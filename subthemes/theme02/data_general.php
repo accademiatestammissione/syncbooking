@@ -22,6 +22,9 @@ $SITE = [
   'wa'        => 'https://wa.me/393382507545',
   'facebook'  => 'https://www.facebook.com/masserialecerase/',
   'instagram' => 'https://www.instagram.com/masseria_lecerase_montefieno/',
+  'lang_primary' => 'EN',
+  'lang_secondary' => 'IT',
+  'whatsapp_label' => 'WhatsApp',
   'shop'      => 'https://shop.masserialecerase.com/',
   'map'       => 'https://maps.google.com/?q=Masseria+Le+Cerase+Conversano',
   'youtube'   => 'd7eZ6wC6fkQ',          // background hero video id

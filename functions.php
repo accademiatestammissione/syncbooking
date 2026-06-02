@@ -319,6 +319,20 @@ function sbt_admin_menu() {
 }
 add_action( 'admin_menu', 'sbt_admin_menu' );
 
+function sbt_admin_shared_styles() {
+	?>
+	<style>
+		.sbt-editor-block { background:#fff; border:1px solid #dcdcde; border-radius:8px; margin:12px 0 18px; padding:14px 16px; }
+		.sbt-editor-block details { background:#f6f7f7; border:1px solid #dcdcde; border-radius:8px; margin:10px 0; padding:10px 12px; }
+		.sbt-editor-field { margin:12px 0; }
+		.sbt-editor-field label { display:block; font-weight:600; margin-bottom:5px; }
+		.sbt-editor-field code { color:#646970; font-weight:400; }
+		.sbt-editor-field input, .sbt-editor-field textarea { width:100%; }
+	</style>
+	<?php
+}
+add_action( 'admin_head', 'sbt_admin_shared_styles' );
+
 function sbt_page_content_key( $slug ) {
 	$pages = sbt_page_templates();
 	if ( isset( $pages[ $slug ] ) ) {
@@ -471,7 +485,9 @@ function sbt_sanitize_options( $raw ) {
 
 	$existing = sbt_get_options();
 	$options['overrides'] = isset( $existing['overrides'] ) && is_array( $existing['overrides'] ) ? $existing['overrides'] : array();
-	$options['overrides'][ $options['subtheme'] ] = array();
+	if ( ! isset( $options['overrides'][ $options['subtheme'] ] ) || ! is_array( $options['overrides'][ $options['subtheme'] ] ) ) {
+		$options['overrides'][ $options['subtheme'] ] = array();
+	}
 
 	if ( isset( $raw['overrides'] ) && is_array( $raw['overrides'] ) ) {
 		foreach ( $raw['overrides'] as $key => $value ) {
@@ -485,6 +501,229 @@ function sbt_sanitize_options( $raw ) {
 	return $options;
 }
 
+function sbt_admin_current_tab() {
+	$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'themes';
+	return in_array( $tab, array( 'themes', 'header', 'pages', 'advanced' ), true ) ? $tab : 'themes';
+}
+
+function sbt_admin_tab_url( $tab ) {
+	return add_query_arg(
+		array(
+			'page' => 'syncbooking-theme',
+			'tab'  => $tab,
+		),
+		admin_url( 'themes.php' )
+	);
+}
+
+function sbt_theme_page_edit_url( $slug ) {
+	$page = get_page_by_path( $slug );
+	if ( ! $page ) {
+		return '';
+	}
+
+	return get_edit_post_link( $page->ID, '' );
+}
+
+function sbt_theme_page_public_url( $slug ) {
+	return 'home' === $slug ? home_url( '/' ) : home_url( '/' . $slug . '/' );
+}
+
+function sbt_page_file_options() {
+	$options = array();
+	foreach ( sbt_page_templates() as $slug => $page ) {
+		$options[ $page['file'] ] = $page['title'] . ' (/' . ( 'home' === $slug ? '' : $slug . '/' ) . ')';
+	}
+	return $options;
+}
+
+function sbt_render_admin_shell_start( $active_tab ) {
+	$tabs = array(
+		'themes'   => 'Temi',
+		'header'   => 'Header & Menu',
+		'pages'    => 'Pages',
+		'advanced' => 'Avanzate',
+	);
+	?>
+	<style>
+		.sbt-wrap { max-width: 1320px; }
+		.sbt-tabs { display:flex; gap:8px; margin:22px 0 18px; border-bottom:1px solid #dcdcde; }
+		.sbt-tab { border:1px solid transparent; border-bottom:0; color:#1d2327; display:inline-flex; font-weight:600; padding:12px 16px; text-decoration:none; }
+		.sbt-tab.is-active { background:#fff; border-color:#dcdcde; border-radius:6px 6px 0 0; margin-bottom:-1px; }
+		.sbt-panel { background:#fff; border:1px solid #dcdcde; border-radius:8px; padding:22px; }
+		.sbt-grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); }
+		.sbt-card { border:1px solid #dcdcde; border-radius:8px; padding:18px; position:relative; }
+		.sbt-card.is-selected { border-color:#2271b1; box-shadow:0 0 0 1px #2271b1; }
+		.sbt-card h3 { margin:0 0 8px; }
+		.sbt-muted { color:#646970; }
+		.sbt-field-grid { display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); }
+		.sbt-field label { display:block; font-weight:600; margin-bottom:6px; }
+		.sbt-field input, .sbt-field select, .sbt-field textarea { width:100%; }
+		.sbt-table { border-collapse:collapse; width:100%; }
+		.sbt-table th, .sbt-table td { border-bottom:1px solid #dcdcde; padding:12px; text-align:left; vertical-align:top; }
+		.sbt-menu-item { background:#f6f7f7; border:1px solid #dcdcde; border-radius:8px; margin:0 0 12px; padding:14px; }
+		.sbt-submenu { border-left:3px solid #dcdcde; margin:12px 0 0 18px; padding-left:14px; }
+		.sbt-actions { display:flex; flex-wrap:wrap; gap:8px; }
+		.sbt-advanced details { background:#fff; border:1px solid #dcdcde; border-radius:8px; margin:10px 0; padding:12px; }
+	</style>
+	<div class="wrap sbt-wrap">
+		<h1>SyncBooking Theme</h1>
+		<p class="sbt-muted">Gestisci sottotema, header, menu e pagine da una dashboard unica.</p>
+		<nav class="sbt-tabs" aria-label="SyncBooking Theme">
+			<?php foreach ( $tabs as $key => $label ) : ?>
+				<a class="sbt-tab <?php echo $active_tab === $key ? 'is-active' : ''; ?>" href="<?php echo esc_url( sbt_admin_tab_url( $key ) ); ?>"><?php echo esc_html( $label ); ?></a>
+			<?php endforeach; ?>
+		</nav>
+	<?php
+}
+
+function sbt_render_theme_tab( $active, $subthemes ) {
+	?>
+	<div class="sbt-panel">
+		<h2>Scegli il sottotema</h2>
+		<p class="sbt-muted">Ogni sottotema mantiene layout, header, footer, menu, pagine e contenuti modificabili separati.</p>
+		<div class="sbt-grid">
+			<?php foreach ( $subthemes as $key => $subtheme ) : ?>
+				<label class="sbt-card <?php echo $active === $key ? 'is-selected' : ''; ?>">
+					<input type="radio" name="<?php echo esc_attr( SBT_OPTION ); ?>[subtheme]" value="<?php echo esc_attr( $key ); ?>" <?php checked( $active, $key ); ?>>
+					<h3><?php echo esc_html( $subtheme['label'] ); ?></h3>
+					<p class="sbt-muted"><?php echo esc_html( count( $subtheme['pages'] ) ); ?> pagine modello incluse</p>
+				</label>
+			<?php endforeach; ?>
+		</div>
+		<?php submit_button( 'Salva tema selezionato' ); ?>
+	</div>
+	<?php
+}
+
+function sbt_render_header_field( $path, $label, $value, $overrides, $type = 'text' ) {
+	$current = array_key_exists( $path, $overrides ) ? $overrides[ $path ] : $value;
+	$name = SBT_OPTION . '[overrides][' . $path . ']';
+	?>
+	<div class="sbt-field">
+		<label><?php echo esc_html( $label ); ?></label>
+		<input type="<?php echo esc_attr( $type ); ?>" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $current ); ?>">
+	</div>
+	<?php
+}
+
+function sbt_render_menu_row( $path, $item, $overrides, $page_options, $is_child = false ) {
+	$label_path = $path . '.label';
+	$url_path = $path . '.url';
+	$label = array_key_exists( $label_path, $overrides ) ? $overrides[ $label_path ] : ( $item['label'] ?? '' );
+	$url = array_key_exists( $url_path, $overrides ) ? $overrides[ $url_path ] : ( $item['url'] ?? '' );
+	?>
+	<div class="sbt-menu-item <?php echo $is_child ? 'sbt-menu-child' : ''; ?>">
+		<div class="sbt-field-grid">
+			<div class="sbt-field">
+				<label>Etichetta menu</label>
+				<input type="text" name="<?php echo esc_attr( SBT_OPTION . '[overrides][' . $label_path . ']' ); ?>" value="<?php echo esc_attr( $label ); ?>">
+			</div>
+			<div class="sbt-field">
+				<label>Pagina collegata</label>
+				<select name="<?php echo esc_attr( SBT_OPTION . '[overrides][' . $url_path . ']' ); ?>">
+					<?php foreach ( $page_options as $file => $page_label ) : ?>
+						<option value="<?php echo esc_attr( $file ); ?>" <?php selected( $url, $file ); ?>><?php echo esc_html( $page_label ); ?></option>
+					<?php endforeach; ?>
+				</select>
+			</div>
+			<?php if ( isset( $item['desc'] ) ) : ?>
+				<?php $desc_path = $path . '.desc'; ?>
+				<div class="sbt-field">
+					<label>Descrizione dropdown</label>
+					<input type="text" name="<?php echo esc_attr( SBT_OPTION . '[overrides][' . $desc_path . ']' ); ?>" value="<?php echo esc_attr( array_key_exists( $desc_path, $overrides ) ? $overrides[ $desc_path ] : $item['desc'] ); ?>">
+				</div>
+			<?php endif; ?>
+		</div>
+		<?php if ( ! empty( $item['sub'] ) && is_array( $item['sub'] ) ) : ?>
+			<div class="sbt-submenu">
+				<strong>Sottomenu</strong>
+				<?php foreach ( $item['sub'] as $index => $child ) : ?>
+					<?php sbt_render_menu_row( $path . '.sub.' . $index, $child, $overrides, $page_options, true ); ?>
+				<?php endforeach; ?>
+			</div>
+		<?php endif; ?>
+	</div>
+	<?php
+}
+
+function sbt_render_header_menu_tab( $data, $overrides ) {
+	$page_options = sbt_page_file_options();
+	?>
+	<div class="sbt-panel">
+		<h2>Elementi header</h2>
+		<p class="sbt-muted">Modifica identità, loghi, contatti rapidi e voci del menu alto del sottotema attivo.</p>
+		<div class="sbt-field-grid">
+			<?php
+			sbt_render_header_field( 'SITE.name', 'Nome struttura', $data['SITE']['name'] ?? '', $overrides );
+			sbt_render_header_field( 'SITE.tagline', 'Tagline', $data['SITE']['tagline'] ?? '', $overrides );
+			sbt_render_header_field( 'IMG.logo', 'Logo header URL', $data['IMG']['logo'] ?? '', $overrides, 'url' );
+			sbt_render_header_field( 'IMG.logo_foot', 'Logo footer URL', $data['IMG']['logo_foot'] ?? '', $overrides, 'url' );
+			sbt_render_header_field( 'SITE.wa', 'WhatsApp URL', $data['SITE']['wa'] ?? '', $overrides, 'url' );
+			sbt_render_header_field( 'SITE.whatsapp_label', 'Testo WhatsApp', $data['SITE']['whatsapp_label'] ?? 'WhatsApp', $overrides );
+			sbt_render_header_field( 'SITE.lang_primary', 'Lingua primaria header', $data['SITE']['lang_primary'] ?? 'EN', $overrides );
+			sbt_render_header_field( 'SITE.lang_secondary', 'Lingua secondaria header', $data['SITE']['lang_secondary'] ?? 'IT', $overrides );
+			sbt_render_header_field( 'SITE.phone1', 'Telefono principale', $data['SITE']['phone1'] ?? '', $overrides );
+			sbt_render_header_field( 'SITE.email', 'Email', $data['SITE']['email'] ?? '', $overrides, 'email' );
+			?>
+		</div>
+		<h2 style="margin-top:28px;">Menu alto</h2>
+		<p class="sbt-muted">Ogni voce deve puntare a una pagina modello presente nel sottotema attivo.</p>
+		<?php foreach ( $data['NAV'] as $index => $item ) : ?>
+			<?php sbt_render_menu_row( 'NAV.' . $index, $item, $overrides, $page_options ); ?>
+		<?php endforeach; ?>
+		<?php submit_button( 'Salva header e menu' ); ?>
+	</div>
+	<?php
+}
+
+function sbt_render_pages_tab() {
+	?>
+	<div class="sbt-panel">
+		<h2>Pages del sottotema</h2>
+		<p class="sbt-muted">Da qui vai direttamente alla modifica completa dei campi della singola pagina. Se manca una pagina, salva dal pannello per crearla automaticamente.</p>
+		<table class="sbt-table">
+			<thead><tr><th>Pagina</th><th>Slug</th><th>Stato</th><th>Azioni</th></tr></thead>
+			<tbody>
+				<?php foreach ( sbt_page_templates() as $slug => $page ) : ?>
+					<?php
+					$post = get_page_by_path( $slug );
+					$edit_url = $post ? get_edit_post_link( $post->ID, '' ) : '';
+					?>
+					<tr>
+						<td><strong><?php echo esc_html( $page['title'] ); ?></strong></td>
+						<td><code><?php echo esc_html( '/' . ( 'home' === $slug ? '' : $slug . '/' ) ); ?></code></td>
+						<td><?php echo $post ? 'Presente' : 'Da creare'; ?></td>
+						<td class="sbt-actions">
+							<?php if ( $edit_url ) : ?>
+								<a class="button button-primary" href="<?php echo esc_url( $edit_url ); ?>">Modifica campi pagina</a>
+							<?php endif; ?>
+							<a class="button" href="<?php echo esc_url( sbt_theme_page_public_url( $slug ) ); ?>" target="_blank">Anteprima</a>
+						</td>
+					</tr>
+				<?php endforeach; ?>
+			</tbody>
+		</table>
+		<?php submit_button( 'Crea/aggiorna pagine modello' ); ?>
+	</div>
+	<?php
+}
+
+function sbt_render_advanced_tab( $data, $overrides ) {
+	?>
+	<div class="sbt-panel sbt-advanced">
+		<h2>Avanzate</h2>
+		<p class="sbt-muted">Campi completi del sottotema attivo. Usa questa sezione per dati non presenti nei tab rapidi.</p>
+		<?php
+		sbt_render_admin_fields( 'SITE', $data['SITE'], $overrides, 'Dati generali' );
+		sbt_render_admin_fields( 'IMG', $data['IMG'], $overrides, 'Immagini' );
+		sbt_render_admin_fields( 'NAV', $data['NAV'], $overrides, 'Navigazione' );
+		?>
+		<?php submit_button( 'Salva avanzate' ); ?>
+	</div>
+	<?php
+}
+
 function sbt_render_admin_page() {
 	if ( isset( $_POST['sbt_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['sbt_nonce'] ) ), 'sbt_save' ) && current_user_can( 'manage_options' ) ) {
 		update_option( SBT_OPTION, sbt_sanitize_options( $_POST[ SBT_OPTION ] ?? array() ) );
@@ -493,39 +732,28 @@ function sbt_render_admin_page() {
 		echo '<div class="notice notice-success is-dismissible"><p>Impostazioni SyncBooking salvate.</p></div>';
 	}
 
-	require sbt_subtheme_path( 'data_general.php' );
-
 	$subthemes = sbt_subthemes();
 	$active = sbt_active_subtheme_key();
 	$overrides = sbt_active_overrides();
+	$active_tab = sbt_admin_current_tab();
+	$data = sbt_load_active_data();
+
+	sbt_render_admin_shell_start( $active_tab );
 	?>
-	<div class="wrap">
-		<h1>SyncBooking Theme</h1>
-		<p>Da qui puoi scegliere il sottotema e modificare testi, immagini, gallerie, contatti, menu e card usati dalle pagine del tema.</p>
 		<form method="post">
 			<?php wp_nonce_field( 'sbt_save', 'sbt_nonce' ); ?>
-			<h2>Sottotema</h2>
-			<select name="<?php echo esc_attr( SBT_OPTION ); ?>[subtheme]">
-				<?php foreach ( $subthemes as $key => $subtheme ) : ?>
-					<option value="<?php echo esc_attr( $key ); ?>" <?php selected( $active, $key ); ?>><?php echo esc_html( $subtheme['label'] ); ?></option>
-				<?php endforeach; ?>
-			</select>
-			<p class="description">Salvando cambi sottotema, menu, pagine e contenuti modificabili. Gli override sono separati per ogni sottotema.</p>
-
+			<input type="hidden" name="<?php echo esc_attr( SBT_OPTION ); ?>[subtheme]" value="<?php echo esc_attr( $active ); ?>">
 			<?php
-			sbt_render_admin_fields( 'SITE', $SITE, $overrides, 'Dati generali' );
-			sbt_render_admin_fields( 'IMG', $IMG, $overrides, 'Immagini' );
-			sbt_render_admin_fields( 'C', $C, $overrides, 'Testi e gallerie pagine' );
-			if ( isset( $TEXT ) ) sbt_render_admin_fields( 'TEXT', $TEXT, $overrides, 'Testi fissi template' );
-			if ( isset( $HOUSE_CARDS ) ) sbt_render_admin_fields( 'HOUSE_CARDS', $HOUSE_CARDS, $overrides, 'Card case' );
-			if ( isset( $SERVICES ) ) sbt_render_admin_fields( 'SERVICES', $SERVICES, $overrides, 'Servizi' );
-			if ( isset( $GALLERY ) ) sbt_render_admin_fields( 'GALLERY', $GALLERY, $overrides, 'Gallery hospitality' );
-			if ( isset( $WEDDING_GALLERY ) ) sbt_render_admin_fields( 'WEDDING_GALLERY', $WEDDING_GALLERY, $overrides, 'Gallery wedding' );
-			if ( isset( $EXPERIENCES ) ) sbt_render_admin_fields( 'EXPERIENCES', $EXPERIENCES, $overrides, 'Esperienze' );
-			sbt_render_admin_fields( 'NAV', $NAV, $overrides, 'Navigazione' );
+			if ( 'themes' === $active_tab ) {
+				sbt_render_theme_tab( $active, $subthemes );
+			} elseif ( 'header' === $active_tab ) {
+				sbt_render_header_menu_tab( $data, $overrides );
+			} elseif ( 'pages' === $active_tab ) {
+				sbt_render_pages_tab();
+			} else {
+				sbt_render_advanced_tab( $data, $overrides );
+			}
 			?>
-
-			<?php submit_button( 'Salva tema' ); ?>
 		</form>
 	</div>
 	<?php
@@ -537,11 +765,11 @@ function sbt_render_admin_fields( $path, $value, $overrides, $title = '' ) {
 	}
 
 	if ( is_array( $value ) && ! sbt_is_scalar_list( $value ) ) {
-		echo '<div style="border:1px solid #ccd0d4;background:#fff;padding:12px 16px;margin:12px 0 18px;">';
+		echo '<div class="sbt-editor-block">';
 		foreach ( $value as $key => $child ) {
 			$child_path = '' === $path ? (string) $key : $path . '.' . $key;
 			if ( is_array( $child ) && ! sbt_is_scalar_list( $child ) ) {
-				echo '<details style="margin:10px 0;" open><summary><strong>' . esc_html( $key ) . '</strong></summary>';
+				echo '<details open><summary><strong>' . esc_html( $key ) . '</strong></summary>';
 				sbt_render_admin_fields( $child_path, $child, $overrides );
 				echo '</details>';
 			} else {
@@ -560,7 +788,7 @@ function sbt_render_single_admin_field( $path, $label, $value, $overrides ) {
 	$name = SBT_OPTION . '[overrides][' . $path . ']';
 	$is_long = is_string( $current ) && ( false !== strpos( $current, "\n" ) || strlen( wp_strip_all_tags( $current ) ) > 90 || false !== strpos( strtolower( $path ), 'gallery' ) );
 	?>
-	<p>
+	<p class="sbt-editor-field">
 		<label style="display:block;font-weight:600;margin-bottom:4px;"><?php echo esc_html( $label ); ?> <code><?php echo esc_html( $path ); ?></code></label>
 		<?php if ( $is_long ) : ?>
 			<textarea name="<?php echo esc_attr( $name ); ?>" rows="4" class="large-text"><?php echo esc_textarea( $current ); ?></textarea>
