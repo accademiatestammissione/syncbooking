@@ -459,6 +459,48 @@ function sbt_page_editor_sections( $slug, $data ) {
 	}
 
 	$theme = sbt_active_subtheme_key();
+	if ( 'home' === $slug ) {
+		$home_image_keys = 'theme01' === $theme
+			? array( 'welcome', 'lunch', 'spa' )
+			: array( 'welcome', 'band', 'teaser_hospitality', 'teaser_wedding', 'teaser_events', 'exp_massage', 'exp_boat', 'exp_cooking', 'exp_dinner' );
+		$home_images = array();
+		foreach ( $home_image_keys as $image_key ) {
+			if ( isset( $data['IMG'][ $image_key ] ) ) {
+				$home_images[ $image_key ] = $data['IMG'][ $image_key ];
+			}
+		}
+		if ( $home_images ) {
+			$sections['IMG'] = array( 'title' => 'Immagini Home', 'value' => $home_images );
+		}
+
+		$video_key = 'theme01' === $theme ? 'vimeo' : 'youtube';
+		if ( isset( $data['SITE'][ $video_key ] ) ) {
+			$sections['SITE'] = array( 'title' => 'Video Home', 'value' => array( $video_key => $data['SITE'][ $video_key ] ) );
+		}
+	}
+
+	if ( 'theme02' === $theme && 'home' !== $slug ) {
+		$page_image_keys = array(
+			'hospitality'         => array( 'hosp_hero', 'teaser_hospitality', 'exp_massage', 'exp_boat', 'exp_cooking', 'exp_dinner' ),
+			'events-weddings'     => array( 'events_hero', 'teaser_wedding', 'partys_hero', 'band' ),
+			'wedding-in-masseria' => array( 'wedding_hero', 'events_hero' ),
+			'partys-meeting'      => array( 'partys_hero', 'band' ),
+			'surroundings'        => array( 'surr_hero', 'band' ),
+			'contacts'            => array( 'contacts_hero' ),
+		);
+		if ( isset( $page_image_keys[ $slug ] ) ) {
+			$page_images = array();
+			foreach ( $page_image_keys[ $slug ] as $image_key ) {
+				if ( isset( $data['IMG'][ $image_key ] ) ) {
+					$page_images[ $image_key ] = $data['IMG'][ $image_key ];
+				}
+			}
+			if ( $page_images ) {
+				$sections['IMG'] = array( 'title' => 'Immagini pagina', 'value' => $page_images );
+			}
+		}
+	}
+
 	if ( 'theme01' === $theme ) {
 		if ( in_array( $slug, array( 'home', 'houses' ), true ) && ! empty( $data['HOUSE_CARDS'] ) ) {
 			$sections['HOUSE_CARDS'] = array( 'title' => 'Card case', 'value' => $data['HOUSE_CARDS'] );
@@ -640,7 +682,7 @@ function sbt_reset_subtheme_template( $subtheme ) {
 
 function sbt_admin_current_tab() {
 	$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'themes';
-	return in_array( $tab, array( 'themes', 'header', 'pages', 'advanced' ), true ) ? $tab : 'themes';
+	return in_array( $tab, array( 'themes', 'home', 'header', 'pages' ), true ) ? $tab : 'themes';
 }
 
 function sbt_admin_tab_url( $tab ) {
@@ -673,9 +715,9 @@ function sbt_page_file_options() {
 function sbt_render_admin_shell_start( $active_tab ) {
 	$tabs = array(
 		'themes'   => 'Temi',
+		'home'     => 'Home',
 		'header'   => 'Header & Menu',
 		'pages'    => 'Pages',
-		'advanced' => 'Avanzate',
 	);
 	?>
 	<style>
@@ -697,7 +739,6 @@ function sbt_render_admin_shell_start( $active_tab ) {
 		.sbt-menu-item { background:#f6f7f7; border:1px solid #dcdcde; border-radius:8px; margin:0 0 12px; padding:14px; }
 		.sbt-submenu { border-left:3px solid #dcdcde; margin:12px 0 0 18px; padding-left:14px; }
 		.sbt-actions { display:flex; flex-wrap:wrap; gap:8px; }
-		.sbt-advanced details { background:#fff; border:1px solid #dcdcde; border-radius:8px; margin:10px 0; padding:12px; }
 	</style>
 	<div class="wrap sbt-wrap">
 		<h1>SyncBooking Theme</h1>
@@ -821,15 +862,46 @@ function sbt_render_header_menu_tab( $data, $overrides ) {
 	<?php
 }
 
+function sbt_render_home_tab( $data, $overrides ) {
+	$pages = sbt_page_templates();
+	$home_title = isset( $pages['home']['title'] ) ? $pages['home']['title'] : 'Home';
+	$sections = sbt_page_editor_sections( 'home', $data );
+	$preview_url = sbt_theme_page_public_url( 'home' );
+	?>
+	<div class="sbt-panel">
+		<h2>Home</h2>
+		<p class="sbt-muted">Gestisci da qui tutti i contenuti principali della homepage del sottotema attivo.</p>
+		<div class="sbt-page-editor-layout">
+			<div>
+				<?php foreach ( $sections as $path => $section ) : ?>
+					<?php sbt_render_admin_fields( $path, $section['value'], $overrides, $section['title'] ); ?>
+				<?php endforeach; ?>
+				<?php submit_button( 'Salva Home' ); ?>
+			</div>
+			<aside class="sbt-page-preview">
+				<div class="sbt-page-preview__bar">
+					<strong>Anteprima Home</strong>
+					<a class="button" href="<?php echo esc_url( $preview_url ); ?>" target="_blank" rel="noopener">Apri Home</a>
+				</div>
+				<iframe src="<?php echo esc_url( $preview_url ); ?>" title="Anteprima <?php echo esc_attr( $home_title ); ?>"></iframe>
+			</aside>
+		</div>
+	</div>
+	<?php
+}
+
 function sbt_render_pages_tab() {
 	?>
 	<div class="sbt-panel">
 		<h2>Pages del sottotema</h2>
-		<p class="sbt-muted">Da qui vai direttamente alla modifica completa dei campi della singola pagina. Se manca una pagina, salva dal pannello per crearla automaticamente.</p>
+		<p class="sbt-muted">Da qui vai direttamente alla modifica completa delle pagine interne. La homepage ora si gestisce dalla tab Home.</p>
 		<table class="sbt-table">
 			<thead><tr><th>Pagina</th><th>Slug</th><th>Stato</th><th>Azioni</th></tr></thead>
 			<tbody>
 				<?php foreach ( sbt_page_templates() as $slug => $page ) : ?>
+					<?php if ( 'home' === $slug ) : ?>
+						<?php continue; ?>
+					<?php endif; ?>
 					<?php
 					$post = get_page_by_path( $slug );
 					$edit_url = $post ? get_edit_post_link( $post->ID, '' ) : '';
@@ -849,21 +921,6 @@ function sbt_render_pages_tab() {
 			</tbody>
 		</table>
 		<?php submit_button( 'Crea/aggiorna pagine modello' ); ?>
-	</div>
-	<?php
-}
-
-function sbt_render_advanced_tab( $data, $overrides ) {
-	?>
-	<div class="sbt-panel sbt-advanced">
-		<h2>Avanzate</h2>
-		<p class="sbt-muted">Campi completi del sottotema attivo. Usa questa sezione per dati non presenti nei tab rapidi.</p>
-		<?php
-		sbt_render_admin_fields( 'SITE', $data['SITE'], $overrides, 'Dati generali' );
-		sbt_render_admin_fields( 'IMG', $data['IMG'], $overrides, 'Immagini' );
-		sbt_render_admin_fields( 'NAV', $data['NAV'], $overrides, 'Navigazione' );
-		?>
-		<?php submit_button( 'Salva avanzate' ); ?>
 	</div>
 	<?php
 }
@@ -899,12 +956,12 @@ function sbt_render_admin_page() {
 			<?php
 			if ( 'themes' === $active_tab ) {
 				sbt_render_theme_tab( $active, $subthemes );
+			} elseif ( 'home' === $active_tab ) {
+				sbt_render_home_tab( $data, $overrides );
 			} elseif ( 'header' === $active_tab ) {
 				sbt_render_header_menu_tab( $data, $overrides );
 			} elseif ( 'pages' === $active_tab ) {
 				sbt_render_pages_tab();
-			} else {
-				sbt_render_advanced_tab( $data, $overrides );
 			}
 			?>
 		</form>
