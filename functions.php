@@ -322,16 +322,114 @@ add_action( 'admin_menu', 'sbt_admin_menu' );
 function sbt_admin_shared_styles() {
 	?>
 	<style>
+		.sbt-page-editor-layout { display:grid; gap:18px; grid-template-columns:minmax(0,1fr) minmax(320px,42%); }
+		.sbt-page-preview { position:sticky; top:42px; }
+		.sbt-page-preview iframe { background:#fff; border:1px solid #dcdcde; border-radius:8px; height:720px; width:100%; }
+		.sbt-page-preview__bar { align-items:center; display:flex; justify-content:space-between; margin-bottom:8px; }
 		.sbt-editor-block { background:#fff; border:1px solid #dcdcde; border-radius:8px; margin:12px 0 18px; padding:14px 16px; }
 		.sbt-editor-block details { background:#f6f7f7; border:1px solid #dcdcde; border-radius:8px; margin:10px 0; padding:10px 12px; }
+		.sbt-editor-block summary { cursor:pointer; }
+		.sbt-section-title { align-items:baseline; display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; }
+		.sbt-section-title code, .sbt-field-path { color:#646970; font-size:12px; font-weight:400; }
 		.sbt-editor-field { margin:12px 0; }
 		.sbt-editor-field label { display:block; font-weight:600; margin-bottom:5px; }
 		.sbt-editor-field code { color:#646970; font-weight:400; }
 		.sbt-editor-field input, .sbt-editor-field textarea { width:100%; }
+		.sbt-media-control { display:grid; gap:8px; }
+		.sbt-media-preview img { background:#f6f7f7; border:1px solid #dcdcde; border-radius:6px; height:96px; object-fit:cover; width:140px; }
+		.sbt-gallery-list { display:grid; gap:10px; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); margin:10px 0; }
+		.sbt-gallery-item { background:#fff; border:1px solid #dcdcde; border-radius:8px; cursor:move; overflow:hidden; position:relative; }
+		.sbt-gallery-item img { aspect-ratio:4/3; display:block; object-fit:cover; width:100%; }
+		.sbt-gallery-remove { position:absolute; right:6px; top:6px; }
+		.sbt-gallery-empty { border:1px dashed #c3c4c7; border-radius:8px; color:#646970; padding:14px; text-align:center; }
+		.sbt-gallery-actions, .sbt-media-actions { display:flex; flex-wrap:wrap; gap:8px; }
+		@media (max-width: 1180px) { .sbt-page-editor-layout { grid-template-columns:1fr; } .sbt-page-preview { position:static; } }
 	</style>
 	<?php
 }
 add_action( 'admin_head', 'sbt_admin_shared_styles' );
+
+function sbt_enqueue_admin_assets( $hook ) {
+	if ( 'appearance_page_syncbooking-theme' !== $hook && 'post.php' !== $hook && 'post-new.php' !== $hook ) {
+		return;
+	}
+
+	wp_enqueue_media();
+	wp_enqueue_script( 'jquery-ui-sortable' );
+}
+add_action( 'admin_enqueue_scripts', 'sbt_enqueue_admin_assets' );
+
+function sbt_admin_footer_scripts() {
+	?>
+	<script>
+	(function($){
+		function syncGallery($control){
+			var urls = [];
+			$control.find('.sbt-gallery-item').each(function(){
+				urls.push($(this).data('url'));
+			});
+			$control.find('.sbt-gallery-value').val(urls.join("\n"));
+			$control.find('.sbt-gallery-empty').toggle(urls.length === 0);
+		}
+
+		function renderGalleryItem(url){
+			return $('<div class="sbt-gallery-item" />')
+				.attr('data-url', url)
+				.append($('<button type="button" class="button-link-delete sbt-gallery-remove">x</button>'))
+				.append($('<img alt="">').attr('src', url));
+		}
+
+		$(function(){
+			$('.sbt-gallery-list').sortable({
+				update: function(){ syncGallery($(this).closest('.sbt-gallery-control')); }
+			});
+
+			$(document).on('click', '.sbt-media-pick', function(e){
+				e.preventDefault();
+				var $control = $(this).closest('.sbt-media-control');
+				var frame = wp.media({ title: 'Seleziona immagine', multiple: false, library: { type: 'image' } });
+				frame.on('select', function(){
+					var item = frame.state().get('selection').first().toJSON();
+					var url = item.url;
+					$control.find('.sbt-media-value').val(url);
+					$control.find('.sbt-media-preview').html($('<img alt="">').attr('src', url));
+				});
+				frame.open();
+			});
+
+			$(document).on('click', '.sbt-media-clear', function(e){
+				e.preventDefault();
+				var $control = $(this).closest('.sbt-media-control');
+				$control.find('.sbt-media-value').val('');
+				$control.find('.sbt-media-preview').empty();
+			});
+
+			$(document).on('click', '.sbt-gallery-pick', function(e){
+				e.preventDefault();
+				var $control = $(this).closest('.sbt-gallery-control');
+				var frame = wp.media({ title: 'Seleziona immagini', multiple: true, library: { type: 'image' } });
+				frame.on('select', function(){
+					frame.state().get('selection').each(function(attachment){
+						var item = attachment.toJSON();
+						$control.find('.sbt-gallery-list').append(renderGalleryItem(item.url));
+					});
+					syncGallery($control);
+				});
+				frame.open();
+			});
+
+			$(document).on('click', '.sbt-gallery-remove', function(e){
+				e.preventDefault();
+				var $control = $(this).closest('.sbt-gallery-control');
+				$(this).closest('.sbt-gallery-item').remove();
+				syncGallery($control);
+			});
+		});
+	})(jQuery);
+	</script>
+	<?php
+}
+add_action( 'admin_footer', 'sbt_admin_footer_scripts' );
 
 function sbt_page_content_key( $slug ) {
 	$pages = sbt_page_templates();
@@ -401,6 +499,15 @@ function sbt_add_page_editor_metabox() {
 }
 add_action( 'add_meta_boxes', 'sbt_add_page_editor_metabox' );
 
+function sbt_theme_page_public_url( $slug ) {
+	if ( 'home' === $slug ) {
+		return home_url( '/' );
+	}
+
+	$page = get_page_by_path( $slug );
+	return $page ? get_permalink( $page ) : home_url( '/' . $slug . '/' );
+}
+
 function sbt_render_page_editor_metabox( $post ) {
 	wp_nonce_field( 'sbt_page_save', 'sbt_page_nonce' );
 
@@ -414,13 +521,22 @@ function sbt_render_page_editor_metabox( $post ) {
 	$data = sbt_load_active_data();
 	$sections = sbt_page_editor_sections( $slug, $data );
 	$overrides = sbt_active_overrides();
+	$preview_url = sbt_theme_page_public_url( $slug );
 
 	echo '<p>Editor unico per la pagina <strong>' . esc_html( $pages[ $slug ]['title'] ) . '</strong> del sottotema <strong>' . esc_html( sbt_active_subtheme()['label'] ) . '</strong>.</p>';
 	echo '<input type="hidden" name="sbt_page_slug" value="' . esc_attr( $slug ) . '">';
 
+	echo '<div class="sbt-page-editor-layout">';
+	echo '<div>';
 	foreach ( $sections as $path => $section ) {
 		sbt_render_admin_fields( $path, $section['value'], $overrides, $section['title'] );
 	}
+	echo '</div>';
+	echo '<aside class="sbt-page-preview">';
+	echo '<div class="sbt-page-preview__bar"><strong>Anteprima pagina</strong><a class="button" href="' . esc_url( $preview_url ) . '" target="_blank" rel="noopener">Apri pagina</a></div>';
+	echo '<iframe src="' . esc_url( $preview_url ) . '" title="Anteprima ' . esc_attr( $pages[ $slug ]['title'] ) . '"></iframe>';
+	echo '</aside>';
+	echo '</div>';
 }
 
 function sbt_save_page_editor_metabox( $post_id ) {
@@ -441,7 +557,8 @@ function sbt_save_page_editor_metabox( $post_id ) {
 	}
 
 	$slug = sanitize_title( wp_unslash( $_POST['sbt_page_slug'] ) );
-	if ( ! isset( sbt_page_templates()[ $slug ] ) ) {
+	$pages = sbt_page_templates();
+	if ( ! isset( $pages[ $slug ] ) ) {
 		return;
 	}
 
@@ -523,10 +640,6 @@ function sbt_theme_page_edit_url( $slug ) {
 	}
 
 	return get_edit_post_link( $page->ID, '' );
-}
-
-function sbt_theme_page_public_url( $slug ) {
-	return 'home' === $slug ? home_url( '/' ) : home_url( '/' . $slug . '/' );
 }
 
 function sbt_page_file_options() {
@@ -759,9 +872,100 @@ function sbt_render_admin_page() {
 	<?php
 }
 
+function sbt_humanize_key( $key ) {
+	$labels = array(
+		'cta'              => 'Call to action',
+		'cta_label'        => 'Testo pulsante',
+		'cta_url'          => 'Link pulsante',
+		'img'              => 'Immagine',
+		'image'            => 'Immagine',
+		'logo'             => 'Logo',
+		'logo_foot'        => 'Logo footer',
+		'favicon'          => 'Favicon',
+		'supertitle'       => 'Sopratitolo',
+		'subtitle'         => 'Sottotitolo',
+		'body'             => 'Testo',
+		'text'             => 'Testo',
+		'desc'             => 'Descrizione',
+		'description'      => 'Descrizione',
+		'title'            => 'Titolo',
+		'label'            => 'Etichetta',
+		'url'              => 'Link',
+		'menu'             => 'Menu',
+		'gallery'          => 'Galleria',
+		'wedding_gallery'  => 'Galleria wedding',
+		'phone'            => 'Telefono',
+		'email'            => 'Email',
+		'address'          => 'Indirizzo',
+		'whatsapp_label'   => 'Testo WhatsApp',
+		'lang_primary'     => 'Lingua principale',
+		'lang_secondary'   => 'Lingua secondaria',
+	);
+
+	$key = strtolower( (string) $key );
+	if ( isset( $labels[ $key ] ) ) {
+		return $labels[ $key ];
+	}
+
+	return ucwords( str_replace( array( '_', '-' ), ' ', (string) $key ) );
+}
+
+function sbt_friendly_field_label( $label, $path ) {
+	$parts = explode( '.', (string) $path );
+	$key = '' !== (string) $label ? (string) $label : end( $parts );
+	return sbt_humanize_key( $key );
+}
+
+function sbt_current_admin_value( $path, $value, $overrides ) {
+	return array_key_exists( $path, $overrides ) ? $overrides[ $path ] : ( sbt_is_scalar_list( $value ) ? implode( "\n", $value ) : $value );
+}
+
+function sbt_value_lines( $value ) {
+	if ( is_array( $value ) ) {
+		return array_values( array_filter( array_map( 'strval', $value ) ) );
+	}
+
+	return array_values( array_filter( array_map( 'trim', preg_split( '/\r\n|\r|\n/', (string) $value ) ) ) );
+}
+
+function sbt_is_image_string( $value ) {
+	return is_string( $value ) && (bool) preg_match( '/\.(jpe?g|png|gif|webp|avif|svg)(\?.*)?$/i', $value );
+}
+
+function sbt_is_image_field( $path, $value ) {
+	$lower = strtolower( (string) $path );
+	$last = basename( str_replace( '.', '/', $lower ) );
+	$image_keys = array( 'img', 'image', 'logo', 'logo_foot', 'favicon', 'banner', 'main', 'cta_bg', 'welcome', 'lunch', 'spa', 'villa', 'room', 'room2', 'garden', 'a1', 'a5' );
+
+	if ( in_array( $last, $image_keys, true ) ) {
+		return true;
+	}
+
+	return sbt_is_image_string( $value );
+}
+
+function sbt_is_gallery_field( $path, $value ) {
+	$lower = strtolower( (string) $path );
+	if ( false !== strpos( $lower, 'gallery' ) ) {
+		return true;
+	}
+
+	if ( ! sbt_is_scalar_list( $value ) ) {
+		return false;
+	}
+
+	foreach ( $value as $item ) {
+		if ( ! sbt_is_image_string( $item ) ) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 function sbt_render_admin_fields( $path, $value, $overrides, $title = '' ) {
 	if ( '' !== $title ) {
-		echo '<h2>' . esc_html( $title ) . '</h2>';
+		echo '<h2 class="sbt-section-title"><span>' . esc_html( $title ) . '</span><code>' . esc_html( $path ) . '</code></h2>';
 	}
 
 	if ( is_array( $value ) && ! sbt_is_scalar_list( $value ) ) {
@@ -769,7 +973,7 @@ function sbt_render_admin_fields( $path, $value, $overrides, $title = '' ) {
 		foreach ( $value as $key => $child ) {
 			$child_path = '' === $path ? (string) $key : $path . '.' . $key;
 			if ( is_array( $child ) && ! sbt_is_scalar_list( $child ) ) {
-				echo '<details open><summary><strong>' . esc_html( $key ) . '</strong></summary>';
+				echo '<details open><summary><span class="sbt-section-title"><strong>' . esc_html( sbt_humanize_key( $key ) ) . '</strong><code>' . esc_html( $child_path ) . '</code></span></summary>';
 				sbt_render_admin_fields( $child_path, $child, $overrides );
 				echo '</details>';
 			} else {
@@ -784,17 +988,53 @@ function sbt_render_admin_fields( $path, $value, $overrides, $title = '' ) {
 }
 
 function sbt_render_single_admin_field( $path, $label, $value, $overrides ) {
-	$current = array_key_exists( $path, $overrides ) ? $overrides[ $path ] : ( sbt_is_scalar_list( $value ) ? implode( "\n", $value ) : $value );
+	$current = sbt_current_admin_value( $path, $value, $overrides );
 	$name = SBT_OPTION . '[overrides][' . $path . ']';
-	$is_long = is_string( $current ) && ( false !== strpos( $current, "\n" ) || strlen( wp_strip_all_tags( $current ) ) > 90 || false !== strpos( strtolower( $path ), 'gallery' ) );
+	$friendly_label = sbt_friendly_field_label( $label, $path );
+	$is_gallery = sbt_is_gallery_field( $path, $value );
+	$is_image = ! $is_gallery && sbt_is_image_field( $path, $current );
+	$is_long = is_string( $current ) && ( false !== strpos( $current, "\n" ) || strlen( wp_strip_all_tags( $current ) ) > 90 );
 	?>
-	<p class="sbt-editor-field">
-		<label style="display:block;font-weight:600;margin-bottom:4px;"><?php echo esc_html( $label ); ?> <code><?php echo esc_html( $path ); ?></code></label>
-		<?php if ( $is_long ) : ?>
+	<div class="sbt-editor-field">
+		<label>
+			<?php echo esc_html( $friendly_label ); ?>
+			<span class="sbt-field-path"><?php echo esc_html( $path ); ?></span>
+		</label>
+		<?php if ( $is_gallery ) : ?>
+			<?php $gallery_urls = sbt_value_lines( $current ); ?>
+			<span class="sbt-gallery-control">
+				<textarea name="<?php echo esc_attr( $name ); ?>" class="sbt-gallery-value" hidden><?php echo esc_textarea( implode( "\n", $gallery_urls ) ); ?></textarea>
+				<span class="sbt-gallery-list">
+					<?php foreach ( $gallery_urls as $url ) : ?>
+						<span class="sbt-gallery-item" data-url="<?php echo esc_attr( $url ); ?>">
+							<button type="button" class="button-link-delete sbt-gallery-remove">x</button>
+							<img src="<?php echo esc_url( $url ); ?>" alt="">
+						</span>
+					<?php endforeach; ?>
+				</span>
+				<span class="sbt-gallery-empty" <?php echo $gallery_urls ? 'style="display:none;"' : ''; ?>>Nessuna immagine selezionata.</span>
+				<span class="sbt-gallery-actions">
+					<button type="button" class="button sbt-gallery-pick">Aggiungi immagini</button>
+				</span>
+			</span>
+		<?php elseif ( $is_image ) : ?>
+			<span class="sbt-media-control">
+				<span class="sbt-media-preview">
+					<?php if ( $current ) : ?>
+						<img src="<?php echo esc_url( $current ); ?>" alt="">
+					<?php endif; ?>
+				</span>
+				<input type="text" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $current ); ?>" class="large-text sbt-media-value">
+				<span class="sbt-media-actions">
+					<button type="button" class="button sbt-media-pick">Scegli immagine</button>
+					<button type="button" class="button sbt-media-clear">Rimuovi</button>
+				</span>
+			</span>
+		<?php elseif ( $is_long ) : ?>
 			<textarea name="<?php echo esc_attr( $name ); ?>" rows="4" class="large-text"><?php echo esc_textarea( $current ); ?></textarea>
 		<?php else : ?>
 			<input type="text" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $current ); ?>" class="large-text">
 		<?php endif; ?>
-	</p>
+	</div>
 	<?php
 }
