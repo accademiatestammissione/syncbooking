@@ -26,30 +26,30 @@ function sbt_subthemes() {
 			'dir'   => 'theme01',
 			'pages' => array(
 				'home'                => array( 'title' => 'Home', 'file' => 'index.php' ),
-				'villa'               => array( 'title' => 'Villa', 'file' => 'villa.php' ),
-				'houses'              => array( 'title' => 'Houses', 'file' => 'houses.php' ),
-				'house-for-2'         => array( 'title' => 'Houses for 2', 'file' => 'house-for-2.php' ),
-				'house-for-3'         => array( 'title' => 'Houses for 3', 'file' => 'house-for-3.php' ),
-				'house-for-4'         => array( 'title' => 'Houses for 4', 'file' => 'house-for-4.php' ),
-				'price-and-condition' => array( 'title' => 'Price & Condition', 'file' => 'price-and-condition.php' ),
-				'spa-wellness'        => array( 'title' => 'SPA & Wellness', 'file' => 'spa-wellness.php' ),
-				'experiences'         => array( 'title' => 'Experiences', 'file' => 'experiences.php' ),
-				'surroundings'        => array( 'title' => 'Surroundings', 'file' => 'surroundings.php' ),
-				'offers'              => array( 'title' => 'Offers', 'file' => 'offers.php' ),
-				'contacts'            => array( 'title' => 'Contacts', 'file' => 'contacts.php' ),
+				'villa'               => array( 'title' => 'Villa', 'file' => 'villa.php', 'content_key' => 'villa' ),
+				'houses'              => array( 'title' => 'Houses', 'file' => 'houses.php', 'content_key' => 'houses' ),
+				'house-for-2'         => array( 'title' => 'Houses for 2', 'file' => 'house-for-2.php', 'content_key' => 'house2' ),
+				'house-for-3'         => array( 'title' => 'Houses for 3', 'file' => 'house-for-3.php', 'content_key' => 'house3' ),
+				'house-for-4'         => array( 'title' => 'Houses for 4', 'file' => 'house-for-4.php', 'content_key' => 'house4' ),
+				'price-and-condition' => array( 'title' => 'Price & Condition', 'file' => 'price-and-condition.php', 'content_key' => 'price' ),
+				'spa-wellness'        => array( 'title' => 'SPA & Wellness', 'file' => 'spa-wellness.php', 'content_key' => 'spa' ),
+				'experiences'         => array( 'title' => 'Experiences', 'file' => 'experiences.php', 'content_key' => 'experiences' ),
+				'surroundings'        => array( 'title' => 'Surroundings', 'file' => 'surroundings.php', 'content_key' => 'surroundings' ),
+				'offers'              => array( 'title' => 'Offers', 'file' => 'offers.php', 'content_key' => 'offers' ),
+				'contacts'            => array( 'title' => 'Contacts', 'file' => 'contacts.php', 'content_key' => 'contacts' ),
 			),
 		),
 		'theme02' => array(
 			'label' => 'Masseria Le Cerase',
 			'dir'   => 'theme02',
 			'pages' => array(
-				'home'                => array( 'title' => 'Home', 'file' => 'index.php' ),
-				'hospitality'         => array( 'title' => 'Hospitality', 'file' => 'hospitality.php' ),
-				'events-weddings'     => array( 'title' => 'Events & Weddings', 'file' => 'events-weddings.php' ),
-				'wedding-in-masseria' => array( 'title' => 'Wedding in Masseria', 'file' => 'wedding-in-masseria.php' ),
-				'partys-meeting'      => array( 'title' => 'Partys & Meeting', 'file' => 'partys-meeting.php' ),
-				'surroundings'        => array( 'title' => 'Surroundings', 'file' => 'surroundings.php' ),
-				'contacts'            => array( 'title' => 'Contacts', 'file' => 'contacts.php' ),
+				'home'                => array( 'title' => 'Home', 'file' => 'index.php', 'content_key' => 'home' ),
+				'hospitality'         => array( 'title' => 'Hospitality', 'file' => 'hospitality.php', 'content_key' => 'hospitality' ),
+				'events-weddings'     => array( 'title' => 'Events & Weddings', 'file' => 'events-weddings.php', 'content_key' => 'events' ),
+				'wedding-in-masseria' => array( 'title' => 'Wedding in Masseria', 'file' => 'wedding-in-masseria.php', 'content_key' => 'wedding' ),
+				'partys-meeting'      => array( 'title' => 'Partys & Meeting', 'file' => 'partys-meeting.php', 'content_key' => 'partys' ),
+				'surroundings'        => array( 'title' => 'Surroundings', 'file' => 'surroundings.php', 'content_key' => 'surroundings' ),
+				'contacts'            => array( 'title' => 'Contacts', 'file' => 'contacts.php', 'content_key' => 'contacts' ),
 			),
 		),
 	);
@@ -318,6 +318,150 @@ function sbt_admin_menu() {
 	add_theme_page( 'SyncBooking Theme', 'SyncBooking Theme', 'manage_options', 'syncbooking-theme', 'sbt_render_admin_page' );
 }
 add_action( 'admin_menu', 'sbt_admin_menu' );
+
+function sbt_page_content_key( $slug ) {
+	$pages = sbt_page_templates();
+	if ( isset( $pages[ $slug ] ) ) {
+		return isset( $pages[ $slug ]['content_key'] ) ? $pages[ $slug ]['content_key'] : $slug;
+	}
+
+	return '';
+}
+
+function sbt_load_active_data() {
+	$IMG = $SITE = $NAV = $C = $HOUSE_CARDS = $SERVICES = $TEXT = $GALLERY = $WEDDING_GALLERY = $EXPERIENCES = array();
+	require sbt_subtheme_path( 'data_general.php' );
+
+	return compact( 'IMG', 'SITE', 'NAV', 'C', 'HOUSE_CARDS', 'SERVICES', 'TEXT', 'GALLERY', 'WEDDING_GALLERY', 'EXPERIENCES' );
+}
+
+function sbt_page_editor_sections( $slug, $data ) {
+	$content_key = sbt_page_content_key( $slug );
+	$sections = array();
+
+	if ( $content_key && isset( $data['C'][ $content_key ] ) ) {
+		$sections[ 'C.' . $content_key ] = array(
+			'title' => 'Contenuti pagina',
+			'value' => $data['C'][ $content_key ],
+		);
+	}
+
+	$theme = sbt_active_subtheme_key();
+	if ( 'theme01' === $theme ) {
+		if ( in_array( $slug, array( 'home', 'houses' ), true ) && ! empty( $data['HOUSE_CARDS'] ) ) {
+			$sections['HOUSE_CARDS'] = array( 'title' => 'Card case', 'value' => $data['HOUSE_CARDS'] );
+		}
+		if ( 'home' === $slug && ! empty( $data['SERVICES'] ) ) {
+			$sections['SERVICES'] = array( 'title' => 'Servizi', 'value' => $data['SERVICES'] );
+		}
+		if ( in_array( $slug, array( 'home', 'contacts', 'house-for-2', 'house-for-3', 'house-for-4', 'price-and-condition' ), true ) && ! empty( $data['TEXT'] ) ) {
+			$sections['TEXT'] = array( 'title' => 'Testi fissi usati nella pagina', 'value' => $data['TEXT'] );
+		}
+	}
+
+	if ( 'theme02' === $theme ) {
+		if ( 'home' === $slug && ! empty( $data['EXPERIENCES'] ) ) {
+			$sections['EXPERIENCES'] = array( 'title' => 'Esperienze home', 'value' => $data['EXPERIENCES'] );
+		}
+		if ( 'hospitality' === $slug ) {
+			if ( ! empty( $data['SERVICES'] ) ) $sections['SERVICES'] = array( 'title' => 'Servizi hospitality', 'value' => $data['SERVICES'] );
+			if ( ! empty( $data['GALLERY'] ) ) $sections['GALLERY'] = array( 'title' => 'Gallery hospitality', 'value' => $data['GALLERY'] );
+		}
+		if ( 'wedding-in-masseria' === $slug && ! empty( $data['WEDDING_GALLERY'] ) ) {
+			$sections['WEDDING_GALLERY'] = array( 'title' => 'Gallery wedding', 'value' => $data['WEDDING_GALLERY'] );
+		}
+	}
+
+	return $sections;
+}
+
+function sbt_add_page_editor_metabox() {
+	add_meta_box(
+		'sbt-page-content',
+		'SyncBooking - contenuti pagina',
+		'sbt_render_page_editor_metabox',
+		'page',
+		'normal',
+		'high'
+	);
+}
+add_action( 'add_meta_boxes', 'sbt_add_page_editor_metabox' );
+
+function sbt_render_page_editor_metabox( $post ) {
+	wp_nonce_field( 'sbt_page_save', 'sbt_page_nonce' );
+
+	$slug = $post->post_name;
+	$pages = sbt_page_templates();
+	if ( ! isset( $pages[ $slug ] ) ) {
+		echo '<p>Questa pagina non appartiene al sottotema attivo. Seleziona un sottotema da <strong>Aspetto > SyncBooking Theme</strong> oppure usa uno slug pagina del tema.</p>';
+		return;
+	}
+
+	$data = sbt_load_active_data();
+	$sections = sbt_page_editor_sections( $slug, $data );
+	$overrides = sbt_active_overrides();
+
+	echo '<p>Editor unico per la pagina <strong>' . esc_html( $pages[ $slug ]['title'] ) . '</strong> del sottotema <strong>' . esc_html( sbt_active_subtheme()['label'] ) . '</strong>.</p>';
+	echo '<input type="hidden" name="sbt_page_slug" value="' . esc_attr( $slug ) . '">';
+
+	foreach ( $sections as $path => $section ) {
+		sbt_render_admin_fields( $path, $section['value'], $overrides, $section['title'] );
+	}
+}
+
+function sbt_save_page_editor_metabox( $post_id ) {
+	if ( ! isset( $_POST['sbt_page_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['sbt_page_nonce'] ) ), 'sbt_page_save' ) ) {
+		return;
+	}
+
+	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+		return;
+	}
+
+	if ( ! current_user_can( 'edit_page', $post_id ) ) {
+		return;
+	}
+
+	if ( ! isset( $_POST['sbt_page_slug'], $_POST[ SBT_OPTION ]['overrides'] ) || ! is_array( $_POST[ SBT_OPTION ]['overrides'] ) ) {
+		return;
+	}
+
+	$slug = sanitize_title( wp_unslash( $_POST['sbt_page_slug'] ) );
+	if ( ! isset( sbt_page_templates()[ $slug ] ) ) {
+		return;
+	}
+
+	$options = sbt_get_options();
+	$key = sbt_active_subtheme_key();
+	if ( ! isset( $options['overrides'] ) || ! is_array( $options['overrides'] ) ) {
+		$options['overrides'] = array();
+	}
+	if ( ! isset( $options['overrides'][ $key ] ) || ! is_array( $options['overrides'][ $key ] ) ) {
+		$options['overrides'][ $key ] = array();
+	}
+
+	$data = sbt_load_active_data();
+	$allowed_sections = sbt_page_editor_sections( $slug, $data );
+	$allowed_prefixes = array_keys( $allowed_sections );
+
+	foreach ( $_POST[ SBT_OPTION ]['overrides'] as $path => $value ) {
+		$path = sanitize_text_field( wp_unslash( $path ) );
+		$allowed = false;
+		foreach ( $allowed_prefixes as $prefix ) {
+			if ( $path === $prefix || 0 === strpos( $path, $prefix . '.' ) ) {
+				$allowed = true;
+				break;
+			}
+		}
+
+		if ( $allowed && is_string( $value ) ) {
+			$options['overrides'][ $key ][ $path ] = wp_kses_post( wp_unslash( $value ) );
+		}
+	}
+
+	update_option( SBT_OPTION, $options );
+}
+add_action( 'save_post_page', 'sbt_save_page_editor_metabox' );
 
 function sbt_sanitize_options( $raw ) {
 	$options = sbt_default_options();

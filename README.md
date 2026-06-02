@@ -7,6 +7,8 @@ Tema WordPress multi-sottotema con due modelli completi:
 
 Da WordPress vai in `Aspetto > SyncBooking Theme` per scegliere il sottotema attivo e modificare testi, immagini, gallerie, menu, card e dati generali. Gli override sono separati per ogni sottotema.
 
+Quando apri una pagina WordPress del sottotema attivo, trovi anche il box `SyncBooking - contenuti pagina`: è un editor unico che mostra i campi della pagina corrente, indipendentemente dal sottotema scelto.
+
 ## Media
 
 Ogni sottotema include i propri media reali in:
