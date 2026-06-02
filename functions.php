@@ -618,6 +618,26 @@ function sbt_sanitize_options( $raw ) {
 	return $options;
 }
 
+function sbt_reset_subtheme_template( $subtheme ) {
+	$subthemes = sbt_subthemes();
+	if ( ! isset( $subthemes[ $subtheme ] ) ) {
+		return false;
+	}
+
+	$options = sbt_get_options();
+	$options['subtheme'] = $subtheme;
+	if ( ! isset( $options['overrides'] ) || ! is_array( $options['overrides'] ) ) {
+		$options['overrides'] = array();
+	}
+
+	$options['overrides'][ $subtheme ] = array();
+	update_option( SBT_OPTION, $options );
+	sbt_create_theme_pages();
+	sbt_install_upload_assets();
+
+	return true;
+}
+
 function sbt_admin_current_tab() {
 	$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'themes';
 	return in_array( $tab, array( 'themes', 'header', 'pages', 'advanced' ), true ) ? $tab : 'themes';
@@ -704,7 +724,18 @@ function sbt_render_theme_tab( $active, $subthemes ) {
 				</label>
 			<?php endforeach; ?>
 		</div>
-		<?php submit_button( 'Salva tema selezionato' ); ?>
+		<div class="sbt-actions">
+			<?php submit_button( 'Salva tema selezionato', 'primary', 'submit', false ); ?>
+			<button
+				type="submit"
+				class="button"
+				name="sbt_action"
+				value="reset_active_template"
+				onclick="return confirm('Vuoi riportare il sottotema selezionato al template originale? Le modifiche salvate per questo sottotema saranno cancellate.');"
+			>
+				Reset template originale
+			</button>
+		</div>
 	</div>
 	<?php
 }
@@ -839,10 +870,19 @@ function sbt_render_advanced_tab( $data, $overrides ) {
 
 function sbt_render_admin_page() {
 	if ( isset( $_POST['sbt_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['sbt_nonce'] ) ), 'sbt_save' ) && current_user_can( 'manage_options' ) ) {
-		update_option( SBT_OPTION, sbt_sanitize_options( $_POST[ SBT_OPTION ] ?? array() ) );
-		sbt_create_theme_pages();
-		sbt_install_upload_assets();
-		echo '<div class="notice notice-success is-dismissible"><p>Impostazioni SyncBooking salvate.</p></div>';
+		$raw_options = $_POST[ SBT_OPTION ] ?? array();
+		$selected_subtheme = isset( $raw_options['subtheme'] ) ? sanitize_key( wp_unslash( $raw_options['subtheme'] ) ) : sbt_active_subtheme_key();
+
+		if ( isset( $_POST['sbt_action'] ) && 'reset_active_template' === sanitize_key( wp_unslash( $_POST['sbt_action'] ) ) ) {
+			if ( sbt_reset_subtheme_template( $selected_subtheme ) ) {
+				echo '<div class="notice notice-success is-dismissible"><p>Template originale ripristinato per il sottotema selezionato.</p></div>';
+			}
+		} else {
+			update_option( SBT_OPTION, sbt_sanitize_options( $raw_options ) );
+			sbt_create_theme_pages();
+			sbt_install_upload_assets();
+			echo '<div class="notice notice-success is-dismissible"><p>Impostazioni SyncBooking salvate.</p></div>';
+		}
 	}
 
 	$subthemes = sbt_subthemes();
