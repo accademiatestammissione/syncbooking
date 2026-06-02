@@ -9,8 +9,8 @@
    place. Loaded by inc/header.php on every page.
    ============================================================ */
 
-/* ---- base url for the media library (change once if needed) ---- */
-$BASE = 'https://villarosaresort.it/wp-content/uploads/';
+/* ---- base url for the bundled media library ---- */
+$BASE = function_exists('sbt_media_base_url') ? sbt_media_base_url() : 'assets/uploads/';
 
 /* ---- IMAGES (friendly keys) ---- */
 $IMG = [

@@ -35,6 +35,105 @@ function sbt_asset_url( $path ) {
 	return get_template_directory_uri() . '/' . ltrim( $path, '/' );
 }
 
+function sbt_media_base_url() {
+	$uploads = wp_get_upload_dir();
+	$target  = trailingslashit( $uploads['basedir'] ) . 'syncbooking-theme/2025/02/logo02-white-villarosaresort-conversano.png';
+
+	if ( file_exists( $target ) ) {
+		return trailingslashit( $uploads['baseurl'] ) . 'syncbooking-theme/';
+	}
+
+	return sbt_asset_url( 'assets/uploads/' );
+}
+
+function sbt_install_upload_assets() {
+	$source = get_template_directory() . '/assets/uploads';
+	if ( ! is_dir( $source ) ) {
+		return;
+	}
+
+	$uploads = wp_get_upload_dir();
+	$target  = trailingslashit( $uploads['basedir'] ) . 'syncbooking-theme';
+
+	sbt_copy_directory( $source, $target );
+	sbt_register_upload_assets( $target );
+}
+
+function sbt_copy_directory( $source, $target ) {
+	if ( ! is_dir( $target ) ) {
+		wp_mkdir_p( $target );
+	}
+
+	$items = scandir( $source );
+	if ( false === $items ) {
+		return;
+	}
+
+	foreach ( $items as $item ) {
+		if ( '.' === $item || '..' === $item ) {
+			continue;
+		}
+
+		$from = trailingslashit( $source ) . $item;
+		$to   = trailingslashit( $target ) . $item;
+
+		if ( is_dir( $from ) ) {
+			sbt_copy_directory( $from, $to );
+		} elseif ( ! file_exists( $to ) ) {
+			copy( $from, $to );
+		}
+	}
+}
+
+function sbt_register_upload_assets( $directory ) {
+	if ( ! function_exists( 'wp_insert_attachment' ) || ! is_dir( $directory ) ) {
+		return;
+	}
+
+	require_once ABSPATH . 'wp-admin/includes/image.php';
+
+	$iterator = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $directory, RecursiveDirectoryIterator::SKIP_DOTS ) );
+	foreach ( $iterator as $file ) {
+		if ( ! $file->isFile() ) {
+			continue;
+		}
+
+		$path = $file->getPathname();
+		$type = wp_check_filetype( $path );
+		if ( empty( $type['type'] ) || 0 !== strpos( $type['type'], 'image/' ) ) {
+			continue;
+		}
+
+		$relative = str_replace( trailingslashit( $directory ), '', $path );
+		$existing = get_posts( array(
+			'post_type'      => 'attachment',
+			'post_status'    => 'inherit',
+			'posts_per_page' => 1,
+			'meta_key'       => '_sbt_bundled_media_path',
+			'meta_value'     => wp_normalize_path( $relative ),
+			'fields'         => 'ids',
+		) );
+
+		if ( $existing ) {
+			continue;
+		}
+
+		$attachment_id = wp_insert_attachment( array(
+			'post_mime_type' => $type['type'],
+			'post_title'     => sanitize_file_name( pathinfo( $path, PATHINFO_FILENAME ) ),
+			'post_content'   => '',
+			'post_status'    => 'inherit',
+		), $path );
+
+		if ( is_wp_error( $attachment_id ) ) {
+			continue;
+		}
+
+		update_post_meta( $attachment_id, '_sbt_bundled_media_path', wp_normalize_path( $relative ) );
+		wp_update_attachment_metadata( $attachment_id, wp_generate_attachment_metadata( $attachment_id, $path ) );
+	}
+}
+
 function sbt_page_map() {
 	return array(
 		'index.php'               => 'home',
@@ -147,6 +246,7 @@ function sbt_create_theme_pages() {
 	}
 }
 add_action( 'after_switch_theme', 'sbt_create_theme_pages' );
+add_action( 'after_switch_theme', 'sbt_install_upload_assets' );
 
 function sbt_route_page_template( $template ) {
 	if ( is_front_page() || is_home() ) {
