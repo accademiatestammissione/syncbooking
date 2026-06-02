@@ -57,8 +57,9 @@ function sbt_subthemes() {
 
 function sbt_default_options() {
 	return array(
-		'subtheme'  => 'theme01',
-		'overrides' => array(),
+		'subtheme'           => 'theme01',
+		'overrides'          => array(),
+		'custom_house_pages' => array(),
 	);
 }
 
@@ -102,7 +103,32 @@ function sbt_media_base_url() {
 
 function sbt_page_templates() {
 	$subtheme = sbt_active_subtheme();
-	return $subtheme['pages'];
+	$pages = $subtheme['pages'];
+
+	if ( 'theme01' === sbt_active_subtheme_key() ) {
+		foreach ( sbt_custom_house_pages( 'theme01' ) as $house_page ) {
+			$pages[ $house_page['slug'] ] = array(
+				'title'         => $house_page['title'],
+				'file'          => $house_page['slug'] . '.php',
+				'template_file' => 'house-custom.php',
+				'content_key'   => $house_page['content_key'],
+				'custom_house'  => true,
+			);
+		}
+	}
+
+	return $pages;
+}
+
+function sbt_custom_house_pages( $subtheme = '' ) {
+	$options = sbt_get_options();
+	$subtheme = '' === $subtheme ? sbt_active_subtheme_key() : $subtheme;
+
+	if ( empty( $options['custom_house_pages'][ $subtheme ] ) || ! is_array( $options['custom_house_pages'][ $subtheme ] ) ) {
+		return array();
+	}
+
+	return array_values( array_filter( $options['custom_house_pages'][ $subtheme ], 'is_array' ) );
 }
 
 function sbt_is_theme_page_post( $post_id ) {
@@ -253,7 +279,8 @@ function sbt_route_page_template( $template ) {
 		$slug = get_post_field( 'post_name', get_queried_object_id() );
 		$pages = sbt_page_templates();
 		if ( isset( $pages[ $slug ] ) ) {
-			$file = sbt_subtheme_path( $pages[ $slug ]['file'] );
+			$template_file = isset( $pages[ $slug ]['template_file'] ) ? $pages[ $slug ]['template_file'] : $pages[ $slug ]['file'];
+			$file = sbt_subtheme_path( $template_file );
 			return file_exists( $file ) ? $file : $template;
 		}
 	}
@@ -299,8 +326,42 @@ function sbt_active_overrides() {
 	return isset( $overrides[ $key ] ) && is_array( $overrides[ $key ] ) ? $overrides[ $key ] : array();
 }
 
+function sbt_custom_house_default_content( $title, $base = array() ) {
+	$content = is_array( $base ) && $base ? $base : array(
+		'title'    => $title,
+		'key'      => $title,
+		'over'     => 'The Houses',
+		'h1'       => $title,
+		'lead'     => 'A private house designed for comfort and quiet days in Puglia.',
+		'p'        => 'Edit this text from the SyncBooking page editor.',
+		'banner'   => '',
+		'main'     => '',
+		'specs'    => array( array( 'Surface', '40-50 m2' ), array( 'Occupancy', '2 guests' ), array( 'Bed', 'King-size' ) ),
+		'gallery'  => array(),
+		'included' => array(),
+	);
+
+	$content['title'] = $title;
+	$content['key'] = $title;
+	$content['h1'] = $title;
+
+	return $content;
+}
+
 function sbt_bootstrap_content( &$IMG, &$SITE, &$NAV, &$C, &$HOUSE_CARDS = array(), &$SERVICES = array(), &$TEXT = array(), &$GALLERY = array(), &$WEDDING_GALLERY = array(), &$EXPERIENCES = array() ) {
 	$overrides = sbt_active_overrides();
+
+	if ( 'theme01' === sbt_active_subtheme_key() ) {
+		foreach ( sbt_custom_house_pages( 'theme01' ) as $house_page ) {
+			if ( empty( $house_page['content_key'] ) ) {
+				continue;
+			}
+
+			if ( ! isset( $C[ $house_page['content_key'] ] ) ) {
+				$C[ $house_page['content_key'] ] = sbt_custom_house_default_content( $house_page['title'], $C['house2'] ?? array() );
+			}
+		}
+	}
 
 	sbt_apply_flat_overrides( $IMG, 'IMG', $overrides );
 	sbt_apply_flat_overrides( $SITE, 'SITE', $overrides );
@@ -317,6 +378,24 @@ function sbt_bootstrap_content( &$IMG, &$SITE, &$NAV, &$C, &$HOUSE_CARDS = array
 	sbt_rewrite_content_urls( $C );
 	sbt_rewrite_content_urls( $HOUSE_CARDS );
 	sbt_rewrite_content_urls( $EXPERIENCES );
+
+	if ( 'theme01' === sbt_active_subtheme_key() ) {
+		foreach ( sbt_custom_house_pages( 'theme01' ) as $house_page ) {
+			$content_key = $house_page['content_key'];
+			if ( empty( $C[ $content_key ] ) || ! is_array( $C[ $content_key ] ) ) {
+				continue;
+			}
+
+			$house = $C[ $content_key ];
+			$HOUSE_CARDS[] = array(
+				'tag'   => $house['over'] ?? 'The Houses',
+				'title' => $house['h1'] ?? $house_page['title'],
+				'img'   => $house['main'] ?? ( $house['banner'] ?? '' ),
+				'url'   => sbt_url( $house_page['slug'] . '.php' ),
+				'specs' => $house['specs'] ?? array(),
+			);
+		}
+	}
 }
 
 function sbt_rewrite_content_urls( &$value ) {
@@ -545,7 +624,9 @@ function sbt_page_editor_sections( $slug, $data ) {
 		if ( 'home' === $slug && ! empty( $data['SERVICES'] ) ) {
 			$sections['SERVICES'] = array( 'title' => 'Servizi', 'value' => $data['SERVICES'] );
 		}
-		if ( in_array( $slug, array( 'home', 'contacts', 'house-for-2', 'house-for-3', 'house-for-4', 'price-and-condition' ), true ) && ! empty( $data['TEXT'] ) ) {
+		$pages = sbt_page_templates();
+		$is_house_detail = isset( $pages[ $slug ]['content_key'] ) && 0 === strpos( $pages[ $slug ]['content_key'], 'house' ) && 'houses' !== $slug;
+		if ( ( $is_house_detail || in_array( $slug, array( 'home', 'contacts', 'price-and-condition' ), true ) ) && ! empty( $data['TEXT'] ) ) {
 			$sections['TEXT'] = array( 'title' => 'Testi fissi usati nella pagina', 'value' => $data['TEXT'] );
 		}
 	}
@@ -681,6 +762,7 @@ function sbt_sanitize_options( $raw ) {
 
 	$existing = sbt_get_options();
 	$options['overrides'] = isset( $existing['overrides'] ) && is_array( $existing['overrides'] ) ? $existing['overrides'] : array();
+	$options['custom_house_pages'] = isset( $existing['custom_house_pages'] ) && is_array( $existing['custom_house_pages'] ) ? $existing['custom_house_pages'] : array();
 	if ( ! isset( $options['overrides'][ $options['subtheme'] ] ) || ! is_array( $options['overrides'][ $options['subtheme'] ] ) ) {
 		$options['overrides'][ $options['subtheme'] ] = array();
 	}
@@ -709,10 +791,110 @@ function sbt_reset_subtheme_template( $subtheme ) {
 		$options['overrides'] = array();
 	}
 
+	foreach ( sbt_custom_house_pages( $subtheme ) as $house_page ) {
+		if ( ! empty( $house_page['slug'] ) ) {
+			$page = get_page_by_path( $house_page['slug'] );
+			if ( $page ) {
+				wp_trash_post( $page->ID );
+			}
+		}
+	}
+
 	$options['overrides'][ $subtheme ] = array();
+	if ( isset( $options['custom_house_pages'][ $subtheme ] ) ) {
+		$options['custom_house_pages'][ $subtheme ] = array();
+	}
 	update_option( SBT_OPTION, $options );
 	sbt_create_theme_pages();
 	sbt_install_upload_assets();
+
+	return true;
+}
+
+function sbt_unique_page_slug( $base_slug ) {
+	$base_slug = sanitize_title( $base_slug );
+	$base_slug = $base_slug ? $base_slug : 'house-custom';
+	$pages = sbt_page_templates();
+	$slug = $base_slug;
+	$index = 2;
+
+	while ( isset( $pages[ $slug ] ) || get_page_by_path( $slug ) ) {
+		$slug = $base_slug . '-' . $index;
+		$index++;
+	}
+
+	return $slug;
+}
+
+function sbt_add_custom_house_page( $title ) {
+	if ( 'theme01' !== sbt_active_subtheme_key() ) {
+		return false;
+	}
+
+	$title = trim( wp_strip_all_tags( (string) $title ) );
+	if ( '' === $title ) {
+		$title = 'New House';
+	}
+
+	$slug = sbt_unique_page_slug( $title );
+	$content_key = 'house_' . str_replace( '-', '_', $slug );
+	$options = sbt_get_options();
+	if ( ! isset( $options['custom_house_pages']['theme01'] ) || ! is_array( $options['custom_house_pages']['theme01'] ) ) {
+		$options['custom_house_pages']['theme01'] = array();
+	}
+
+	$options['custom_house_pages']['theme01'][] = array(
+		'title'       => $title,
+		'slug'        => $slug,
+		'content_key' => $content_key,
+	);
+
+	update_option( SBT_OPTION, $options );
+	sbt_create_theme_pages();
+
+	return true;
+}
+
+function sbt_delete_custom_house_page( $slug ) {
+	if ( 'theme01' !== sbt_active_subtheme_key() ) {
+		return false;
+	}
+
+	$slug = sanitize_title( $slug );
+	$options = sbt_get_options();
+	$pages = isset( $options['custom_house_pages']['theme01'] ) && is_array( $options['custom_house_pages']['theme01'] ) ? $options['custom_house_pages']['theme01'] : array();
+	$removed = false;
+	$content_key = '';
+
+	foreach ( $pages as $index => $page ) {
+		if ( isset( $page['slug'] ) && $slug === $page['slug'] ) {
+			$content_key = $page['content_key'] ?? '';
+			unset( $pages[ $index ] );
+			$removed = true;
+			break;
+		}
+	}
+
+	if ( ! $removed ) {
+		return false;
+	}
+
+	$options['custom_house_pages']['theme01'] = array_values( $pages );
+	if ( $content_key && isset( $options['overrides']['theme01'] ) && is_array( $options['overrides']['theme01'] ) ) {
+		foreach ( array_keys( $options['overrides']['theme01'] ) as $override_path ) {
+			$prefix = 'C.' . $content_key;
+			if ( $prefix === $override_path || 0 === strpos( $override_path, $prefix . '.' ) ) {
+				unset( $options['overrides']['theme01'][ $override_path ] );
+			}
+		}
+	}
+
+	update_option( SBT_OPTION, $options );
+
+	$page = get_page_by_path( $slug );
+	if ( $page ) {
+		wp_trash_post( $page->ID );
+	}
 
 	return true;
 }
@@ -928,15 +1110,55 @@ function sbt_render_home_tab( $data, $overrides ) {
 }
 
 function sbt_render_pages_tab() {
+	$pages = sbt_page_templates();
 	?>
 	<div class="sbt-panel">
 		<h2>Pages del sottotema</h2>
 		<p class="sbt-muted">Da qui vai direttamente alla modifica completa delle pagine interne. La homepage ora si gestisce dalla tab Home.</p>
+		<?php if ( 'theme01' === sbt_active_subtheme_key() ) : ?>
+			<h2 style="margin-top:24px;">Schede Houses</h2>
+			<p class="sbt-muted">Puoi aggiungere nuove schede solo per la sezione Houses. Le pagine base del template restano protette; puoi cancellare con X solo quelle aggiunte da te.</p>
+			<div class="sbt-actions" style="margin:12px 0 18px;">
+				<input type="text" name="sbt_house_title" placeholder="Es. House for 5" style="max-width:260px;">
+				<button type="submit" class="button button-primary" name="sbt_action" value="add_house_page">Aggiungi House</button>
+			</div>
+			<table class="sbt-table" style="margin-bottom:28px;">
+				<thead><tr><th>House</th><th>Slug</th><th>Stato</th><th>Azioni</th></tr></thead>
+				<tbody>
+					<?php foreach ( $pages as $slug => $page ) : ?>
+						<?php if ( empty( $page['content_key'] ) || 0 !== strpos( $page['content_key'], 'house' ) || 'houses' === $slug ) : ?>
+							<?php continue; ?>
+						<?php endif; ?>
+						<?php
+						$post = get_page_by_path( $slug );
+						$edit_url = $post ? get_edit_post_link( $post->ID, '' ) : '';
+						$is_custom = ! empty( $page['custom_house'] );
+						?>
+						<tr>
+							<td><strong><?php echo esc_html( $page['title'] ); ?></strong></td>
+							<td><code><?php echo esc_html( '/' . $slug . '/' ); ?></code></td>
+							<td><?php echo $post ? 'Presente' : 'Da creare'; ?></td>
+							<td class="sbt-actions">
+								<?php if ( $edit_url ) : ?>
+									<a class="button button-primary" href="<?php echo esc_url( $edit_url ); ?>">Modifica</a>
+								<?php endif; ?>
+								<a class="button" href="<?php echo esc_url( sbt_theme_page_public_url( $slug ) ); ?>" target="_blank">Anteprima</a>
+								<?php if ( $is_custom ) : ?>
+									<button type="submit" class="button-link-delete" name="sbt_delete_house_slug" value="<?php echo esc_attr( $slug ); ?>" onclick="return confirm('Vuoi cancellare questa House? La pagina andra nel cestino e i contenuti personalizzati saranno rimossi.');">X</button>
+								<?php endif; ?>
+							</td>
+						</tr>
+					<?php endforeach; ?>
+				</tbody>
+			</table>
+		<?php endif; ?>
+
+		<h2>Pagine interne</h2>
 		<table class="sbt-table">
 			<thead><tr><th>Pagina</th><th>Slug</th><th>Stato</th><th>Azioni</th></tr></thead>
 			<tbody>
-				<?php foreach ( sbt_page_templates() as $slug => $page ) : ?>
-					<?php if ( 'home' === $slug ) : ?>
+				<?php foreach ( $pages as $slug => $page ) : ?>
+					<?php if ( 'home' === $slug || ! empty( $page['custom_house'] ) || in_array( $slug, array( 'house-for-2', 'house-for-3', 'house-for-4' ), true ) ) : ?>
 						<?php continue; ?>
 					<?php endif; ?>
 					<?php
@@ -967,7 +1189,17 @@ function sbt_render_admin_page() {
 		$raw_options = $_POST[ SBT_OPTION ] ?? array();
 		$selected_subtheme = isset( $raw_options['subtheme'] ) ? sanitize_key( wp_unslash( $raw_options['subtheme'] ) ) : sbt_active_subtheme_key();
 
-		if ( isset( $_POST['sbt_action'] ) && 'reset_active_template' === sanitize_key( wp_unslash( $_POST['sbt_action'] ) ) ) {
+		$sbt_action = isset( $_POST['sbt_action'] ) ? sanitize_key( wp_unslash( $_POST['sbt_action'] ) ) : '';
+		if ( isset( $_POST['sbt_delete_house_slug'] ) ) {
+			if ( sbt_delete_custom_house_page( sanitize_title( wp_unslash( $_POST['sbt_delete_house_slug'] ) ) ) ) {
+				echo '<div class="notice notice-success is-dismissible"><p>House cancellata.</p></div>';
+			}
+		} elseif ( 'add_house_page' === $sbt_action ) {
+			$title = isset( $_POST['sbt_house_title'] ) ? sanitize_text_field( wp_unslash( $_POST['sbt_house_title'] ) ) : '';
+			if ( sbt_add_custom_house_page( $title ) ) {
+				echo '<div class="notice notice-success is-dismissible"><p>Nuova House aggiunta.</p></div>';
+			}
+		} elseif ( 'reset_active_template' === $sbt_action ) {
 			if ( sbt_reset_subtheme_template( $selected_subtheme ) ) {
 				echo '<div class="notice notice-success is-dismissible"><p>Template originale ripristinato per il sottotema selezionato.</p></div>';
 			}
