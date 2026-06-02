@@ -568,10 +568,7 @@ function sbt_page_editor_sections( $slug, $data ) {
 	$sections = array();
 
 	if ( $content_key && isset( $data['C'][ $content_key ] ) ) {
-		$sections[ 'C.' . $content_key ] = array(
-			'title' => 'Contenuti pagina',
-			'value' => $data['C'][ $content_key ],
-		);
+		$sections = array_merge( $sections, sbt_content_editor_sections( $content_key, $data['C'][ $content_key ] ) );
 	}
 
 	$theme = sbt_active_subtheme_key();
@@ -626,8 +623,22 @@ function sbt_page_editor_sections( $slug, $data ) {
 		}
 		$pages = sbt_page_templates();
 		$is_house_detail = isset( $pages[ $slug ]['content_key'] ) && 0 === strpos( $pages[ $slug ]['content_key'], 'house' ) && 'houses' !== $slug;
-		if ( ( $is_house_detail || in_array( $slug, array( 'home', 'contacts', 'price-and-condition' ), true ) ) && ! empty( $data['TEXT'] ) ) {
+		if ( ( $is_house_detail || in_array( $slug, array( 'home', 'price-and-condition' ), true ) ) && ! empty( $data['TEXT'] ) ) {
 			$sections['TEXT'] = array( 'title' => 'Testi fissi usati nella pagina', 'value' => $data['TEXT'] );
+		}
+		if ( 'contacts' === $slug ) {
+			if ( ! empty( $data['TEXT'] ) ) {
+				$form_text = array_intersect_key( $data['TEXT'], array_flip( array( 'form_name', 'form_email', 'form_dates', 'form_dates_placeholder', 'form_message', 'form_send', 'form_result', 'chat_whatsapp', 'address', 'phone', 'email' ) ) );
+				if ( $form_text ) {
+					$sections['TEXT.form'] = array( 'path' => 'TEXT', 'title' => 'Form contatti', 'value' => $form_text );
+				}
+			}
+			if ( ! empty( $data['SITE'] ) ) {
+				$contact_site = array_intersect_key( $data['SITE'], array_flip( array( 'address', 'map', 'map_embed', 'phone1', 'phone1_t', 'phone2', 'phone2_t', 'email', 'wa' ) ) );
+				if ( $contact_site ) {
+					$sections['SITE.contacts'] = array( 'path' => 'SITE', 'title' => 'Contatti e mappa', 'value' => $contact_site );
+				}
+			}
 		}
 	}
 
@@ -642,6 +653,53 @@ function sbt_page_editor_sections( $slug, $data ) {
 		if ( 'wedding-in-masseria' === $slug && ! empty( $data['WEDDING_GALLERY'] ) ) {
 			$sections['WEDDING_GALLERY'] = array( 'title' => 'Gallery wedding', 'value' => $data['WEDDING_GALLERY'] );
 		}
+	}
+
+	return $sections;
+}
+
+function sbt_content_editor_sections( $content_key, $content ) {
+	$path = 'C.' . $content_key;
+	$sections = array();
+	$groups = array(
+		'hero'      => array( 'title' => 'Hero / banner', 'keys' => array( 'title', 'over', 'h1', 'hero_over', 'hero_h1', 'hero_sub', 'banner' ) ),
+		'intro'     => array( 'title' => 'Sezione introduttiva', 'keys' => array( 'welcome_over', 'welcome_h2', 'welcome_p1', 'welcome_p2', 'intro_over', 'intro_h2', 'intro_p', 'lead', 'p' ) ),
+		'houses'    => array( 'title' => 'Sezione Houses', 'keys' => array( 'houses_over', 'houses_h2', 'houses_p' ) ),
+		'services'  => array( 'title' => 'Sezione servizi', 'keys' => array( 'services_over', 'services_h2' ) ),
+		'gallery'   => array( 'title' => 'Gallery', 'keys' => array( 'gallery' ) ),
+		'cards'     => array( 'title' => 'Card / liste', 'keys' => array( 'cards', 'offers', 'feat_rows', 'amenities', 'included', 'specs' ) ),
+		'band'      => array( 'title' => 'Sezione band', 'keys' => array( 'band_over', 'band_h2', 'band_p' ) ),
+		'offers'    => array( 'title' => 'Sezione offerte', 'keys' => array( 'offers_over', 'offers_h2', 'offers_p' ) ),
+		'form'      => array( 'title' => 'Note form', 'keys' => array( 'form_note' ) ),
+		'cta'       => array( 'title' => 'Call to action', 'keys' => array( 'cta_over', 'cta_h2', 'cta_p', 'cta_btn', 'cta_url', 'cta_bg' ) ),
+	);
+	$used = array();
+
+	foreach ( $groups as $group_key => $group ) {
+		$value = array();
+		foreach ( $group['keys'] as $key ) {
+			if ( array_key_exists( $key, $content ) ) {
+				$value[ $key ] = $content[ $key ];
+				$used[ $key ] = true;
+			}
+		}
+
+		if ( $value ) {
+			$sections[ $path . '.' . $group_key ] = array(
+				'path'  => $path,
+				'title' => $group['title'],
+				'value' => $value,
+			);
+		}
+	}
+
+	$remaining = array_diff_key( $content, $used );
+	if ( $remaining ) {
+		$sections[ $path . '.other' ] = array(
+			'path'  => $path,
+			'title' => 'Altri contenuti',
+			'value' => $remaining,
+		);
 	}
 
 	return $sections;
@@ -689,7 +747,7 @@ function sbt_render_page_editor_metabox( $post ) {
 	echo '<div class="sbt-page-editor-layout">';
 	echo '<div>';
 	foreach ( $sections as $path => $section ) {
-		sbt_render_admin_fields( $path, $section['value'], $overrides, $section['title'] );
+		sbt_render_admin_fields( $section['path'] ?? $path, $section['value'], $overrides, $section['title'] );
 	}
 	echo '</div>';
 	echo '<aside class="sbt-page-preview">';
@@ -733,7 +791,11 @@ function sbt_save_page_editor_metabox( $post_id ) {
 
 	$data = sbt_load_active_data();
 	$allowed_sections = sbt_page_editor_sections( $slug, $data );
-	$allowed_prefixes = array_keys( $allowed_sections );
+	$allowed_prefixes = array();
+	foreach ( $allowed_sections as $section_key => $section ) {
+		$allowed_prefixes[] = $section['path'] ?? $section_key;
+	}
+	$allowed_prefixes = array_unique( $allowed_prefixes );
 
 	foreach ( $_POST[ SBT_OPTION ]['overrides'] as $path => $value ) {
 		$path = sanitize_text_field( wp_unslash( $path ) );
@@ -946,10 +1008,21 @@ function sbt_render_admin_shell_start( $active_tab ) {
 		.sbt-tab.is-active { background:#fff; border-color:#dcdcde; border-radius:6px 6px 0 0; margin-bottom:-1px; }
 		.sbt-panel { background:#fff; border:1px solid #dcdcde; border-radius:8px; padding:22px; }
 		.sbt-grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); }
+		.sbt-theme-grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); margin:18px 0; }
 		.sbt-card { border:1px solid #dcdcde; border-radius:8px; padding:18px; position:relative; }
+		.sbt-theme-card { align-items:flex-start; cursor:pointer; display:grid; gap:12px; grid-template-columns:auto 1fr; min-height:118px; }
+		.sbt-theme-card input { margin-top:4px; }
+		.sbt-theme-card__body { min-width:0; }
+		.sbt-theme-card__body h3 { font-size:18px; line-height:1.25; margin:0 0 6px; }
+		.sbt-theme-card__meta { color:#646970; display:block; font-size:13px; }
 		.sbt-card.is-selected { border-color:#2271b1; box-shadow:0 0 0 1px #2271b1; }
 		.sbt-card h3 { margin:0 0 8px; }
 		.sbt-muted { color:#646970; }
+		.sbt-theme-footer { align-items:center; border-top:1px solid #dcdcde; display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between; margin-top:22px; padding-top:18px; }
+		.sbt-reset-box { background:#fcf0f1; border:1px solid #f1aeb5; border-radius:8px; margin-top:18px; padding:16px; }
+		.sbt-reset-box h3 { margin:0 0 6px; }
+		.sbt-reset-box .button-link-delete { background:#fff; border:1px solid #d63638; border-radius:4px; color:#b32d2e; cursor:pointer; display:inline-flex; font-weight:600; min-height:32px; padding:5px 12px; text-decoration:none; }
+		.sbt-reset-box .button-link-delete:hover { background:#d63638; color:#fff; }
 		.sbt-field-grid { display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); }
 		.sbt-field label { display:block; font-weight:600; margin-bottom:6px; }
 		.sbt-field input, .sbt-field select, .sbt-field textarea { width:100%; }
@@ -975,20 +1048,27 @@ function sbt_render_theme_tab( $active, $subthemes ) {
 	<div class="sbt-panel">
 		<h2>Scegli il sottotema</h2>
 		<p class="sbt-muted">Ogni sottotema mantiene layout, header, footer, menu, pagine e contenuti modificabili separati.</p>
-		<div class="sbt-grid">
+		<div class="sbt-theme-grid">
 			<?php foreach ( $subthemes as $key => $subtheme ) : ?>
-				<label class="sbt-card <?php echo $active === $key ? 'is-selected' : ''; ?>">
+				<label class="sbt-card sbt-theme-card <?php echo $active === $key ? 'is-selected' : ''; ?>">
 					<input type="radio" name="<?php echo esc_attr( SBT_OPTION ); ?>[subtheme]" value="<?php echo esc_attr( $key ); ?>" <?php checked( $active, $key ); ?>>
-					<h3><?php echo esc_html( $subtheme['label'] ); ?></h3>
-					<p class="sbt-muted"><?php echo esc_html( count( $subtheme['pages'] ) ); ?> pagine modello incluse</p>
+					<span class="sbt-theme-card__body">
+						<h3><?php echo esc_html( $subtheme['label'] ); ?></h3>
+						<span class="sbt-theme-card__meta"><?php echo esc_html( count( $subtheme['pages'] ) ); ?> pagine modello incluse</span>
+					</span>
 				</label>
 			<?php endforeach; ?>
 		</div>
-		<div class="sbt-actions">
+		<div class="sbt-theme-footer">
+			<span class="sbt-muted">Il sottotema selezionato determina layout, pagine e contenuti mostrati nelle altre tab.</span>
 			<?php submit_button( 'Salva tema selezionato', 'primary', 'submit', false ); ?>
+		</div>
+		<div class="sbt-reset-box">
+			<h3>Reset template</h3>
+			<p class="sbt-muted">Riporta il sottotema selezionato ai contenuti originali e cancella le modifiche salvate per quel sottotema.</p>
 			<button
 				type="submit"
-				class="button"
+				class="button button-link-delete"
 				name="sbt_action"
 				value="reset_active_template"
 				onclick="return confirm('Vuoi riportare il sottotema selezionato al template originale? Le modifiche salvate per questo sottotema saranno cancellate.');"
@@ -1093,7 +1173,7 @@ function sbt_render_home_tab( $data, $overrides ) {
 		<div class="sbt-page-editor-layout">
 			<div>
 				<?php foreach ( $sections as $path => $section ) : ?>
-					<?php sbt_render_admin_fields( $path, $section['value'], $overrides, $section['title'] ); ?>
+					<?php sbt_render_admin_fields( $section['path'] ?? $path, $section['value'], $overrides, $section['title'] ); ?>
 				<?php endforeach; ?>
 				<?php submit_button( 'Salva Home' ); ?>
 			</div>
