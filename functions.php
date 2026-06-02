@@ -105,6 +105,16 @@ function sbt_page_templates() {
 	return $subtheme['pages'];
 }
 
+function sbt_is_theme_page_post( $post_id ) {
+	if ( ! $post_id || 'page' !== get_post_type( $post_id ) ) {
+		return false;
+	}
+
+	$slug = get_post_field( 'post_name', $post_id );
+	$pages = sbt_page_templates();
+	return isset( $pages[ $slug ] );
+}
+
 function sbt_page_map() {
 	$map = array();
 	foreach ( sbt_page_templates() as $slug => $page ) {
@@ -252,6 +262,15 @@ function sbt_route_page_template( $template ) {
 }
 add_filter( 'template_include', 'sbt_route_page_template', 99 );
 
+function sbt_disable_standard_page_editor( $use_block_editor, $post ) {
+	if ( $post && sbt_is_theme_page_post( $post->ID ) ) {
+		return false;
+	}
+
+	return $use_block_editor;
+}
+add_filter( 'use_block_editor_for_post', 'sbt_disable_standard_page_editor', 10, 2 );
+
 function sbt_is_scalar_list( $value ) {
 	return is_array( $value ) && array_values( $value ) === $value && 0 < count( $value ) && ! array_filter( $value, 'is_array' );
 }
@@ -348,6 +367,24 @@ function sbt_admin_shared_styles() {
 	<?php
 }
 add_action( 'admin_head', 'sbt_admin_shared_styles' );
+
+function sbt_hide_standard_page_editor() {
+	$screen = get_current_screen();
+	if ( ! $screen || 'page' !== $screen->post_type || 'post' !== $screen->base ) {
+		return;
+	}
+
+	$post_id = isset( $_GET['post'] ) ? absint( $_GET['post'] ) : 0;
+	if ( ! sbt_is_theme_page_post( $post_id ) ) {
+		return;
+	}
+	?>
+	<style>
+		#postdivrich { display:none; }
+	</style>
+	<?php
+}
+add_action( 'admin_head-post.php', 'sbt_hide_standard_page_editor' );
 
 function sbt_enqueue_admin_assets( $hook ) {
 	if ( 'appearance_page_syncbooking-theme' !== $hook && 'post.php' !== $hook && 'post-new.php' !== $hook ) {
