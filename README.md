@@ -22,3 +22,9 @@ Quando il tema viene attivato, o quando salvi le impostazioni del pannello SyncB
 - `wp-content/uploads/syncbooking-theme/theme02/`
 
 Le immagini vengono anche registrate nella Media Library.
+
+## WordPress.org e licenze
+
+Il codice del tema dichiara licenza GPL v2 or later nel file `style.css`.
+
+Prima di caricare il tema su WordPress.org bisogna verificare e documentare la licenza di ogni asset incluso, in particolare immagini, video placeholder, font e script di terze parti. Gli asset reali presenti nelle cartelle `assets/uploads` possono essere pubblicati nella directory WordPress.org solo se il titolare conferma che sono GPL compatibili o rilasciati con una licenza compatibile.

@@ -58,6 +58,8 @@ function sbt_subthemes() {
 function sbt_default_options() {
 	return array(
 		'subtheme'           => 'theme01',
+		'admin_language'     => 'it',
+		'languages'          => array( 'en' ),
 		'overrides'          => array(),
 		'custom_house_pages' => array(),
 	);
@@ -66,6 +68,59 @@ function sbt_default_options() {
 function sbt_get_options() {
 	$options = get_option( SBT_OPTION, array() );
 	return wp_parse_args( is_array( $options ) ? $options : array(), sbt_default_options() );
+}
+
+function sbt_available_languages() {
+	return array(
+		'en' => 'English',
+		'it' => 'Italiano',
+		'fr' => 'Francais',
+		'de' => 'Deutsch',
+		'es' => 'Espanol',
+	);
+}
+
+function sbt_enabled_languages() {
+	$options = sbt_get_options();
+	$available = sbt_available_languages();
+	$languages = isset( $options['languages'] ) && is_array( $options['languages'] ) ? array_map( 'sanitize_key', $options['languages'] ) : array( 'en' );
+	$languages[] = 'en';
+	$languages = array_values( array_unique( array_filter( $languages, function( $language ) use ( $available ) {
+		return isset( $available[ $language ] );
+	} ) ) );
+
+	return $languages ? $languages : array( 'en' );
+}
+
+function sbt_admin_language() {
+	$options = sbt_get_options();
+	return isset( $options['admin_language'] ) && in_array( $options['admin_language'], array( 'it', 'en' ), true ) ? $options['admin_language'] : 'it';
+}
+
+function sbt_t( $key ) {
+	$labels = array(
+		'it' => array(
+			'choose_subtheme' => 'Scegli il sottotema',
+			'theme_note'      => 'Ogni sottotema mantiene layout, header, footer, menu, pagine e contenuti modificabili separati.',
+			'save_theme'      => 'Salva impostazioni tema',
+			'admin_language'  => 'Lingua gestionale',
+			'site_languages'  => 'Lingue pagine',
+			'reset_template'  => 'Reset template',
+			'reset_note'      => 'Riporta il sottotema selezionato ai contenuti originali e cancella le modifiche salvate per quel sottotema.',
+		),
+		'en' => array(
+			'choose_subtheme' => 'Choose subtheme',
+			'theme_note'      => 'Each subtheme keeps separate layout, header, footer, menu, pages and editable content.',
+			'save_theme'      => 'Save theme settings',
+			'admin_language'  => 'Admin language',
+			'site_languages'  => 'Page languages',
+			'reset_template'  => 'Reset template',
+			'reset_note'      => 'Restore the selected subtheme to its original content and remove saved changes for that subtheme.',
+		),
+	);
+	$language = sbt_admin_language();
+
+	return $labels[ $language ][ $key ] ?? $labels['it'][ $key ] ?? $key;
 }
 
 function sbt_active_subtheme_key() {
@@ -136,9 +191,40 @@ function sbt_is_theme_page_post( $post_id ) {
 		return false;
 	}
 
-	$slug = get_post_field( 'post_name', $post_id );
+	$slug = sbt_page_base_slug_for_post( $post_id );
 	$pages = sbt_page_templates();
 	return isset( $pages[ $slug ] );
+}
+
+function sbt_page_base_slug_for_post( $post_id ) {
+	$base_slug = get_post_meta( $post_id, '_sbt_base_slug', true );
+	return $base_slug ? sanitize_title( $base_slug ) : get_post_field( 'post_name', $post_id );
+}
+
+function sbt_page_language_for_post( $post_id ) {
+	$language = get_post_meta( $post_id, '_sbt_language', true );
+	$language = $language ? sanitize_key( $language ) : 'en';
+	return in_array( $language, sbt_enabled_languages(), true ) ? $language : 'en';
+}
+
+function sbt_current_content_language() {
+	if ( is_admin() ) {
+		if ( isset( $_GET['edit_lang'] ) ) {
+			$language = sanitize_key( wp_unslash( $_GET['edit_lang'] ) );
+			return in_array( $language, sbt_enabled_languages(), true ) ? $language : 'en';
+		}
+
+		if ( isset( $_POST['sbt_edit_language'] ) ) {
+			$language = sanitize_key( wp_unslash( $_POST['sbt_edit_language'] ) );
+			return in_array( $language, sbt_enabled_languages(), true ) ? $language : 'en';
+		}
+	}
+
+	if ( function_exists( 'get_queried_object_id' ) && get_queried_object_id() ) {
+		return sbt_page_language_for_post( get_queried_object_id() );
+	}
+
+	return 'en';
 }
 
 function sbt_page_map() {
@@ -155,7 +241,8 @@ function sbt_url( $url ) {
 	$hash = false === strpos( (string) $url, '#' ) ? '' : '#' . substr( (string) $url, strpos( (string) $url, '#' ) + 1 );
 
 	if ( isset( $map[ $file ] ) ) {
-		return 'home' === $map[ $file ] ? home_url( '/' ) . $hash : home_url( '/' . $map[ $file ] . '/' ) . $hash;
+		$language_slug = sbt_language_page_slug( $map[ $file ], sbt_current_content_language() );
+		return 'home' === $map[ $file ] && 'en' === sbt_current_content_language() ? home_url( '/' ) . $hash : home_url( '/' . $language_slug . '/' ) . $hash;
 	}
 
 	return $url;
@@ -253,21 +340,36 @@ function sbt_install_upload_assets() {
 add_action( 'after_switch_theme', 'sbt_install_upload_assets' );
 
 function sbt_create_theme_pages() {
-	foreach ( sbt_page_templates() as $slug => $page ) {
-		if ( get_page_by_path( $slug ) ) {
-			continue;
-		}
+	foreach ( sbt_enabled_languages() as $language ) {
+		foreach ( sbt_page_templates() as $slug => $page ) {
+			$page_slug = sbt_language_page_slug( $slug, $language );
+			if ( get_page_by_path( $page_slug ) ) {
+				continue;
+			}
 
-		wp_insert_post( array(
-			'post_type'    => 'page',
-			'post_status'  => 'publish',
-			'post_title'   => $page['title'],
-			'post_name'    => $slug,
-			'post_content' => '',
-		) );
+			$page_id = wp_insert_post( array(
+				'post_type'    => 'page',
+				'post_status'  => 'publish',
+				'post_title'   => 'en' === $language ? $page['title'] : $page['title'] . ' (' . strtoupper( $language ) . ')',
+				'post_name'    => $page_slug,
+				'post_content' => '',
+			) );
+
+			if ( $page_id && ! is_wp_error( $page_id ) ) {
+				update_post_meta( $page_id, '_sbt_base_slug', $slug );
+				update_post_meta( $page_id, '_sbt_language', $language );
+			}
+		}
 	}
 }
 add_action( 'after_switch_theme', 'sbt_create_theme_pages' );
+
+function sbt_language_page_slug( $base_slug, $language ) {
+	$base_slug = sanitize_title( $base_slug );
+	$language = sanitize_key( $language );
+
+	return 'en' === $language ? $base_slug : $language . '-' . $base_slug;
+}
 
 function sbt_route_page_template( $template ) {
 	if ( is_front_page() || is_home() ) {
@@ -276,7 +378,7 @@ function sbt_route_page_template( $template ) {
 	}
 
 	if ( is_page() ) {
-		$slug = get_post_field( 'post_name', get_queried_object_id() );
+		$slug = sbt_page_base_slug_for_post( get_queried_object_id() );
 		$pages = sbt_page_templates();
 		if ( isset( $pages[ $slug ] ) ) {
 			$template_file = isset( $pages[ $slug ]['template_file'] ) ? $pages[ $slug ]['template_file'] : $pages[ $slug ]['file'];
@@ -319,11 +421,16 @@ function sbt_apply_flat_overrides( &$value, $path, $overrides ) {
 	}
 }
 
-function sbt_active_overrides() {
+function sbt_active_overrides( $language = '' ) {
 	$options = sbt_get_options();
 	$key = sbt_active_subtheme_key();
 	$overrides = isset( $options['overrides'] ) && is_array( $options['overrides'] ) ? $options['overrides'] : array();
-	return isset( $overrides[ $key ] ) && is_array( $overrides[ $key ] ) ? $overrides[ $key ] : array();
+	$subtheme_overrides = isset( $overrides[ $key ] ) && is_array( $overrides[ $key ] ) ? $overrides[ $key ] : array();
+	$language = '' === $language ? sbt_current_content_language() : sanitize_key( $language );
+	$legacy = array_filter( $subtheme_overrides, 'is_string' );
+	$language_overrides = isset( $subtheme_overrides['_languages'][ $language ] ) && is_array( $subtheme_overrides['_languages'][ $language ] ) ? $subtheme_overrides['_languages'][ $language ] : array();
+
+	return array_merge( $legacy, $language_overrides );
 }
 
 function sbt_custom_house_default_content( $title, $base = array() ) {
@@ -413,7 +520,7 @@ function sbt_rewrite_content_urls( &$value ) {
 }
 
 function sbt_admin_menu() {
-	add_theme_page( 'SyncBooking Theme', 'SyncBooking Theme', 'manage_options', 'syncbooking-theme', 'sbt_render_admin_page' );
+	add_theme_page( 'SyncBooking Theme', 'SyncBooking Theme', 'edit_theme_options', 'syncbooking-theme', 'sbt_render_admin_page' );
 }
 add_action( 'admin_menu', 'sbt_admin_menu' );
 
@@ -717,19 +824,22 @@ function sbt_add_page_editor_metabox() {
 }
 add_action( 'add_meta_boxes', 'sbt_add_page_editor_metabox' );
 
-function sbt_theme_page_public_url( $slug ) {
-	if ( 'home' === $slug ) {
+function sbt_theme_page_public_url( $slug, $language = '' ) {
+	$language = '' === $language ? sbt_current_content_language() : sanitize_key( $language );
+	$page_slug = sbt_language_page_slug( $slug, $language );
+	if ( 'home' === $slug && 'en' === $language ) {
 		return home_url( '/' );
 	}
 
-	$page = get_page_by_path( $slug );
-	return $page ? get_permalink( $page ) : home_url( '/' . $slug . '/' );
+	$page = get_page_by_path( $page_slug );
+	return $page ? get_permalink( $page ) : home_url( '/' . $page_slug . '/' );
 }
 
 function sbt_render_page_editor_metabox( $post ) {
 	wp_nonce_field( 'sbt_page_save', 'sbt_page_nonce' );
 
-	$slug = $post->post_name;
+	$slug = sbt_page_base_slug_for_post( $post->ID );
+	$edit_language = sbt_page_language_for_post( $post->ID );
 	$pages = sbt_page_templates();
 	if ( ! isset( $pages[ $slug ] ) ) {
 		echo '<p>Questa pagina non appartiene al sottotema attivo. Seleziona un sottotema da <strong>Aspetto > SyncBooking Theme</strong> oppure usa uno slug pagina del tema.</p>';
@@ -738,11 +848,12 @@ function sbt_render_page_editor_metabox( $post ) {
 
 	$data = sbt_load_active_data();
 	$sections = sbt_page_editor_sections( $slug, $data );
-	$overrides = sbt_active_overrides();
-	$preview_url = sbt_theme_page_public_url( $slug );
+	$overrides = sbt_active_overrides( $edit_language );
+	$preview_url = sbt_theme_page_public_url( $slug, $edit_language );
 
-	echo '<p>Editor unico per la pagina <strong>' . esc_html( $pages[ $slug ]['title'] ) . '</strong> del sottotema <strong>' . esc_html( sbt_active_subtheme()['label'] ) . '</strong>.</p>';
+	echo '<p>Editor unico per la pagina <strong>' . esc_html( $pages[ $slug ]['title'] ) . '</strong> del sottotema <strong>' . esc_html( sbt_active_subtheme()['label'] ) . '</strong> - lingua <strong>' . esc_html( strtoupper( $edit_language ) ) . '</strong>.</p>';
 	echo '<input type="hidden" name="sbt_page_slug" value="' . esc_attr( $slug ) . '">';
+	echo '<input type="hidden" name="sbt_edit_language" value="' . esc_attr( $edit_language ) . '">';
 
 	echo '<div class="sbt-page-editor-layout">';
 	echo '<div>';
@@ -775,6 +886,8 @@ function sbt_save_page_editor_metabox( $post_id ) {
 	}
 
 	$slug = sanitize_title( wp_unslash( $_POST['sbt_page_slug'] ) );
+	$edit_language = isset( $_POST['sbt_edit_language'] ) ? sanitize_key( wp_unslash( $_POST['sbt_edit_language'] ) ) : 'en';
+	$edit_language = in_array( $edit_language, sbt_enabled_languages(), true ) ? $edit_language : 'en';
 	$pages = sbt_page_templates();
 	if ( ! isset( $pages[ $slug ] ) ) {
 		return;
@@ -787,6 +900,12 @@ function sbt_save_page_editor_metabox( $post_id ) {
 	}
 	if ( ! isset( $options['overrides'][ $key ] ) || ! is_array( $options['overrides'][ $key ] ) ) {
 		$options['overrides'][ $key ] = array();
+	}
+	if ( ! isset( $options['overrides'][ $key ]['_languages'] ) || ! is_array( $options['overrides'][ $key ]['_languages'] ) ) {
+		$options['overrides'][ $key ]['_languages'] = array();
+	}
+	if ( ! isset( $options['overrides'][ $key ]['_languages'][ $edit_language ] ) || ! is_array( $options['overrides'][ $key ]['_languages'][ $edit_language ] ) ) {
+		$options['overrides'][ $key ]['_languages'][ $edit_language ] = array();
 	}
 
 	$data = sbt_load_active_data();
@@ -808,7 +927,7 @@ function sbt_save_page_editor_metabox( $post_id ) {
 		}
 
 		if ( $allowed && is_string( $value ) ) {
-			$options['overrides'][ $key ][ $path ] = wp_kses_post( wp_unslash( $value ) );
+			$options['overrides'][ $key ]['_languages'][ $edit_language ][ $path ] = wp_kses_post( wp_unslash( $value ) );
 		}
 	}
 
@@ -825,15 +944,30 @@ function sbt_sanitize_options( $raw ) {
 	$existing = sbt_get_options();
 	$options['overrides'] = isset( $existing['overrides'] ) && is_array( $existing['overrides'] ) ? $existing['overrides'] : array();
 	$options['custom_house_pages'] = isset( $existing['custom_house_pages'] ) && is_array( $existing['custom_house_pages'] ) ? $existing['custom_house_pages'] : array();
+	$options['admin_language'] = isset( $raw['admin_language'] ) && in_array( sanitize_key( wp_unslash( $raw['admin_language'] ) ), array( 'it', 'en' ), true ) ? sanitize_key( wp_unslash( $raw['admin_language'] ) ) : sbt_admin_language();
+	$available_languages = sbt_available_languages();
+	$languages = isset( $raw['languages'] ) && is_array( $raw['languages'] ) ? array_map( 'sanitize_key', wp_unslash( $raw['languages'] ) ) : sbt_enabled_languages();
+	$languages[] = 'en';
+	$options['languages'] = array_values( array_unique( array_filter( $languages, function( $language ) use ( $available_languages ) {
+		return isset( $available_languages[ $language ] );
+	} ) ) );
 	if ( ! isset( $options['overrides'][ $options['subtheme'] ] ) || ! is_array( $options['overrides'][ $options['subtheme'] ] ) ) {
 		$options['overrides'][ $options['subtheme'] ] = array();
 	}
 
 	if ( isset( $raw['overrides'] ) && is_array( $raw['overrides'] ) ) {
+		$edit_language = isset( $raw['edit_language'] ) ? sanitize_key( wp_unslash( $raw['edit_language'] ) ) : 'en';
+		$edit_language = in_array( $edit_language, $options['languages'], true ) ? $edit_language : 'en';
+		if ( ! isset( $options['overrides'][ $options['subtheme'] ]['_languages'] ) || ! is_array( $options['overrides'][ $options['subtheme'] ]['_languages'] ) ) {
+			$options['overrides'][ $options['subtheme'] ]['_languages'] = array();
+		}
+		if ( ! isset( $options['overrides'][ $options['subtheme'] ]['_languages'][ $edit_language ] ) || ! is_array( $options['overrides'][ $options['subtheme'] ]['_languages'][ $edit_language ] ) ) {
+			$options['overrides'][ $options['subtheme'] ]['_languages'][ $edit_language ] = array();
+		}
 		foreach ( $raw['overrides'] as $key => $value ) {
 			$key = sanitize_text_field( wp_unslash( $key ) );
 			if ( is_string( $value ) ) {
-				$options['overrides'][ $options['subtheme'] ][ $key ] = wp_kses_post( wp_unslash( $value ) );
+				$options['overrides'][ $options['subtheme'] ]['_languages'][ $edit_language ][ $key ] = wp_kses_post( wp_unslash( $value ) );
 			}
 		}
 	}
@@ -1044,10 +1178,12 @@ function sbt_render_admin_shell_start( $active_tab ) {
 }
 
 function sbt_render_theme_tab( $active, $subthemes ) {
+	$enabled_languages = sbt_enabled_languages();
+	$available_languages = sbt_available_languages();
 	?>
 	<div class="sbt-panel">
-		<h2>Scegli il sottotema</h2>
-		<p class="sbt-muted">Ogni sottotema mantiene layout, header, footer, menu, pagine e contenuti modificabili separati.</p>
+		<h2><?php echo esc_html( sbt_t( 'choose_subtheme' ) ); ?></h2>
+		<p class="sbt-muted"><?php echo esc_html( sbt_t( 'theme_note' ) ); ?></p>
 		<div class="sbt-theme-grid">
 			<?php foreach ( $subthemes as $key => $subtheme ) : ?>
 				<label class="sbt-card sbt-theme-card <?php echo $active === $key ? 'is-selected' : ''; ?>">
@@ -1059,13 +1195,36 @@ function sbt_render_theme_tab( $active, $subthemes ) {
 				</label>
 			<?php endforeach; ?>
 		</div>
+		<div class="sbt-field-grid">
+			<div class="sbt-field">
+				<label><?php echo esc_html( sbt_t( 'admin_language' ) ); ?></label>
+				<select name="<?php echo esc_attr( SBT_OPTION ); ?>[admin_language]">
+					<option value="it" <?php selected( sbt_admin_language(), 'it' ); ?>>Italiano</option>
+					<option value="en" <?php selected( sbt_admin_language(), 'en' ); ?>>English</option>
+				</select>
+			</div>
+			<div class="sbt-field">
+				<label><?php echo esc_html( sbt_t( 'site_languages' ) ); ?></label>
+				<div class="sbt-actions">
+					<?php foreach ( $available_languages as $language => $label ) : ?>
+						<label>
+							<input type="checkbox" name="<?php echo esc_attr( SBT_OPTION ); ?>[languages][]" value="<?php echo esc_attr( $language ); ?>" <?php checked( in_array( $language, $enabled_languages, true ) ); ?> <?php disabled( 'en', $language ); ?>>
+							<?php echo esc_html( strtoupper( $language ) . ' - ' . $label ); ?>
+						</label>
+						<?php if ( 'en' === $language ) : ?>
+							<input type="hidden" name="<?php echo esc_attr( SBT_OPTION ); ?>[languages][]" value="en">
+						<?php endif; ?>
+					<?php endforeach; ?>
+				</div>
+			</div>
+		</div>
 		<div class="sbt-theme-footer">
 			<span class="sbt-muted">Il sottotema selezionato determina layout, pagine e contenuti mostrati nelle altre tab.</span>
-			<?php submit_button( 'Salva tema selezionato', 'primary', 'submit', false ); ?>
+			<?php submit_button( sbt_t( 'save_theme' ), 'primary', 'submit', false ); ?>
 		</div>
 		<div class="sbt-reset-box">
-			<h3>Reset template</h3>
-			<p class="sbt-muted">Riporta il sottotema selezionato ai contenuti originali e cancella le modifiche salvate per quel sottotema.</p>
+			<h3><?php echo esc_html( sbt_t( 'reset_template' ) ); ?></h3>
+			<p class="sbt-muted"><?php echo esc_html( sbt_t( 'reset_note' ) ); ?></p>
 			<button
 				type="submit"
 				class="button button-link-delete"
@@ -1161,15 +1320,26 @@ function sbt_render_header_menu_tab( $data, $overrides ) {
 	<?php
 }
 
-function sbt_render_home_tab( $data, $overrides ) {
+function sbt_render_language_switcher( $tab, $active_language ) {
+	?>
+	<div class="sbt-actions" style="margin:0 0 18px;">
+		<?php foreach ( sbt_enabled_languages() as $language ) : ?>
+			<a class="button <?php echo $active_language === $language ? 'button-primary' : ''; ?>" href="<?php echo esc_url( add_query_arg( 'edit_lang', $language, sbt_admin_tab_url( $tab ) ) ); ?>"><?php echo esc_html( strtoupper( $language ) ); ?></a>
+		<?php endforeach; ?>
+	</div>
+	<?php
+}
+
+function sbt_render_home_tab( $data, $overrides, $edit_language = 'en' ) {
 	$pages = sbt_page_templates();
 	$home_title = isset( $pages['home']['title'] ) ? $pages['home']['title'] : 'Home';
 	$sections = sbt_page_editor_sections( 'home', $data );
-	$preview_url = sbt_theme_page_public_url( 'home' );
+	$preview_url = sbt_theme_page_public_url( 'home', $edit_language );
 	?>
 	<div class="sbt-panel">
 		<h2>Home</h2>
-		<p class="sbt-muted">Gestisci da qui tutti i contenuti principali della homepage del sottotema attivo.</p>
+		<p class="sbt-muted">Gestisci da qui tutti i contenuti principali della homepage del sottotema attivo. Lingua contenuti: <strong><?php echo esc_html( strtoupper( $edit_language ) ); ?></strong>.</p>
+		<?php sbt_render_language_switcher( 'home', $edit_language ); ?>
 		<div class="sbt-page-editor-layout">
 			<div>
 				<?php foreach ( $sections as $path => $section ) : ?>
@@ -1191,6 +1361,7 @@ function sbt_render_home_tab( $data, $overrides ) {
 
 function sbt_render_pages_tab() {
 	$pages = sbt_page_templates();
+	$languages = sbt_enabled_languages();
 	?>
 	<div class="sbt-panel">
 		<h2>Pages del sottotema</h2>
@@ -1203,31 +1374,35 @@ function sbt_render_pages_tab() {
 				<button type="submit" class="button button-primary" name="sbt_action" value="add_house_page">Aggiungi House</button>
 			</div>
 			<table class="sbt-table" style="margin-bottom:28px;">
-				<thead><tr><th>House</th><th>Slug</th><th>Stato</th><th>Azioni</th></tr></thead>
+				<thead><tr><th>House</th><th>Lingua</th><th>Slug</th><th>Stato</th><th>Azioni</th></tr></thead>
 				<tbody>
 					<?php foreach ( $pages as $slug => $page ) : ?>
 						<?php if ( empty( $page['content_key'] ) || 0 !== strpos( $page['content_key'], 'house' ) || 'houses' === $slug ) : ?>
 							<?php continue; ?>
 						<?php endif; ?>
-						<?php
-						$post = get_page_by_path( $slug );
-						$edit_url = $post ? get_edit_post_link( $post->ID, '' ) : '';
-						$is_custom = ! empty( $page['custom_house'] );
-						?>
-						<tr>
-							<td><strong><?php echo esc_html( $page['title'] ); ?></strong></td>
-							<td><code><?php echo esc_html( '/' . $slug . '/' ); ?></code></td>
-							<td><?php echo $post ? 'Presente' : 'Da creare'; ?></td>
-							<td class="sbt-actions">
-								<?php if ( $edit_url ) : ?>
-									<a class="button button-primary" href="<?php echo esc_url( $edit_url ); ?>">Modifica</a>
-								<?php endif; ?>
-								<a class="button" href="<?php echo esc_url( sbt_theme_page_public_url( $slug ) ); ?>" target="_blank">Anteprima</a>
-								<?php if ( $is_custom ) : ?>
-									<button type="submit" class="button-link-delete" name="sbt_delete_house_slug" value="<?php echo esc_attr( $slug ); ?>" onclick="return confirm('Vuoi cancellare questa House? La pagina andra nel cestino e i contenuti personalizzati saranno rimossi.');">X</button>
-								<?php endif; ?>
-							</td>
-						</tr>
+						<?php foreach ( $languages as $language ) : ?>
+							<?php
+							$page_slug = sbt_language_page_slug( $slug, $language );
+							$post = get_page_by_path( $page_slug );
+							$edit_url = $post ? get_edit_post_link( $post->ID, '' ) : '';
+							$is_custom = ! empty( $page['custom_house'] );
+							?>
+							<tr>
+								<td><strong><?php echo esc_html( $page['title'] ); ?></strong></td>
+								<td><?php echo esc_html( strtoupper( $language ) ); ?></td>
+								<td><code><?php echo esc_html( '/' . $page_slug . '/' ); ?></code></td>
+								<td><?php echo $post ? 'Presente' : 'Da creare'; ?></td>
+								<td class="sbt-actions">
+									<?php if ( $edit_url ) : ?>
+										<a class="button button-primary" href="<?php echo esc_url( $edit_url ); ?>">Modifica</a>
+									<?php endif; ?>
+									<a class="button" href="<?php echo esc_url( sbt_theme_page_public_url( $slug, $language ) ); ?>" target="_blank">Anteprima</a>
+									<?php if ( $is_custom && 'en' === $language ) : ?>
+										<button type="submit" class="button-link-delete" name="sbt_delete_house_slug" value="<?php echo esc_attr( $slug ); ?>" onclick="return confirm('Vuoi cancellare questa House? La pagina andra nel cestino e i contenuti personalizzati saranno rimossi.');">X</button>
+									<?php endif; ?>
+								</td>
+							</tr>
+						<?php endforeach; ?>
 					<?php endforeach; ?>
 				</tbody>
 			</table>
@@ -1235,27 +1410,31 @@ function sbt_render_pages_tab() {
 
 		<h2>Pagine interne</h2>
 		<table class="sbt-table">
-			<thead><tr><th>Pagina</th><th>Slug</th><th>Stato</th><th>Azioni</th></tr></thead>
+			<thead><tr><th>Pagina</th><th>Lingua</th><th>Slug</th><th>Stato</th><th>Azioni</th></tr></thead>
 			<tbody>
 				<?php foreach ( $pages as $slug => $page ) : ?>
 					<?php if ( 'home' === $slug || ! empty( $page['custom_house'] ) || in_array( $slug, array( 'house-for-2', 'house-for-3', 'house-for-4' ), true ) ) : ?>
 						<?php continue; ?>
 					<?php endif; ?>
-					<?php
-					$post = get_page_by_path( $slug );
-					$edit_url = $post ? get_edit_post_link( $post->ID, '' ) : '';
-					?>
-					<tr>
-						<td><strong><?php echo esc_html( $page['title'] ); ?></strong></td>
-						<td><code><?php echo esc_html( '/' . ( 'home' === $slug ? '' : $slug . '/' ) ); ?></code></td>
-						<td><?php echo $post ? 'Presente' : 'Da creare'; ?></td>
-						<td class="sbt-actions">
-							<?php if ( $edit_url ) : ?>
-								<a class="button button-primary" href="<?php echo esc_url( $edit_url ); ?>">Modifica campi pagina</a>
-							<?php endif; ?>
-							<a class="button" href="<?php echo esc_url( sbt_theme_page_public_url( $slug ) ); ?>" target="_blank">Anteprima</a>
-						</td>
-					</tr>
+					<?php foreach ( $languages as $language ) : ?>
+						<?php
+						$page_slug = sbt_language_page_slug( $slug, $language );
+						$post = get_page_by_path( $page_slug );
+						$edit_url = $post ? get_edit_post_link( $post->ID, '' ) : '';
+						?>
+						<tr>
+							<td><strong><?php echo esc_html( $page['title'] ); ?></strong></td>
+							<td><?php echo esc_html( strtoupper( $language ) ); ?></td>
+							<td><code><?php echo esc_html( '/' . $page_slug . '/' ); ?></code></td>
+							<td><?php echo $post ? 'Presente' : 'Da creare'; ?></td>
+							<td class="sbt-actions">
+								<?php if ( $edit_url ) : ?>
+									<a class="button button-primary" href="<?php echo esc_url( $edit_url ); ?>">Modifica campi pagina</a>
+								<?php endif; ?>
+								<a class="button" href="<?php echo esc_url( sbt_theme_page_public_url( $slug, $language ) ); ?>" target="_blank">Anteprima</a>
+							</td>
+						</tr>
+					<?php endforeach; ?>
 				<?php endforeach; ?>
 			</tbody>
 		</table>
@@ -1265,7 +1444,7 @@ function sbt_render_pages_tab() {
 }
 
 function sbt_render_admin_page() {
-	if ( isset( $_POST['sbt_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['sbt_nonce'] ) ), 'sbt_save' ) && current_user_can( 'manage_options' ) ) {
+	if ( isset( $_POST['sbt_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['sbt_nonce'] ) ), 'sbt_save' ) && current_user_can( 'edit_theme_options' ) ) {
 		$raw_options = $_POST[ SBT_OPTION ] ?? array();
 		$selected_subtheme = isset( $raw_options['subtheme'] ) ? sanitize_key( wp_unslash( $raw_options['subtheme'] ) ) : sbt_active_subtheme_key();
 
@@ -1293,8 +1472,9 @@ function sbt_render_admin_page() {
 
 	$subthemes = sbt_subthemes();
 	$active = sbt_active_subtheme_key();
-	$overrides = sbt_active_overrides();
 	$active_tab = sbt_admin_current_tab();
+	$edit_language = sbt_current_content_language();
+	$overrides = sbt_active_overrides( $edit_language );
 	$data = sbt_load_active_data();
 
 	sbt_render_admin_shell_start( $active_tab );
@@ -1302,11 +1482,12 @@ function sbt_render_admin_page() {
 		<form method="post">
 			<?php wp_nonce_field( 'sbt_save', 'sbt_nonce' ); ?>
 			<input type="hidden" name="<?php echo esc_attr( SBT_OPTION ); ?>[subtheme]" value="<?php echo esc_attr( $active ); ?>">
+			<input type="hidden" name="<?php echo esc_attr( SBT_OPTION ); ?>[edit_language]" value="<?php echo esc_attr( $edit_language ); ?>">
 			<?php
 			if ( 'themes' === $active_tab ) {
 				sbt_render_theme_tab( $active, $subthemes );
 			} elseif ( 'home' === $active_tab ) {
-				sbt_render_home_tab( $data, $overrides );
+				sbt_render_home_tab( $data, $overrides, $edit_language );
 			} elseif ( 'header' === $active_tab ) {
 				sbt_render_header_menu_tab( $data, $overrides );
 			} elseif ( 'pages' === $active_tab ) {
