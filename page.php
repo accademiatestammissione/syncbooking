@@ -3,12 +3,12 @@ $slug = function_exists('get_post_field') ? get_post_field('post_name', get_quer
 $map = function_exists('sbt_page_templates') ? sbt_page_templates() : [];
 
 if (isset($map[$slug])) {
-  require __DIR__ . '/' . $map[$slug]['file'];
+  require sbt_subtheme_path($map[$slug]['file']);
   return;
 }
 
 $PAGE = '';
-require __DIR__ . '/inc/header.php';
+require sbt_subtheme_path('inc/header.php');
 ?>
 <section class="page-hero" data-screen-label="WordPress page">
   <div class="wrap">
@@ -29,5 +29,4 @@ require __DIR__ . '/inc/header.php';
     </div>
   </div>
 </section>
-<?php require __DIR__ . '/inc/footer.php'; ?>
-
+<?php require sbt_subtheme_path('inc/footer.php'); ?>
