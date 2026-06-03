@@ -663,6 +663,165 @@ function sbt_rewrite_content_urls( &$value ) {
 	}
 }
 
+function sbt_visual_meta_editor_enabled() {
+	return is_user_logged_in() && current_user_can( 'edit_theme_options' ) && ! is_admin();
+}
+
+function sbt_visual_meta_editor_allowed_roots() {
+	return array( 'C', 'TEXT', 'SITE', 'NAV', 'HOUSE_CARDS', 'SERVICES', 'EXPERIENCES' );
+}
+
+function sbt_visual_meta_editor_allowed_path( $path ) {
+	$path = (string) $path;
+	if ( ! preg_match( '/^[A-Za-z0-9_.-]+$/', $path ) ) {
+		return false;
+	}
+
+	$root = strtok( $path, '.' );
+	return in_array( $root, sbt_visual_meta_editor_allowed_roots(), true );
+}
+
+function sbt_vfe( $path, $value, $args = array() ) {
+	if ( ! sbt_visual_meta_editor_enabled() || ! sbt_visual_meta_editor_allowed_path( $path ) ) {
+		return $value;
+	}
+
+	$defaults = array(
+		'multiline' => false,
+		'context'   => '',
+	);
+	$args = wp_parse_args( $args, $defaults );
+	$tag = $args['multiline'] ? 'span' : 'span';
+
+	return '<' . $tag . ' class="sbt-vfe-field" data-sbt-vfe-path="' . esc_attr( $path ) . '" data-sbt-vfe-multiline="' . ( $args['multiline'] ? '1' : '0' ) . '" data-sbt-vfe-context="' . esc_attr( $args['context'] ) . '">' . $value . '<button type="button" class="sbt-vfe-edit" aria-label="Modifica campo">&#9998;</button></' . $tag . '>';
+}
+
+function sbt_visual_meta_editor_assets() {
+	if ( ! sbt_visual_meta_editor_enabled() ) {
+		return;
+	}
+
+	?>
+	<style>
+		.sbt-vfe-field { outline:1px dashed transparent; outline-offset:4px; position:relative; transition:outline-color .15s ease; }
+		.sbt-vfe-field:hover { outline-color:rgba(34,113,177,.75); }
+		.sbt-vfe-edit { align-items:center; background:#2271b1; border:0; border-radius:999px; color:#fff; cursor:pointer; display:inline-flex; font-size:12px; height:24px; justify-content:center; line-height:1; margin-left:8px; padding:0; vertical-align:middle; width:24px; }
+		.sbt-vfe-modal { align-items:center; background:rgba(0,0,0,.45); bottom:0; display:none; justify-content:center; left:0; padding:24px; position:fixed; right:0; top:0; z-index:999999; }
+		.sbt-vfe-modal.is-open { display:flex; }
+		.sbt-vfe-dialog { background:#fff; border-radius:8px; box-shadow:0 18px 60px rgba(0,0,0,.25); color:#1d2327; max-width:620px; padding:18px; width:min(620px,100%); }
+		.sbt-vfe-dialog h3 { color:#1d2327; font:600 18px/1.25 system-ui,sans-serif; margin:0 0 12px; }
+		.sbt-vfe-dialog textarea, .sbt-vfe-dialog input { border:1px solid #8c8f94; border-radius:4px; box-sizing:border-box; color:#1d2327; font:400 15px/1.45 system-ui,sans-serif; min-height:44px; padding:10px; width:100%; }
+		.sbt-vfe-dialog textarea { min-height:150px; resize:vertical; }
+		.sbt-vfe-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:14px; }
+		.sbt-vfe-actions button { border:1px solid #8c8f94; border-radius:4px; cursor:pointer; font:600 14px/1 system-ui,sans-serif; padding:9px 13px; }
+		.sbt-vfe-save { background:#2271b1; border-color:#2271b1!important; color:#fff; }
+	</style>
+	<script>
+	(function(){
+		var config = {
+			ajaxUrl: <?php echo wp_json_encode( admin_url( 'admin-ajax.php' ) ); ?>,
+			nonce: <?php echo wp_json_encode( wp_create_nonce( 'sbt_vfe_save' ) ); ?>,
+			postId: <?php echo wp_json_encode( get_queried_object_id() ); ?>,
+			language: <?php echo wp_json_encode( sbt_current_content_language() ); ?>
+		};
+		var activeField = null;
+		var modal = document.createElement('div');
+		modal.className = 'sbt-vfe-modal';
+		modal.innerHTML = '<div class="sbt-vfe-dialog" role="dialog" aria-modal="true"><h3>Modifica contenuto</h3><div class="sbt-vfe-input"></div><div class="sbt-vfe-actions"><button type="button" class="sbt-vfe-cancel">Annulla</button><button type="button" class="sbt-vfe-save">Salva</button></div></div>';
+		document.body.appendChild(modal);
+
+		function fieldHtml(field){
+			var clone = field.cloneNode(true);
+			var button = clone.querySelector('.sbt-vfe-edit');
+			if (button) button.remove();
+			return clone.innerHTML.trim();
+		}
+
+		document.addEventListener('click', function(event){
+			var button = event.target.closest('.sbt-vfe-edit');
+			if (!button) return;
+			event.preventDefault();
+			event.stopPropagation();
+			activeField = button.closest('.sbt-vfe-field');
+			var multiline = activeField.getAttribute('data-sbt-vfe-multiline') === '1';
+			var wrap = modal.querySelector('.sbt-vfe-input');
+			var value = fieldHtml(activeField);
+			wrap.innerHTML = multiline ? '<textarea></textarea>' : '<input type="text">';
+			wrap.firstElementChild.value = value;
+			modal.classList.add('is-open');
+			wrap.firstElementChild.focus();
+		}, true);
+
+		modal.querySelector('.sbt-vfe-cancel').addEventListener('click', function(){
+			modal.classList.remove('is-open');
+			activeField = null;
+		});
+
+		modal.querySelector('.sbt-vfe-save').addEventListener('click', function(){
+			if (!activeField) return;
+			var input = modal.querySelector('textarea,input');
+			var data = new FormData();
+			data.append('action', 'sbt_vfe_save');
+			data.append('nonce', config.nonce);
+			data.append('post_id', config.postId || 0);
+			data.append('language', config.language || 'en');
+			data.append('path', activeField.getAttribute('data-sbt-vfe-path'));
+			data.append('value', input.value);
+			fetch(config.ajaxUrl, { method:'POST', credentials:'same-origin', body:data })
+				.then(function(response){ return response.json(); })
+				.then(function(json){
+					if (!json || !json.success) throw new Error(json && json.data ? json.data : 'Errore salvataggio');
+					activeField.innerHTML = json.data.value + '<button type="button" class="sbt-vfe-edit" aria-label="Modifica campo">&#9998;</button>';
+					modal.classList.remove('is-open');
+					activeField = null;
+				})
+				.catch(function(error){ alert(error.message); });
+		});
+	})();
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'sbt_visual_meta_editor_assets', 30 );
+
+function sbt_visual_meta_editor_save() {
+	if ( ! current_user_can( 'edit_theme_options' ) ) {
+		wp_send_json_error( 'Permessi insufficienti.' );
+	}
+
+	check_ajax_referer( 'sbt_vfe_save', 'nonce' );
+
+	$path = isset( $_POST['path'] ) ? sanitize_text_field( wp_unslash( $_POST['path'] ) ) : '';
+	if ( ! sbt_visual_meta_editor_allowed_path( $path ) ) {
+		wp_send_json_error( 'Campo non autorizzato.' );
+	}
+
+	$post_id = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
+	$value = isset( $_POST['value'] ) ? wp_kses_post( wp_unslash( $_POST['value'] ) ) : '';
+	$options = sbt_get_options();
+	$key = sbt_active_subtheme_key();
+	$language = isset( $_POST['language'] ) ? sanitize_key( wp_unslash( $_POST['language'] ) ) : sbt_current_content_language();
+	$language = in_array( $language, sbt_enabled_languages(), true ) ? $language : 'en';
+	if ( $post_id ) {
+		update_post_meta( $post_id, '_sbt_visual_meta_' . sanitize_key( str_replace( '.', '_', $path ) ), $value );
+	}
+
+	if ( ! isset( $options['overrides'][ $key ] ) || ! is_array( $options['overrides'][ $key ] ) ) {
+		$options['overrides'][ $key ] = array();
+	}
+	if ( ! isset( $options['overrides'][ $key ]['_languages'] ) || ! is_array( $options['overrides'][ $key ]['_languages'] ) ) {
+		$options['overrides'][ $key ]['_languages'] = array();
+	}
+	if ( ! isset( $options['overrides'][ $key ]['_languages'][ $language ] ) || ! is_array( $options['overrides'][ $key ]['_languages'][ $language ] ) ) {
+		$options['overrides'][ $key ]['_languages'][ $language ] = array();
+	}
+
+	$options['overrides'][ $key ]['_languages'][ $language ][ $path ] = $value;
+	update_option( SBT_OPTION, $options );
+
+	wp_send_json_success( array( 'value' => $value ) );
+}
+add_action( 'wp_ajax_sbt_vfe_save', 'sbt_visual_meta_editor_save' );
+
 function sbt_admin_menu() {
 	add_theme_page( 'SyncBooking Theme', 'SyncBooking Theme', 'edit_theme_options', 'syncbooking-theme', 'sbt_render_admin_page' );
 }
