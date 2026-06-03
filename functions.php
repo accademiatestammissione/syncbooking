@@ -16,6 +16,7 @@ function sbt_setup() {
 	add_theme_support( 'title-tag' );
 	add_theme_support( 'post-thumbnails' );
 	add_theme_support( 'custom-logo' );
+	load_theme_textdomain( 'syncbooking-theme', get_template_directory() . '/languages' );
 }
 add_action( 'after_setup_theme', 'sbt_setup' );
 
@@ -132,6 +133,13 @@ function sbt_active_subtheme_key() {
 function sbt_active_subtheme() {
 	$subthemes = sbt_subthemes();
 	return $subthemes[ sbt_active_subtheme_key() ];
+}
+
+function sbt_unit_label( $overrides = array() ) {
+	$value = isset( $overrides['SITE.unit_label'] ) ? $overrides['SITE.unit_label'] : '';
+	$value = '' !== $value ? $value : 'House';
+
+	return wp_strip_all_tags( $value );
 }
 
 function sbt_subtheme_path( $path = '' ) {
@@ -680,6 +688,14 @@ function sbt_page_editor_sections( $slug, $data ) {
 
 	$theme = sbt_active_subtheme_key();
 	if ( 'home' === $slug ) {
+		$sections['SITE.structure'] = array(
+			'path'  => 'SITE',
+			'title' => 'Struttura generale',
+			'value' => array(
+				'unit_label' => $data['SITE']['unit_label'] ?? 'House',
+				'unit_count' => $data['SITE']['unit_count'] ?? '3',
+			),
+		);
 		$home_image_keys = 'theme01' === $theme
 			? array( 'welcome', 'lunch', 'spa' )
 			: array( 'welcome', 'band', 'teaser_hospitality', 'teaser_wedding', 'teaser_events', 'exp_massage', 'exp_boat', 'exp_cooking', 'exp_dinner' );
@@ -1362,16 +1378,17 @@ function sbt_render_home_tab( $data, $overrides, $edit_language = 'en' ) {
 function sbt_render_pages_tab() {
 	$pages = sbt_page_templates();
 	$languages = sbt_enabled_languages();
+	$unit_label = sbt_unit_label( sbt_active_overrides( sbt_current_content_language() ) );
 	?>
 	<div class="sbt-panel">
 		<h2>Pages del sottotema</h2>
 		<p class="sbt-muted">Da qui vai direttamente alla modifica completa delle pagine interne. La homepage ora si gestisce dalla tab Home.</p>
 		<?php if ( 'theme01' === sbt_active_subtheme_key() ) : ?>
-			<h2 style="margin-top:24px;">Schede Houses</h2>
-			<p class="sbt-muted">Puoi aggiungere nuove schede solo per la sezione Houses. Le pagine base del template restano protette; puoi cancellare con X solo quelle aggiunte da te.</p>
+			<h2 style="margin-top:24px;">Schede <?php echo esc_html( $unit_label ); ?></h2>
+			<p class="sbt-muted">Puoi aggiungere nuove schede solo per la sezione <?php echo esc_html( $unit_label ); ?>. Le pagine base del template restano protette; puoi cancellare con X solo quelle aggiunte da te.</p>
 			<div class="sbt-actions" style="margin:12px 0 18px;">
-				<input type="text" name="sbt_house_title" placeholder="Es. House for 5" style="max-width:260px;">
-				<button type="submit" class="button button-primary" name="sbt_action" value="add_house_page">Aggiungi House</button>
+				<input type="text" name="sbt_house_title" placeholder="<?php echo esc_attr( 'Es. ' . $unit_label . ' for 5' ); ?>" style="max-width:260px;">
+				<button type="submit" class="button button-primary" name="sbt_action" value="add_house_page">Aggiungi <?php echo esc_html( $unit_label ); ?></button>
 			</div>
 			<table class="sbt-table" style="margin-bottom:28px;">
 				<thead><tr><th>House</th><th>Lingua</th><th>Slug</th><th>Stato</th><th>Azioni</th></tr></thead>
@@ -1527,6 +1544,8 @@ function sbt_humanize_key( $key ) {
 		'whatsapp_label'   => 'Testo WhatsApp',
 		'lang_primary'     => 'Lingua principale',
 		'lang_secondary'   => 'Lingua secondaria',
+		'unit_label'       => 'Nome sezione unita',
+		'unit_count'       => 'Numero unita',
 	);
 
 	$key = strtolower( (string) $key );
@@ -1541,6 +1560,26 @@ function sbt_friendly_field_label( $label, $path ) {
 	$parts = explode( '.', (string) $path );
 	$key = '' !== (string) $label ? (string) $label : end( $parts );
 	return sbt_humanize_key( $key );
+}
+
+function sbt_field_alias( $path ) {
+	$key = basename( str_replace( '.', '/', (string) $path ) );
+	$aliases = array(
+		'h1'       => 'h1_1',
+		'hero_h1'  => 'h1_1',
+		'intro_h2' => 'h2_1',
+		'houses_h2'=> 'h2_2',
+		'cta_h2'   => 'h2_cta',
+		'p'        => 'text_1',
+		'intro_p'  => 'text_1',
+		'banner'   => 'image_hero',
+		'main'     => 'image_1',
+		'gallery'  => 'gallery_1',
+		'cta_url'  => 'url_cta',
+		'cta_btn'  => 'button_cta',
+	);
+
+	return $aliases[ $key ] ?? $key;
 }
 
 function sbt_current_admin_value( $path, $value, $overrides ) {
@@ -1625,7 +1664,7 @@ function sbt_render_single_admin_field( $path, $label, $value, $overrides ) {
 	<div class="sbt-editor-field">
 		<label>
 			<?php echo esc_html( $friendly_label ); ?>
-			<span class="sbt-field-path"><?php echo esc_html( $path ); ?></span>
+			<span class="sbt-field-path"><?php echo esc_html( sbt_field_alias( $path ) ); ?> - <?php echo esc_html( $path ); ?></span>
 		</label>
 		<?php if ( $is_gallery ) : ?>
 			<?php $gallery_urls = sbt_value_lines( $current ); ?>
