@@ -586,7 +586,9 @@ function sbt_admin_shared_styles() {
 		.sbt-page-editor-layout { display:grid; gap:18px; grid-template-columns:minmax(0,1fr) minmax(320px,42%); }
 		.sbt-page-preview { position:sticky; top:42px; }
 		.sbt-page-preview iframe { background:#fff; border:1px solid #dcdcde; border-radius:8px; height:720px; width:100%; }
-		.sbt-page-preview__bar { align-items:center; display:flex; justify-content:space-between; margin-bottom:8px; }
+		.sbt-page-preview__bar { align-items:center; display:flex; gap:10px; justify-content:space-between; margin-bottom:8px; }
+		.sbt-page-preview__actions { align-items:center; display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; }
+		.sbt-page-preview__mode { align-items:center; color:#50575e; display:flex; font-size:12px; gap:5px; white-space:nowrap; }
 		.sbt-page-preview__target { color:#646970; font-size:12px; margin:0 0 8px; }
 		.sbt-preview-section { border-radius:8px; padding:1px; }
 		.sbt-preview-section.is-active > .sbt-section-title { color:#2271b1; }
@@ -668,10 +670,14 @@ function sbt_admin_footer_scripts() {
 			return (text || '').toString().toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
 		}
 
-		function previewKeywords(target){
+		function previewKeywords(target, labels){
+			if (labels) {
+				return labels.toString().split('|').map(function(label){ return normalizePreviewText(label); }).filter(Boolean);
+			}
 			var text = normalizePreviewText(target);
 			if (text.indexOf('hero') !== -1 || text.indexOf('banner') !== -1) return ['banner', 'hero'];
-			if (text.indexOf('intro') !== -1 || text.indexOf('welcome') !== -1) return ['intro', 'welcome', 'body', 'content', 'your stay'];
+			if (text.indexOf('intro') !== -1 || text.indexOf('introdutt') !== -1 || text.indexOf('welcome') !== -1) return ['intro', 'welcome', 'body', 'content', 'your stay'];
+			if (text.indexOf('house') !== -1 || text.indexOf('case') !== -1) return ['houses'];
 			if (text.indexOf('gallery') !== -1) return ['gallery'];
 			if (text.indexOf('amenit') !== -1 || text.indexOf('included') !== -1) return ['amenities', 'included'];
 			if (text.indexOf('servizi') !== -1 || text.indexOf('services') !== -1) return ['services'];
@@ -682,12 +688,35 @@ function sbt_admin_footer_scripts() {
 			return text ? [text] : [];
 		}
 
+		function ensurePreviewFocusStyle(doc){
+			if (doc.getElementById('sbt-admin-preview-style')) return;
+			var style = doc.createElement('style');
+			style.id = 'sbt-admin-preview-style';
+			style.textContent = [
+				'body.sbt-admin-section-preview{background:#fff!important;}',
+				'body.sbt-admin-section-preview #hdr,body.sbt-admin-section-preview header,body.sbt-admin-section-preview .drawer{display:none!important;}',
+				'body.sbt-admin-section-preview [data-screen-label].sbt-admin-preview-hidden{display:none!important;}',
+				'body.sbt-admin-section-preview [data-screen-label].sbt-admin-preview-active{outline:3px solid #2271b1;outline-offset:-3px;}'
+			].join('');
+			doc.head.appendChild(style);
+		}
+
+		function resetPreviewFocus(doc){
+			var body = doc.body;
+			if (body) body.classList.remove('sbt-admin-section-preview');
+			Array.prototype.slice.call(doc.querySelectorAll('[data-screen-label]')).forEach(function(section){
+				section.classList.remove('sbt-admin-preview-hidden', 'sbt-admin-preview-active');
+			});
+		}
+
 		function focusPreviewSection($section){
 			var target = $section.data('preview-target') || '';
+			var labels = $section.data('preview-labels') || '';
 			var $iframe = $('.sbt-preview-frame').first();
+			var sectionOnly = $('.sbt-preview-section-only').first().is(':checked');
 			$('.sbt-preview-section').removeClass('is-active');
 			$section.addClass('is-active');
-			$('.sbt-page-preview__target').text(target ? 'Anteprima sezione: ' + target : 'Anteprima pagina');
+			$('.sbt-page-preview__target').text(target ? (sectionOnly ? 'Solo sezione: ' : 'Anteprima sezione: ') + target : 'Anteprima pagina');
 			if (!$iframe.length || !$iframe[0].contentWindow) return;
 
 			var doc;
@@ -697,9 +726,11 @@ function sbt_admin_footer_scripts() {
 				return;
 			}
 			if (!doc) return;
+			ensurePreviewFocusStyle(doc);
+			resetPreviewFocus(doc);
 
 			var sections = Array.prototype.slice.call(doc.querySelectorAll('[data-screen-label]'));
-			var keywords = previewKeywords(target);
+			var keywords = previewKeywords(target, labels);
 			var found = null;
 			sections.some(function(section){
 				var label = normalizePreviewText(section.getAttribute('data-screen-label'));
@@ -713,7 +744,14 @@ function sbt_admin_footer_scripts() {
 			});
 
 			if (found) {
-				found.scrollIntoView({ block: 'start', behavior: 'smooth' });
+				if (sectionOnly && doc.body) {
+					doc.body.classList.add('sbt-admin-section-preview');
+					sections.forEach(function(section){
+						section.classList.toggle('sbt-admin-preview-hidden', section !== found);
+					});
+					found.classList.add('sbt-admin-preview-active');
+				}
+				found.scrollIntoView({ block: 'start', behavior: 'auto' });
 			}
 		}
 
@@ -724,6 +762,13 @@ function sbt_admin_footer_scripts() {
 
 			$(document).on('mouseenter focusin click', '.sbt-preview-section', function(){
 				focusPreviewSection($(this));
+			});
+
+			$(document).on('change', '.sbt-preview-section-only', function(){
+				var $active = $('.sbt-preview-section.is-active').first();
+				if ($active.length) {
+					focusPreviewSection($active);
+				}
 			});
 
 			$('.sbt-preview-frame').on('load', function(){
@@ -950,6 +995,64 @@ function sbt_content_editor_sections( $content_key, $content ) {
 	return $sections;
 }
 
+function sbt_preview_labels_for_section( $slug, $path, $section ) {
+	$title = isset( $section['title'] ) ? $section['title'] : '';
+	$haystack = strtolower( $slug . ' ' . $path . ' ' . $title );
+	$labels = array( $title );
+
+	if ( false !== strpos( $haystack, 'hero' ) || false !== strpos( $haystack, 'banner' ) ) {
+		$labels[] = 'hero';
+		$labels[] = 'banner';
+	}
+	if ( false !== strpos( $haystack, 'intro' ) || false !== strpos( $haystack, 'introdutt' ) || false !== strpos( $haystack, 'welcome' ) ) {
+		$labels[] = 'intro';
+		$labels[] = 'welcome';
+		$labels[] = 'body';
+		$labels[] = 'content';
+		$labels[] = 'your stay';
+	}
+	if ( false !== strpos( $haystack, 'houses' ) || false !== strpos( $haystack, 'house' ) || false !== strpos( $haystack, 'case' ) ) {
+		$labels[] = 'houses';
+		$labels[] = 'overview';
+	}
+	if ( false !== strpos( $haystack, 'servizi' ) || false !== strpos( $haystack, 'services' ) ) {
+		$labels[] = 'services';
+	}
+	if ( false !== strpos( $haystack, 'gallery' ) || false !== strpos( $haystack, 'immagini' ) || false !== strpos( $haystack, 'img' ) ) {
+		$labels[] = 'gallery';
+	}
+	if ( false !== strpos( $haystack, 'card' ) || false !== strpos( $haystack, 'liste' ) ) {
+		$labels[] = 'cards';
+		$labels[] = 'features';
+		$labels[] = 'formats';
+		$labels[] = 'discover';
+	}
+	if ( false !== strpos( $haystack, 'band' ) ) {
+		$labels[] = 'band';
+	}
+	if ( false !== strpos( $haystack, 'offer' ) || false !== strpos( $haystack, 'offerte' ) ) {
+		$labels[] = 'offers';
+	}
+	if ( false !== strpos( $haystack, 'amenit' ) || false !== strpos( $haystack, 'included' ) ) {
+		$labels[] = 'amenities';
+		$labels[] = 'included';
+	}
+	if ( false !== strpos( $haystack, 'form' ) || false !== strpos( $haystack, 'contatti' ) || false !== strpos( $haystack, 'contacts' ) || false !== strpos( $haystack, 'mappa' ) ) {
+		$labels[] = 'contacts';
+		$labels[] = 'contacts body';
+		$labels[] = 'contacts content';
+		$labels[] = 'contacts map';
+	}
+	if ( false !== strpos( $haystack, 'cta' ) || false !== strpos( $haystack, 'call' ) ) {
+		$labels[] = 'cta';
+	}
+	if ( false !== strpos( $haystack, 'footer' ) ) {
+		$labels[] = 'footer';
+	}
+
+	return implode( '|', array_unique( array_filter( $labels ) ) );
+}
+
 function sbt_add_page_editor_metabox() {
 	add_meta_box(
 		'sbt-page-content',
@@ -996,13 +1099,14 @@ function sbt_render_page_editor_metabox( $post ) {
 	echo '<div class="sbt-page-editor-layout">';
 	echo '<div>';
 	foreach ( $sections as $path => $section ) {
-		echo '<div class="sbt-preview-section" data-preview-target="' . esc_attr( $section['preview'] ?? $section['title'] ) . '">';
+		$preview_labels = sbt_preview_labels_for_section( $slug, $path, $section );
+		echo '<div class="sbt-preview-section" data-preview-target="' . esc_attr( $section['preview'] ?? $section['title'] ) . '" data-preview-labels="' . esc_attr( $preview_labels ) . '">';
 		sbt_render_admin_fields( $section['path'] ?? $path, $section['value'], $overrides, $section['title'] );
 		echo '</div>';
 	}
 	echo '</div>';
 	echo '<aside class="sbt-page-preview">';
-	echo '<div class="sbt-page-preview__bar"><strong>Anteprima pagina</strong><a class="button" href="' . esc_url( $preview_url ) . '" target="_blank" rel="noopener">Apri pagina</a></div>';
+	echo '<div class="sbt-page-preview__bar"><strong>Anteprima pagina</strong><div class="sbt-page-preview__actions"><label class="sbt-page-preview__mode"><input type="checkbox" class="sbt-preview-section-only" checked> Solo sezione</label><a class="button" href="' . esc_url( $preview_url ) . '" target="_blank" rel="noopener">Apri pagina</a></div></div>';
 	echo '<p class="sbt-page-preview__target">Anteprima pagina</p>';
 	echo '<iframe class="sbt-preview-frame" src="' . esc_url( $preview_url ) . '" title="Anteprima ' . esc_attr( $pages[ $slug ]['title'] ) . '"></iframe>';
 	echo '</aside>';
@@ -1569,7 +1673,7 @@ function sbt_render_home_tab( $data, $overrides, $edit_language = 'en' ) {
 		<div class="sbt-page-editor-layout">
 			<div>
 				<?php foreach ( $sections as $path => $section ) : ?>
-					<div class="sbt-preview-section" data-preview-target="<?php echo esc_attr( $section['preview'] ?? $section['title'] ); ?>">
+					<div class="sbt-preview-section" data-preview-target="<?php echo esc_attr( $section['preview'] ?? $section['title'] ); ?>" data-preview-labels="<?php echo esc_attr( sbt_preview_labels_for_section( 'home', $path, $section ) ); ?>">
 						<?php sbt_render_section_language_tabs( 'home', $edit_language ); ?>
 						<?php sbt_render_admin_fields( $section['path'] ?? $path, $section['value'], $overrides, $section['title'] ); ?>
 					</div>
@@ -1579,7 +1683,10 @@ function sbt_render_home_tab( $data, $overrides, $edit_language = 'en' ) {
 			<aside class="sbt-page-preview">
 				<div class="sbt-page-preview__bar">
 					<strong>Anteprima Home</strong>
-					<a class="button" href="<?php echo esc_url( $preview_url ); ?>" target="_blank" rel="noopener">Apri Home</a>
+					<div class="sbt-page-preview__actions">
+						<label class="sbt-page-preview__mode"><input type="checkbox" class="sbt-preview-section-only" checked> Solo sezione</label>
+						<a class="button" href="<?php echo esc_url( $preview_url ); ?>" target="_blank" rel="noopener">Apri Home</a>
+					</div>
 				</div>
 				<p class="sbt-page-preview__target">Anteprima pagina</p>
 				<iframe class="sbt-preview-frame" src="<?php echo esc_url( $preview_url ); ?>" title="Anteprima <?php echo esc_attr( $home_title ); ?>"></iframe>
