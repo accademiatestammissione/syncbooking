@@ -595,6 +595,8 @@ function sbt_admin_shared_styles() {
 		.sbt-editor-block summary { cursor:pointer; }
 		.sbt-section-title { align-items:baseline; display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; }
 		.sbt-section-title code, .sbt-field-path { color:#646970; font-size:12px; font-weight:400; }
+		.sbt-section-tabs { display:flex; gap:6px; justify-content:flex-end; margin:0 0 -6px; position:relative; z-index:1; }
+		.sbt-section-tabs .button { min-height:28px; padding:2px 10px; }
 		.sbt-editor-field { margin:12px 0; }
 		.sbt-editor-field label { display:block; font-weight:600; margin-bottom:5px; }
 		.sbt-editor-field code { color:#646970; font-weight:400; }
@@ -1523,6 +1525,16 @@ function sbt_render_language_switcher( $tab, $active_language ) {
 	<?php
 }
 
+function sbt_render_section_language_tabs( $tab, $active_language ) {
+	?>
+	<div class="sbt-section-tabs">
+		<?php foreach ( sbt_enabled_languages() as $language ) : ?>
+			<a class="button <?php echo $active_language === $language ? 'button-primary' : ''; ?>" href="<?php echo esc_url( add_query_arg( 'edit_lang', $language, sbt_admin_tab_url( $tab ) ) ); ?>"><?php echo esc_html( strtoupper( $language ) ); ?></a>
+		<?php endforeach; ?>
+	</div>
+	<?php
+}
+
 function sbt_render_home_tab( $data, $overrides, $edit_language = 'en' ) {
 	$pages = sbt_page_templates();
 	$home_title = isset( $pages['home']['title'] ) ? $pages['home']['title'] : 'Home';
@@ -1531,12 +1543,12 @@ function sbt_render_home_tab( $data, $overrides, $edit_language = 'en' ) {
 	?>
 	<div class="sbt-panel">
 		<h2>Home</h2>
-		<p class="sbt-muted">Gestisci da qui tutti i contenuti principali della homepage del sottotema attivo. Lingua contenuti: <strong><?php echo esc_html( strtoupper( $edit_language ) ); ?></strong>.</p>
-		<?php sbt_render_language_switcher( 'home', $edit_language ); ?>
+		<p class="sbt-muted">Gestisci da qui tutti i contenuti principali della homepage del sottotema attivo.</p>
 		<div class="sbt-page-editor-layout">
 			<div>
 				<?php foreach ( $sections as $path => $section ) : ?>
 					<div class="sbt-preview-section" data-preview-target="<?php echo esc_attr( $section['preview'] ?? $section['title'] ); ?>">
+						<?php sbt_render_section_language_tabs( 'home', $edit_language ); ?>
 						<?php sbt_render_admin_fields( $section['path'] ?? $path, $section['value'], $overrides, $section['title'] ); ?>
 					</div>
 				<?php endforeach; ?>
