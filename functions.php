@@ -678,6 +678,7 @@ function sbt_admin_shared_styles() {
 		.sbt-page-preview__actions { align-items:center; display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; }
 		.sbt-page-preview__target { color:#646970; font-size:12px; margin:0 0 8px; }
 		.sbt-preview-section { border:1px solid #dcdcde; border-radius:8px; display:grid; gap:16px; grid-template-columns:minmax(0,1fr) minmax(320px,42%); margin:0 0 18px; padding:16px; }
+		.sbt-preview-section--no-preview { grid-template-columns:1fr; }
 		.sbt-preview-section.is-active { border-color:#2271b1; box-shadow:0 0 0 1px #2271b1; }
 		.sbt-preview-section.is-active .sbt-section-title { color:#2271b1; }
 		.sbt-preview-section__editor { min-width:0; }
@@ -1928,26 +1929,17 @@ function sbt_render_section_language_tabs( $tab, $active_language ) {
 
 function sbt_render_home_tab( $data, $overrides, $edit_language = 'en' ) {
 	$sections = sbt_page_editor_sections( 'home', $data );
-	$preview_url = sbt_theme_page_public_url( 'home', $edit_language );
 	?>
 	<div class="sbt-panel">
 		<h2>Home</h2>
 		<p class="sbt-muted">Gestisci da qui tutti i contenuti principali della homepage del sottotema attivo.</p>
 		<div class="sbt-page-editor-layout">
 			<?php foreach ( $sections as $path => $section ) : ?>
-				<div class="sbt-preview-section" data-preview-target="<?php echo esc_attr( $section['preview'] ?? $section['title'] ); ?>" data-preview-labels="<?php echo esc_attr( sbt_preview_labels_for_section( 'home', $path, $section ) ); ?>">
+				<div class="sbt-preview-section sbt-preview-section--no-preview">
 					<div class="sbt-preview-section__editor">
 						<?php sbt_render_section_language_tabs( 'home', $edit_language ); ?>
 						<?php sbt_render_admin_fields( $section['path'] ?? $path, $section['value'], $overrides, $section['title'] ); ?>
 					</div>
-					<aside class="sbt-page-preview">
-						<div class="sbt-page-preview__bar">
-							<strong>Anteprima sezione</strong>
-							<a class="button" href="<?php echo esc_url( $preview_url ); ?>" target="_blank" rel="noopener">Apri Home</a>
-						</div>
-						<p class="sbt-page-preview__target">Solo sezione: <?php echo esc_html( $section['preview'] ?? $section['title'] ); ?></p>
-						<iframe class="sbt-preview-frame" loading="lazy" src="<?php echo esc_url( $preview_url ); ?>" title="Anteprima <?php echo esc_attr( $section['preview'] ?? $section['title'] ); ?>"></iframe>
-					</aside>
 				</div>
 			<?php endforeach; ?>
 			<?php submit_button( 'Salva Home' ); ?>
