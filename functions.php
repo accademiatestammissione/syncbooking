@@ -1485,12 +1485,13 @@ function sbt_render_menu_row( $path, $item, $overrides, $page_options, $is_child
 	<?php
 }
 
-function sbt_render_header_menu_tab( $data, $overrides ) {
+function sbt_render_header_menu_tab( $data, $overrides, $edit_language = 'en' ) {
 	$page_options = sbt_page_file_options();
 	?>
 	<div class="sbt-panel">
+		<?php sbt_render_section_language_tabs( 'header', $edit_language ); ?>
 		<h2>Elementi header</h2>
-		<p class="sbt-muted">Modifica identità, loghi, contatti rapidi e voci del menu alto del sottotema attivo.</p>
+		<p class="sbt-muted">Modifica identita, loghi, contatti rapidi e testi header del sottotema attivo.</p>
 		<div class="sbt-field-grid">
 			<?php
 			sbt_render_header_field( 'SITE.name', 'Nome struttura', $data['SITE']['name'] ?? '', $overrides );
@@ -1506,10 +1507,31 @@ function sbt_render_header_menu_tab( $data, $overrides ) {
 			?>
 		</div>
 		<h2 style="margin-top:28px;">Menu alto</h2>
-		<p class="sbt-muted">Ogni voce deve puntare a una pagina modello presente nel sottotema attivo.</p>
+		<?php sbt_render_section_language_tabs( 'header', $edit_language ); ?>
+		<p class="sbt-muted">Ogni voce puo avere etichetta e link diversi per lingua.</p>
 		<?php foreach ( $data['NAV'] as $index => $item ) : ?>
 			<?php sbt_render_menu_row( 'NAV.' . $index, $item, $overrides, $page_options ); ?>
 		<?php endforeach; ?>
+		<h2 style="margin-top:28px;">Footer e link</h2>
+		<?php sbt_render_section_language_tabs( 'header', $edit_language ); ?>
+		<p class="sbt-muted">Gestisci testi footer, link social, dati legali e link specifici per lingua.</p>
+		<div class="sbt-field-grid">
+			<?php
+			sbt_render_header_field( 'TEXT.contacts', 'Titolo contatti footer', $data['TEXT']['contacts'] ?? 'Contacts', $overrides );
+			sbt_render_header_field( 'TEXT.stay_in_touch', 'Titolo social footer', $data['TEXT']['stay_in_touch'] ?? 'Stay in touch', $overrides );
+			sbt_render_header_field( 'TEXT.privacy_policy', 'Privacy policy label', $data['TEXT']['privacy_policy'] ?? 'Privacy Policy', $overrides );
+			sbt_render_header_field( 'TEXT.all_rights_reserved', 'Diritti riservati label', $data['TEXT']['all_rights_reserved'] ?? 'All rights reserved', $overrides );
+			sbt_render_header_field( 'SITE.address', 'Indirizzo footer', $data['SITE']['address'] ?? '', $overrides );
+			sbt_render_header_field( 'SITE.map', 'Link Google Maps', $data['SITE']['map'] ?? '', $overrides, 'url' );
+			sbt_render_header_field( 'SITE.facebook', 'Facebook URL', $data['SITE']['facebook'] ?? '', $overrides, 'url' );
+			sbt_render_header_field( 'SITE.instagram', 'Instagram URL', $data['SITE']['instagram'] ?? '', $overrides, 'url' );
+			sbt_render_header_field( 'SITE.vat', 'VAT / Partita IVA', $data['SITE']['vat'] ?? '', $overrides );
+			sbt_render_header_field( 'SITE.cin', 'CIN', $data['SITE']['cin'] ?? '', $overrides );
+			sbt_render_header_field( 'SITE.year', 'Anno footer', $data['SITE']['year'] ?? '', $overrides );
+			sbt_render_header_field( 'SITE.webdev.label', 'Label link webdev', $data['SITE']['webdev']['label'] ?? '', $overrides );
+			sbt_render_header_field( 'SITE.webdev.url', 'URL link webdev', $data['SITE']['webdev']['url'] ?? '', $overrides, 'url' );
+			?>
+		</div>
 		<?php submit_button( 'Salva header e menu' ); ?>
 	</div>
 	<?php
@@ -1686,7 +1708,7 @@ function sbt_render_admin_page() {
 			} elseif ( 'home' === $active_tab ) {
 				sbt_render_home_tab( $data, $overrides, $edit_language );
 			} elseif ( 'header' === $active_tab ) {
-				sbt_render_header_menu_tab( $data, $overrides );
+				sbt_render_header_menu_tab( $data, $overrides, $edit_language );
 			} elseif ( 'pages' === $active_tab ) {
 				sbt_render_pages_tab();
 			}
