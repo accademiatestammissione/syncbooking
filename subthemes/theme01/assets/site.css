@@ -25,6 +25,11 @@ body{
   background:var(--bg);-webkit-font-smoothing:antialiased;overflow-x:hidden;
 }
 img{display:block;max-width:100%;}
+.sbt-vfe-image-wrap{display:block;}
+.media .sbt-vfe-image-wrap,.house .ph .sbt-vfe-image-wrap,.exp .sbt-vfe-image-wrap,.offer-card .sbt-vfe-image-wrap,.mosaic .m-item .sbt-vfe-image-wrap{height:100%;width:100%;}
+.mosaic .m-item .sbt-vfe-image-wrap,.exp .sbt-vfe-image-wrap,.offer-card .sbt-vfe-image-wrap{position:absolute;inset:0;}
+.gallery .sbt-vfe-image-wrap{aspect-ratio:1/1;}
+.gallery .sbt-vfe-image-wrap img{height:100%;}
 a{color:inherit;text-decoration:none;}
 h1,h2,h3,h4{margin:0;font-family:var(--serif);font-weight:500;line-height:1.04;letter-spacing:.005em;}
 p{margin:0;line-height:1.75;}

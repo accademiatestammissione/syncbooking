@@ -236,6 +236,47 @@ function sbt_media_base_url() {
 	return sbt_asset_url( 'assets/uploads/' );
 }
 
+function sbt_theme_style_value( $key, $fallback = '' ) {
+	$overrides = sbt_active_overrides();
+	return isset( $overrides[ $key ] ) && '' !== $overrides[ $key ] ? $overrides[ $key ] : $fallback;
+}
+
+function sbt_theme_design_css() {
+	$fonts = array(
+		'classic' => array( "'Cormorant Garamond', Georgia, serif", "'Jost', system-ui, sans-serif" ),
+		'elegant' => array( 'Georgia, serif', "'Jost', system-ui, sans-serif" ),
+		'modern' => array( "'Jost', system-ui, sans-serif", "'Jost', system-ui, sans-serif" ),
+		'editorial' => array( "'Cormorant Garamond', Georgia, serif", 'system-ui, sans-serif' ),
+	);
+	$font_key = sbt_theme_style_value( 'SITE.font_pairing', 'classic' );
+	$font_pair = $fonts[ $font_key ] ?? $fonts['classic'];
+	$color_map = array(
+		'bg' => array( 'SITE.color_bg', '#f6f2ea' ),
+		'surface' => array( 'SITE.color_surface', '#fbf8f2' ),
+		'ink' => array( 'SITE.color_ink', '#2b2723' ),
+		'muted' => array( 'SITE.color_muted', '#7d7468' ),
+		'line' => array( 'SITE.color_line', '#e6dfd2' ),
+		'green' => array( 'SITE.color_primary', '#8a463f' ),
+		'green-deep' => array( 'SITE.color_primary_deep', '#6f3631' ),
+		'green-soft' => array( 'SITE.color_primary_soft', '#a8645a' ),
+		'rose' => array( 'SITE.color_accent', '#b47e6e' ),
+		'gold' => array( 'SITE.color_gold', '#a98c5b' ),
+		'header-red' => array( 'SITE.color_header', '#9c4733' ),
+		'header-red-deep' => array( 'SITE.color_header_deep', '#863c2b' ),
+	);
+	$lines = array(
+		'--serif:' . $font_pair[0],
+		'--sans:' . $font_pair[1],
+	);
+	foreach ( $color_map as $css_var => $settings ) {
+		$value = sbt_theme_style_value( $settings[0], $settings[1] );
+		$value = sanitize_hex_color( $value ) ?: $settings[1];
+		$lines[] = '--' . $css_var . ':' . $value;
+	}
+	echo '<style id="sbt-theme-design-vars">:root{' . implode( ';', $lines ) . ';}</style>' . "\n";
+}
+add_action( 'wp_head', 'sbt_theme_design_css', 25 );
+
 function sbt_page_templates() {
 	$subtheme = sbt_active_subtheme();
 	$pages = $subtheme['pages'];
@@ -695,11 +736,43 @@ function sbt_vfe( $path, $value, $args = array() ) {
 	$defaults = array(
 		'multiline' => false,
 		'context'   => '',
+		'type'      => 'text',
 	);
 	$args = wp_parse_args( $args, $defaults );
 	$tag = $args['multiline'] ? 'span' : 'span';
 
-	return '<' . $tag . ' class="sbt-vfe-field" data-sbt-vfe-path="' . esc_attr( $path ) . '" data-sbt-vfe-multiline="' . ( $args['multiline'] ? '1' : '0' ) . '" data-sbt-vfe-context="' . esc_attr( $args['context'] ) . '">' . $value . '<button type="button" class="sbt-vfe-edit" aria-label="Modifica campo">&#9998;</button></' . $tag . '>';
+	return '<' . $tag . ' class="sbt-vfe-field" data-sbt-vfe-path="' . esc_attr( $path ) . '" data-sbt-vfe-multiline="' . ( $args['multiline'] ? '1' : '0' ) . '" data-sbt-vfe-type="' . esc_attr( $args['type'] ) . '" data-sbt-vfe-value="' . esc_attr( $value ) . '" data-sbt-vfe-context="' . esc_attr( $args['context'] ) . '">' . $value . '<button type="button" class="sbt-vfe-edit" aria-label="Modifica campo">&#9998;</button></' . $tag . '>';
+}
+
+function sbt_vfe_control( $path, $value, $label = 'Modifica', $type = 'text' ) {
+	if ( ! sbt_visual_meta_editor_enabled() || ! sbt_visual_meta_editor_allowed_path( $path ) ) {
+		return '';
+	}
+
+	return '<span class="sbt-vfe-field sbt-vfe-control" data-sbt-vfe-path="' . esc_attr( $path ) . '" data-sbt-vfe-multiline="0" data-sbt-vfe-type="' . esc_attr( $type ) . '" data-sbt-vfe-value="' . esc_attr( $value ) . '"><span class="sbt-vfe-control-label">' . esc_html( $label ) . '</span><button type="button" class="sbt-vfe-edit" aria-label="' . esc_attr( $label ) . '">&#9998;</button></span>';
+}
+
+function sbt_vfe_image( $path, $src, $attrs = array() ) {
+	$attr_string = '';
+	foreach ( $attrs as $name => $value ) {
+		$attr_string .= ' ' . esc_attr( $name ) . '="' . esc_attr( $value ) . '"';
+	}
+
+	$image = '<img src="' . esc_url( $src ) . '"' . $attr_string . ' />';
+	if ( ! sbt_visual_meta_editor_enabled() || ! sbt_visual_meta_editor_allowed_path( $path ) ) {
+		return $image;
+	}
+
+	return '<span class="sbt-vfe-image-wrap">' . $image . sbt_vfe_control( $path, $src, 'Immagine', 'image' ) . '</span>';
+}
+
+function sbt_vfe_background_style( $path, $url ) {
+	$style = "background-image:url('" . esc_url( $url ) . "');";
+	if ( ! sbt_visual_meta_editor_enabled() || ! sbt_visual_meta_editor_allowed_path( $path ) ) {
+		return $style;
+	}
+
+	return $style . ' position:relative;';
 }
 
 function sbt_visual_meta_editor_assets() {
@@ -712,6 +785,10 @@ function sbt_visual_meta_editor_assets() {
 		.sbt-vfe-field { outline:1px dashed transparent; outline-offset:4px; position:relative; transition:outline-color .15s ease; }
 		.sbt-vfe-field:hover { outline-color:rgba(34,113,177,.75); }
 		.sbt-vfe-edit { align-items:center; background:#2271b1; border:0; border-radius:999px; color:#fff; cursor:pointer; display:inline-flex; font-size:12px; height:24px; justify-content:center; line-height:1; margin-left:8px; padding:0; vertical-align:middle; width:24px; }
+		.sbt-vfe-control { align-items:center; background:rgba(34,113,177,.94); border-radius:999px; color:#fff; display:inline-flex; font:600 11px/1 system-ui,sans-serif; gap:6px; margin:8px 0; outline-color:rgba(34,113,177,.75); padding:3px 4px 3px 10px; text-transform:none; }
+		.sbt-vfe-control .sbt-vfe-edit { background:#fff; color:#2271b1; margin-left:0; }
+		.sbt-vfe-image-wrap { display:block; position:relative; }
+		.sbt-vfe-image-wrap > .sbt-vfe-control { left:10px; position:absolute; top:10px; z-index:5; }
 		.sbt-vfe-modal { align-items:center; background:rgba(0,0,0,.45); bottom:0; display:none; justify-content:center; left:0; padding:24px; position:fixed; right:0; top:0; z-index:999999; }
 		.sbt-vfe-modal.is-open { display:flex; }
 		.sbt-vfe-dialog { background:#fff; border-radius:8px; box-shadow:0 18px 60px rgba(0,0,0,.25); color:#1d2327; max-width:620px; padding:18px; width:min(620px,100%); }
@@ -737,9 +814,14 @@ function sbt_visual_meta_editor_assets() {
 		document.body.appendChild(modal);
 
 		function fieldHtml(field){
+			if (field.hasAttribute('data-sbt-vfe-value')) {
+				return field.getAttribute('data-sbt-vfe-value') || '';
+			}
 			var clone = field.cloneNode(true);
 			var button = clone.querySelector('.sbt-vfe-edit');
 			if (button) button.remove();
+			var label = clone.querySelector('.sbt-vfe-control-label');
+			if (label) label.remove();
 			return clone.innerHTML.trim();
 		}
 
@@ -750,9 +832,10 @@ function sbt_visual_meta_editor_assets() {
 			event.stopPropagation();
 			activeField = button.closest('.sbt-vfe-field');
 			var multiline = activeField.getAttribute('data-sbt-vfe-multiline') === '1';
+			var type = activeField.getAttribute('data-sbt-vfe-type') || 'text';
 			var wrap = modal.querySelector('.sbt-vfe-input');
 			var value = fieldHtml(activeField);
-			wrap.innerHTML = multiline ? '<textarea></textarea>' : '<input type="text">';
+			wrap.innerHTML = multiline ? '<textarea></textarea>' : '<input type="' + (type === 'url' || type === 'image' ? 'url' : 'text') + '">';
 			wrap.firstElementChild.value = value;
 			modal.classList.add('is-open');
 			wrap.firstElementChild.focus();
@@ -777,7 +860,12 @@ function sbt_visual_meta_editor_assets() {
 				.then(function(response){ return response.json(); })
 				.then(function(json){
 					if (!json || !json.success) throw new Error(json && json.data ? json.data : 'Errore salvataggio');
-					activeField.innerHTML = json.data.value + '<button type="button" class="sbt-vfe-edit" aria-label="Modifica campo">&#9998;</button>';
+					if (activeField.classList.contains('sbt-vfe-control')) {
+						activeField.setAttribute('data-sbt-vfe-value', json.data.value);
+					} else {
+						activeField.setAttribute('data-sbt-vfe-value', json.data.value);
+						activeField.innerHTML = json.data.value + '<button type="button" class="sbt-vfe-edit" aria-label="Modifica campo">&#9998;</button>';
+					}
 					modal.classList.remove('is-open');
 					activeField = null;
 				})
@@ -1633,8 +1721,8 @@ function sbt_render_admin_shell_start( $active_tab ) {
 	$tabs = array(
 		'themes'   => 'Temi',
 		'general'  => 'General Settings',
-		'home'     => 'Home',
 		'header'   => 'Header & Menu',
+		'home'     => 'Home',
 		'pages'    => 'Pages',
 	);
 	?>
@@ -1675,6 +1763,14 @@ function sbt_render_admin_shell_start( $active_tab ) {
 		.sbt-menu-item { background:#f6f7f7; border:1px solid #dcdcde; border-radius:8px; margin:0 0 12px; padding:14px; }
 		.sbt-submenu { border-left:3px solid #dcdcde; margin:12px 0 0 18px; padding-left:14px; }
 		.sbt-actions { display:flex; flex-wrap:wrap; gap:8px; }
+		.sbt-mode-grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); margin-top:12px; }
+		.sbt-mode-card { border:1px solid #dcdcde; border-radius:8px; cursor:pointer; display:block; padding:14px; }
+		.sbt-mode-card:has(input:checked) { border-color:#2271b1; box-shadow:0 0 0 1px #2271b1; }
+		.sbt-mode-card input { margin-right:8px; }
+		.sbt-mode-title { align-items:center; display:flex; font-weight:700; gap:6px; }
+		.sbt-mode-card p { margin:8px 0 0; }
+		.sbt-palette-grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); }
+		.sbt-color-field input[type=color] { height:42px; padding:2px; }
 	</style>
 	<div class="wrap sbt-wrap">
 		<h1>SyncBooking Theme</h1>
@@ -1749,13 +1845,21 @@ function sbt_render_theme_tab( $active, $subthemes ) {
 	<?php
 }
 
-function sbt_render_header_field( $path, $label, $value, $overrides, $type = 'text' ) {
+function sbt_render_header_field( $path, $label, $value, $overrides, $type = 'text', $choices = array() ) {
 	$current = array_key_exists( $path, $overrides ) ? $overrides[ $path ] : $value;
 	$name = SBT_OPTION . '[overrides][' . $path . ']';
 	?>
 	<div class="sbt-field">
 		<label><?php echo esc_html( $label ); ?></label>
-		<input type="<?php echo esc_attr( $type ); ?>" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $current ); ?>">
+		<?php if ( 'select' === $type ) : ?>
+			<select name="<?php echo esc_attr( $name ); ?>">
+				<?php foreach ( $choices as $choice_value => $choice_label ) : ?>
+					<option value="<?php echo esc_attr( $choice_value ); ?>" <?php selected( $current, $choice_value ); ?>><?php echo esc_html( $choice_label ); ?></option>
+				<?php endforeach; ?>
+			</select>
+		<?php else : ?>
+			<input type="<?php echo esc_attr( $type ); ?>" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $current ); ?>">
+		<?php endif; ?>
 	</div>
 	<?php
 }
@@ -1837,18 +1941,22 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 		<div class="sbt-grid">
 			<div class="sbt-card">
 				<h3>Modalita modifica</h3>
-				<p class="sbt-muted">Scegli se modificare dai campi admin oppure direttamente dal frontend con le matite.</p>
-				<div class="sbt-field">
-					<label>
-						<input type="radio" name="<?php echo esc_attr( SBT_OPTION ); ?>[edit_mode]" value="standard" <?php checked( $edit_mode, 'standard' ); ?>>
-						Edit
+				<p class="sbt-muted">Scegli come vuoi lavorare sui contenuti delle pagine. Header, menu, footer, font e palette restano gestiti dalla tab Header & Menu.</p>
+				<div class="sbt-mode-grid">
+					<label class="sbt-mode-card">
+						<span class="sbt-mode-title">
+							<input type="radio" name="<?php echo esc_attr( SBT_OPTION ); ?>[edit_mode]" value="standard" <?php checked( $edit_mode, 'standard' ); ?>>
+							Edit
+						</span>
+						<p class="sbt-muted">Mostra il sito pulito. Modifichi testi, link, bottoni e immagini solo dai campi admin.</p>
 					</label>
-					<p class="sbt-muted" style="margin:4px 0 12px;">Frontend pulito, modifica solo dai campi admin.</p>
-					<label>
-						<input type="radio" name="<?php echo esc_attr( SBT_OPTION ); ?>[edit_mode]" value="visual" <?php checked( $edit_mode, 'visual' ); ?>>
-						Visual Edit
+					<label class="sbt-mode-card">
+						<span class="sbt-mode-title">
+							<input type="radio" name="<?php echo esc_attr( SBT_OPTION ); ?>[edit_mode]" value="visual" <?php checked( $edit_mode, 'visual' ); ?>>
+							Visual Edit
+						</span>
+						<p class="sbt-muted">Mostra le matite agli admin loggati per modificare inline contenuti, immagini e URL delle pagine.</p>
 					</label>
-					<p class="sbt-muted" style="margin:4px 0 0;">Mostra le matite sul frontend agli admin loggati.</p>
 				</div>
 			</div>
 			<div class="sbt-card">
@@ -1891,6 +1999,34 @@ function sbt_render_header_menu_tab( $data, $overrides, $edit_language = 'en' ) 
 			sbt_render_header_field( 'SITE.lang_secondary', 'Lingua secondaria header', $data['SITE']['lang_secondary'] ?? 'IT', $overrides );
 			sbt_render_header_field( 'SITE.phone1', 'Telefono principale', $data['SITE']['phone1'] ?? '', $overrides );
 			sbt_render_header_field( 'SITE.email', 'Email', $data['SITE']['email'] ?? '', $overrides, 'email' );
+			?>
+		</div>
+		<h2 style="margin-top:28px;">Font e palette tema</h2>
+		<p class="sbt-muted">Questi valori controllano i colori base e i font usati dal sottotema attivo.</p>
+		<div class="sbt-field-grid">
+			<?php
+			sbt_render_header_field( 'SITE.font_pairing', 'Font tema', $data['SITE']['font_pairing'] ?? 'classic', $overrides, 'select', array(
+				'classic' => 'Classic resort - Cormorant + Jost',
+				'elegant' => 'Elegant - Georgia + Jost',
+				'modern' => 'Modern - Jost completo',
+				'editorial' => 'Editorial - Cormorant + System',
+			) );
+			?>
+		</div>
+		<div class="sbt-palette-grid" style="margin-top:14px;">
+			<?php
+			sbt_render_header_field( 'SITE.color_bg', 'Sfondo pagina', $data['SITE']['color_bg'] ?? '#f6f2ea', $overrides, 'color' );
+			sbt_render_header_field( 'SITE.color_surface', 'Sfondo sezioni', $data['SITE']['color_surface'] ?? '#fbf8f2', $overrides, 'color' );
+			sbt_render_header_field( 'SITE.color_ink', 'Testo principale', $data['SITE']['color_ink'] ?? '#2b2723', $overrides, 'color' );
+			sbt_render_header_field( 'SITE.color_muted', 'Testo secondario', $data['SITE']['color_muted'] ?? '#7d7468', $overrides, 'color' );
+			sbt_render_header_field( 'SITE.color_line', 'Linee e bordi', $data['SITE']['color_line'] ?? '#e6dfd2', $overrides, 'color' );
+			sbt_render_header_field( 'SITE.color_primary', 'Colore primario bottoni', $data['SITE']['color_primary'] ?? '#8a463f', $overrides, 'color' );
+			sbt_render_header_field( 'SITE.color_primary_deep', 'Primario scuro', $data['SITE']['color_primary_deep'] ?? '#6f3631', $overrides, 'color' );
+			sbt_render_header_field( 'SITE.color_primary_soft', 'Primario morbido', $data['SITE']['color_primary_soft'] ?? '#a8645a', $overrides, 'color' );
+			sbt_render_header_field( 'SITE.color_accent', 'Accento/overline', $data['SITE']['color_accent'] ?? '#b47e6e', $overrides, 'color' );
+			sbt_render_header_field( 'SITE.color_gold', 'Oro dettagli', $data['SITE']['color_gold'] ?? '#a98c5b', $overrides, 'color' );
+			sbt_render_header_field( 'SITE.color_header', 'Header scroll', $data['SITE']['color_header'] ?? '#9c4733', $overrides, 'color' );
+			sbt_render_header_field( 'SITE.color_header_deep', 'Header menu mobile/dropdown', $data['SITE']['color_header_deep'] ?? '#863c2b', $overrides, 'color' );
 			?>
 		</div>
 		<h2 style="margin-top:28px;">Menu alto</h2>

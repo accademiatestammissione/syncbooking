@@ -48,6 +48,19 @@ $SITE = [
   'lang_primary' => 'EN',
   'lang_secondary' => 'IT',
   'whatsapp_label' => 'WhatsApp',
+  'font_pairing' => 'classic',
+  'color_bg' => '#f6f2ea',
+  'color_surface' => '#fbf8f2',
+  'color_ink' => '#2b2723',
+  'color_muted' => '#7d7468',
+  'color_line' => '#e6dfd2',
+  'color_primary' => '#8a463f',
+  'color_primary_deep' => '#6f3631',
+  'color_primary_soft' => '#a8645a',
+  'color_accent' => '#b47e6e',
+  'color_gold' => '#a98c5b',
+  'color_header' => '#9c4733',
+  'color_header_deep' => '#863c2b',
   'vat'      => 'IT08825490728',
   'cin'      => 'IT072019B400085362',
   'year'     => '2026',
@@ -100,6 +113,7 @@ $C['home'] = [
   'welcome_h2' => 'An eclectic 1930s villa,<br>reborn as a retreat',
   'welcome_p1' => 'Villa Rosa is your oasis of well-being. Nestled in a large park with centuries-old trees, just steps from the ancient Norman-Swabian Castle that characterizes the village of Conversano — one of Puglia\'s most charming villages — lies a complex of elegant residences, including a historic villa in an eclectic style from the 1930s.',
   'welcome_p2' => 'Every detail is designed for comfort: the privacy of our houses — each with a dining area, fully equipped kitchen, and outdoor pergola — the splendid pool, the gym, and the elegant spa.',
+  'welcome_url' => 'villa.php',
   'houses_over'=> 'The Houses',
   'houses_h2'  => 'Your private retreat',
   'houses_p'   => 'The new luxury in holidays is more freedom: an entire house with an external pergola at your disposal. Refined design, a mix of modern and ancient, and every comfort make the homes of Villa Rosa very exclusive.',
@@ -111,6 +125,17 @@ $C['home'] = [
   'offers_over'=> 'Villa Rosa offers',
   'offers_h2'  => 'Summer Promotions',
   'offers_p'   => 'Discover our seasonal offers and reserve your stay in the heart of Puglia at the very best conditions.',
+  'scroll_label' => 'Scroll',
+  'welcome_stamp' => 'Since<br>1930',
+  'spa_label' => 'Villa Rosa Resort & SPA',
+  'spa_teaser_h3' => 'SPA & Wellness',
+  'spa_teaser_p' => 'Awaken your mind and body. Our wellness center offers a hydromassage pool, Turkish bath, Finnish sauna, emotional hydroshower, relax area, gym, massages and a Yoga program.',
+  'spa_teaser_url' => 'spa-wellness.php',
+  'experience_label' => 'Villa Rosa Resort & SPA',
+  'experience_teaser_h3' => 'Apulian Experience',
+  'experience_teaser_p' => 'We craft tailor-made experiences for each guest, customized according to individual needs - from cooking classes and wine tastings to private tours of the surrounding wonders.',
+  'experience_teaser_url' => 'experiences.php',
+  'offers_url' => 'offers.php',
 ];
 
 /* house cards (shared by home + houses listing) */
@@ -256,6 +281,18 @@ $C['price'] = [
     ['City tax','Applied per person/night as required by the Municipality of Conversano.'],
     ['Pets','Welcome on request — please let us know in advance.'],
   ],
+  'note'=>'Indicative starting rates per night. Final price depends on season, length of stay and occupancy.',
+  'gallery_over'=>'Included in every stay',
+  'gallery_h2'=>'The wellness centre',
+  'gallery'=>[
+    function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/jacuzzi.png') : 'assets/images/jacuzzi.png',
+    function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/sauna.png') : 'assets/images/sauna.png',
+    function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/turkish-bath.png') : 'assets/images/turkish-bath.png',
+    function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/relax-lounge.png') : 'assets/images/relax-lounge.png',
+    function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/gym.png') : 'assets/images/gym.png',
+  ],
+  'cta_over'=>'Tailored to your dates',
+  'cta_url'=>'contacts.php',
   'cta_h2'=>'Request your personalised quote',
   'cta_btn'=>'Contact us',
 ];
@@ -284,6 +321,7 @@ $C['spa'] = [
   'cta_over'=>'Reserve your moment',
   'cta_h2'=>'Book your wellness experience',
   'cta_btn'=>'Contact us',
+  'cta_url'=>'contacts.php',
   'cta_bg'=>$IMG['spa'],
 ];
 
@@ -300,9 +338,20 @@ $C['experiences'] = [
     ['img'=>$IMG['villa'],'over'=>'Explore','h3'=>'Private tours','p'=>'Conversano, Polignano a Mare, Alberobello and the Itria Valley with a private guide.'],
     ['img'=>$IMG['a5'],'over'=>'Sea','h3'=>'Coast & beaches','p'=>'The turquoise Adriatic coast is moments away — let us plan your perfect day by the sea.'],
   ],
+  'wellness_over'=>'Body & soul',
+  'wellness_h2'=>'Wellness & SPA',
+  'wellness_p'=>'Tucked beneath ancient vaults, our wellness centre is a world apart: sauna, Turkish bath, emotional showers, a hydromassage pool and a candle-lit relaxation lounge - plus a fully equipped gym for those who like to keep moving.',
+  'wellness_gallery'=>[
+    function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/jacuzzi.png') : 'assets/images/jacuzzi.png',
+    function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/sauna.png') : 'assets/images/sauna.png',
+    function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/turkish-bath.png') : 'assets/images/turkish-bath.png',
+    function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/relax-lounge.png') : 'assets/images/relax-lounge.png',
+    function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/gym.png') : 'assets/images/gym.png',
+  ],
   'cta_over'=>'Design your itinerary',
   'cta_h2'=>'Let us tailor your experience',
   'cta_btn'=>'Get in touch',
+  'cta_url'=>'contacts.php',
   'cta_bg'=>$IMG['lunch'],
 ];
 
@@ -352,6 +401,7 @@ $C['offers'] = [
   'cta_over'=>'Ready to book?',
   'cta_h2'=>'Reserve your offer today',
   'cta_btn'=>'Contact us',
+  'cta_url'=>'contacts.php',
 ];
 
 $TEXT = [
