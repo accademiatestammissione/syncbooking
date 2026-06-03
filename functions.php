@@ -1150,11 +1150,51 @@ function sbt_theme_page_public_url( $slug, $language = '' ) {
 	return $page ? get_permalink( $page ) : home_url( '/' . $page_slug . '/' );
 }
 
+function sbt_theme_page_post( $slug, $language = 'en' ) {
+	$slug = sanitize_title( $slug );
+	$language = sanitize_key( $language );
+	$posts = get_posts( array(
+		'post_type'      => 'page',
+		'post_status'    => 'any',
+		'posts_per_page' => 1,
+		'meta_query'     => array(
+			array(
+				'key'   => '_sbt_base_slug',
+				'value' => $slug,
+			),
+			array(
+				'key'   => '_sbt_language',
+				'value' => $language,
+			),
+		),
+	) );
+
+	if ( $posts ) {
+		return $posts[0];
+	}
+
+	return get_page_by_path( sbt_language_page_slug( $slug, $language ) );
+}
+
+function sbt_page_editor_language_tabs( $post_id, $slug, $active_language ) {
+	$languages = sbt_enabled_languages();
+	if ( count( $languages ) < 2 ) {
+		return;
+	}
+
+	echo '<div class="sbt-actions" style="margin:12px 0 18px;">';
+	foreach ( $languages as $language ) {
+		$url = add_query_arg( 'edit_lang', $language, get_edit_post_link( $post_id, '' ) );
+		echo '<a class="button ' . ( $active_language === $language ? 'button-primary' : '' ) . '" href="' . esc_url( $url ) . '">' . esc_html( strtoupper( $language ) ) . '</a>';
+	}
+	echo '</div>';
+}
+
 function sbt_render_page_editor_metabox( $post ) {
 	wp_nonce_field( 'sbt_page_save', 'sbt_page_nonce' );
 
 	$slug = sbt_page_base_slug_for_post( $post->ID );
-	$edit_language = sbt_page_language_for_post( $post->ID );
+	$edit_language = sbt_current_content_language();
 	$pages = sbt_page_templates();
 	if ( ! isset( $pages[ $slug ] ) ) {
 		echo '<p>Questa pagina non appartiene al sottotema attivo. Seleziona un sottotema da <strong>Aspetto > SyncBooking Theme</strong> oppure usa uno slug pagina del tema.</p>';
@@ -1167,6 +1207,7 @@ function sbt_render_page_editor_metabox( $post ) {
 	$preview_url = sbt_theme_page_public_url( $slug, $edit_language );
 
 	echo '<p>Editor unico per la pagina <strong>' . esc_html( $pages[ $slug ]['title'] ) . '</strong> del sottotema <strong>' . esc_html( sbt_active_subtheme()['label'] ) . '</strong> - lingua <strong>' . esc_html( strtoupper( $edit_language ) ) . '</strong>.</p>';
+	sbt_page_editor_language_tabs( $post->ID, $slug, $edit_language );
 	echo '<input type="hidden" name="sbt_page_slug" value="' . esc_attr( $slug ) . '">';
 	echo '<input type="hidden" name="sbt_edit_language" value="' . esc_attr( $edit_language ) . '">';
 
@@ -1925,33 +1966,37 @@ function sbt_render_pages_tab() {
 		<p class="sbt-muted">Da qui vai direttamente alla modifica completa delle pagine interne. La homepage ora si gestisce dalla tab Home.</p>
 		<?php if ( 'theme01' === sbt_active_subtheme_key() ) : ?>
 			<h2 style="margin-top:24px;">Schede <?php echo esc_html( $unit_label ); ?></h2>
-			<p class="sbt-muted">Queste schede vengono generate dal numero impostato in General Settings. Per aggiungere o togliere schede cambia il menu "Numero unita" nella tab General Settings.</p>
+			<p class="sbt-muted">Queste schede vengono generate dal numero impostato in General Settings. Apri la scheda una volta sola: dentro l'editor trovi i tab lingua.</p>
 			<table class="sbt-table" style="margin-bottom:28px;">
-				<thead><tr><th><?php echo esc_html( $unit_label ); ?></th><th>Lingua</th><th>Slug</th><th>Stato</th><th>Azioni</th></tr></thead>
+				<thead><tr><th><?php echo esc_html( $unit_label ); ?></th><th>Lingue</th><th>Slug base</th><th>Stato</th><th>Azioni</th></tr></thead>
 				<tbody>
 					<?php foreach ( $pages as $slug => $page ) : ?>
-						<?php if ( empty( $page['content_key'] ) || 0 !== strpos( $page['content_key'], 'house' ) || 'houses' === $slug ) : ?>
+						<?php if ( empty( $page['custom_house'] ) ) : ?>
 							<?php continue; ?>
 						<?php endif; ?>
-						<?php foreach ( $languages as $language ) : ?>
-							<?php
-							$page_slug = sbt_language_page_slug( $slug, $language );
-							$post = get_page_by_path( $page_slug );
-							$edit_url = $post ? get_edit_post_link( $post->ID, '' ) : '';
-							?>
-							<tr>
-								<td><strong><?php echo esc_html( $page['title'] ); ?></strong></td>
-								<td><?php echo esc_html( strtoupper( $language ) ); ?></td>
-								<td><code><?php echo esc_html( '/' . $page_slug . '/' ); ?></code></td>
-								<td><?php echo $post ? 'Presente' : 'Da creare'; ?></td>
-								<td class="sbt-actions">
-									<?php if ( $edit_url ) : ?>
-										<a class="button button-primary" href="<?php echo esc_url( $edit_url ); ?>">Modifica</a>
-									<?php endif; ?>
-									<a class="button" href="<?php echo esc_url( sbt_theme_page_public_url( $slug, $language ) ); ?>" target="_blank">Anteprima</a>
-								</td>
-							</tr>
-						<?php endforeach; ?>
+						<?php
+						$page_slug = sbt_language_page_slug( $slug, 'en' );
+						$post = sbt_theme_page_post( $slug, 'en' );
+						$edit_url = $post ? add_query_arg( 'edit_lang', 'en', get_edit_post_link( $post->ID, '' ) ) : '';
+						$missing_languages = array();
+						foreach ( $languages as $language ) {
+							if ( ! sbt_theme_page_post( $slug, $language ) ) {
+								$missing_languages[] = strtoupper( $language );
+							}
+						}
+						?>
+						<tr>
+							<td><strong><?php echo esc_html( $page['title'] ); ?></strong></td>
+							<td><?php echo esc_html( implode( ' / ', array_map( 'strtoupper', $languages ) ) ); ?></td>
+							<td><code><?php echo esc_html( '/' . $page_slug . '/' ); ?></code></td>
+							<td><?php echo $missing_languages ? 'Mancano: ' . esc_html( implode( ', ', $missing_languages ) ) : 'Presente'; ?></td>
+							<td class="sbt-actions">
+								<?php if ( $edit_url ) : ?>
+									<a class="button button-primary" href="<?php echo esc_url( $edit_url ); ?>">Modifica campi pagina</a>
+								<?php endif; ?>
+								<a class="button" href="<?php echo esc_url( sbt_theme_page_public_url( $slug, 'en' ) ); ?>" target="_blank">Anteprima</a>
+							</td>
+						</tr>
 					<?php endforeach; ?>
 				</tbody>
 			</table>
@@ -1959,31 +2004,35 @@ function sbt_render_pages_tab() {
 
 		<h2>Pagine interne</h2>
 		<table class="sbt-table">
-			<thead><tr><th>Pagina</th><th>Lingua</th><th>Slug</th><th>Stato</th><th>Azioni</th></tr></thead>
+			<thead><tr><th>Pagina</th><th>Lingue</th><th>Slug base</th><th>Stato</th><th>Azioni</th></tr></thead>
 			<tbody>
 				<?php foreach ( $pages as $slug => $page ) : ?>
 					<?php if ( 'home' === $slug || ! empty( $page['custom_house'] ) ) : ?>
 						<?php continue; ?>
 					<?php endif; ?>
-					<?php foreach ( $languages as $language ) : ?>
-						<?php
-						$page_slug = sbt_language_page_slug( $slug, $language );
-						$post = get_page_by_path( $page_slug );
-						$edit_url = $post ? get_edit_post_link( $post->ID, '' ) : '';
-						?>
-						<tr>
-							<td><strong><?php echo esc_html( $page['title'] ); ?></strong></td>
-							<td><?php echo esc_html( strtoupper( $language ) ); ?></td>
-							<td><code><?php echo esc_html( '/' . $page_slug . '/' ); ?></code></td>
-							<td><?php echo $post ? 'Presente' : 'Da creare'; ?></td>
-							<td class="sbt-actions">
-								<?php if ( $edit_url ) : ?>
-									<a class="button button-primary" href="<?php echo esc_url( $edit_url ); ?>">Modifica campi pagina</a>
-								<?php endif; ?>
-								<a class="button" href="<?php echo esc_url( sbt_theme_page_public_url( $slug, $language ) ); ?>" target="_blank">Anteprima</a>
-							</td>
-						</tr>
-					<?php endforeach; ?>
+					<?php
+					$page_slug = sbt_language_page_slug( $slug, 'en' );
+					$post = sbt_theme_page_post( $slug, 'en' );
+					$edit_url = $post ? add_query_arg( 'edit_lang', 'en', get_edit_post_link( $post->ID, '' ) ) : '';
+					$missing_languages = array();
+					foreach ( $languages as $language ) {
+						if ( ! sbt_theme_page_post( $slug, $language ) ) {
+							$missing_languages[] = strtoupper( $language );
+						}
+					}
+					?>
+					<tr>
+						<td><strong><?php echo esc_html( $page['title'] ); ?></strong></td>
+						<td><?php echo esc_html( implode( ' / ', array_map( 'strtoupper', $languages ) ) ); ?></td>
+						<td><code><?php echo esc_html( '/' . $page_slug . '/' ); ?></code></td>
+						<td><?php echo $missing_languages ? 'Mancano: ' . esc_html( implode( ', ', $missing_languages ) ) : 'Presente'; ?></td>
+						<td class="sbt-actions">
+							<?php if ( $edit_url ) : ?>
+								<a class="button button-primary" href="<?php echo esc_url( $edit_url ); ?>">Modifica campi pagina</a>
+							<?php endif; ?>
+							<a class="button" href="<?php echo esc_url( sbt_theme_page_public_url( $slug, 'en' ) ); ?>" target="_blank">Anteprima</a>
+						</td>
+					</tr>
 				<?php endforeach; ?>
 			</tbody>
 		</table>
