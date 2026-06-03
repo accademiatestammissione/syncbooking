@@ -1,7 +1,7 @@
 === SyncBooking Theme ===
 Contributors: accademiatestammissione
 Requires at least: 6.0
-Tested up to: 7.0
+Tested up to: 6.9
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -14,6 +14,11 @@ SyncBooking Theme provides a WordPress theme package for hospitality websites. I
 
 == Changelog ==
 
+= 1.0.1 =
+* Updated theme package version for WordPress.org upload.
+* Added WordPress.org required theme assets.
+* Removed unused duplicate demo media from the package.
+
 = 1.0.0 =
 * Initial WordPress theme package.
 
@@ -21,4 +26,6 @@ SyncBooking Theme provides a WordPress theme package for hospitality websites. I
 
 Bundled theme code: SyncBooking Theme, Copyright Accademia Test Ammissione, GPLv2 or later.
 
-Bundled images and media in subthemes/theme01/assets/uploads and subthemes/theme02/assets/uploads must be documented with copyright, source, and GPL-compatible license information before submitting this theme to WordPress.org.
+Bundled demo images and media in subthemes/theme01/assets and subthemes/theme02/assets: Copyright Accademia Test Ammissione, distributed under GPLv2 or later.
+
+No third-party font files are bundled. Font selections use local/system font stacks.

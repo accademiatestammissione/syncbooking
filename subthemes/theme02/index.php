@@ -3,7 +3,9 @@
 <!-- HERO -->
 <section class="hero" id="top" data-screen-label="Hero">
   <div class="hero-video" style="background-image:url('<?= $IMG['band'] ?>');">
+    <?php if (!empty($SITE['youtube'])): ?>
     <iframe src="https://www.youtube.com/embed/<?= $SITE['youtube'] ?>?autoplay=1&controls=0&mute=1&loop=1&playlist=<?= $SITE['youtube'] ?>&disablekb=1&modestbranding=1&playsinline=1&rel=0&background=1" allow="autoplay; fullscreen" title="<?= $SITE['name'] ?>"></iframe>
+    <?php endif; ?>
   </div>
   <div class="hero-overlay"></div>
   <div class="hero-inner">

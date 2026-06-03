@@ -44,6 +44,8 @@
   </div>
 </section>
 
+<?php if (!empty($SITE['map_embed'])): ?>
 <iframe class="map-embed" src="<?= $SITE['map_embed'] ?>" loading="lazy" title="Map"></iframe>
+<?php endif; ?>
 
 <?php require __DIR__ . '/inc/footer.php'; ?>

@@ -33,7 +33,7 @@ $IMG = [
 $SITE = [
   'name'     => 'Villa Rosa Resort',
   'tagline'  => 'An Apulia Villa',
-  'vimeo'    => '687646681',
+  'vimeo'    => '',
   'wa'       => 'https://wa.me/393206090558',
   'phone1'   => '+39 338 250 7545',
   'phone1_t' => '+393382507545',
@@ -42,7 +42,7 @@ $SITE = [
   'email'    => 'villarosasuites@gmail.com',
   'address'  => 'Viale P. Orlando, 1<br>70014 Conversano (Bari)<br>Puglia, Italy',
   'map'      => 'https://maps.app.goo.gl/PjihQ243sU2ZcT4m9',
-  'map_embed'=> 'https://www.google.com/maps?q=Villa%20Rosa%20Resort%20Conversano&output=embed',
+  'map_embed'=> '',
   'facebook' => 'https://www.facebook.com/villarosaresort/',
   'instagram'=> 'https://www.instagram.com/villarosaresortpuglia/',
   'lang_primary' => 'EN',

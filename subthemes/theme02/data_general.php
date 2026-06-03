@@ -27,7 +27,8 @@ $SITE = [
   'whatsapp_label' => 'WhatsApp',
   'shop'      => 'https://shop.masserialecerase.com/',
   'map'       => 'https://maps.google.com/?q=Masseria+Le+Cerase+Conversano',
-  'youtube'   => 'd7eZ6wC6fkQ',          // background hero video id
+  'map_embed' => '',
+  'youtube'   => '',
   'year'      => '2026',
   'vat'       => 'IT08825490728',
   'cin'       => 'IT072019B400085362',

@@ -48,7 +48,9 @@
 </section>
 
 <section style="padding-bottom:0;" data-screen-label="Contacts map">
-  <iframe class="map-embed" src="https://www.google.com/maps?q=Masseria%20Le%20Cerase%20Conversano&output=embed" title="Map" loading="lazy"></iframe>
+  <?php if (!empty($SITE['map_embed'])): ?>
+  <iframe class="map-embed" src="<?= $SITE['map_embed'] ?>" title="Map" loading="lazy"></iframe>
+  <?php endif; ?>
 </section>
 
 <?php require __DIR__ . '/inc/footer.php'; ?>

@@ -15,9 +15,6 @@ $WA_SVG = '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <title><?= htmlspecialchars($PAGE_TITLE) ?></title>
 <link rel="icon" href="<?= $IMG['favicon'] ?>" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="<?= function_exists('sbt_asset_url') ? sbt_asset_url('assets/site.css') : 'assets/site.css' ?>" />
 <?php if (function_exists('wp_head')) wp_head(); ?>
 </head>

@@ -2,8 +2,10 @@
 
 <!-- HERO -->
 <section class="hero" id="top" data-screen-label="Hero">
-  <div class="hero-video">
+  <div class="hero-video" style="background-image:url('<?= $IMG['hero'] ?? $IMG['welcome'] ?>');">
+    <?php if (!empty($SITE['vimeo'])): ?>
     <iframe src="https://player.vimeo.com/video/<?= $SITE['vimeo'] ?>?autoplay=1&controls=0&mute=1&muted=1&loop=1&playlist=<?= $SITE['vimeo'] ?>&background=1" allow="autoplay; fullscreen" title="<?= $SITE['name'] ?>"></iframe>
+    <?php endif; ?>
   </div>
   <div class="hero-overlay"></div>
   <div class="hero-inner">
