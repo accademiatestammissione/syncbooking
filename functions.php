@@ -587,6 +587,9 @@ function sbt_admin_shared_styles() {
 		.sbt-page-preview { position:sticky; top:42px; }
 		.sbt-page-preview iframe { background:#fff; border:1px solid #dcdcde; border-radius:8px; height:720px; width:100%; }
 		.sbt-page-preview__bar { align-items:center; display:flex; justify-content:space-between; margin-bottom:8px; }
+		.sbt-page-preview__target { color:#646970; font-size:12px; margin:0 0 8px; }
+		.sbt-preview-section { border-radius:8px; padding:1px; }
+		.sbt-preview-section.is-active > .sbt-section-title { color:#2271b1; }
 		.sbt-editor-block { background:#fff; border:1px solid #dcdcde; border-radius:8px; margin:12px 0 18px; padding:14px 16px; }
 		.sbt-editor-block details { background:#f6f7f7; border:1px solid #dcdcde; border-radius:8px; margin:10px 0; padding:10px 12px; }
 		.sbt-editor-block summary { cursor:pointer; }
@@ -659,9 +662,73 @@ function sbt_admin_footer_scripts() {
 				.append($('<img alt="">').attr('src', url));
 		}
 
+		function normalizePreviewText(text){
+			return (text || '').toString().toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+		}
+
+		function previewKeywords(target){
+			var text = normalizePreviewText(target);
+			if (text.indexOf('hero') !== -1 || text.indexOf('banner') !== -1) return ['banner', 'hero'];
+			if (text.indexOf('intro') !== -1 || text.indexOf('welcome') !== -1) return ['intro', 'welcome', 'body', 'content', 'your stay'];
+			if (text.indexOf('gallery') !== -1) return ['gallery'];
+			if (text.indexOf('amenit') !== -1 || text.indexOf('included') !== -1) return ['amenities', 'included'];
+			if (text.indexOf('servizi') !== -1 || text.indexOf('services') !== -1) return ['services'];
+			if (text.indexOf('card') !== -1 || text.indexOf('liste') !== -1) return ['body', 'features', 'formats', 'conditions', 'offers', 'discover'];
+			if (text.indexOf('form') !== -1 || text.indexOf('contatti') !== -1 || text.indexOf('mappa') !== -1) return ['contacts body', 'contacts content', 'contacts map'];
+			if (text.indexOf('call') !== -1 || text.indexOf('cta') !== -1) return ['cta'];
+			if (text.indexOf('band') !== -1) return ['band'];
+			return text ? [text] : [];
+		}
+
+		function focusPreviewSection($section){
+			var target = $section.data('preview-target') || '';
+			var $iframe = $('.sbt-preview-frame').first();
+			$('.sbt-preview-section').removeClass('is-active');
+			$section.addClass('is-active');
+			$('.sbt-page-preview__target').text(target ? 'Anteprima sezione: ' + target : 'Anteprima pagina');
+			if (!$iframe.length || !$iframe[0].contentWindow) return;
+
+			var doc;
+			try {
+				doc = $iframe[0].contentWindow.document;
+			} catch (e) {
+				return;
+			}
+			if (!doc) return;
+
+			var sections = Array.prototype.slice.call(doc.querySelectorAll('[data-screen-label]'));
+			var keywords = previewKeywords(target);
+			var found = null;
+			sections.some(function(section){
+				var label = normalizePreviewText(section.getAttribute('data-screen-label'));
+				return keywords.some(function(keyword){
+					if (label.indexOf(normalizePreviewText(keyword)) !== -1) {
+						found = section;
+						return true;
+					}
+					return false;
+				});
+			});
+
+			if (found) {
+				found.scrollIntoView({ block: 'start', behavior: 'smooth' });
+			}
+		}
+
 		$(function(){
 			$('.sbt-gallery-list').sortable({
 				update: function(){ syncGallery($(this).closest('.sbt-gallery-control')); }
+			});
+
+			$(document).on('mouseenter focusin click', '.sbt-preview-section', function(){
+				focusPreviewSection($(this));
+			});
+
+			$('.sbt-preview-frame').on('load', function(){
+				var $first = $('.sbt-preview-section').first();
+				if ($first.length) {
+					setTimeout(function(){ focusPreviewSection($first); }, 250);
+				}
 			});
 
 			$(document).on('click', '.sbt-media-pick', function(e){
@@ -927,12 +994,15 @@ function sbt_render_page_editor_metabox( $post ) {
 	echo '<div class="sbt-page-editor-layout">';
 	echo '<div>';
 	foreach ( $sections as $path => $section ) {
+		echo '<div class="sbt-preview-section" data-preview-target="' . esc_attr( $section['preview'] ?? $section['title'] ) . '">';
 		sbt_render_admin_fields( $section['path'] ?? $path, $section['value'], $overrides, $section['title'] );
+		echo '</div>';
 	}
 	echo '</div>';
 	echo '<aside class="sbt-page-preview">';
 	echo '<div class="sbt-page-preview__bar"><strong>Anteprima pagina</strong><a class="button" href="' . esc_url( $preview_url ) . '" target="_blank" rel="noopener">Apri pagina</a></div>';
-	echo '<iframe src="' . esc_url( $preview_url ) . '" title="Anteprima ' . esc_attr( $pages[ $slug ]['title'] ) . '"></iframe>';
+	echo '<p class="sbt-page-preview__target">Anteprima pagina</p>';
+	echo '<iframe class="sbt-preview-frame" src="' . esc_url( $preview_url ) . '" title="Anteprima ' . esc_attr( $pages[ $slug ]['title'] ) . '"></iframe>';
 	echo '</aside>';
 	echo '</div>';
 }
@@ -1466,7 +1536,9 @@ function sbt_render_home_tab( $data, $overrides, $edit_language = 'en' ) {
 		<div class="sbt-page-editor-layout">
 			<div>
 				<?php foreach ( $sections as $path => $section ) : ?>
-					<?php sbt_render_admin_fields( $section['path'] ?? $path, $section['value'], $overrides, $section['title'] ); ?>
+					<div class="sbt-preview-section" data-preview-target="<?php echo esc_attr( $section['preview'] ?? $section['title'] ); ?>">
+						<?php sbt_render_admin_fields( $section['path'] ?? $path, $section['value'], $overrides, $section['title'] ); ?>
+					</div>
 				<?php endforeach; ?>
 				<?php submit_button( 'Salva Home' ); ?>
 			</div>
@@ -1475,7 +1547,8 @@ function sbt_render_home_tab( $data, $overrides, $edit_language = 'en' ) {
 					<strong>Anteprima Home</strong>
 					<a class="button" href="<?php echo esc_url( $preview_url ); ?>" target="_blank" rel="noopener">Apri Home</a>
 				</div>
-				<iframe src="<?php echo esc_url( $preview_url ); ?>" title="Anteprima <?php echo esc_attr( $home_title ); ?>"></iframe>
+				<p class="sbt-page-preview__target">Anteprima pagina</p>
+				<iframe class="sbt-preview-frame" src="<?php echo esc_url( $preview_url ); ?>" title="Anteprima <?php echo esc_attr( $home_title ); ?>"></iframe>
 			</aside>
 		</div>
 	</div>
