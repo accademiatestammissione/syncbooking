@@ -1573,19 +1573,6 @@ function sbt_syncbooking_plugin_status() {
 		return $status;
 	}
 
-	foreach ( $plugins as $file => $plugin ) {
-		$name = isset( $plugin['Name'] ) ? (string) $plugin['Name'] : '';
-		$plugin_slug = dirname( $file );
-		if ( SBT_REQUIRED_PLUGIN_SLUG === $plugin_slug || false !== stripos( $name, 'SyncBooking' ) ) {
-			$status['installed'] = true;
-			$status['file'] = $file;
-			$status['name'] = $name ? $name : 'SyncBooking';
-			$status['active'] = function_exists( 'is_plugin_active' ) && is_plugin_active( $file );
-			$status['action_url'] = $status['active'] ? admin_url( 'plugins.php' ) : wp_nonce_url( admin_url( 'plugins.php?action=activate&plugin=' . rawurlencode( $file ) ), 'activate-plugin_' . $file );
-			break;
-		}
-	}
-
 	return $status;
 }
 
