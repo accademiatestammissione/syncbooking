@@ -49,13 +49,6 @@ Change a string → the page changes. No HTML editing required.
 - Run locally with: `php -S localhost:8000` then open `http://localhost:8000/index.php`.
 - Or drop the folder on any PHP-capable web host.
 
-## WordPress media
-
-The WordPress theme package includes the real Villa Rosa media under
-`assets/uploads/`. When the theme is activated in WordPress, these files are
-copied automatically to `wp-content/uploads/syncbooking-theme/` and the site
-uses that local uploads path instead of remote image URLs.
-
 ## Note on preview
 
 The visual preview in the design tool uses the **HTML** copies in the project root

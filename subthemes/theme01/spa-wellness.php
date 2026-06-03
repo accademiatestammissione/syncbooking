@@ -1,11 +1,11 @@
-<?php $PAGE = 'spa'; require __DIR__ . '/inc/header.php'; $p = $C['spa']; ?>
+<?php $PAGE = 'spa'; $PAGE_TITLE = $C['spa']['title']; require __DIR__ . '/inc/header.php'; $p = $C['spa']; ?>
 
 <section class="page-hero" data-screen-label="SPA banner">
   <img class="bg" src="<?= $p['banner'] ?>" alt="<?= $p['h1'] ?>" />
   <div class="wrap">
     <div class="overline"><?= $p['over'] ?></div>
     <h1><?= $p['h1'] ?></h1>
-    <nav class="crumb"><a href="<?= function_exists('sbt_url') ? sbt_url('index.php') : 'index.php' ?>"><?= $TEXT['home'] ?></a><span>/</span>SPA &amp; Wellness</nav>
+    <nav class="crumb"><a href="<?= function_exists('sbt_url') ? sbt_url('index.php') : 'index.php' ?>"><?= $TEXT['home'] ?? 'Home' ?></a><span>/</span>SPA &amp; Wellness</nav>
   </div>
 </section>
 

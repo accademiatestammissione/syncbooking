@@ -1,4 +1,4 @@
-<?php $PAGE = 'home'; require __DIR__ . '/inc/header.php'; $p = $C['home']; ?>
+<?php $PAGE = 'home'; $PAGE_TITLE = $C['home']['title']; require __DIR__ . '/inc/header.php'; $p = $C['home']; ?>
 
 <!-- HERO -->
 <section class="hero" id="top" data-screen-label="Hero">
@@ -22,7 +22,7 @@
       <h2 class="lead"><?= function_exists('sbt_vfe') ? sbt_vfe('C.home.welcome_h2', $p['welcome_h2'], ['multiline'=>true]) : $p['welcome_h2'] ?></h2>
       <p class="body-text"><?= function_exists('sbt_vfe') ? sbt_vfe('C.home.welcome_p1', $p['welcome_p1'], ['multiline'=>true]) : $p['welcome_p1'] ?></p>
       <p class="body-text" style="margin-top:18px;"><?= function_exists('sbt_vfe') ? sbt_vfe('C.home.welcome_p2', $p['welcome_p2'], ['multiline'=>true]) : $p['welcome_p2'] ?></p>
-      <a class="btn btn--ghost" href="<?= function_exists('sbt_url') ? sbt_url('villa.php') : 'villa.php' ?>" style="margin-top:30px;"><?= $TEXT['discover_villa'] ?></a>
+      <a class="btn btn--ghost" href="<?= function_exists('sbt_url') ? sbt_url('villa.php') : 'villa.php' ?>" style="margin-top:30px;"><?= $TEXT['discover_villa'] ?? 'Discover the Villa' ?></a>
     </div>
     <div class="media reveal">
       <img src="<?= $IMG['welcome'] ?>" alt="<?= $SITE['name'] ?>" />
@@ -42,16 +42,16 @@
     </div>
     <div class="house-grid">
       <?php foreach ($HOUSE_CARDS as $h): ?>
-      <article class="house reveal">
+      <a class="house reveal" href="<?= function_exists('sbt_url') ? sbt_url($h['url']) : $h['url'] ?>">
         <div class="ph"><span class="tag"><?= $h['tag'] ?></span><img src="<?= $h['img'] ?>" alt="<?= $h['title'] ?>" /></div>
         <div class="body">
           <h3><?= $h['title'] ?></h3>
           <ul class="specs">
             <?php foreach ($h['specs'] as $s): ?><li><span><?= $s[0] ?></span><b><?= $s[1] ?></b></li><?php endforeach; ?>
           </ul>
-          <a class="more" href="<?= $h['url'] ?>"><?= $TEXT['more'] ?> <span></span></a>
+          <span class="more"><?= $TEXT['more'] ?? 'More' ?> <span></span></span>
         </div>
-      </article>
+      </a>
       <?php endforeach; ?>
     </div>
   </div>
@@ -94,7 +94,7 @@
         <div class="label"><?= $SITE['name'] ?> &amp; SPA</div>
         <h3>SPA &amp; Wellness</h3>
         <p class="body-text">Awaken your mind and body. Our wellness center offers a hydromassage pool, Turkish bath, Finnish sauna, emotional hydroshower, relax area, gym, massages and a Yoga program.</p>
-        <a class="btn btn--ghost" href="<?= function_exists('sbt_url') ? sbt_url('spa-wellness.php') : 'spa-wellness.php' ?>" style="margin-top:28px;"><?= $TEXT['discover_spa'] ?></a>
+        <a class="btn btn--ghost" href="<?= function_exists('sbt_url') ? sbt_url('spa-wellness.php') : 'spa-wellness.php' ?>" style="margin-top:28px;"><?= $TEXT['discover_spa'] ?? 'Discover the SPA' ?></a>
       </div>
     </div>
     <div class="two-col">
@@ -102,7 +102,7 @@
         <div class="label"><?= $SITE['name'] ?> &amp; SPA</div>
         <h3>Apulian Experience</h3>
         <p class="body-text">We craft tailor-made experiences for each guest, customized according to individual needs — from cooking classes and wine tastings to private tours of the surrounding wonders.</p>
-        <a class="btn btn--ghost" href="<?= function_exists('sbt_url') ? sbt_url('experiences.php') : 'experiences.php' ?>" style="margin-top:28px;"><?= $TEXT['explore_experiences'] ?></a>
+        <a class="btn btn--ghost" href="<?= function_exists('sbt_url') ? sbt_url('experiences.php') : 'experiences.php' ?>" style="margin-top:28px;"><?= $TEXT['explore_experiences'] ?? 'Explore experiences' ?></a>
       </div>
       <div class="media reveal"><img src="<?= $IMG['lunch'] ?>" alt="Apulian Experience" /><div class="frame"></div></div>
     </div>
@@ -115,7 +115,7 @@
     <div class="overline"><?= function_exists('sbt_vfe') ? sbt_vfe('C.home.offers_over', $p['offers_over']) : $p['offers_over'] ?></div>
     <h2><?= function_exists('sbt_vfe') ? sbt_vfe('C.home.offers_h2', $p['offers_h2']) : $p['offers_h2'] ?></h2>
     <p class="body-text" style="margin:0 auto 36px;color:rgba(255,255,255,.88);max-width:50ch;"><?= function_exists('sbt_vfe') ? sbt_vfe('C.home.offers_p', $p['offers_p'], ['multiline'=>true]) : $p['offers_p'] ?></p>
-    <a class="btn btn--light" href="<?= function_exists('sbt_url') ? sbt_url('offers.php') : 'offers.php' ?>"><?= $TEXT['see_offers'] ?></a>
+    <a class="btn btn--light" href="<?= function_exists('sbt_url') ? sbt_url('offers.php') : 'offers.php' ?>"><?= $TEXT['see_offers'] ?? 'See the offers' ?></a>
   </div>
 </section>
 

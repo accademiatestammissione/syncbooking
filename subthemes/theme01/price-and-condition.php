@@ -1,11 +1,11 @@
-<?php $PAGE = 'houses'; require __DIR__ . '/inc/header.php'; $p = $C['price']; ?>
+<?php $PAGE = 'houses'; $PAGE_TITLE = $C['price']['title']; require __DIR__ . '/inc/header.php'; $p = $C['price']; ?>
 
 <section class="page-hero" data-screen-label="Price banner">
   <img class="bg" src="<?= $p['banner'] ?>" alt="<?= $p['h1'] ?>" />
   <div class="wrap">
     <div class="overline"><?= $p['over'] ?></div>
     <h1><?= $p['h1'] ?></h1>
-    <nav class="crumb"><a href="<?= function_exists('sbt_url') ? sbt_url('index.php') : 'index.php' ?>"><?= $TEXT['home'] ?></a><span>/</span><a href="<?= function_exists('sbt_url') ? sbt_url('houses.php') : 'houses.php' ?>"><?= $TEXT['houses'] ?></a><span>/</span>Price &amp; Condition</nav>
+    <nav class="crumb"><a href="<?= function_exists('sbt_url') ? sbt_url('index.php') : 'index.php' ?>"><?= $TEXT['home'] ?? 'Home' ?></a><span>/</span><a href="<?= function_exists('sbt_url') ? sbt_url('houses.php') : 'houses.php' ?>"><?= $TEXT['houses'] ?? 'Houses' ?></a><span>/</span><?= $TEXT['price_condition'] ?? 'Price &amp; Condition' ?></nav>
   </div>
 </section>
 
@@ -25,7 +25,7 @@
         <ul>
           <?php foreach ($c['feats'] as $f): ?><li><?= $f ?></li><?php endforeach; ?>
         </ul>
-        <a class="btn btn--ghost" href="<?= function_exists('sbt_url') ? sbt_url('contacts.php') : 'contacts.php' ?>" style="margin-top:6px;"><?= $TEXT['request_quote'] ?></a>
+        <a class="btn btn--ghost" href="<?= function_exists('sbt_url') ? sbt_url('contacts.php') : 'contacts.php' ?>" style="margin-top:6px;"><?= $TEXT['request_quote'] ?? 'Request a quote' ?></a>
       </div>
       <?php endforeach; ?>
     </div>
@@ -44,6 +44,23 @@
       <div class="row"><dt><?= $c[0] ?></dt><dd><?= $c[1] ?></dd></div>
       <?php endforeach; ?>
     </dl>
+  </div>
+</section>
+
+<section class="pad-s" data-screen-label="Price gallery">
+  <div class="wrap">
+    <div class="section-head reveal" style="margin-bottom:40px;">
+      <div class="overline">Included in every stay</div>
+      <h2>The wellness centre</h2>
+    </div>
+    <div class="mosaic">
+      <div class="m-item"><img data-lightbox src="<?= function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/jacuzzi.png') : 'assets/images/jacuzzi.png' ?>" alt="Villa Rosa SPA — hydromassage pool" /></div>
+      <div class="m-item"><img data-lightbox src="<?= function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/sauna.png') : 'assets/images/sauna.png' ?>" alt="Villa Rosa SPA — sauna" /></div>
+      <div class="m-item"><img data-lightbox src="<?= function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/turkish-bath.png') : 'assets/images/turkish-bath.png' ?>" alt="Villa Rosa SPA — Turkish bath" /></div>
+      <div class="m-item"><img data-lightbox src="<?= function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/relax-lounge.png') : 'assets/images/relax-lounge.png' ?>" alt="Villa Rosa SPA — relaxation lounge" /></div>
+      <div class="m-item"><img data-lightbox src="<?= function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/gym.png') : 'assets/images/gym.png' ?>" alt="Villa Rosa SPA — gym" /></div>
+      <button class="m-allbtn" type="button"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Show all photos</button>
+    </div>
   </div>
 </section>
 

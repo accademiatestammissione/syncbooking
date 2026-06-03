@@ -12,8 +12,8 @@
   --green-soft:#a8645a;
   --rose:#b47e6e;
   --gold:#a98c5b;
-  --header-red:#8a463f;
-  --header-red-deep:#783b35;
+  --header-red:#9c4733;
+  --header-red-deep:#863c2b;
   --serif:'Cormorant Garamond', Georgia, serif;
   --sans:'Jost', system-ui, sans-serif;
   --shadow:0 24px 60px -28px rgba(43,39,35,.45);
@@ -39,6 +39,11 @@ p{margin:0;line-height:1.75;}
 .btn--ghost:hover{background:var(--ink);color:var(--bg);}
 .btn--light{background:transparent;border-color:rgba(255,255,255,.55);color:#fff;}
 .btn--light:hover{background:#fff;color:var(--green);border-color:#fff;}
+.house-actions{display:flex;gap:14px;flex-wrap:wrap;margin-top:32px;}
+@media(max-width:600px){
+  .house-actions{flex-direction:column;align-items:stretch;}
+  .house-actions .btn{width:100%;justify-content:center;}
+}
 .wrap{width:min(1240px,90vw);margin-inline:auto;}
 .reveal{opacity:0;transform:translateY(34px);transition:opacity 1s cubic-bezier(.2,.7,.2,1),transform 1s cubic-bezier(.2,.7,.2,1);}
 .reveal.in{opacity:1;transform:none;}
@@ -151,19 +156,20 @@ section{position:relative;}
 /* ============ HOUSES ============ */
 .houses{background:var(--surface);}
 .house-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:30px;}
-.house{background:var(--bg);overflow:hidden;display:flex;flex-direction:column;transition:.5s ease;}
+.house{position:relative;height:480px;overflow:hidden;display:block;transition:.5s ease;text-decoration:none;color:inherit;}
 .house:hover{transform:translateY(-8px);box-shadow:var(--shadow);}
-.house .ph{position:relative;height:300px;overflow:hidden;}
+.house .ph{position:absolute;inset:0;height:100%;overflow:hidden;}
 .house .ph img{width:100%;height:100%;object-fit:cover;transition:transform 1.1s ease;}
 .house:hover .ph img{transform:scale(1.07);}
-.house .tag{position:absolute;top:16px;left:16px;background:rgba(120,59,53,.9);color:#fff;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;padding:7px 13px;}
-.house .body{padding:28px 28px 32px;display:flex;flex-direction:column;gap:14px;flex:1;}
-.house h3{font-size:30px;}
-.specs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;color:var(--muted);font-size:13.5px;letter-spacing:.02em;}
-.specs li{display:flex;justify-content:space-between;border-bottom:1px dashed var(--line);padding-bottom:8px;}
-.specs b{color:var(--ink);font-weight:400;}
-.house .more{margin-top:auto;font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--green);display:inline-flex;align-items:center;gap:9px;padding-top:6px;}
-.house .more span{width:26px;height:1px;background:var(--green);transition:width .35s;}
+.house .ph::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(35,23,20,.92) 0%,rgba(35,23,20,.72) 26%,rgba(35,23,20,.18) 55%,rgba(35,23,20,0) 78%);}
+.house .tag{position:absolute;top:16px;left:16px;z-index:2;background:rgba(120,59,53,.92);color:#fff;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;padding:7px 13px;}
+.house .body{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:26px 28px 28px;display:flex;flex-direction:column;gap:12px;color:#fff;}
+.house h3{font-size:30px;color:#fff;}
+.specs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px;color:rgba(255,255,255,.82);font-size:13.5px;letter-spacing:.02em;}
+.specs li{display:flex;justify-content:space-between;border-bottom:1px dashed rgba(255,255,255,.28);padding-bottom:7px;}
+.specs b{color:#fff;font-weight:400;}
+.house .more{margin-top:4px;font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:#fff;display:inline-flex;align-items:center;gap:9px;padding-top:4px;}
+.house .more span{width:26px;height:1px;background:#fff;transition:width .35s;}
 .house:hover .more span{width:44px;}
 
 /* ============ SERVICES / AMENITIES ============ */
@@ -210,10 +216,10 @@ section{position:relative;}
 .media img,.mosaic .m-item img,.house .ph img,.gallery img{font-family:var(--sans);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8a7f6d;text-align:center;}
 
 /* ============ AIRBNB-STYLE MOSAIC ============ */
-.mosaic{position:relative;display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:10px;height:clamp(380px,46vw,560px);border-radius:16px;overflow:hidden;}
+.mosaic{position:relative;display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:0;height:clamp(380px,46vw,560px);border-radius:16px;overflow:hidden;background:#b8a98f;}
 .mosaic .m-item{position:relative;overflow:hidden;cursor:zoom-in;background:#cdbfa8;}
 .mosaic .m-item:first-child{grid-row:1 / span 2;}
-.mosaic .m-item img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .7s ease;filter:saturate(.97);}
+.mosaic .m-item img{position:absolute;inset:-1px;width:calc(100% + 2px);height:calc(100% + 2px);object-fit:cover;display:block;transition:transform .7s ease;filter:saturate(.97);}
 .mosaic .m-item:hover img{transform:scale(1.05);}
 .mosaic .m-item::after{content:"";position:absolute;inset:0;background:rgba(33,24,23,0);transition:background .3s;}
 .mosaic .m-item:hover::after{background:rgba(33,24,23,.12);}
@@ -221,9 +227,8 @@ section{position:relative;}
 .m-allbtn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.7;}
 .m-allbtn:hover{background:var(--ink);color:#fff;}
 @media(max-width:760px){
-  .mosaic{display:flex;grid-template-columns:none;grid-template-rows:none;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;height:clamp(280px,72vw,400px);border-radius:14px;gap:8px;scrollbar-width:none;}
-  .mosaic::-webkit-scrollbar{display:none;}
-  .mosaic .m-item,.mosaic .m-item:first-child{flex:0 0 86%;grid-row:auto;scroll-snap-align:center;}
+  .mosaic{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:30vw;gap:0;height:auto;border-radius:14px;}
+  .mosaic .m-item:first-child{grid-column:1 / -1;grid-row:auto;height:58vw;}
   .m-allbtn{bottom:14px;right:14px;padding:9px 16px;}
 }
 
@@ -333,6 +338,8 @@ footer a:hover{color:#f3ddd6;}
 }
 @media(max-width:860px){
   .two-col{grid-template-columns:1fr;}
+  header .logo img{height:37px;}
+  header.scrolled .logo img{height:32px;}
   .two-col .media{order:-1;}
   .house-grid{grid-template-columns:1fr;}
   .exp-grid{grid-template-columns:1fr;}

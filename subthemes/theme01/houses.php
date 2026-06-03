@@ -1,11 +1,11 @@
-<?php $PAGE = 'houses'; require __DIR__ . '/inc/header.php'; $p = $C['houses']; ?>
+<?php $PAGE = 'houses'; $PAGE_TITLE = $C['houses']['title']; require __DIR__ . '/inc/header.php'; $p = $C['houses']; ?>
 
 <section class="page-hero" data-screen-label="Houses banner">
   <img class="bg" src="<?= $p['banner'] ?>" alt="<?= $p['h1'] ?>" />
   <div class="wrap">
     <div class="overline"><?= $p['over'] ?></div>
     <h1><?= $p['h1'] ?></h1>
-    <nav class="crumb"><a href="<?= function_exists('sbt_url') ? sbt_url('index.php') : 'index.php' ?>"><?= $TEXT['home'] ?></a><span>/</span><?= $TEXT['houses'] ?></nav>
+    <nav class="crumb"><a href="<?= function_exists('sbt_url') ? sbt_url('index.php') : 'index.php' ?>"><?= $TEXT['home'] ?? 'Home' ?></a><span>/</span><?= $TEXT['houses'] ?? 'Houses' ?></nav>
   </div>
 </section>
 
@@ -18,16 +18,16 @@
     </div>
     <div class="house-grid">
       <?php foreach ($HOUSE_CARDS as $h): ?>
-      <article class="house reveal">
+      <a class="house reveal" href="<?= function_exists('sbt_url') ? sbt_url($h['url']) : $h['url'] ?>">
         <div class="ph"><span class="tag"><?= $h['tag'] ?></span><img src="<?= $h['img'] ?>" alt="<?= $h['title'] ?>" /></div>
         <div class="body">
           <h3><?= $h['title'] ?></h3>
           <ul class="specs">
             <?php foreach ($h['specs'] as $s): ?><li><span><?= $s[0] ?></span><b><?= $s[1] ?></b></li><?php endforeach; ?>
           </ul>
-          <a class="more" href="<?= $h['url'] ?>"><?= $TEXT['more'] ?> <span></span></a>
+          <span class="more"><?= $TEXT['more'] ?? 'More' ?> <span></span></span>
         </div>
-      </article>
+      </a>
       <?php endforeach; ?>
     </div>
   </div>
@@ -38,7 +38,7 @@
     <div class="overline"><?= $p['cta_over'] ?></div>
     <h2><?= $p['cta_h2'] ?></h2>
     <p><?= $p['cta_p'] ?></p>
-    <a class="btn btn--light" href="<?= $p['cta_url'] ?>" style="margin-top:8px;"><?= $p['cta_btn'] ?></a>
+    <a class="btn btn--light" href="<?= function_exists('sbt_url') ? sbt_url($p['cta_url']) : $p['cta_url'] ?>" style="margin-top:8px;"><?= $p['cta_btn'] ?></a>
   </div>
 </section>
 

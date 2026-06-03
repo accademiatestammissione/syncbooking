@@ -12,7 +12,7 @@
         <p><a href="<?= $SITE['map'] ?>"><?= $SITE['address'] ?></a></p>
       </div>
       <div class="reveal">
-        <h4><?= $TEXT['contacts'] ?></h4>
+        <h4><?= $TEXT['contacts'] ?? 'Contacts' ?></h4>
         <p>
           <a href="tel:<?= $SITE['phone1_t'] ?>">T. <?= $SITE['phone1'] ?></a><br>
           <a href="tel:<?= $SITE['phone2_t'] ?>">T. <?= $SITE['phone2'] ?></a><br>
@@ -20,7 +20,7 @@
         </p>
       </div>
       <div class="reveal">
-        <h4><?= $TEXT['stay_in_touch'] ?></h4>
+        <h4><?= $TEXT['stay_in_touch'] ?? 'Stay in touch' ?></h4>
         <div class="socials">
           <a href="<?= $SITE['wa'] ?>" aria-label="WhatsApp"><?= $WA_SVG ?></a>
           <a href="<?= $SITE['facebook'] ?>" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M14 8.5V7c0-.8.2-1.2 1.3-1.2H17V3h-2.5C11.6 3 11 4.7 11 6.7V8.5H9V12h2v9h3v-9h2.4l.4-3.5H14Z"/></svg></a>
@@ -29,8 +29,8 @@
       </div>
     </div>
     <div class="legal">
-      <span>© <?= $SITE['year'] ?> <?= $SITE['name'] ?> — <?= $SITE['tagline'] ?> · VAT <?= $SITE['vat'] ?> · CIN <?= $SITE['cin'] ?> · All rights reserved</span>
-      <span style="display:flex;gap:18px;"><a href="#"><?= $TEXT['privacy_policy'] ?></a><a href="<?= $SITE['webdev']['url'] ?>"><?= $SITE['webdev']['label'] ?></a></span>
+      <span>© <?= $SITE['year'] ?> <?= $SITE['name'] ?> — <?= $SITE['tagline'] ?> · VAT <?= $SITE['vat'] ?> · CIN <?= $SITE['cin'] ?> · <?= $TEXT['all_rights_reserved'] ?? 'All rights reserved' ?></span>
+      <span style="display:flex;gap:18px;"><a href="#"><?= $TEXT['privacy_policy'] ?? 'Privacy Policy' ?></a><a href="<?= $SITE['webdev']['url'] ?>"><?= $SITE['webdev']['label'] ?></a></span>
     </div>
   </div>
 </footer>

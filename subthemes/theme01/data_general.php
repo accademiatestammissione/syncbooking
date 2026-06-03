@@ -82,6 +82,7 @@ $ICON = [
   'car'     => '<path d="M4 15l1.5-5A2 2 0 0 1 7.4 8.6h9.2A2 2 0 0 1 18.5 10L20 15"/><path d="M3 15h18v3H3z"/><circle cx="7" cy="18" r="1.4"/><circle cx="17" cy="18" r="1.4"/>',
   'gym'     => '<path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/>',
   'bed'     => '<path d="M3 11h18M5 11V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v4M4 11v7M20 11v7M4 15h16"/>',
+  'ac'      => '<path d="M12 2v20M3.4 7l17.2 10M20.6 7L3.4 17"/>',
 ];
 
 /* ============================================================
@@ -195,6 +196,8 @@ $C['house2'] = [
     ['bed','King-size Bed','A spacious king-size bed dressed in fine linens.'],
     ['wifi','Free Wi-Fi','Fast, free connection throughout the house and grounds.'],
     ['spa','SPA Access','Access to the wellness centre, pool and park.'],
+    ['ac','Air Conditioning','Independent climate control for the perfect temperature year-round.'],
+    ['car','Private Parking','Reserved on-site parking for a relaxed, stress-free arrival.'],
   ],
   'gallery'=>[$IMG['a1'],$IMG['room'],$IMG['room2'],$IMG['garden'],$IMG['a5']],
 ];
@@ -209,6 +212,8 @@ $C['house3'] = [
     ['bed','King + Sofa Bed','A king-size bed plus a comfortable sofa bed for the third guest.'],
     ['wifi','Free Wi-Fi','Fast, free connection throughout the house and grounds.'],
     ['spa','SPA Access','Access to the wellness centre, pool and park.'],
+    ['ac','Air Conditioning','Independent climate control for the perfect temperature year-round.'],
+    ['car','Private Parking','Reserved on-site parking for a relaxed, stress-free arrival.'],
   ],
   'gallery'=>[$IMG['room2'],$IMG['garden'],$IMG['a5'],$IMG['a1'],$IMG['room']],
 ];
@@ -223,6 +228,8 @@ $C['house4'] = [
     ['bed','King + Double Sofa','King-size bed plus a double sofa bed for added flexibility.'],
     ['wifi','Free Wi-Fi','Fast, free connection throughout the house and grounds.'],
     ['spa','SPA Access','Access to the wellness centre, pool and park.'],
+    ['ac','Air Conditioning','Independent climate control for the perfect temperature year-round.'],
+    ['car','Private Parking','Reserved on-site parking for a relaxed, stress-free arrival.'],
   ],
   'gallery'=>[$IMG['room'],$IMG['a1'],$IMG['garden'],$IMG['room2'],$IMG['a5']],
 ];
@@ -371,10 +378,10 @@ $TEXT = [
   'form_name' => 'Name',
   'form_email' => 'Email',
   'form_dates' => 'Dates of stay',
-  'form_dates_placeholder' => 'e.g. 12–15 July 2026',
+  'form_dates_placeholder' => 'e.g. 12-15 July 2026',
   'form_message' => 'Message',
   'form_send' => 'Send request',
-  'form_result' => 'Thank you — this is a demo form. Connect it to your booking system or mailer.',
+  'form_result' => 'Thank you - this is a demo form. Connect it to your booking system or mailer.',
   'the_houses' => 'The Houses',
   'look_inside' => 'A look inside',
   'room_detail' => 'The room, in detail',

@@ -1,11 +1,11 @@
-<?php $PAGE = 'villa'; require __DIR__ . '/inc/header.php'; $p = $C['villa']; ?>
+<?php $PAGE = 'villa'; $PAGE_TITLE = $C['villa']['title']; require __DIR__ . '/inc/header.php'; $p = $C['villa']; ?>
 
 <section class="page-hero" data-screen-label="Villa banner">
   <img class="bg" src="<?= $p['banner'] ?>" alt="<?= $p['h1'] ?>" />
   <div class="wrap">
     <div class="overline"><?= $p['over'] ?></div>
     <h1><?= $p['h1'] ?></h1>
-    <nav class="crumb"><a href="<?= function_exists('sbt_url') ? sbt_url('index.php') : 'index.php' ?>"><?= $TEXT['home'] ?></a><span>/</span>Villa</nav>
+    <nav class="crumb"><a href="<?= function_exists('sbt_url') ? sbt_url('index.php') : 'index.php' ?>"><?= $TEXT['home'] ?? 'Home' ?></a><span>/</span>Villa</nav>
   </div>
 </section>
 
@@ -50,7 +50,7 @@
   <div class="inner reveal">
     <div class="overline"><?= $p['cta_over'] ?></div>
     <h2><?= $p['cta_h2'] ?></h2>
-    <a class="btn btn--light" href="<?= $p['cta_url'] ?>" style="margin-top:8px;"><?= $p['cta_btn'] ?></a>
+    <a class="btn btn--light" href="<?= function_exists('sbt_url') ? sbt_url($p['cta_url']) : $p['cta_url'] ?>" style="margin-top:8px;"><?= $p['cta_btn'] ?></a>
   </div>
 </section>
 
