@@ -671,15 +671,16 @@ add_action( 'admin_menu', 'sbt_admin_menu' );
 function sbt_admin_shared_styles() {
 	?>
 	<style>
-		.sbt-page-editor-layout { display:grid; gap:18px; grid-template-columns:minmax(0,1fr) minmax(320px,42%); }
-		.sbt-page-preview { position:sticky; top:42px; }
-		.sbt-page-preview iframe { background:#fff; border:1px solid #dcdcde; border-radius:8px; height:720px; width:100%; }
+		.sbt-page-editor-layout { display:grid; gap:18px; }
+		.sbt-page-preview { align-self:start; }
+		.sbt-page-preview iframe { background:#fff; border:1px solid #dcdcde; border-radius:8px; height:380px; width:100%; }
 		.sbt-page-preview__bar { align-items:center; display:flex; gap:10px; justify-content:space-between; margin-bottom:8px; }
 		.sbt-page-preview__actions { align-items:center; display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; }
-		.sbt-page-preview__mode { align-items:center; color:#50575e; display:flex; font-size:12px; gap:5px; white-space:nowrap; }
 		.sbt-page-preview__target { color:#646970; font-size:12px; margin:0 0 8px; }
-		.sbt-preview-section { border-radius:8px; padding:1px; }
-		.sbt-preview-section.is-active > .sbt-section-title { color:#2271b1; }
+		.sbt-preview-section { border:1px solid #dcdcde; border-radius:8px; display:grid; gap:16px; grid-template-columns:minmax(0,1fr) minmax(320px,42%); margin:0 0 18px; padding:16px; }
+		.sbt-preview-section.is-active { border-color:#2271b1; box-shadow:0 0 0 1px #2271b1; }
+		.sbt-preview-section.is-active .sbt-section-title { color:#2271b1; }
+		.sbt-preview-section__editor { min-width:0; }
 		.sbt-editor-block { background:#fff; border:1px solid #dcdcde; border-radius:8px; margin:12px 0 18px; padding:14px 16px; }
 		.sbt-editor-block details { background:#f6f7f7; border:1px solid #dcdcde; border-radius:8px; margin:10px 0; padding:10px 12px; }
 		.sbt-editor-block summary { cursor:pointer; }
@@ -700,7 +701,7 @@ function sbt_admin_shared_styles() {
 		.sbt-gallery-remove { position:absolute; right:6px; top:6px; }
 		.sbt-gallery-empty { border:1px dashed #c3c4c7; border-radius:8px; color:#646970; padding:14px; text-align:center; }
 		.sbt-gallery-actions, .sbt-media-actions { display:flex; flex-wrap:wrap; gap:8px; }
-		@media (max-width: 1180px) { .sbt-page-editor-layout { grid-template-columns:1fr; } .sbt-page-preview { position:static; } }
+		@media (max-width: 1180px) { .sbt-preview-section { grid-template-columns:1fr; } .sbt-page-preview { position:static; } }
 	</style>
 	<?php
 }
@@ -800,11 +801,11 @@ function sbt_admin_footer_scripts() {
 		function focusPreviewSection($section){
 			var target = $section.data('preview-target') || '';
 			var labels = $section.data('preview-labels') || '';
-			var $iframe = $('.sbt-preview-frame').first();
-			var sectionOnly = $('.sbt-preview-section-only').first().is(':checked');
+			var $iframe = $section.find('.sbt-preview-frame').first();
+			var sectionOnly = true;
 			$('.sbt-preview-section').removeClass('is-active');
 			$section.addClass('is-active');
-			$('.sbt-page-preview__target').text(target ? (sectionOnly ? 'Solo sezione: ' : 'Anteprima sezione: ') + target : 'Anteprima pagina');
+			$section.find('.sbt-page-preview__target').text(target ? 'Solo sezione: ' + target : 'Anteprima sezione');
 			if (!$iframe.length || !$iframe[0].contentWindow) return;
 
 			var doc;
@@ -852,17 +853,10 @@ function sbt_admin_footer_scripts() {
 				focusPreviewSection($(this));
 			});
 
-			$(document).on('change', '.sbt-preview-section-only', function(){
-				var $active = $('.sbt-preview-section.is-active').first();
-				if ($active.length) {
-					focusPreviewSection($active);
-				}
-			});
-
 			$('.sbt-preview-frame').on('load', function(){
-				var $first = $('.sbt-preview-section').first();
-				if ($first.length) {
-					setTimeout(function(){ focusPreviewSection($first); }, 250);
+				var $section = $(this).closest('.sbt-preview-section');
+				if ($section.length) {
+					setTimeout(function(){ focusPreviewSection($section); }, 250);
 				}
 			});
 
@@ -1177,19 +1171,19 @@ function sbt_render_page_editor_metabox( $post ) {
 	echo '<input type="hidden" name="sbt_edit_language" value="' . esc_attr( $edit_language ) . '">';
 
 	echo '<div class="sbt-page-editor-layout">';
-	echo '<div>';
 	foreach ( $sections as $path => $section ) {
 		$preview_labels = sbt_preview_labels_for_section( $slug, $path, $section );
 		echo '<div class="sbt-preview-section" data-preview-target="' . esc_attr( $section['preview'] ?? $section['title'] ) . '" data-preview-labels="' . esc_attr( $preview_labels ) . '">';
+		echo '<div class="sbt-preview-section__editor">';
 		sbt_render_admin_fields( $section['path'] ?? $path, $section['value'], $overrides, $section['title'] );
 		echo '</div>';
+		echo '<aside class="sbt-page-preview">';
+		echo '<div class="sbt-page-preview__bar"><strong>Anteprima sezione</strong><a class="button" href="' . esc_url( $preview_url ) . '" target="_blank" rel="noopener">Apri pagina</a></div>';
+		echo '<p class="sbt-page-preview__target">Solo sezione: ' . esc_html( $section['preview'] ?? $section['title'] ) . '</p>';
+		echo '<iframe class="sbt-preview-frame" loading="lazy" src="' . esc_url( $preview_url ) . '" title="Anteprima ' . esc_attr( $section['preview'] ?? $section['title'] ) . '"></iframe>';
+		echo '</aside>';
+		echo '</div>';
 	}
-	echo '</div>';
-	echo '<aside class="sbt-page-preview">';
-	echo '<div class="sbt-page-preview__bar"><strong>Anteprima pagina</strong><div class="sbt-page-preview__actions"><label class="sbt-page-preview__mode"><input type="checkbox" class="sbt-preview-section-only" checked> Solo sezione</label><a class="button" href="' . esc_url( $preview_url ) . '" target="_blank" rel="noopener">Apri pagina</a></div></div>';
-	echo '<p class="sbt-page-preview__target">Anteprima pagina</p>';
-	echo '<iframe class="sbt-preview-frame" src="' . esc_url( $preview_url ) . '" title="Anteprima ' . esc_attr( $pages[ $slug ]['title'] ) . '"></iframe>';
-	echo '</aside>';
 	echo '</div>';
 }
 
@@ -1892,8 +1886,6 @@ function sbt_render_section_language_tabs( $tab, $active_language ) {
 }
 
 function sbt_render_home_tab( $data, $overrides, $edit_language = 'en' ) {
-	$pages = sbt_page_templates();
-	$home_title = isset( $pages['home']['title'] ) ? $pages['home']['title'] : 'Home';
 	$sections = sbt_page_editor_sections( 'home', $data );
 	$preview_url = sbt_theme_page_public_url( 'home', $edit_language );
 	?>
@@ -1901,26 +1893,23 @@ function sbt_render_home_tab( $data, $overrides, $edit_language = 'en' ) {
 		<h2>Home</h2>
 		<p class="sbt-muted">Gestisci da qui tutti i contenuti principali della homepage del sottotema attivo.</p>
 		<div class="sbt-page-editor-layout">
-			<div>
-				<?php foreach ( $sections as $path => $section ) : ?>
-					<div class="sbt-preview-section" data-preview-target="<?php echo esc_attr( $section['preview'] ?? $section['title'] ); ?>" data-preview-labels="<?php echo esc_attr( sbt_preview_labels_for_section( 'home', $path, $section ) ); ?>">
+			<?php foreach ( $sections as $path => $section ) : ?>
+				<div class="sbt-preview-section" data-preview-target="<?php echo esc_attr( $section['preview'] ?? $section['title'] ); ?>" data-preview-labels="<?php echo esc_attr( sbt_preview_labels_for_section( 'home', $path, $section ) ); ?>">
+					<div class="sbt-preview-section__editor">
 						<?php sbt_render_section_language_tabs( 'home', $edit_language ); ?>
 						<?php sbt_render_admin_fields( $section['path'] ?? $path, $section['value'], $overrides, $section['title'] ); ?>
 					</div>
-				<?php endforeach; ?>
-				<?php submit_button( 'Salva Home' ); ?>
-			</div>
-			<aside class="sbt-page-preview">
-				<div class="sbt-page-preview__bar">
-					<strong>Anteprima Home</strong>
-					<div class="sbt-page-preview__actions">
-						<label class="sbt-page-preview__mode"><input type="checkbox" class="sbt-preview-section-only" checked> Solo sezione</label>
-						<a class="button" href="<?php echo esc_url( $preview_url ); ?>" target="_blank" rel="noopener">Apri Home</a>
-					</div>
+					<aside class="sbt-page-preview">
+						<div class="sbt-page-preview__bar">
+							<strong>Anteprima sezione</strong>
+							<a class="button" href="<?php echo esc_url( $preview_url ); ?>" target="_blank" rel="noopener">Apri Home</a>
+						</div>
+						<p class="sbt-page-preview__target">Solo sezione: <?php echo esc_html( $section['preview'] ?? $section['title'] ); ?></p>
+						<iframe class="sbt-preview-frame" loading="lazy" src="<?php echo esc_url( $preview_url ); ?>" title="Anteprima <?php echo esc_attr( $section['preview'] ?? $section['title'] ); ?>"></iframe>
+					</aside>
 				</div>
-				<p class="sbt-page-preview__target">Anteprima pagina</p>
-				<iframe class="sbt-preview-frame" src="<?php echo esc_url( $preview_url ); ?>" title="Anteprima <?php echo esc_attr( $home_title ); ?>"></iframe>
-			</aside>
+			<?php endforeach; ?>
+			<?php submit_button( 'Salva Home' ); ?>
 		</div>
 	</div>
 	<?php
