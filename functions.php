@@ -59,6 +59,7 @@ function sbt_default_options() {
 	return array(
 		'subtheme'           => 'theme01',
 		'admin_language'     => 'it',
+		'edit_mode'          => 'visual',
 		'languages'          => array( 'en' ),
 		'overrides'          => array(),
 		'custom_house_pages' => array(),
@@ -95,6 +96,11 @@ function sbt_enabled_languages() {
 function sbt_admin_language() {
 	$options = sbt_get_options();
 	return isset( $options['admin_language'] ) && in_array( $options['admin_language'], array( 'it', 'en' ), true ) ? $options['admin_language'] : 'it';
+}
+
+function sbt_edit_mode() {
+	$options = sbt_get_options();
+	return isset( $options['edit_mode'] ) && in_array( $options['edit_mode'], array( 'standard', 'visual' ), true ) ? $options['edit_mode'] : 'visual';
 }
 
 function sbt_t( $key ) {
@@ -664,7 +670,7 @@ function sbt_rewrite_content_urls( &$value ) {
 }
 
 function sbt_visual_meta_editor_enabled() {
-	return is_user_logged_in() && current_user_can( 'edit_theme_options' ) && ! is_admin();
+	return 'visual' === sbt_edit_mode() && is_user_logged_in() && current_user_can( 'edit_theme_options' ) && ! is_admin();
 }
 
 function sbt_visual_meta_editor_allowed_roots() {
@@ -1300,6 +1306,7 @@ function sbt_sanitize_options( $raw ) {
 	$options['overrides'] = isset( $existing['overrides'] ) && is_array( $existing['overrides'] ) ? $existing['overrides'] : array();
 	$options['custom_house_pages'] = isset( $existing['custom_house_pages'] ) && is_array( $existing['custom_house_pages'] ) ? $existing['custom_house_pages'] : array();
 	$options['admin_language'] = isset( $raw['admin_language'] ) && in_array( sanitize_key( wp_unslash( $raw['admin_language'] ) ), array( 'it', 'en' ), true ) ? sanitize_key( wp_unslash( $raw['admin_language'] ) ) : sbt_admin_language();
+	$options['edit_mode'] = isset( $raw['edit_mode'] ) && in_array( sanitize_key( wp_unslash( $raw['edit_mode'] ) ), array( 'standard', 'visual' ), true ) ? sanitize_key( wp_unslash( $raw['edit_mode'] ) ) : sbt_edit_mode();
 	$available_languages = sbt_available_languages();
 	$languages = isset( $raw['languages'] ) && is_array( $raw['languages'] ) ? array_map( 'sanitize_key', wp_unslash( $raw['languages'] ) ) : sbt_enabled_languages();
 	$languages[] = 'en';
@@ -1795,6 +1802,7 @@ function sbt_render_menu_row( $path, $item, $overrides, $page_options, $is_child
 
 function sbt_render_general_settings_tab( $data, $overrides ) {
 	$plugin_status = sbt_syncbooking_plugin_status();
+	$edit_mode = sbt_edit_mode();
 	$unit_overrides = array(
 		'SITE.unit_label' => sbt_structural_override_value( 'theme01', 'SITE.unit_label', $data['SITE']['unit_label'] ?? 'House' ),
 		'SITE.unit_count' => sbt_structural_override_value( 'theme01', 'SITE.unit_count', $data['SITE']['unit_count'] ?? '3' ),
@@ -1827,6 +1835,22 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 		</div>
 
 		<div class="sbt-grid">
+			<div class="sbt-card">
+				<h3>Modalita modifica</h3>
+				<p class="sbt-muted">Scegli se modificare dai campi admin oppure direttamente dal frontend con le matite.</p>
+				<div class="sbt-field">
+					<label>
+						<input type="radio" name="<?php echo esc_attr( SBT_OPTION ); ?>[edit_mode]" value="standard" <?php checked( $edit_mode, 'standard' ); ?>>
+						Edit
+					</label>
+					<p class="sbt-muted" style="margin:4px 0 12px;">Frontend pulito, modifica solo dai campi admin.</p>
+					<label>
+						<input type="radio" name="<?php echo esc_attr( SBT_OPTION ); ?>[edit_mode]" value="visual" <?php checked( $edit_mode, 'visual' ); ?>>
+						Visual Edit
+					</label>
+					<p class="sbt-muted" style="margin:4px 0 0;">Mostra le matite sul frontend agli admin loggati.</p>
+				</div>
+			</div>
 			<div class="sbt-card">
 				<h3>Struttura vendibile</h3>
 				<p class="sbt-muted">Scegli cosa vendi e quante schede/pagine creare nel sottotema attivo.</p>
