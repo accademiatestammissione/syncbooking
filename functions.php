@@ -598,6 +598,7 @@ function sbt_admin_shared_styles() {
 		.sbt-editor-field input, .sbt-editor-field textarea { width:100%; }
 		.sbt-media-control { display:grid; gap:8px; }
 		.sbt-media-preview img { background:#f6f7f7; border:1px solid #dcdcde; border-radius:6px; height:96px; object-fit:cover; width:140px; }
+		.sbt-media-hint { color:#646970; font-size:12px; margin:0; }
 		.sbt-gallery-list { display:grid; gap:10px; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); margin:10px 0; }
 		.sbt-gallery-item { background:#fff; border:1px solid #dcdcde; border-radius:8px; cursor:move; overflow:hidden; position:relative; }
 		.sbt-gallery-item img { aspect-ratio:4/3; display:block; object-fit:cover; width:100%; }
@@ -672,6 +673,8 @@ function sbt_admin_footer_scripts() {
 					var url = item.url;
 					$control.find('.sbt-media-value').val(url);
 					$control.find('.sbt-media-preview').html($('<img alt="">').attr('src', url));
+					$control.find('.sbt-media-hint').text('Immagine selezionata.');
+					$control.find('.sbt-media-pick').text('Sostituisci immagine');
 				});
 				frame.open();
 			});
@@ -681,6 +684,8 @@ function sbt_admin_footer_scripts() {
 				var $control = $(this).closest('.sbt-media-control');
 				$control.find('.sbt-media-value').val('');
 				$control.find('.sbt-media-preview').empty();
+				$control.find('.sbt-media-hint').text('Nessuna immagine selezionata.');
+				$control.find('.sbt-media-pick').text('Scegli immagine');
 			});
 
 			$(document).on('click', '.sbt-gallery-pick', function(e){
@@ -1792,9 +1797,10 @@ function sbt_render_single_admin_field( $path, $label, $value, $overrides ) {
 						<img src="<?php echo esc_url( $current ); ?>" alt="">
 					<?php endif; ?>
 				</span>
-				<input type="text" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $current ); ?>" class="large-text sbt-media-value">
+				<input type="hidden" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $current ); ?>" class="sbt-media-value">
+				<p class="sbt-media-hint"><?php echo $current ? 'Immagine selezionata.' : 'Nessuna immagine selezionata.'; ?></p>
 				<span class="sbt-media-actions">
-					<button type="button" class="button sbt-media-pick">Scegli immagine</button>
+					<button type="button" class="button sbt-media-pick"><?php echo $current ? 'Sostituisci immagine' : 'Scegli immagine'; ?></button>
 					<button type="button" class="button sbt-media-clear">Rimuovi</button>
 				</span>
 			</span>
