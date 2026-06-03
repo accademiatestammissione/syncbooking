@@ -1657,24 +1657,59 @@ function sbt_friendly_field_label( $label, $path ) {
 	return sbt_humanize_key( $key );
 }
 
-function sbt_field_alias( $path ) {
+function sbt_field_kind( $path, $value ) {
 	$key = basename( str_replace( '.', '/', (string) $path ) );
-	$aliases = array(
-		'h1'       => 'h1_1',
-		'hero_h1'  => 'h1_1',
-		'intro_h2' => 'h2_1',
-		'houses_h2'=> 'h2_2',
-		'cta_h2'   => 'h2_cta',
-		'p'        => 'text_1',
-		'intro_p'  => 'text_1',
-		'banner'   => 'image_hero',
-		'main'     => 'image_1',
-		'gallery'  => 'gallery_1',
-		'cta_url'  => 'url_cta',
-		'cta_btn'  => 'button_cta',
+	$key = strtolower( $key );
+
+	if ( sbt_is_gallery_field( $path, $value ) ) {
+		return 'gallery';
+	}
+
+	if ( sbt_is_image_field( $path, $value ) ) {
+		return 'image';
+	}
+
+	$map = array(
+		'h1'       => 'h1',
+		'hero_h1'  => 'h1',
+		'h2'       => 'h2',
+		'intro_h2' => 'h2',
+		'houses_h2'=> 'h2',
+		'services_h2' => 'h2',
+		'band_h2' => 'h2',
+		'offers_h2' => 'h2',
+		'cta_h2'   => 'h2',
+		'title'    => 'title',
+		'hero_over'=> 'overline',
+		'over'     => 'overline',
+		'intro_over' => 'overline',
+		'cta_over' => 'overline',
+		'label'    => 'label',
+		'cta_label'=> 'button',
+		'cta_btn'  => 'button',
+		'url'      => 'url',
+		'cta_url'  => 'url',
+		'map'      => 'url',
+		'map_embed'=> 'url',
+		'unit_count' => 'number',
+		'unit_label' => 'select',
 	);
 
-	return $aliases[ $key ] ?? $key;
+	if ( isset( $map[ $key ] ) ) {
+		return $map[ $key ];
+	}
+
+	return 'text';
+}
+
+function sbt_next_field_alias( $path, $value, &$counters ) {
+	$kind = sbt_field_kind( $path, $value );
+	if ( ! isset( $counters[ $kind ] ) ) {
+		$counters[ $kind ] = 0;
+	}
+
+	$counters[ $kind ]++;
+	return $kind . '_' . $counters[ $kind ];
 }
 
 function sbt_current_admin_value( $path, $value, $overrides ) {
@@ -1725,8 +1760,9 @@ function sbt_is_gallery_field( $path, $value ) {
 }
 
 function sbt_render_admin_fields( $path, $value, $overrides, $title = '' ) {
+	$counters = array();
 	if ( '' !== $title ) {
-		echo '<h2 class="sbt-section-title"><span>' . esc_html( $title ) . '</span><code>' . esc_html( $path ) . '</code></h2>';
+		echo '<h2 class="sbt-section-title"><span>' . esc_html( $title ) . '</span></h2>';
 	}
 
 	if ( is_array( $value ) && ! sbt_is_scalar_list( $value ) ) {
@@ -1734,21 +1770,21 @@ function sbt_render_admin_fields( $path, $value, $overrides, $title = '' ) {
 		foreach ( $value as $key => $child ) {
 			$child_path = '' === $path ? (string) $key : $path . '.' . $key;
 			if ( is_array( $child ) && ! sbt_is_scalar_list( $child ) ) {
-				echo '<details open><summary><span class="sbt-section-title"><strong>' . esc_html( sbt_humanize_key( $key ) ) . '</strong><code>' . esc_html( $child_path ) . '</code></span></summary>';
+				echo '<details open><summary><span class="sbt-section-title"><strong>' . esc_html( sbt_humanize_key( $key ) ) . '</strong></span></summary>';
 				sbt_render_admin_fields( $child_path, $child, $overrides );
 				echo '</details>';
 			} else {
-				sbt_render_single_admin_field( $child_path, $key, $child, $overrides );
+				sbt_render_single_admin_field( $child_path, $key, $child, $overrides, sbt_next_field_alias( $child_path, $child, $counters ) );
 			}
 		}
 		echo '</div>';
 		return;
 	}
 
-	sbt_render_single_admin_field( $path, basename( str_replace( '.', '/', $path ) ), $value, $overrides );
+	sbt_render_single_admin_field( $path, basename( str_replace( '.', '/', $path ) ), $value, $overrides, sbt_next_field_alias( $path, $value, $counters ) );
 }
 
-function sbt_render_single_admin_field( $path, $label, $value, $overrides ) {
+function sbt_render_single_admin_field( $path, $label, $value, $overrides, $field_alias = '' ) {
 	$current = sbt_current_admin_value( $path, $value, $overrides );
 	$name = SBT_OPTION . '[overrides][' . $path . ']';
 	$friendly_label = sbt_friendly_field_label( $label, $path );
@@ -1759,7 +1795,7 @@ function sbt_render_single_admin_field( $path, $label, $value, $overrides ) {
 	<div class="sbt-editor-field">
 		<label>
 			<?php echo esc_html( $friendly_label ); ?>
-			<span class="sbt-field-path"><?php echo esc_html( sbt_field_alias( $path ) ); ?> - <?php echo esc_html( $path ); ?></span>
+			<span class="sbt-field-path"><?php echo esc_html( $field_alias ); ?></span>
 		</label>
 		<?php if ( 'SITE.unit_label' === $path ) : ?>
 			<select name="<?php echo esc_attr( $name ); ?>" class="large-text">
