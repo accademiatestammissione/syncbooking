@@ -11,6 +11,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'SBT_VERSION', '1.1.0' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
+define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
+define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
 
 function sbt_setup() {
 	add_theme_support( 'title-tag' );
@@ -1558,12 +1560,23 @@ function sbt_syncbooking_plugin_status() {
 		'active'    => false,
 		'file'      => '',
 		'name'      => 'SyncBooking',
-		'action_url'=> admin_url( 'plugin-install.php?s=SyncBooking&tab=search&type=term' ),
+		'action_url'=> admin_url( 'plugin-install.php?s=' . SBT_REQUIRED_PLUGIN_SLUG . '&tab=search&type=term' ),
 	);
+
+	if ( isset( $plugins[ SBT_REQUIRED_PLUGIN_FILE ] ) ) {
+		$plugin = $plugins[ SBT_REQUIRED_PLUGIN_FILE ];
+		$status['installed'] = true;
+		$status['file'] = SBT_REQUIRED_PLUGIN_FILE;
+		$status['name'] = isset( $plugin['Name'] ) && $plugin['Name'] ? $plugin['Name'] : 'SyncBooking';
+		$status['active'] = function_exists( 'is_plugin_active' ) && is_plugin_active( SBT_REQUIRED_PLUGIN_FILE );
+		$status['action_url'] = $status['active'] ? admin_url( 'plugins.php' ) : wp_nonce_url( admin_url( 'plugins.php?action=activate&plugin=' . rawurlencode( SBT_REQUIRED_PLUGIN_FILE ) ), 'activate-plugin_' . SBT_REQUIRED_PLUGIN_FILE );
+		return $status;
+	}
 
 	foreach ( $plugins as $file => $plugin ) {
 		$name = isset( $plugin['Name'] ) ? (string) $plugin['Name'] : '';
-		if ( false !== stripos( $file, 'syncbooking' ) || false !== stripos( $name, 'SyncBooking' ) ) {
+		$plugin_slug = dirname( $file );
+		if ( SBT_REQUIRED_PLUGIN_SLUG === $plugin_slug || false !== stripos( $name, 'SyncBooking' ) ) {
 			$status['installed'] = true;
 			$status['file'] = $file;
 			$status['name'] = $name ? $name : 'SyncBooking';
@@ -1787,7 +1800,7 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 				<?php elseif ( $plugin_status['installed'] ) : ?>
 					<span><?php echo esc_html( $plugin_status['name'] ); ?> risulta installato ma non attivo. Attivalo da Plugin per completare la configurazione.</span>
 				<?php else : ?>
-					<span>Il plugin SyncBooking non risulta installato. Il tema lo richiede per le funzioni di booking.</span>
+					<span>Il plugin SyncBooking ufficiale di WordPress.org (<code>syncbooking</code>) non risulta installato. Il tema lo richiede per le funzioni di booking.</span>
 				<?php endif; ?>
 				<p style="margin:10px 0 0;">
 					<a class="button <?php echo $plugin_status['active'] ? '' : 'button-primary'; ?>" href="<?php echo esc_url( $plugin_status['action_url'] ); ?>">
