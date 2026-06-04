@@ -12,8 +12,8 @@
   --green-soft:#a8645a;
   --rose:#b47e6e;
   --gold:#a98c5b;
-  --header-red:#9c4733;
-  --header-red-deep:#863c2b;
+  --header-red:#8a463f;
+  --header-red-deep:#73362f;
   --serif:'Cormorant Garamond', Georgia, serif;
   --sans:'Jost', system-ui, sans-serif;
   --shadow:0 24px 60px -28px rgba(43,39,35,.45);
@@ -176,14 +176,33 @@ section{position:relative;}
 .house .more{margin-top:4px;font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:#fff;display:inline-flex;align-items:center;gap:9px;padding-top:4px;}
 .house .more span{width:26px;height:1px;background:#fff;transition:width .35s;}
 .house:hover .more span{width:44px;}
+.house-cta{align-self:flex-start;margin-top:8px;padding:12px 26px;}
+.house:hover .house-cta{background:#fff;color:var(--header-red);border-color:#fff;}
+
+/* ============ MEDIA CAROUSEL ============ */
+.media-carousel{position:relative;}
+.mc-track{position:relative;width:100%;height:clamp(360px,52vw,620px);overflow:hidden;background:#cdbfa8;}
+.mc-track img,.mc-track .sbt-vfe-image-wrap{position:absolute;inset:0;width:100%;height:100%;}
+.mc-track img{object-fit:cover;opacity:0;transition:opacity .9s ease;cursor:zoom-in;}
+.mc-track img.active,.mc-track .sbt-vfe-image-wrap.active img{opacity:1;}
+.mc-track .sbt-vfe-image-wrap img{width:100%;height:100%;object-fit:cover;}
+.mc-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:4;width:46px;height:46px;background:rgba(33,24,23,.4);color:#fff;border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:24px;line-height:1;transition:.3s;}
+.mc-nav:hover{background:var(--header-red);}
+.mc-prev{left:14px;}.mc-next{right:14px;}
+.media-carousel:hover .mc-nav{background:rgba(33,24,23,.62);}
+.media-carousel:hover .mc-nav:hover{background:var(--header-red);}
+.mc-dots{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);z-index:4;display:flex;gap:8px;}
+.mc-dots button{width:8px;height:8px;border-radius:50%;border:0;background:rgba(255,255,255,.55);cursor:pointer;padding:0;transition:.35s ease;}
+.mc-dots button.active{background:#fff;width:22px;border-radius:4px;}
+@media(max-width:760px){.mc-nav{width:40px;height:40px;}}
 
 /* ============ SERVICES / AMENITIES ============ */
-.services{background:var(--green-deep);color:#ece7db;}
+.services{background:var(--header-red);color:#ece7db;}
 .services .section-head h2{color:#fff;}
 .services .overline{color:#e2bdaf;}
 .svc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;background:rgba(255,255,255,.08);}
-.svc{background:var(--green-deep);padding:42px 30px;display:flex;flex-direction:column;gap:16px;transition:.4s;}
-.svc:hover{background:var(--green);}
+.svc{background:var(--header-red);padding:42px 30px;display:flex;flex-direction:column;gap:16px;transition:.4s;}
+.svc:hover{background:var(--header-red-deep);}
 .svc svg{width:34px;height:34px;stroke:#eccabd;stroke-width:1.4;fill:none;}
 .svc h4{font-size:25px;color:#fff;font-weight:500;}
 .svc p{font-size:13.5px;color:#e0c3bb;line-height:1.65;}
@@ -273,6 +292,14 @@ section{position:relative;}
 .price-card ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:11px;}
 .price-card li{display:flex;gap:10px;align-items:flex-start;font-size:14px;color:var(--muted);}
 .price-card li::before{content:"";flex:none;width:6px;height:6px;margin-top:7px;background:var(--rose);border-radius:50%;}
+.book-cta{display:flex;align-items:center;justify-content:space-between;gap:48px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--green);padding:clamp(34px,4vw,52px) clamp(30px,4vw,56px);}
+.book-cta .bc-text{max-width:54ch;}
+.book-cta h3{font-size:clamp(28px,3.2vw,40px);margin:12px 0 14px;}
+.book-cta .bc-text p{color:var(--muted);font-size:15.5px;}
+.book-cta .bc-action{display:flex;flex-direction:column;align-items:flex-start;gap:14px;flex:none;}
+.book-cta .bc-action .btn{font-size:13px;padding:18px 38px;}
+.book-cta .bc-note{font-size:12.5px;letter-spacing:.04em;color:var(--muted);}
+@media(max-width:760px){.book-cta{gap:28px;}.book-cta .bc-action{align-self:stretch;}.book-cta .bc-action .btn{width:100%;justify-content:center;}}
 .cond-list{max-width:780px;margin:0 auto;display:grid;gap:18px;}
 .cond-list .row{display:grid;grid-template-columns:200px 1fr;gap:24px;padding-bottom:18px;border-bottom:1px solid var(--line);}
 .cond-list .row dt{font-family:var(--serif);font-size:21px;color:var(--ink);}
@@ -308,8 +335,17 @@ section{position:relative;}
 .offer-card h3{font-size:clamp(26px,3vw,38px);}
 .offer-card p{color:rgba(255,255,255,.85);font-size:14.5px;margin-top:10px;max-width:42ch;}
 
+/* ============ HOUSE CTA BAND ============ */
+.cta-band{position:relative;min-height:clamp(440px,58vw,640px);display:flex;align-items:center;justify-content:center;text-align:center;color:#fff;overflow:hidden;background-attachment:fixed;background-size:cover;background-position:center;}
+.cta-band::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(45,24,22,.32) 0%,rgba(45,24,22,.58) 100%);}
+.cta-band .inner{position:relative;z-index:2;max-width:780px;padding:80px 24px;}
+.cta-band .overline{color:#e9cfc4;}
+.cta-band h2{font-size:clamp(40px,5.4vw,76px);margin:18px 0 36px;color:#fff;}
+.cta-band .btn--light{border-color:rgba(255,255,255,.7);}
+.cta-band .btn--light:hover{background:#fff;color:var(--green);border-color:#fff;}
+
 /* ============ FOOTER ============ */
-footer{background:var(--green-deep);color:#e0c9c3;padding:80px 0 0;}
+footer{background:var(--header-red);color:#e0c9c3;padding:80px 0 0;border-top:1px solid rgba(255,255,255,.14);}
 .foot-grid{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;gap:50px;padding-bottom:60px;}
 footer .logo img{height:120px;width:auto;margin-bottom:20px;}
 footer h4{color:#fff;font-size:24px;margin-bottom:18px;}
@@ -352,6 +388,7 @@ footer a:hover{color:#f3ddd6;}
   .contact-grid{grid-template-columns:1fr;}
   .gallery{grid-template-columns:repeat(2,1fr);}
   .band{background-attachment:scroll;}
+  .cta-band{background-attachment:scroll;}
   .foot-grid{grid-template-columns:1fr;gap:36px;}
   footer .logo img{height:40px;}
   .stamp{width:96px;height:96px;font-size:15px;bottom:-18px;right:-10px;}

@@ -25,7 +25,7 @@
           <ul class="specs">
             <?php foreach ($h['specs'] as $si => $s): ?><li><span><?= function_exists('sbt_vfe') ? sbt_vfe('HOUSE_CARDS.' . $i . '.specs.' . $si . '.0', $s[0]) : $s[0] ?></span><b><?= function_exists('sbt_vfe') ? sbt_vfe('HOUSE_CARDS.' . $i . '.specs.' . $si . '.1', $s[1]) : $s[1] ?></b></li><?php endforeach; ?>
           </ul>
-          <span class="more"><?= function_exists('sbt_vfe') ? sbt_vfe('TEXT.more', $TEXT['more'] ?? 'More') : ($TEXT['more'] ?? 'More') ?> <span></span></span>
+          <span class="btn btn--light house-cta"><?= function_exists('sbt_vfe') ? sbt_vfe('TEXT.more', $TEXT['more'] ?? 'Discover') : ($TEXT['more'] ?? 'Discover') ?></span>
           <?= function_exists('sbt_vfe_control') ? sbt_vfe_control('HOUSE_CARDS.' . $i . '.url', $h['url'], 'Link card', 'url') : '' ?>
         </div>
       </a>

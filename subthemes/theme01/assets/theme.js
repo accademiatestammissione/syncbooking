@@ -35,6 +35,49 @@
     io.observe(el);
   });
 
+  // media carousel
+  document.querySelectorAll('[data-carousel]').forEach(function(car){
+    var imgs = [].slice.call(car.querySelectorAll('.mc-track img'));
+    if (!imgs.length) return;
+
+    var dotsWrap = car.querySelector('.mc-dots');
+    var idx = 0;
+    var timer;
+
+    imgs.forEach(function(img, n){
+      if (!dotsWrap || imgs.length < 2) return;
+      var dot = document.createElement('button');
+      dot.type = 'button';
+      dot.setAttribute('aria-label', 'Go to photo ' + (n + 1));
+      dot.addEventListener('click', function(e){
+        e.stopPropagation();
+        go(n);
+        restart();
+      });
+      dotsWrap.appendChild(dot);
+    });
+
+    var dots = dotsWrap ? [].slice.call(dotsWrap.children) : [];
+    function go(n){
+      idx = (n + imgs.length) % imgs.length;
+      imgs.forEach(function(img, k){ img.classList.toggle('active', k === idx); });
+      dots.forEach(function(dot, k){ dot.classList.toggle('active', k === idx); });
+    }
+    function next(){ go(idx + 1); }
+    function prev(){ go(idx - 1); }
+    function restart(){
+      clearInterval(timer);
+      if (imgs.length > 1) timer = setInterval(next, 5500);
+    }
+
+    var nextBtn = car.querySelector('.mc-next');
+    var prevBtn = car.querySelector('.mc-prev');
+    if (nextBtn) nextBtn.addEventListener('click', function(e){ e.stopPropagation(); next(); restart(); });
+    if (prevBtn) prevBtn.addEventListener('click', function(e){ e.stopPropagation(); prev(); restart(); });
+    go(0);
+    restart();
+  });
+
   // lightbox (binds to img[data-lightbox])
   var lb = document.getElementById('lightbox');
   if (lb){
