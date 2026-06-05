@@ -23,6 +23,11 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 1.0.12 =
+* Added permanent source-of-truth build instructions for refreshing subthemes from new clean HTML packages.
+* Documented that JavaScript-generated header and footer sources must be mirrored in the WordPress PHP templates.
+* Synced Theme 01 header actions and mobile drawer with the latest clean HTML source.
+
 = 1.0.11 =
 * Added Media Library support to the frontend Visual Edit controls.
 * Added single-image replacement and full-gallery replacement from Visual Edit.

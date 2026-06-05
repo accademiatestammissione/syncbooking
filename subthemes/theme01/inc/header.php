@@ -53,7 +53,6 @@ $WA_SVG = '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4
   </nav>
   <div class="actions-desktop">
     <div class="lang-toggle"><a href="#" class="active"><?php echo $SITE['lang_primary'] ?? 'EN' ?></a><span class="sep">/</span><a href="#"><?php echo $SITE['lang_secondary'] ?? 'IT' ?></a></div>
-    <a class="wa" href="<?php echo $SITE['wa'] ?>"><?php echo $WA_SVG ?><?php echo $SITE['whatsapp_label'] ?? 'WhatsApp' ?></a>
   </div>
   <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
 </header>
@@ -68,5 +67,4 @@ $WA_SVG = '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4
       </div>
     <?php endif; ?>
   <?php endforeach; ?>
-  <a class="wa" href="<?php echo $SITE['wa'] ?>"><?php echo $WA_SVG ?><?php echo $SITE['whatsapp_label'] ?? 'WhatsApp' ?></a>
 </div>
