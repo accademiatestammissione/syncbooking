@@ -52,17 +52,29 @@
     </div>
     <div class="house-grid">
       <?php foreach ($HOUSE_CARDS as $i => $h): ?>
-      <a class="house reveal" href="<?= function_exists('sbt_url') ? sbt_url($h['url']) : $h['url'] ?>">
-        <div class="ph"><span class="tag"><?= function_exists('sbt_vfe') ? sbt_vfe('HOUSE_CARDS.' . $i . '.tag', $h['tag']) : $h['tag'] ?></span><?= function_exists('sbt_vfe_image') ? sbt_vfe_image('HOUSE_CARDS.' . $i . '.img', $h['img'], ['alt' => $h['title']]) : '<img src="' . $h['img'] . '" alt="' . $h['title'] . '" />' ?></div>
+      <div class="house reveal">
+        <div class="ph">
+          <span class="tag"><?= function_exists('sbt_vfe') ? sbt_vfe('HOUSE_CARDS.' . $i . '.tag', $h['tag']) : $h['tag'] ?></span>
+          <div class="media-carousel" data-carousel>
+            <div class="mc-track">
+              <?php foreach (($h['gallery'] ?? [$h['img']]) as $gi => $img): ?>
+                <?= function_exists('sbt_vfe_image') ? sbt_vfe_image('HOUSE_CARDS.' . $i . '.gallery.' . $gi, $img, ['alt' => $h['title']]) : '<img src="' . $img . '" alt="' . $h['title'] . '" />' ?>
+              <?php endforeach; ?>
+            </div>
+            <button class="mc-nav mc-prev" type="button" aria-label="Previous">&#8249;</button>
+            <button class="mc-nav mc-next" type="button" aria-label="Next">&#8250;</button>
+            <div class="mc-dots"></div>
+          </div>
+        </div>
         <div class="body">
           <h3><?= function_exists('sbt_vfe') ? sbt_vfe('HOUSE_CARDS.' . $i . '.title', $h['title']) : $h['title'] ?></h3>
           <ul class="specs">
             <?php foreach ($h['specs'] as $si => $s): ?><li><span><?= function_exists('sbt_vfe') ? sbt_vfe('HOUSE_CARDS.' . $i . '.specs.' . $si . '.0', $s[0]) : $s[0] ?></span><b><?= function_exists('sbt_vfe') ? sbt_vfe('HOUSE_CARDS.' . $i . '.specs.' . $si . '.1', $s[1]) : $s[1] ?></b></li><?php endforeach; ?>
           </ul>
-          <span class="btn btn--light house-cta"><?= function_exists('sbt_vfe') ? sbt_vfe('TEXT.more', $TEXT['more'] ?? 'Discover') : ($TEXT['more'] ?? 'Discover') ?></span>
+          <a class="btn btn--light house-cta" href="<?= function_exists('sbt_url') ? sbt_url($h['url']) : $h['url'] ?>"><?= function_exists('sbt_vfe') ? sbt_vfe('TEXT.more', $TEXT['more'] ?? 'Discover') : ($TEXT['more'] ?? 'Discover') ?></a>
           <?= function_exists('sbt_vfe_control') ? sbt_vfe_control('HOUSE_CARDS.' . $i . '.url', $h['url'], 'Link card', 'url') : '' ?>
         </div>
-      </a>
+      </div>
       <?php endforeach; ?>
     </div>
   </div>

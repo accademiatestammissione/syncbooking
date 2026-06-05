@@ -14,6 +14,11 @@ SyncBooking Theme provides a WordPress theme package for hospitality websites. I
 
 == Changelog ==
 
+= 1.0.4 =
+* Updated Theme 01 visual assets and homepage house cards from the latest clean HTML source.
+* Added the Theme 01 Article template with editable fields.
+* Kept clean HTML sources outside the WordPress theme package.
+
 = 1.0.3 =
 * Regenerated Theme 01 page templates from the clean HTML source.
 * Aligned internal page sections, carousel blocks, CTA bands, contact map and booking CTA markup.

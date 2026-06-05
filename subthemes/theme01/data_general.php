@@ -28,6 +28,10 @@ $IMG = [
   'room2'     => $BASE.'2025/03/VMLX0557.jpg',
   'garden'    => $BASE.'2025/03/7a97973d-9ff7-4e3e-bb14-7b6909ac32a7.jpg',
   'wellness_corridor' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/wellness-corridor.jpg') : 'assets/images/wellness-corridor.jpg',
+  'apulian_table' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/apulian-table.jpg') : 'assets/images/apulian-table.jpg',
+  'apulian_breakfast' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/apulian-breakfast.jpg') : 'assets/images/apulian-breakfast.jpg',
+  'conversano_town' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/conversano-town.jpg') : 'assets/images/conversano-town.jpg',
+  'jacuzzi_detail' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/jacuzzi.jpg') : 'assets/images/jacuzzi.jpg',
 ];
 
 /* ---- SITE-WIDE INFO ---- */
@@ -133,12 +137,12 @@ $C['home'] = [
   'spa_teaser_h3' => 'SPA & Wellness',
   'spa_teaser_p' => 'Awaken your mind and body. Our wellness center offers a hydromassage pool, Turkish bath, Finnish sauna, emotional hydroshower, relax area, gym, massages and a Yoga program.',
   'spa_teaser_url' => 'spa-wellness.php',
-  'spa_gallery' => [$IMG['spa'], $IMG['room2'], $IMG['a5'], $IMG['garden'], $IMG['villa']],
+  'spa_gallery' => [$IMG['jacuzzi_detail'], $IMG['room2'], $IMG['a5'], $IMG['garden'], $IMG['villa']],
   'experience_label' => 'Villa Rosa Resort & SPA',
   'experience_teaser_h3' => 'Apulian Experience',
   'experience_teaser_p' => 'We craft tailor-made experiences for each guest, customized according to individual needs - from cooking classes and wine tastings to private tours of the surrounding wonders.',
   'experience_teaser_url' => 'experiences.php',
-  'experience_gallery' => [$IMG['lunch'], $IMG['villa'], $IMG['welcome'], $IMG['a1'], $IMG['room']],
+  'experience_gallery' => [$IMG['apulian_table'], $IMG['villa'], $IMG['welcome'], $IMG['a1'], $IMG['room']],
   'offers_url' => 'offers.php',
   'house_cta_over' => 'Your private retreat awaits',
   'house_cta_h2' => 'Choose your house<br>in Villa Rosa',
@@ -149,11 +153,11 @@ $C['home'] = [
 
 /* house cards (shared by home + houses listing) */
 $HOUSE_CARDS = [
-  ['tag'=>'For 2 people','title'=>'Houses for 2','img'=>$IMG['a1'],'url'=>'house-for-2.php',
+  ['tag'=>'For 2 people','title'=>'Houses for 2','img'=>$IMG['a1'],'gallery'=>[$IMG['welcome'],$IMG['room2'],$IMG['room']],'url'=>'house-for-2.php',
    'specs'=>[['Surface','30–40 m²'],['Occupancy','2 adults + cot'],['Bed','King-size']]],
-  ['tag'=>'For 3 people','title'=>'Houses for 3','img'=>$IMG['room'],'url'=>'house-for-3.php',
+  ['tag'=>'For 3 people','title'=>'Houses for 3','img'=>$IMG['room'],'gallery'=>[$IMG['lunch'],$IMG['room'],$IMG['garden']],'url'=>'house-for-3.php',
    'specs'=>[['Surface','40–50 m²'],['Occupancy','3 adults + cot'],['Beds','King + sofa bed']]],
-  ['tag'=>'For 4 people','title'=>'Houses for 4','img'=>$IMG['room2'],'url'=>'house-for-4.php',
+  ['tag'=>'For 4 people','title'=>'Houses for 4','img'=>$IMG['room2'],'gallery'=>[$IMG['spa'],$IMG['garden'],$IMG['villa']],'url'=>'house-for-4.php',
    'specs'=>[['Surface','50–60 m²'],['Occupancy','4 adults + cot'],['Beds','King + double sofa']]],
 ];
 
@@ -374,6 +378,37 @@ $C['experiences'] = [
   'cta_btn'=>'Contact us',
   'cta_url'=>'contacts.php',
   'cta_bg'=>$IMG['lunch'],
+];
+
+/* ---------- ARTICLE ---------- */
+$C['article'] = [
+  'title'=>'Article - Villa Rosa Resort',
+  'over'=>'Villa Rosa Resort & SPA',
+  'h1'=>'Experiences',
+  'banner'=>$IMG['lunch'],
+  'article_over'=>'Taste',
+  'article_title'=>'Cooking Classes in the heart of Puglia',
+  'article_meta'=>'Experiences - 5 min read',
+  'body_p1'=>'Write your article here. This opening paragraph sets the scene; the drop-cap is applied automatically, so simply start typing and let the words lead your guest into the story. Replace this text with your own.',
+  'body_p2'=>'Continue with the body of your article. You can write as many paragraphs as you like; each one will flow in this comfortable, readable column. Talk about the experience, what guests will see, taste and feel, and why it matters.',
+  'body_h2'=>'A section heading',
+  'body_p3'=>'Use headings to break longer pieces into clear sections. This makes the article easy to scan and pleasant to read on any device.',
+  'body_quote'=>'Add a short, evocative quote here to give the page a moment of pause.',
+  'body_h3'=>'A smaller subheading',
+  'body_p4'=>'You can also use bulleted lists to highlight practical details:',
+  'body_items'=>[
+    'First point - for example, what is included',
+    'Second point - duration, group size or location',
+    'Third point - anything else worth noting',
+  ],
+  'body_p5'=>'Close with a final thought or an invitation. When you are ready, guests can',
+  'body_link_text'=>'get in touch',
+  'body_link_url'=>'contacts.php',
+  'cta_over'=>'Design your days',
+  'cta_h2'=>'Plan your experiences',
+  'cta_btn'=>'Contact us',
+  'cta_url'=>'contacts.php',
+  'cta_bg'=>$IMG['a5'],
 ];
 
 /* ---------- SURROUNDINGS ---------- */
