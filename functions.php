@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.15' );
+define( 'SBT_VERSION', '1.0.16' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -343,8 +343,8 @@ function sbt_theme_design_css() {
 		'green-soft' => array( 'SITE.color_primary_soft', '#a8645a' ),
 		'rose' => array( 'SITE.color_accent', '#b47e6e' ),
 		'gold' => array( 'SITE.color_gold', '#a98c5b' ),
-		'header-red' => array( 'SITE.color_header', '#9c4733' ),
-		'header-red-deep' => array( 'SITE.color_header_deep', '#863c2b' ),
+		'header-red' => array( 'SITE.color_header', '#8a463f' ),
+		'header-red-deep' => array( 'SITE.color_header_deep', '#73362f' ),
 	);
 	$lines = array(
 		'--serif:' . $font_pair[0],
@@ -358,6 +358,20 @@ function sbt_theme_design_css() {
 	echo '<style id="sbt-theme-design-vars">:root{' . implode( ';', $lines ) . ';}</style>' . "\n";
 }
 add_action( 'wp_head', 'sbt_theme_design_css', 25 );
+
+function sbt_enqueue_theme_fonts() {
+	if ( 'theme01' !== sbt_active_subtheme_key() ) {
+		return;
+	}
+
+	wp_enqueue_style(
+		'syncbooking-hospitality-theme01-fonts',
+		'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap',
+		array(),
+		null
+	);
+}
+add_action( 'wp_enqueue_scripts', 'sbt_enqueue_theme_fonts' );
 
 function sbt_page_templates() {
 	$subtheme = sbt_active_subtheme();
