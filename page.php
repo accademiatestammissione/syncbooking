@@ -25,6 +25,9 @@ require sbt_subtheme_path('inc/header.php');
       ?>
       <div id="post-<?php the_ID(); ?>" <?php post_class('body-text'); ?>>
         <?php
+        if ( has_post_thumbnail() ) {
+          the_post_thumbnail( 'large' );
+        }
         the_content();
         wp_link_pages(
           array(
@@ -32,6 +35,7 @@ require sbt_subtheme_path('inc/header.php');
             'after'  => '</nav>',
           )
         );
+        the_tags( '<p class="post-tags">', ', ', '</p>' );
         ?>
       </div>
       <?php

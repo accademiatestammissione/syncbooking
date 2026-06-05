@@ -14,6 +14,11 @@ SyncBooking Hospitality provides a WordPress theme package for hospitality websi
 
 == Changelog ==
 
+= 1.0.9 =
+* Replaced large local wellness PNG assets with compressed JPG assets.
+* Added additional recommended theme supports and editor styling hooks.
+* Added fallback blog markup for thumbnails, tags and post pagination.
+
 = 1.0.8 =
 * Removed bundled demo upload media from the theme package.
 * Added an on-demand demo media downloader in General Settings.

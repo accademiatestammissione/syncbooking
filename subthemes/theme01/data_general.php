@@ -31,11 +31,11 @@ $IMG = [
   'apulian_table' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/apulian-table.jpg') : 'assets/images/apulian-table.jpg',
   'apulian_breakfast' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/apulian-breakfast.jpg') : 'assets/images/apulian-breakfast.jpg',
   'conversano_town' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/conversano-town.jpg') : 'assets/images/conversano-town.jpg',
-  'jacuzzi_detail' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/jacuzzi.png') : 'assets/images/jacuzzi.png',
-  'sauna_detail' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/sauna.png') : 'assets/images/sauna.png',
-  'turkish_bath_detail' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/turkish-bath.png') : 'assets/images/turkish-bath.png',
-  'relax_lounge_detail' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/relax-lounge.png') : 'assets/images/relax-lounge.png',
-  'gym_detail' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/gym.png') : 'assets/images/gym.png',
+  'jacuzzi_detail' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/jacuzzi.jpg') : 'assets/images/jacuzzi.jpg',
+  'sauna_detail' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/sauna.jpg') : 'assets/images/sauna.jpg',
+  'turkish_bath_detail' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/turkish-bath.jpg') : 'assets/images/turkish-bath.jpg',
+  'relax_lounge_detail' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/relax-lounge.jpg') : 'assets/images/relax-lounge.jpg',
+  'gym_detail' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/gym.jpg') : 'assets/images/gym.jpg',
 ];
 
 /* ---- SITE-WIDE INFO ---- */
