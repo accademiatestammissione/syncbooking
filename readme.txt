@@ -10,9 +10,13 @@ Hospitality theme with selectable subthemes, editable pages, media galleries and
 
 == Description ==
 
-SyncBooking Theme provides a WordPress theme package for hospitality websites. It includes selectable subthemes, editable header and menu fields, page-level content editing, media-library galleries, and language-aware page creation.
+SyncBooking Hospitality provides a WordPress theme package for hospitality websites. It includes selectable subthemes, editable header and menu fields, page-level content editing, media-library galleries, and language-aware page creation.
 
 == Changelog ==
+
+= 1.0.5 =
+* Updated the public theme name for WordPress.org validation.
+* Added the required theme tags to style.css.
 
 = 1.0.4 =
 * Updated Theme 01 visual assets and homepage house cards from the latest clean HTML source.
