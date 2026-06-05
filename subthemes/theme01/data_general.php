@@ -27,6 +27,7 @@ $IMG = [
   'room'      => $BASE.'2025/03/350a927d-d95e-401a-9c30-845b04364bc4.jpg',
   'room2'     => $BASE.'2025/03/VMLX0557.jpg',
   'garden'    => $BASE.'2025/03/7a97973d-9ff7-4e3e-bb14-7b6909ac32a7.jpg',
+  'wellness_corridor' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/wellness-corridor.jpg') : 'assets/images/wellness-corridor.jpg',
 ];
 
 /* ---- SITE-WIDE INFO ---- */
@@ -42,7 +43,7 @@ $SITE = [
   'email'    => 'villarosasuites@gmail.com',
   'address'  => 'Viale P. Orlando, 1<br>70014 Conversano (Bari)<br>Puglia, Italy',
   'map'      => 'https://maps.app.goo.gl/PjihQ243sU2ZcT4m9',
-  'map_embed'=> '',
+  'map_embed'=> 'https://www.google.com/maps?q=Villa%20Rosa%20Resort%20Conversano&output=embed',
   'facebook' => 'https://www.facebook.com/villarosaresort/',
   'instagram'=> 'https://www.instagram.com/villarosaresortpuglia/',
   'lang_primary' => 'EN',
@@ -148,11 +149,11 @@ $C['home'] = [
 
 /* house cards (shared by home + houses listing) */
 $HOUSE_CARDS = [
-  ['tag'=>'For 2 people','title'=>'Houses for 2','img'=>$IMG['welcome'],'url'=>'house-for-2.php',
+  ['tag'=>'For 2 people','title'=>'Houses for 2','img'=>$IMG['a1'],'url'=>'house-for-2.php',
    'specs'=>[['Surface','30–40 m²'],['Occupancy','2 adults + cot'],['Bed','King-size']]],
-  ['tag'=>'For 3 people','title'=>'Houses for 3','img'=>$IMG['lunch'],'url'=>'house-for-3.php',
+  ['tag'=>'For 3 people','title'=>'Houses for 3','img'=>$IMG['room'],'url'=>'house-for-3.php',
    'specs'=>[['Surface','40–50 m²'],['Occupancy','3 adults + cot'],['Beds','King + sofa bed']]],
-  ['tag'=>'For 4 people','title'=>'Houses for 4','img'=>$IMG['spa'],'url'=>'house-for-4.php',
+  ['tag'=>'For 4 people','title'=>'Houses for 4','img'=>$IMG['room2'],'url'=>'house-for-4.php',
    'specs'=>[['Surface','50–60 m²'],['Occupancy','4 adults + cot'],['Beds','King + double sofa']]],
 ];
 
@@ -273,6 +274,7 @@ $C['price'] = [
   'over'=>'Rates & reservations','h1'=>'Price & Condition','banner'=>$IMG['garden'],
   'intro_over'=>'Transparent & flexible',
   'intro_h2'=>'Plan your stay with confidence',
+  'intro_p_html'=>'Check live availability and the best rates for each house, then confirm your reservation in a few secure steps - instant booking, no waiting for a reply.',
   'intro_p'=>'Our rates vary by season and length of stay. Below you find an indicative starting price per night for each house type — contact us for a tailored quote and the best available conditions.',
   'cards'=>[
     ['name'=>'Houses for 2','from'=>'From','price'=>'120','unit'=>'/ night','feats'=>['30–40 m² with private pergola','King-size bed','Equipped kitchen & dining area','SPA, pool & park access']],
@@ -289,6 +291,12 @@ $C['price'] = [
     ['City tax','Applied per person/night as required by the Municipality of Conversano.'],
     ['Pets','Welcome on request — please let us know in advance.'],
   ],
+  'book_over'=>'Real-time availability',
+  'book_h3'=>'Check dates & book online',
+  'book_p'=>'Select your house, see live prices for your dates and complete your reservation through our secure booking system.',
+  'book_url'=>'https://villarosaresort.it/booking',
+  'book_btn'=>'Book your stay',
+  'book_note'=>'Best rate guaranteed when you book direct.',
   'note'=>'Indicative starting rates per night. Final price depends on season, length of stay and occupancy.',
   'gallery_over'=>'Included in every stay',
   'gallery_h2'=>'The wellness centre',
@@ -309,7 +317,7 @@ $C['price'] = [
 $C['spa'] = [
   'title'=>'SPA & Wellness – Villa Rosa Resort',
   'over'=>'Villa Rosa Resort & SPA','h1'=>'SPA & Wellness','banner'=>$IMG['spa'],
-  'intro_over'=>'Awaken mind & body',
+  'intro_over'=>'Awaken body & mind',
   'intro_h2'=>'A sanctuary of well-being',
   'intro_p'=>'Our wellness centre is a refuge dedicated to regeneration. Surrender to the warmth of the Turkish bath, the heat of the Finnish sauna and the embrace of the hydromassage — then let go completely in the relaxation area.',
   'feat_rows'=>[
@@ -336,9 +344,10 @@ $C['spa'] = [
 /* ---------- EXPERIENCES ---------- */
 $C['experiences'] = [
   'title'=>'Experiences – Villa Rosa Resort',
-  'over'=>'Villa Rosa Resort & SPA','h1'=>'Apulian Experiences','banner'=>$IMG['lunch'],
+  'over'=>'Villa Rosa Resort & SPA','h1'=>'Experiences','banner'=>$IMG['lunch'],
   'intro_over'=>'Tailor-made for you',
   'intro_h2'=>'Live Puglia, your way',
+  'intro_p_html'=>'We craft bespoke experiences for every guest, shaped around your tastes and curiosities. From the flavours of the Apulian table to the wonders just beyond our gates, let us design moments you will remember long after you leave.',
   'intro_p'=>'We craft bespoke experiences for each guest, customised according to your tastes and curiosity — from the table to the sea, from history to the vineyards. Tell us what you love, and we will arrange the rest.',
   'cards'=>[
     ['img'=>$IMG['lunch'],'over'=>'Taste','h3'=>'Cooking classes','p'=>'Learn the secrets of Apulian cuisine with hands-on classes — from orecchiette to focaccia.'],
@@ -356,9 +365,13 @@ $C['experiences'] = [
     function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/relax-lounge.jpg') : 'assets/images/relax-lounge.jpg',
     function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/gym.jpg') : 'assets/images/gym.jpg',
   ],
-  'cta_over'=>'Design your itinerary',
-  'cta_h2'=>'Let us tailor your experience',
-  'cta_btn'=>'Get in touch',
+  'band_bg'=>$IMG['wellness_corridor'],
+  'band_over'=>'Unhurried & authentic',
+  'band_h2'=>'The art of living,<br>Apulian style',
+  'band_p'=>'Long lunches under the pergola, sun-warmed stone, and the generous welcome of the South - this is the rhythm of a stay at Villa Rosa.',
+  'cta_over'=>'Design your days',
+  'cta_h2'=>'Plan your experiences',
+  'cta_btn'=>'Contact us',
   'cta_url'=>'contacts.php',
   'cta_bg'=>$IMG['lunch'],
 ];
@@ -366,19 +379,20 @@ $C['experiences'] = [
 /* ---------- SURROUNDINGS ---------- */
 $C['surroundings'] = [
   'title'=>'Surroundings – Villa Rosa Resort',
-  'over'=>'The Apulian way of living','h1'=>'Surroundings','banner'=>$IMG['garden'],
-  'intro_over'=>'Where we are',
-  'intro_h2'=>'Conversano & the heart of Puglia',
+  'over'=>'Conversano & beyond','h1'=>'Surroundings','banner'=>$IMG['garden'],
+  'intro_over'=>'In the heart of Puglia',
+  'intro_h2'=>'A region to fall in love with',
+  'intro_p_html'=>'Villa Rosa sits in the ancient heart of Conversano, one of Puglia\'s most charming villages, crowned by its Norman-Swabian Castle. From here, the wonders of the region are all within easy reach - whitewashed towns, the trulli of the Itria Valley, and the turquoise Adriatic coast.',
   'intro_p'=>'Villa Rosa sits in the historic centre of Conversano, beside the Norman-Swabian Castle. From here, the most beautiful corners of Puglia are all within easy reach — whitewashed towns, trulli, vineyards and a luminous coastline.',
   'cards'=>[
-    ['img'=>$IMG['villa'],'over'=>'On foot','h3'=>'Conversano','p'=>'The castle, the cathedral and the old town are right outside your door.'],
-    ['img'=>$IMG['a5'],'over'=>'15 min','h3'=>'Polignano a Mare','p'=>'Cliffs, sea caves and one of the most photographed beaches in Italy.'],
-    ['img'=>$IMG['garden'],'over'=>'40 min','h3'=>'Alberobello','p'=>'The UNESCO town of trulli in the green Itria Valley.'],
-    ['img'=>$IMG['lunch'],'over'=>'A short drive','h3'=>'Bari & Monopoli','p'=>'The lively regional capital and the charming port town of Monopoli.'],
+    ['img'=>$IMG['garden'],'over'=>'2 min walk','h3'=>'Conversano','p'=>''],
+    ['img'=>$IMG['villa'],'over'=>'25 min','h3'=>'Polignano a Mare','p'=>''],
+    ['img'=>$IMG['a5'],'over'=>'35 min','h3'=>'Alberobello & Itria Valley','p'=>''],
+    ['img'=>$IMG['welcome'],'over'=>'40 min','h3'=>'Bari','p'=>''],
   ],
-  'cta_over'=>'Plan your discovery',
-  'cta_h2'=>'Let us guide your Puglia',
-  'cta_btn'=>'See experiences',
+  'cta_over'=>'Let us guide you',
+  'cta_h2'=>'Discover Puglia with us',
+  'cta_btn'=>'See our experiences',
   'cta_url'=>'experiences.php',
   'cta_bg'=>$IMG['a5'],
 ];
@@ -386,9 +400,10 @@ $C['surroundings'] = [
 /* ---------- CONTACTS ---------- */
 $C['contacts'] = [
   'title'=>'Contacts – Villa Rosa Resort',
-  'over'=>'We are here for you','h1'=>'Contacts','banner'=>$IMG['villa'],
+  'over'=>'We are here for you','h1'=>'Contacts','banner'=>$IMG['welcome'],
   'intro_over'=>'Get in touch',
   'intro_h2'=>'Plan your stay with us',
+  'intro_p_html'=>'For availability, tailored quotes or any request, our team will be delighted to help. Reach us by phone, email or WhatsApp - or send a message using the form and we will reply as soon as possible.',
   'intro_p'=>'For availability, tailored quotes or any request, write to us or call — we will be delighted to help you plan an unforgettable stay in Puglia.',
   'form_note'=>'This is a demo form for the theme preview.',
 ];
@@ -396,20 +411,22 @@ $C['contacts'] = [
 /* ---------- OFFERS ---------- */
 $C['offers'] = [
   'title'=>'Offers – Villa Rosa Resort',
-  'over'=>'Villa Rosa offers','h1'=>'Offers & Promotions','banner'=>$IMG['a5'],
+  'over'=>'Villa Rosa offers','h1'=>'Offers','banner'=>$IMG['villa'],
   'intro_over'=>'Best available conditions',
-  'intro_h2'=>'Seasonal offers for your stay',
+  'intro_h2'=>'Seasonal promotions',
+  'intro_p_html'=>'Reserve your stay in the heart of Puglia at the very best conditions. Discover our current offers - and contact us directly for exclusive, tailor-made rates.',
   'intro_p'=>'Discover our current promotions and book directly with us for the best rates and a warm, personal welcome.',
   'cards'=>[
-    ['img'=>$IMG['a1'],'badge'=>'Long stay','h3'=>'Stay longer, save more','p'=>'Book 7 nights or more and enjoy a special reduced rate on your entire stay.'],
-    ['img'=>$IMG['spa'],'badge'=>'Wellness','h3'=>'Spa & relax package','p'=>'A stay with dedicated access to the SPA and a tailored massage for two.'],
-    ['img'=>$IMG['lunch'],'badge'=>'Taste','h3'=>'Flavours of Puglia','p'=>'A stay enriched with a cooking class and a local wine & oil tasting.'],
-    ['img'=>$IMG['villa'],'badge'=>'Early booking','h3'=>'Book early','p'=>'Reserve well in advance and lock in the best available rate of the season.'],
+    ['img'=>$IMG['a5'],'badge'=>'Early booking','h3'=>'Book Early, Save More','p'=>'Reserve well in advance and enjoy a special rate on your favourite house.'],
+    ['img'=>$IMG['garden'],'badge'=>'Long stay','h3'=>'7 Nights = 6','p'=>'Stay a week and pay for six nights - the perfect way to truly unwind in Puglia.'],
+    ['img'=>$IMG['spa'],'badge'=>'Wellness','h3'=>'SPA Escape','p'=>'A romantic stay for two with a dedicated wellness experience in our SPA.'],
+    ['img'=>$IMG['villa'],'badge'=>'Season','h3'=>'Spring & Autumn','p'=>'Discover Puglia in its gentlest seasons with our reduced shoulder-season rates.'],
   ],
-  'cta_over'=>'Ready to book?',
-  'cta_h2'=>'Reserve your offer today',
+  'cta_over'=>'Tailored to you',
+  'cta_h2'=>'Ask for your best rate',
   'cta_btn'=>'Contact us',
   'cta_url'=>'contacts.php',
+  'cta_bg'=>$IMG['a5'],
 ];
 
 $TEXT = [
@@ -417,7 +434,7 @@ $TEXT = [
   'discover_spa' => 'Discover the SPA',
   'explore_experiences' => 'Explore experiences',
   'see_offers' => 'See the offers',
-  'more' => 'More',
+  'more' => 'Discover',
   'home' => 'Home',
   'houses' => 'Houses',
   'enquire' => 'Enquire',
@@ -438,7 +455,14 @@ $TEXT = [
   'form_dates' => 'Dates of stay',
   'form_dates_placeholder' => 'e.g. 12-15 July 2026',
   'form_message' => 'Message',
-  'form_send' => 'Send request',
+  'form_phone' => 'Phone',
+  'form_name_placeholder' => 'Your name',
+  'form_email_placeholder' => 'you@email.com',
+  'form_phone_placeholder' => '+39 ...',
+  'form_message_placeholder' => 'Tell us about your stay, dates and number of guests...',
+  'form_send' => 'Send message',
+  'discover' => 'Discover',
+  'open_maps' => 'Open in Google Maps ->',
   'form_result' => 'Thank you - this is a demo form. Connect it to your booking system or mailer.',
   'the_houses' => 'The Houses',
   'look_inside' => 'A look inside',

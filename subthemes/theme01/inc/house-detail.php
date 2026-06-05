@@ -13,7 +13,17 @@
 
 <section class="pad" data-screen-label="<?= $p['h1'] ?> overview">
   <div class="wrap two-col">
-    <div class="media reveal"><?= function_exists('sbt_vfe_image') ? sbt_vfe_image('C.' . $CONTENT_KEY . '.main', $p['main'], ['alt' => $p['h1'] . ' interior']) : '<img src="' . $p['main'] . '" alt="' . $p['h1'] . ' interior" />' ?><div class="frame"></div></div>
+    <div class="media reveal media-carousel" data-carousel>
+      <div class="mc-track">
+        <?php foreach (($p['overview_gallery'] ?? array($p['main'], $p['banner'], $IMG['room2'])) as $gi => $img): ?>
+          <?= function_exists('sbt_vfe_image') ? sbt_vfe_image('C.' . $CONTENT_KEY . '.overview_gallery.' . $gi, $img, ['data-lightbox' => '', 'alt' => $p['h1'] . ' interior']) : '<img data-lightbox src="' . $img . '" alt="' . $p['h1'] . ' interior" />' ?>
+        <?php endforeach; ?>
+      </div>
+      <button class="mc-nav mc-prev" type="button" aria-label="Previous">&#8249;</button>
+      <button class="mc-nav mc-next" type="button" aria-label="Next">&#8250;</button>
+      <div class="mc-dots"></div>
+      <div class="frame"></div>
+    </div>
     <div class="reveal">
       <div class="overline"><?= function_exists('sbt_vfe') ? sbt_vfe('C.' . $CONTENT_KEY . '.over', $p['over']) : $p['over'] ?></div>
       <h2 class="lead"><?= function_exists('sbt_vfe') ? sbt_vfe('C.' . $CONTENT_KEY . '.lead', $p['lead']) : $p['lead'] ?></h2>

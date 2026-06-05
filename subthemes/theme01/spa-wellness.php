@@ -10,27 +10,53 @@
 </section>
 
 <section class="pad" data-screen-label="SPA intro">
-  <div class="wrap">
-    <div class="section-head reveal">
+  <div class="wrap two-col">
+    <div class="reveal">
       <div class="overline"><?= function_exists('sbt_vfe') ? sbt_vfe('C.spa.intro_over', $p['intro_over']) : $p['intro_over'] ?></div>
-      <h2><?= function_exists('sbt_vfe') ? sbt_vfe('C.spa.intro_h2', $p['intro_h2']) : $p['intro_h2'] ?></h2>
-      <p><?= function_exists('sbt_vfe') ? sbt_vfe('C.spa.intro_p', $p['intro_p'], ['multiline'=>true]) : $p['intro_p'] ?></p>
+      <h2 class="lead"><?= function_exists('sbt_vfe') ? sbt_vfe('C.spa.intro_h2', $p['intro_h2'], ['multiline'=>true]) : $p['intro_h2'] ?></h2>
+    </div>
+    <div class="reveal">
+      <?php $intro = is_array($p['intro_p']) ? $p['intro_p'] : array($p['intro_p']); ?>
+      <?php foreach ($intro as $i => $par): ?>
+        <p class="body-text" style="max-width:54ch;<?= $i ? 'margin-top:18px;' : '' ?>"><?= function_exists('sbt_vfe') ? sbt_vfe('C.spa.intro_p.' . $i, $par, ['multiline'=>true]) : $par ?></p>
+      <?php endforeach; ?>
     </div>
   </div>
 </section>
 
-<section class="feature" style="padding-bottom:clamp(80px,11vw,150px);" data-screen-label="SPA features">
+<section class="feature pad" style="padding-top:0;" data-screen-label="SPA features">
   <div class="wrap">
     <?php foreach ($p['feat_rows'] as $i => $r): ?>
-    <div class="two-col"<?= $i ? ' style="margin-top:clamp(60px,8vw,110px);"' : '' ?>>
-      <?php if ($i % 2 === 0): ?>
-      <div class="media reveal"><?= function_exists('sbt_vfe_image') ? sbt_vfe_image('C.spa.feat_rows.' . $i . '.img', $r['img'], ['alt' => $r['h3']]) : '<img src="' . $r['img'] . '" alt="' . $r['h3'] . '" />' ?><div class="frame"></div></div>
-      <div class="reveal"><div class="label"><?= function_exists('sbt_vfe') ? sbt_vfe('C.spa.feat_rows.' . $i . '.label', $r['label']) : $r['label'] ?></div><h3><?= function_exists('sbt_vfe') ? sbt_vfe('C.spa.feat_rows.' . $i . '.h3', $r['h3']) : $r['h3'] ?></h3><p class="body-text"><?= function_exists('sbt_vfe') ? sbt_vfe('C.spa.feat_rows.' . $i . '.p', $r['p'], ['multiline'=>true]) : $r['p'] ?></p></div>
-      <?php else: ?>
-      <div class="reveal"><div class="label"><?= function_exists('sbt_vfe') ? sbt_vfe('C.spa.feat_rows.' . $i . '.label', $r['label']) : $r['label'] ?></div><h3><?= function_exists('sbt_vfe') ? sbt_vfe('C.spa.feat_rows.' . $i . '.h3', $r['h3']) : $r['h3'] ?></h3><p class="body-text"><?= function_exists('sbt_vfe') ? sbt_vfe('C.spa.feat_rows.' . $i . '.p', $r['p'], ['multiline'=>true]) : $r['p'] ?></p></div>
-      <div class="media reveal"><?= function_exists('sbt_vfe_image') ? sbt_vfe_image('C.spa.feat_rows.' . $i . '.img', $r['img'], ['alt' => $r['h3']]) : '<img src="' . $r['img'] . '" alt="' . $r['h3'] . '" />' ?><div class="frame"></div></div>
-      <?php endif; ?>
-    </div>
+      <?php $gallery = $r['gallery'] ?? array($r['img']); ?>
+      <div class="two-col"<?= $i ? ' style="margin-top:clamp(60px,8vw,110px);"' : '' ?>>
+        <?php if ($i % 2 === 0): ?>
+        <div class="media reveal media-carousel" data-carousel>
+          <div class="mc-track">
+            <?php foreach ($gallery as $gi => $img): ?>
+              <?= function_exists('sbt_vfe_image') ? sbt_vfe_image('C.spa.feat_rows.' . $i . '.gallery.' . $gi, $img, ['alt' => $r['h3'], 'data-lightbox' => '']) : '<img data-lightbox src="' . $img . '" alt="' . $r['h3'] . '" />' ?>
+            <?php endforeach; ?>
+          </div>
+          <button class="mc-nav mc-prev" type="button" aria-label="Previous">&#8249;</button>
+          <button class="mc-nav mc-next" type="button" aria-label="Next">&#8250;</button>
+          <div class="mc-dots"></div>
+          <div class="frame"></div>
+        </div>
+        <div class="reveal"><div class="label"><?= function_exists('sbt_vfe') ? sbt_vfe('C.spa.feat_rows.' . $i . '.label', $r['label']) : $r['label'] ?></div><h3><?= function_exists('sbt_vfe') ? sbt_vfe('C.spa.feat_rows.' . $i . '.h3', $r['h3']) : $r['h3'] ?></h3><p class="body-text"><?= function_exists('sbt_vfe') ? sbt_vfe('C.spa.feat_rows.' . $i . '.p', $r['p'], ['multiline'=>true]) : $r['p'] ?></p></div>
+        <?php else: ?>
+        <div class="reveal"><div class="label"><?= function_exists('sbt_vfe') ? sbt_vfe('C.spa.feat_rows.' . $i . '.label', $r['label']) : $r['label'] ?></div><h3><?= function_exists('sbt_vfe') ? sbt_vfe('C.spa.feat_rows.' . $i . '.h3', $r['h3']) : $r['h3'] ?></h3><p class="body-text"><?= function_exists('sbt_vfe') ? sbt_vfe('C.spa.feat_rows.' . $i . '.p', $r['p'], ['multiline'=>true]) : $r['p'] ?></p></div>
+        <div class="media reveal media-carousel" data-carousel>
+          <div class="mc-track">
+            <?php foreach ($gallery as $gi => $img): ?>
+              <?= function_exists('sbt_vfe_image') ? sbt_vfe_image('C.spa.feat_rows.' . $i . '.gallery.' . $gi, $img, ['alt' => $r['h3'], 'data-lightbox' => '']) : '<img data-lightbox src="' . $img . '" alt="' . $r['h3'] . '" />' ?>
+            <?php endforeach; ?>
+          </div>
+          <button class="mc-nav mc-prev" type="button" aria-label="Previous">&#8249;</button>
+          <button class="mc-nav mc-next" type="button" aria-label="Next">&#8250;</button>
+          <div class="mc-dots"></div>
+          <div class="frame"></div>
+        </div>
+        <?php endif; ?>
+      </div>
     <?php endforeach; ?>
   </div>
 </section>

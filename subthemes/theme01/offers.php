@@ -9,12 +9,13 @@
   </div>
 </section>
 
-<section class="pad" data-screen-label="Offers body">
+<section class="pad" data-screen-label="Offers intro">
   <div class="wrap">
     <div class="section-head reveal">
       <div class="overline"><?= function_exists('sbt_vfe') ? sbt_vfe('C.offers.intro_over', $p['intro_over']) : $p['intro_over'] ?></div>
       <h2><?= function_exists('sbt_vfe') ? sbt_vfe('C.offers.intro_h2', $p['intro_h2']) : $p['intro_h2'] ?></h2>
-      <p><?= function_exists('sbt_vfe') ? sbt_vfe('C.offers.intro_p', $p['intro_p'], ['multiline'=>true]) : $p['intro_p'] ?></p>
+      <?php $offers_intro = $p['intro_p_html'] ?? $p['intro_p']; ?>
+      <p><?= function_exists('sbt_vfe') ? sbt_vfe('C.offers.intro_p_html', $offers_intro, ['multiline'=>true]) : $offers_intro ?></p>
     </div>
     <div class="offer-grid">
       <?php foreach ($p['cards'] as $i => $c): ?>
@@ -31,9 +32,9 @@
   </div>
 </section>
 
-<section class="band" style="<?= function_exists('sbt_vfe_background_style') ? sbt_vfe_background_style('IMG.villa', $IMG['villa']) : "background-image:url('" . $IMG['villa'] . "');" ?>" data-screen-label="Offers CTA">
+<section class="band" style="<?= function_exists('sbt_vfe_background_style') ? sbt_vfe_background_style('C.offers.cta_bg', $p['cta_bg'] ?? $IMG['a5']) : "background-image:url('" . ($p['cta_bg'] ?? $IMG['a5']) . "');" ?>" data-screen-label="Offers CTA">
   <div class="inner reveal">
-    <?= function_exists('sbt_vfe_control') ? sbt_vfe_control('IMG.villa', $IMG['villa'], 'Immagine sfondo', 'image') : '' ?>
+    <?= function_exists('sbt_vfe_control') ? sbt_vfe_control('C.offers.cta_bg', $p['cta_bg'] ?? $IMG['a5'], 'Immagine sfondo', 'image') : '' ?>
     <div class="overline"><?= function_exists('sbt_vfe') ? sbt_vfe('C.offers.cta_over', $p['cta_over']) : $p['cta_over'] ?></div>
     <h2><?= function_exists('sbt_vfe') ? sbt_vfe('C.offers.cta_h2', $p['cta_h2']) : $p['cta_h2'] ?></h2>
     <a class="btn btn--light" href="<?= function_exists('sbt_url') ? sbt_url($p['cta_url'] ?? 'contacts.php') : ($p['cta_url'] ?? 'contacts.php') ?>" style="margin-top:8px;"><?= function_exists('sbt_vfe') ? sbt_vfe('C.offers.cta_btn', $p['cta_btn']) : $p['cta_btn'] ?></a>

@@ -1,4 +1,4 @@
-﻿<?php $PAGE = 'experiences'; $PAGE_TITLE = $C['experiences']['title']; require __DIR__ . '/inc/header.php'; $p = $C['experiences']; ?>
+<?php $PAGE = 'experiences'; $PAGE_TITLE = $C['experiences']['title']; require __DIR__ . '/inc/header.php'; $p = $C['experiences']; ?>
 
 <section class="page-hero" data-screen-label="Experiences banner">
   <?= function_exists('sbt_vfe_image') ? sbt_vfe_image('C.experiences.banner', $p['banner'], ['class' => 'bg', 'alt' => $p['h1']]) : '<img class="bg" src="' . $p['banner'] . '" alt="' . $p['h1'] . '" />' ?>
@@ -14,7 +14,8 @@
     <div class="section-head reveal">
       <div class="overline"><?= function_exists('sbt_vfe') ? sbt_vfe('C.experiences.intro_over', $p['intro_over']) : $p['intro_over'] ?></div>
       <h2><?= function_exists('sbt_vfe') ? sbt_vfe('C.experiences.intro_h2', $p['intro_h2']) : $p['intro_h2'] ?></h2>
-      <p><?= function_exists('sbt_vfe') ? sbt_vfe('C.experiences.intro_p', $p['intro_p'], ['multiline'=>true]) : $p['intro_p'] ?></p>
+      <?php $experiences_intro = $p['intro_p_html'] ?? $p['intro_p']; ?>
+      <p><?= function_exists('sbt_vfe') ? sbt_vfe('C.experiences.intro_p_html', $experiences_intro, ['multiline'=>true]) : $experiences_intro ?></p>
     </div>
     <div class="exp-grid">
       <?php foreach ($p['cards'] as $i => $c): ?>
@@ -23,9 +24,7 @@
         <div class="ex-body">
           <div class="overline"><?= function_exists('sbt_vfe') ? sbt_vfe('C.experiences.cards.' . $i . '.over', $c['over']) : $c['over'] ?></div>
           <h3><?= function_exists('sbt_vfe') ? sbt_vfe('C.experiences.cards.' . $i . '.h3', $c['h3']) : $c['h3'] ?></h3>
-          <p style="color:rgba(255,255,255,.85);font-size:14.5px;margin-top:8px;max-width:40ch;"><?= function_exists('sbt_vfe') ? sbt_vfe('C.experiences.cards.' . $i . '.p', $c['p'], ['multiline'=>true]) : $c['p'] ?></p>
-          <a class="ex-link" href="<?= function_exists('sbt_url') ? sbt_url($p['cta_url']) : $p['cta_url'] ?>"><?= function_exists('sbt_vfe') ? sbt_vfe('TEXT.enquire', $TEXT['enquire'] ?? 'Enquire') : ($TEXT['enquire'] ?? 'Enquire') ?> <span></span></a>
-          <?= function_exists('sbt_vfe_control') ? sbt_vfe_control('C.experiences.cta_url', $p['cta_url'], 'Link enquire', 'url') : '' ?>
+          <div class="ex-link"><?= function_exists('sbt_vfe') ? sbt_vfe('TEXT.discover', $TEXT['discover'] ?? 'Discover') : ($TEXT['discover'] ?? 'Discover') ?> <span></span></div>
         </div>
       </article>
       <?php endforeach; ?>
@@ -47,13 +46,23 @@
   </div>
 </section>
 
-<section class="band" style="<?= function_exists('sbt_vfe_background_style') ? sbt_vfe_background_style('C.experiences.cta_bg', $p['cta_bg']) : "background-image:url('" . $p['cta_bg'] . "');" ?>" data-screen-label="Experiences CTA">
+<section class="band" style="<?= function_exists('sbt_vfe_background_style') ? sbt_vfe_background_style('C.experiences.band_bg', $p['band_bg'] ?? $IMG['wellness_corridor']) : "background-image:url('" . ($p['band_bg'] ?? $IMG['wellness_corridor']) . "');" ?>" data-screen-label="Experiences band">
   <div class="inner reveal">
-    <?= function_exists('sbt_vfe_control') ? sbt_vfe_control('C.experiences.cta_bg', $p['cta_bg'], 'Immagine sfondo', 'image') : '' ?>
-    <div class="overline"><?= function_exists('sbt_vfe') ? sbt_vfe('C.experiences.cta_over', $p['cta_over']) : $p['cta_over'] ?></div>
-    <h2><?= function_exists('sbt_vfe') ? sbt_vfe('C.experiences.cta_h2', $p['cta_h2']) : $p['cta_h2'] ?></h2>
-    <a class="btn btn--light" href="<?= function_exists('sbt_url') ? sbt_url($p['cta_url']) : $p['cta_url'] ?>" style="margin-top:8px;"><?= function_exists('sbt_vfe') ? sbt_vfe('C.experiences.cta_btn', $p['cta_btn']) : $p['cta_btn'] ?></a>
-    <?= function_exists('sbt_vfe_control') ? sbt_vfe_control('C.experiences.cta_url', $p['cta_url'], 'Link bottone', 'url') : '' ?>
+    <?= function_exists('sbt_vfe_control') ? sbt_vfe_control('C.experiences.band_bg', $p['band_bg'] ?? $IMG['wellness_corridor'], 'Immagine sfondo', 'image') : '' ?>
+    <div class="overline"><?= function_exists('sbt_vfe') ? sbt_vfe('C.experiences.band_over', $p['band_over'] ?? 'Unhurried &amp; authentic') : ($p['band_over'] ?? 'Unhurried &amp; authentic') ?></div>
+    <h2><?= function_exists('sbt_vfe') ? sbt_vfe('C.experiences.band_h2', $p['band_h2'] ?? 'The art of living,<br>Apulian style', ['multiline'=>true]) : ($p['band_h2'] ?? 'The art of living,<br>Apulian style') ?></h2>
+    <p><?= function_exists('sbt_vfe') ? sbt_vfe('C.experiences.band_p', $p['band_p'] ?? 'Long lunches under the pergola, sun-warmed stone, and the generous welcome of the South - this is the rhythm of a stay at Villa Rosa.', ['multiline'=>true]) : ($p['band_p'] ?? 'Long lunches under the pergola, sun-warmed stone, and the generous welcome of the South - this is the rhythm of a stay at Villa Rosa.') ?></p>
+  </div>
+</section>
+
+<section class="pad" data-screen-label="Experiences CTA">
+  <div class="wrap" style="text-align:center;">
+    <div class="reveal" style="max-width:620px;margin:0 auto;">
+      <div class="overline"><?= function_exists('sbt_vfe') ? sbt_vfe('C.experiences.cta_over', $p['cta_over'] ?? 'Design your days') : ($p['cta_over'] ?? 'Design your days') ?></div>
+      <h2 class="lead" style="margin-bottom:24px;"><?= function_exists('sbt_vfe') ? sbt_vfe('C.experiences.cta_h2', $p['cta_h2'] ?? 'Plan your experiences') : ($p['cta_h2'] ?? 'Plan your experiences') ?></h2>
+      <a class="btn" href="<?= function_exists('sbt_url') ? sbt_url($p['cta_url']) : $p['cta_url'] ?>"><?= function_exists('sbt_vfe') ? sbt_vfe('C.experiences.cta_btn', $p['cta_btn']) : $p['cta_btn'] ?></a>
+      <?= function_exists('sbt_vfe_control') ? sbt_vfe_control('C.experiences.cta_url', $p['cta_url'], 'Link bottone', 'url') : '' ?>
+    </div>
   </div>
 </section>
 
