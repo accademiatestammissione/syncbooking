@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.17' );
+define( 'SBT_VERSION', '1.0.18' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -519,6 +519,49 @@ function sbt_sanitize_editable_override( $path, $value ) {
 	return wp_kses_post( $value );
 }
 
+function sbt_link_target_options() {
+	$options = array();
+	$posts = get_posts(
+		array(
+			'post_type'      => array( 'page', 'post' ),
+			'post_status'    => 'publish',
+			'posts_per_page' => 200,
+			'orderby'        => array(
+				'post_type' => 'ASC',
+				'title'     => 'ASC',
+			),
+			'order'          => 'ASC',
+		)
+	);
+
+	foreach ( $posts as $post ) {
+		$type_label = 'page' === $post->post_type ? 'Pagina' : 'Articolo';
+		$url = set_url_scheme( get_permalink( $post ), 'https' );
+		$options[ $url ] = $type_label . ' - ' . get_the_title( $post );
+	}
+
+	return $options;
+}
+
+function sbt_render_link_target_control( $name, $current ) {
+	$current = sbt_editable_url_value( $current );
+	$options = sbt_link_target_options();
+	$has_current = isset( $options[ $current ] );
+	?>
+	<span class="sbt-link-control">
+		<input type="hidden" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $current ); ?>" class="sbt-link-value">
+		<select class="sbt-link-select">
+			<option value="">Link diretto / esterno</option>
+			<?php foreach ( $options as $url => $label ) : ?>
+				<option value="<?php echo esc_attr( $url ); ?>" <?php selected( $current, $url ); ?>><?php echo esc_html( $label ); ?> - <?php echo esc_html( $url ); ?></option>
+			<?php endforeach; ?>
+		</select>
+		<input type="url" value="<?php echo esc_attr( $has_current ? '' : $current ); ?>" class="sbt-link-direct" placeholder="https://example.com/page/">
+		<span class="sbt-link-hint">Scegli una pagina/articolo oppure inserisci un URL diretto https://...</span>
+	</span>
+	<?php
+}
+
 function sbt_copy_directory( $source, $target ) {
 	if ( ! is_dir( $target ) ) {
 		wp_mkdir_p( $target );
@@ -962,7 +1005,7 @@ function sbt_rewrite_content_urls( &$value ) {
 	}
 
 	foreach ( $value as $key => &$child ) {
-		if ( is_string( $child ) && in_array( (string) $key, array( 'url', 'cta_url' ), true ) ) {
+		if ( is_string( $child ) && preg_match( '/(^|_)url$/', (string) $key ) ) {
 			$child = sbt_url( $child );
 		} else {
 			sbt_rewrite_content_urls( $child );
@@ -1075,8 +1118,9 @@ function sbt_visual_meta_editor_assets() {
 		.sbt-vfe-modal.is-open { display:flex; }
 		.sbt-vfe-dialog { background:#fff; border-radius:8px; box-shadow:0 18px 60px rgba(0,0,0,.25); color:#1d2327; max-width:620px; padding:18px; width:min(620px,100%); }
 		.sbt-vfe-dialog h3 { color:#1d2327; font:600 18px/1.25 system-ui,sans-serif; margin:0 0 12px; }
-		.sbt-vfe-dialog textarea, .sbt-vfe-dialog input { border:1px solid #8c8f94; border-radius:4px; box-sizing:border-box; color:#1d2327; font:400 15px/1.45 system-ui,sans-serif; min-height:44px; padding:10px; width:100%; }
+		.sbt-vfe-dialog textarea, .sbt-vfe-dialog input, .sbt-vfe-dialog select { border:1px solid #8c8f94; border-radius:4px; box-sizing:border-box; color:#1d2327; font:400 15px/1.45 system-ui,sans-serif; min-height:44px; padding:10px; width:100%; }
 		.sbt-vfe-dialog textarea { min-height:150px; resize:vertical; }
+		.sbt-vfe-url-hint { color:#646970; font:400 12px/1.45 system-ui,sans-serif; margin:8px 0 0; }
 		.sbt-vfe-preview { display:grid; gap:8px; margin:0 0 10px; }
 		.sbt-vfe-preview img { border:1px solid #dcdcde; border-radius:6px; height:120px; object-fit:cover; width:180px; }
 		.sbt-vfe-media-actions { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; }
@@ -1091,7 +1135,8 @@ function sbt_visual_meta_editor_assets() {
 			ajaxUrl: <?php echo wp_json_encode( admin_url( 'admin-ajax.php' ) ); ?>,
 			nonce: <?php echo wp_json_encode( wp_create_nonce( 'sbt_vfe_save' ) ); ?>,
 			postId: <?php echo wp_json_encode( get_queried_object_id() ); ?>,
-			language: <?php echo wp_json_encode( sbt_current_content_language() ); ?>
+			language: <?php echo wp_json_encode( sbt_current_content_language() ); ?>,
+			linkTargets: <?php echo wp_json_encode( sbt_link_target_options() ); ?>
 		};
 		var activeField = null;
 		var modal = document.createElement('div');
@@ -1133,6 +1178,16 @@ function sbt_visual_meta_editor_assets() {
 			wrap.innerHTML = '<div class="sbt-vfe-preview"></div><input type="url"><div class="sbt-vfe-media-actions"><button type="button" class="sbt-vfe-pick-image">Scegli / carica immagine</button></div>';
 			wrap.querySelector('input').value = value;
 			updateImagePreview(wrap, value);
+		}
+
+		function renderUrlInput(wrap, value){
+			var options = '<option value="">Link diretto / esterno</option>';
+			Object.keys(config.linkTargets || {}).forEach(function(url){
+				options += '<option value="' + url.replace(/"/g, '&quot;') + '"' + (url === value ? ' selected' : '') + '>' + config.linkTargets[url] + ' - ' + url + '</option>';
+			});
+			var isKnown = !!(config.linkTargets && config.linkTargets[value]);
+			wrap.innerHTML = '<select class="sbt-vfe-url-select">' + options + '</select><input type="url" class="sbt-vfe-url-input" placeholder="https://example.com/page/"><p class="sbt-vfe-url-hint">Scegli una pagina/articolo oppure inserisci un URL diretto https://...</p>';
+			wrap.querySelector('.sbt-vfe-url-input').value = isKnown ? '' : value;
 		}
 
 		function updateImagePreview(wrap, value){
@@ -1245,8 +1300,10 @@ function sbt_visual_meta_editor_assets() {
 			var parentGallery = type === 'image' ? galleryParentPath(activeField.getAttribute('data-sbt-vfe-path')) : '';
 			if (type === 'image') {
 				renderImageInput(wrap, value, parentGallery);
+			} else if (type === 'url') {
+				renderUrlInput(wrap, value);
 			} else {
-				wrap.innerHTML = multiline ? '<textarea></textarea>' : '<input type="' + (type === 'url' ? 'url' : 'text') + '">';
+				wrap.innerHTML = multiline ? '<textarea></textarea>' : '<input type="text">';
 				wrap.firstElementChild.value = value;
 			}
 			modal.classList.add('is-open');
@@ -1260,6 +1317,19 @@ function sbt_visual_meta_editor_assets() {
 			}
 		});
 
+		modal.addEventListener('change', function(event){
+			if (!event.target.closest('.sbt-vfe-url-select')) return;
+			var wrap = modal.querySelector('.sbt-vfe-input');
+			var input = wrap.querySelector('.sbt-vfe-url-input');
+			if (event.target.value && input) input.value = '';
+		});
+
+		modal.addEventListener('input', function(event){
+			if (!event.target.closest('.sbt-vfe-url-input')) return;
+			var select = modal.querySelector('.sbt-vfe-url-select');
+			if (select) select.value = '';
+		});
+
 		modal.querySelector('.sbt-vfe-cancel').addEventListener('click', function(){
 			modal.classList.remove('is-open');
 			activeField = null;
@@ -1267,9 +1337,17 @@ function sbt_visual_meta_editor_assets() {
 
 		modal.querySelector('.sbt-vfe-save').addEventListener('click', function(){
 			if (!activeField) return;
-			var input = modal.querySelector('textarea,input');
 			var type = activeField.getAttribute('data-sbt-vfe-type') || 'text';
-			saveVisualField(activeField, activeField.getAttribute('data-sbt-vfe-path'), input.value, type, false);
+			var value = '';
+			if (type === 'url') {
+				var selected = modal.querySelector('.sbt-vfe-url-select');
+				var direct = modal.querySelector('.sbt-vfe-url-input');
+				value = selected && selected.value ? selected.value : (direct ? direct.value : '');
+			} else {
+				var input = modal.querySelector('textarea,input');
+				value = input ? input.value : '';
+			}
+			saveVisualField(activeField, activeField.getAttribute('data-sbt-vfe-path'), value, type, false);
 		});
 
 		addGalleryEditors();
@@ -1363,6 +1441,8 @@ function sbt_admin_shared_styles() {
 		.sbt-gallery-remove { position:absolute; right:6px; top:6px; }
 		.sbt-gallery-empty { border:1px dashed #c3c4c7; border-radius:8px; color:#646970; padding:14px; text-align:center; }
 		.sbt-gallery-actions, .sbt-media-actions { display:flex; flex-wrap:wrap; gap:8px; }
+		.sbt-link-control { display:grid; gap:8px; }
+		.sbt-link-hint { color:#646970; font-size:12px; }
 		@media (max-width: 1180px) { .sbt-page-editor-layout { display:block; } }
 	</style>
 	<?php
@@ -1470,6 +1550,23 @@ function sbt_admin_footer_scripts() {
 				var $control = $(this).closest('.sbt-gallery-control');
 				$(this).closest('.sbt-gallery-item').remove();
 				syncGallery($control);
+			});
+
+			$(document).on('change', '.sbt-link-select', function(){
+				var $control = $(this).closest('.sbt-link-control');
+				var value = $(this).val();
+				if (value) {
+					$control.find('.sbt-link-direct').val('');
+					$control.find('.sbt-link-value').val(value);
+				} else {
+					$control.find('.sbt-link-value').val($control.find('.sbt-link-direct').val());
+				}
+			});
+
+			$(document).on('input', '.sbt-link-direct', function(){
+				var $control = $(this).closest('.sbt-link-control');
+				$control.find('.sbt-link-select').val('');
+				$control.find('.sbt-link-value').val($(this).val());
 			});
 		});
 	})(jQuery);
@@ -2272,6 +2369,8 @@ function sbt_render_header_field( $path, $label, $value, $overrides, $type = 'te
 					<option value="<?php echo esc_attr( $choice_value ); ?>" <?php selected( $current, $choice_value ); ?>><?php echo esc_html( $choice_label ); ?></option>
 				<?php endforeach; ?>
 			</select>
+		<?php elseif ( 'url' === $type ) : ?>
+			<?php sbt_render_link_target_control( $name, $current ); ?>
 		<?php else : ?>
 			<input type="<?php echo esc_attr( $type ); ?>" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $current ); ?>">
 		<?php endif; ?>
@@ -2294,12 +2393,7 @@ function sbt_render_menu_row( $path, $item, $overrides, $page_options, $is_child
 			</div>
 			<div class="sbt-field">
 				<label>Pagina collegata</label>
-				<select name="<?php echo esc_attr( SBT_OPTION . '[overrides][' . $url_path . ']' ); ?>">
-					<?php foreach ( $page_options as $file => $page_label ) : ?>
-						<?php $option_url = sbt_editable_url_value( $file ); ?>
-						<option value="<?php echo esc_attr( $option_url ); ?>" <?php selected( $absolute_url, $option_url ); ?>><?php echo esc_html( $page_label ); ?> - <?php echo esc_html( $option_url ); ?></option>
-					<?php endforeach; ?>
-				</select>
+				<?php sbt_render_link_target_control( SBT_OPTION . '[overrides][' . $url_path . ']', $absolute_url ); ?>
 			</div>
 			<?php if ( isset( $item['desc'] ) ) : ?>
 				<?php $desc_path = $path . '.desc'; ?>
@@ -2777,6 +2871,10 @@ function sbt_field_kind( $path, $value ) {
 		return $map[ $key ];
 	}
 
+	if ( is_string( $key ) && preg_match( '/(^|_)url$/', $key ) ) {
+		return 'url';
+	}
+
 	return 'text';
 }
 
@@ -2922,7 +3020,7 @@ function sbt_render_single_admin_field( $path, $label, $value, $overrides, $fiel
 		<?php elseif ( $is_long ) : ?>
 			<textarea name="<?php echo esc_attr( $name ); ?>" rows="4" class="large-text"><?php echo esc_textarea( $current ); ?></textarea>
 		<?php elseif ( 'url' === sbt_field_kind( $path, $value ) ) : ?>
-			<input type="url" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( sbt_editable_url_value( $current ) ); ?>" class="large-text" placeholder="https://example.com/page/">
+			<?php sbt_render_link_target_control( $name, $current ); ?>
 		<?php else : ?>
 			<input type="text" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $current ); ?>" class="large-text">
 		<?php endif; ?>

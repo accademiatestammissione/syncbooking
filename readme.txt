@@ -23,6 +23,10 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 1.0.18 =
+* Added page/post target selectors for editable button and menu links.
+* Kept direct https URL entry as an alternative for external links.
+
 = 1.0.17 =
 * Changed frontend Visual Edit galleries to use one gallery-level Media Library modal.
 * Removed per-image Visual Edit wrappers from gallery images so the original gallery layout remains intact.
