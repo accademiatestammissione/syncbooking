@@ -14,6 +14,11 @@ SyncBooking Hospitality provides a WordPress theme package for hospitality websi
 
 == Changelog ==
 
+= 1.0.7 =
+* Re-aligned Theme 01 defaults with the latest clean HTML source.
+* Added optimized local PNG wellness assets used by the Theme 01 HTML source.
+* Restored the Theme 01 homepage Vimeo background video id and iframe parameters.
+
 = 1.0.6 =
 * Replaced PHP short echo tags with full PHP echo tags for WordPress.org scanning.
 * Updated the text domain to match the public theme slug.

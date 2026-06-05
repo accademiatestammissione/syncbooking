@@ -4,7 +4,7 @@
 <section class="hero" id="top" data-screen-label="Hero">
   <div class="hero-video" style="background-image:url('<?php echo $IMG['hero'] ?? $IMG['welcome'] ?>');">
     <?php if (!empty($SITE['vimeo'])): ?>
-    <iframe src="https://player.vimeo.com/video/<?php echo $SITE['vimeo'] ?>?autoplay=1&controls=0&mute=1&muted=1&loop=1&playlist=<?php echo $SITE['vimeo'] ?>&background=1" allow="autoplay; fullscreen" title="<?php echo $SITE['name'] ?>"></iframe>
+    <iframe src="https://player.vimeo.com/video/<?php echo $SITE['vimeo'] ?>?autoplay=1&controls=0&mute=1&muted=1&loop=1&playlist=<?php echo $SITE['vimeo'] ?>&disablekb=1&modestbranding=1&playsinline=1&rel=0&background=1" allow="autoplay; fullscreen" title="<?php echo $SITE['name'] ?>"></iframe>
     <?php endif; ?>
   </div>
   <div class="hero-overlay"></div>
@@ -100,7 +100,7 @@
 </section>
 
 <!-- BAND -->
-<section class="band" style="<?php echo function_exists('sbt_vfe_background_style') ? sbt_vfe_background_style('IMG.lunch', $IMG['lunch']) : "background-image:url('" . $IMG['lunch'] . "');" ?>" data-screen-label="Surroundings band">
+<section class="band" id="band" style="<?php echo function_exists('sbt_vfe_background_style') ? sbt_vfe_background_style('IMG.lunch', $IMG['lunch']) : "background-image:url('" . $IMG['lunch'] . "');" ?>" data-screen-label="Surroundings band">
   <div class="inner reveal">
     <?php echo function_exists('sbt_vfe_control') ? sbt_vfe_control('IMG.lunch', $IMG['lunch'], 'Immagine sfondo', 'image') : '' ?>
     <div class="overline"><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.home.band_over', $p['band_over']) : $p['band_over'] ?></div>
