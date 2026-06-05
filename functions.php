@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.14' );
+define( 'SBT_VERSION', '1.0.15' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -452,6 +452,57 @@ function sbt_url( $url ) {
 	}
 
 	return $url;
+}
+
+function sbt_editable_url_value( $url ) {
+	$url = trim( (string) $url );
+	if ( '' === $url ) {
+		return '';
+	}
+
+	if ( preg_match( '#^https?://#i', $url ) ) {
+		return set_url_scheme( $url, 'https' );
+	}
+
+	$resolved = sbt_url( $url );
+	if ( preg_match( '#^https?://#i', $resolved ) ) {
+		return set_url_scheme( $resolved, 'https' );
+	}
+
+	if ( 0 === strpos( $url, '//' ) ) {
+		return set_url_scheme( $url, 'https' );
+	}
+
+	if ( 0 === strpos( $url, '/' ) ) {
+		return set_url_scheme( home_url( $url ), 'https' );
+	}
+
+	if ( 0 === strpos( $url, '#' ) ) {
+		return set_url_scheme( home_url( '/' . $url ), 'https' );
+	}
+
+	return set_url_scheme( home_url( '/' . ltrim( $url, '/' ) ), 'https' );
+}
+
+function sbt_sanitize_editable_override( $path, $value ) {
+	$value = wp_unslash( $value );
+	$kind = sbt_field_kind( $path, $value );
+
+	if ( 'url' === $kind ) {
+		return esc_url_raw( sbt_editable_url_value( $value ) );
+	}
+
+	if ( 'image' === $kind ) {
+		return esc_url_raw( $value );
+	}
+
+	if ( 'gallery' === $kind ) {
+		$urls = preg_split( '/\r\n|\r|\n/', (string) $value );
+		$urls = array_filter( array_map( 'esc_url_raw', array_map( 'trim', $urls ) ) );
+		return implode( "\n", $urls );
+	}
+
+	return wp_kses_post( $value );
 }
 
 function sbt_copy_directory( $source, $target ) {
@@ -951,6 +1002,10 @@ function sbt_vfe_control( $path, $value, $label = 'Modifica', $type = 'text' ) {
 		return '';
 	}
 
+	if ( 'url' === $type ) {
+		$value = sbt_editable_url_value( $value );
+	}
+
 	return '<span class="sbt-vfe-field sbt-vfe-control" data-sbt-vfe-path="' . esc_attr( $path ) . '" data-sbt-vfe-multiline="0" data-sbt-vfe-type="' . esc_attr( $type ) . '" data-sbt-vfe-value="' . esc_attr( $value ) . '"><span class="sbt-vfe-control-label">' . esc_html( $label ) . '</span><button type="button" class="sbt-vfe-edit" aria-label="' . esc_attr( $label ) . '">&#9998;</button></span>';
 }
 
@@ -1216,7 +1271,9 @@ function sbt_visual_meta_editor_save() {
 	$post_id = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
 	$type = isset( $_POST['type'] ) ? sanitize_key( wp_unslash( $_POST['type'] ) ) : 'text';
 	$raw_value = isset( $_POST['value'] ) ? wp_unslash( $_POST['value'] ) : '';
-	if ( 'image' === $type || 'url' === $type ) {
+	if ( 'url' === $type ) {
+		$value = esc_url_raw( sbt_editable_url_value( $raw_value ) );
+	} elseif ( 'image' === $type ) {
 		$value = esc_url_raw( $raw_value );
 	} elseif ( 'gallery' === $type ) {
 		$urls = preg_split( '/\r\n|\r|\n/', (string) $raw_value );
@@ -1709,7 +1766,7 @@ function sbt_save_page_editor_metabox( $post_id ) {
 		}
 
 		if ( $allowed && is_string( $value ) ) {
-			$options['overrides'][ $key ]['_languages'][ $edit_language ][ $path ] = wp_kses_post( wp_unslash( $value ) );
+			$options['overrides'][ $key ]['_languages'][ $edit_language ][ $path ] = sbt_sanitize_editable_override( $path, $value );
 		}
 	}
 
@@ -1751,9 +1808,9 @@ function sbt_sanitize_options( $raw ) {
 		foreach ( $raw['overrides'] as $key => $value ) {
 			$key = sanitize_text_field( wp_unslash( $key ) );
 			if ( is_string( $value ) ) {
-				$options['overrides'][ $options['subtheme'] ]['_languages'][ $edit_language ][ $key ] = wp_kses_post( wp_unslash( $value ) );
+				$options['overrides'][ $options['subtheme'] ]['_languages'][ $edit_language ][ $key ] = sbt_sanitize_editable_override( $key, $value );
 				if ( in_array( $key, array( 'SITE.unit_label', 'SITE.unit_count' ), true ) ) {
-					$options['overrides'][ $options['subtheme'] ]['_languages']['en'][ $key ] = wp_kses_post( wp_unslash( $value ) );
+					$options['overrides'][ $options['subtheme'] ]['_languages']['en'][ $key ] = sbt_sanitize_editable_override( $key, $value );
 				}
 			}
 		}
@@ -2179,6 +2236,9 @@ function sbt_render_theme_tab( $active, $subthemes ) {
 
 function sbt_render_header_field( $path, $label, $value, $overrides, $type = 'text', $choices = array() ) {
 	$current = array_key_exists( $path, $overrides ) ? $overrides[ $path ] : $value;
+	if ( 'url' === $type ) {
+		$current = sbt_editable_url_value( $current );
+	}
 	$name = SBT_OPTION . '[overrides][' . $path . ']';
 	?>
 	<div class="sbt-field">
@@ -2201,6 +2261,7 @@ function sbt_render_menu_row( $path, $item, $overrides, $page_options, $is_child
 	$url_path = $path . '.url';
 	$label = array_key_exists( $label_path, $overrides ) ? $overrides[ $label_path ] : ( $item['label'] ?? '' );
 	$url = array_key_exists( $url_path, $overrides ) ? $overrides[ $url_path ] : ( $item['url'] ?? '' );
+	$absolute_url = sbt_editable_url_value( $url );
 	?>
 	<div class="sbt-menu-item <?php echo $is_child ? 'sbt-menu-child' : ''; ?>">
 		<div class="sbt-field-grid">
@@ -2212,7 +2273,8 @@ function sbt_render_menu_row( $path, $item, $overrides, $page_options, $is_child
 				<label>Pagina collegata</label>
 				<select name="<?php echo esc_attr( SBT_OPTION . '[overrides][' . $url_path . ']' ); ?>">
 					<?php foreach ( $page_options as $file => $page_label ) : ?>
-						<option value="<?php echo esc_attr( $file ); ?>" <?php selected( $url, $file ); ?>><?php echo esc_html( $page_label ); ?></option>
+						<?php $option_url = sbt_editable_url_value( $file ); ?>
+						<option value="<?php echo esc_attr( $option_url ); ?>" <?php selected( $absolute_url, $option_url ); ?>><?php echo esc_html( $page_label ); ?> - <?php echo esc_html( $option_url ); ?></option>
 					<?php endforeach; ?>
 				</select>
 			</div>
@@ -2706,7 +2768,8 @@ function sbt_next_field_alias( $path, $value, &$counters ) {
 }
 
 function sbt_current_admin_value( $path, $value, $overrides ) {
-	return array_key_exists( $path, $overrides ) ? $overrides[ $path ] : ( sbt_is_scalar_list( $value ) ? implode( "\n", $value ) : $value );
+	$current = array_key_exists( $path, $overrides ) ? $overrides[ $path ] : ( sbt_is_scalar_list( $value ) ? implode( "\n", $value ) : $value );
+	return 'url' === sbt_field_kind( $path, $value ) ? sbt_editable_url_value( $current ) : $current;
 }
 
 function sbt_value_lines( $value ) {
@@ -2835,6 +2898,8 @@ function sbt_render_single_admin_field( $path, $label, $value, $overrides, $fiel
 			</span>
 		<?php elseif ( $is_long ) : ?>
 			<textarea name="<?php echo esc_attr( $name ); ?>" rows="4" class="large-text"><?php echo esc_textarea( $current ); ?></textarea>
+		<?php elseif ( 'url' === sbt_field_kind( $path, $value ) ) : ?>
+			<input type="url" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( sbt_editable_url_value( $current ) ); ?>" class="large-text" placeholder="https://example.com/page/">
 		<?php else : ?>
 			<input type="text" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $current ); ?>" class="large-text">
 		<?php endif; ?>

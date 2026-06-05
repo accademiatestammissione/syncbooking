@@ -23,6 +23,10 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 1.0.15 =
+* Normalized editable button/link fields to absolute https/http URLs instead of internal PHP template filenames.
+* Added a WordPress single post template.
+
 = 1.0.14 =
 * Re-aligned Theme 01 homepage structure and image data with the latest clean HTML source package.
 * Restored the main Villa Rosa home image as an explicit fallback hero/welcome asset.
