@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.12' );
+define( 'SBT_VERSION', '1.0.13' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -991,6 +991,8 @@ function sbt_visual_meta_editor_assets() {
 		.sbt-vfe-control .sbt-vfe-edit { background:#fff; color:#2271b1; margin-left:0; }
 		.sbt-vfe-image-wrap { display:block; position:relative; }
 		.sbt-vfe-image-wrap > .sbt-vfe-control { left:10px; position:absolute; top:10px; z-index:5; }
+		.sbt-vfe-gallery-scope { position:relative; }
+		.sbt-vfe-gallery-edit { align-items:center; background:rgba(34,113,177,.96); border:0; border-radius:999px; color:#fff; cursor:pointer; display:inline-flex; font:600 12px/1 system-ui,sans-serif; gap:6px; padding:8px 11px; position:absolute; right:10px; top:10px; z-index:8; }
 		.sbt-vfe-modal { align-items:center; background:rgba(0,0,0,.45); bottom:0; display:none; justify-content:center; left:0; padding:24px; position:fixed; right:0; top:0; z-index:999999; }
 		.sbt-vfe-modal.is-open { display:flex; }
 		.sbt-vfe-dialog { background:#fff; border-radius:8px; box-shadow:0 18px 60px rgba(0,0,0,.25); color:#1d2327; max-width:620px; padding:18px; width:min(620px,100%); }
@@ -1046,7 +1048,7 @@ function sbt_visual_meta_editor_assets() {
 		}
 
 		function renderImageInput(wrap, value, galleryPath){
-			wrap.innerHTML = '<div class="sbt-vfe-preview"></div><input type="url"><div class="sbt-vfe-media-actions"><button type="button" class="sbt-vfe-pick-image">Scegli / carica immagine</button>' + (galleryPath ? '<button type="button" class="sbt-vfe-pick-gallery">Modifica tutta la gallery</button>' : '') + '</div>';
+			wrap.innerHTML = '<div class="sbt-vfe-preview"></div><input type="url"><div class="sbt-vfe-media-actions"><button type="button" class="sbt-vfe-pick-image">Scegli / carica immagine</button></div>';
 			wrap.querySelector('input').value = value;
 			updateImagePreview(wrap, value);
 		}
@@ -1067,6 +1069,29 @@ function sbt_visual_meta_editor_assets() {
 				updateImagePreview(wrap, item.url);
 			});
 			frame.open();
+		}
+
+		function addGalleryEditors(){
+			document.querySelectorAll('.gallery,.mosaic,.media-carousel').forEach(function(scope){
+				if (scope.querySelector('.sbt-vfe-gallery-edit')) return;
+				var firstField = scope.querySelector('.sbt-vfe-field[data-sbt-vfe-type="image"][data-sbt-vfe-path$=".0"]');
+				if (!firstField) {
+					firstField = scope.querySelector('.sbt-vfe-field[data-sbt-vfe-type="image"]');
+				}
+				if (!firstField || !galleryParentPath(firstField.getAttribute('data-sbt-vfe-path'))) return;
+				scope.classList.add('sbt-vfe-gallery-scope');
+				var button = document.createElement('button');
+				button.type = 'button';
+				button.className = 'sbt-vfe-gallery-edit';
+				button.innerHTML = '&#9998; Galleria';
+				button.setAttribute('aria-label', 'Modifica tutta la galleria');
+				button.addEventListener('click', function(event){
+					event.preventDefault();
+					event.stopPropagation();
+					openGalleryFrame(firstField);
+				});
+				scope.appendChild(button);
+			});
 		}
 
 		function openGalleryFrame(field){
@@ -1155,10 +1180,6 @@ function sbt_visual_meta_editor_assets() {
 				event.preventDefault();
 				openImageFrame(modal.querySelector('.sbt-vfe-input'));
 			}
-			if (event.target.closest('.sbt-vfe-pick-gallery') && activeField) {
-				event.preventDefault();
-				openGalleryFrame(activeField);
-			}
 		});
 
 		modal.querySelector('.sbt-vfe-cancel').addEventListener('click', function(){
@@ -1172,6 +1193,8 @@ function sbt_visual_meta_editor_assets() {
 			var type = activeField.getAttribute('data-sbt-vfe-type') || 'text';
 			saveVisualField(activeField, activeField.getAttribute('data-sbt-vfe-path'), input.value, type, false);
 		});
+
+		addGalleryEditors();
 	})();
 	</script>
 	<?php

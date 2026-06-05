@@ -23,6 +23,10 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 1.0.13 =
+* Added a single frontend Visual Edit gallery button that opens the Media Library modal for complete gallery replacement.
+* Removed the full-gallery action from the single-image modal so gallery layouts stay unchanged while editing.
+
 = 1.0.12 =
 * Added permanent source-of-truth build instructions for refreshing subthemes from new clean HTML packages.
 * Documented that JavaScript-generated header and footer sources must be mirrored in the WordPress PHP templates.
