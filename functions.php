@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.16' );
+define( 'SBT_VERSION', '1.0.17' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -1023,17 +1023,26 @@ function sbt_vfe_control( $path, $value, $label = 'Modifica', $type = 'text' ) {
 	return '<span class="sbt-vfe-field sbt-vfe-control" data-sbt-vfe-path="' . esc_attr( $path ) . '" data-sbt-vfe-multiline="0" data-sbt-vfe-type="' . esc_attr( $type ) . '" data-sbt-vfe-value="' . esc_attr( $value ) . '"><span class="sbt-vfe-control-label">' . esc_html( $label ) . '</span><button type="button" class="sbt-vfe-edit" aria-label="' . esc_attr( $label ) . '">&#9998;</button></span>';
 }
 
+function sbt_vfe_is_gallery_item_path( $path ) {
+	return (bool) preg_match( '/(?:^|\.)(?:gallery|[A-Za-z0-9_]*_gallery)\.\d+$/', (string) $path );
+}
+
 function sbt_vfe_image( $path, $src, $attrs = array() ) {
 	$attr_string = '';
 	foreach ( $attrs as $name => $value ) {
 		$attr_string .= ' ' . esc_attr( $name ) . '="' . esc_attr( $value ) . '"';
 	}
 
-	$image = '<img src="' . esc_url( $src ) . '"' . $attr_string . ' />';
 	if ( ! sbt_visual_meta_editor_enabled() || ! sbt_visual_meta_editor_allowed_path( $path ) ) {
-		return $image;
+		return '<img src="' . esc_url( $src ) . '"' . $attr_string . ' />';
 	}
 
+	if ( sbt_vfe_is_gallery_item_path( $path ) ) {
+		$parent_path = preg_replace( '/\.\d+$/', '', (string) $path );
+		return '<img src="' . esc_url( $src ) . '"' . $attr_string . ' data-sbt-vfe-gallery-item="1" data-sbt-vfe-path="' . esc_attr( $path ) . '" data-sbt-vfe-gallery-path="' . esc_attr( $parent_path ) . '" />';
+	}
+
+	$image = '<img src="' . esc_url( $src ) . '"' . $attr_string . ' />';
 	return '<span class="sbt-vfe-image-wrap">' . $image . sbt_vfe_control( $path, $src, 'Immagine', 'image' ) . '</span>';
 }
 
@@ -1106,6 +1115,10 @@ function sbt_visual_meta_editor_assets() {
 			return /\.\d+$/.test(path || '') ? path.replace(/\.\d+$/, '') : '';
 		}
 
+		function galleryPathFromElement(element){
+			return element.getAttribute('data-sbt-vfe-gallery-path') || galleryParentPath(element.getAttribute('data-sbt-vfe-path'));
+		}
+
 		function closestGalleryUrls(field){
 			var scope = field.closest('.media-carousel,.mosaic,.gallery,.house,.feature,.page-hero') || document;
 			var urls = [];
@@ -1143,11 +1156,8 @@ function sbt_visual_meta_editor_assets() {
 		function addGalleryEditors(){
 			document.querySelectorAll('.gallery,.mosaic,.media-carousel').forEach(function(scope){
 				if (scope.querySelector('.sbt-vfe-gallery-edit')) return;
-				var firstField = scope.querySelector('.sbt-vfe-field[data-sbt-vfe-type="image"][data-sbt-vfe-path$=".0"]');
-				if (!firstField) {
-					firstField = scope.querySelector('.sbt-vfe-field[data-sbt-vfe-type="image"]');
-				}
-				if (!firstField || !galleryParentPath(firstField.getAttribute('data-sbt-vfe-path'))) return;
+				var firstField = scope.querySelector('img[data-sbt-vfe-gallery-item][data-sbt-vfe-gallery-path]');
+				if (!firstField) return;
 				scope.classList.add('sbt-vfe-gallery-scope');
 				var button = document.createElement('button');
 				button.type = 'button';
@@ -1165,8 +1175,7 @@ function sbt_visual_meta_editor_assets() {
 
 		function openGalleryFrame(field){
 			if (!window.wp || !wp.media) return;
-			var path = field.getAttribute('data-sbt-vfe-path');
-			var parentPath = galleryParentPath(path);
+			var parentPath = galleryPathFromElement(field);
 			if (!parentPath) return;
 			var frame = wp.media({ title: 'Seleziona immagini gallery', multiple: true, library: { type: 'image' } });
 			frame.on('open', function(){

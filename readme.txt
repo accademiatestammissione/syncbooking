@@ -23,6 +23,10 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 1.0.17 =
+* Changed frontend Visual Edit galleries to use one gallery-level Media Library modal.
+* Removed per-image Visual Edit wrappers from gallery images so the original gallery layout remains intact.
+
 = 1.0.16 =
 * Re-aligned Theme 01 internal-page header rendering with the clean HTML source fonts and colors.
 * Removed old WordPress menu CSS from Theme 01 header and added admin-bar offset handling.
