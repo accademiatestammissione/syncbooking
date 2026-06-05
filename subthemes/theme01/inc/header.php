@@ -22,18 +22,6 @@ $WA_SVG = '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4
 <header id="hdr">
   <a class="logo" href="<?php echo function_exists('sbt_url') ? sbt_url('index.php') : 'index.php' ?>"><img src="<?php echo $IMG['logo'] ?>" alt="<?php echo $SITE['name'] ?>" /></a>
   <nav class="main">
-    <?php if (function_exists('has_nav_menu') && has_nav_menu('primary')): ?>
-      <?php
-      wp_nav_menu(
-        array(
-          'theme_location' => 'primary',
-          'container'      => false,
-          'menu_class'     => 'wp-menu',
-          'depth'          => 2,
-        )
-      );
-      ?>
-    <?php else: ?>
     <?php foreach ($NAV as $item): ?>
       <?php if (!empty($item['sub'])): ?>
         <div class="has-sub">
@@ -49,7 +37,6 @@ $WA_SVG = '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4
         <a href="<?php echo function_exists('sbt_url') ? sbt_url($item['url']) : $item['url'] ?>"<?php echo $PAGE === $item['key'] ? ' class="current"' : '' ?>><?php echo $item['label'] ?></a>
       <?php endif; ?>
     <?php endforeach; ?>
-    <?php endif; ?>
   </nav>
   <div class="actions-desktop">
     <div class="lang-toggle"><a href="#" class="active"><?php echo $SITE['lang_primary'] ?? 'EN' ?></a><span class="sep">/</span><a href="#"><?php echo $SITE['lang_secondary'] ?? 'IT' ?></a></div>

@@ -18,16 +18,17 @@
 
 <!-- WELCOME -->
 <section class="pad" id="welcome" data-screen-label="Welcome">
-  <div class="wrap two-col">
-    <div class="reveal">
+  <div class="wrap">
+    <div class="two-col">
+      <div class="reveal">
       <div class="overline"><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.home.welcome_over', $p['welcome_over']) : $p['welcome_over'] ?></div>
       <h2 class="lead"><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.home.welcome_h2', $p['welcome_h2'], ['multiline'=>true]) : $p['welcome_h2'] ?></h2>
       <p class="body-text"><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.home.welcome_p1', $p['welcome_p1'], ['multiline'=>true]) : $p['welcome_p1'] ?></p>
       <p class="body-text" style="margin-top:18px;"><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.home.welcome_p2', $p['welcome_p2'], ['multiline'=>true]) : $p['welcome_p2'] ?></p>
       <a class="btn btn--ghost" href="<?php echo function_exists('sbt_url') ? sbt_url($p['welcome_url']) : $p['welcome_url'] ?>" style="margin-top:30px;"><?php echo function_exists('sbt_vfe') ? sbt_vfe('TEXT.discover_villa', $TEXT['discover_villa'] ?? 'Discover the Villa') : ($TEXT['discover_villa'] ?? 'Discover the Villa') ?></a>
       <?php echo function_exists('sbt_vfe_control') ? sbt_vfe_control('C.home.welcome_url', $p['welcome_url'], 'Link bottone', 'url') : '' ?>
-    </div>
-    <div class="media reveal media-carousel" data-carousel>
+      </div>
+      <div class="media reveal media-carousel" data-carousel>
       <div class="mc-track">
         <?php foreach (($p['welcome_gallery'] ?? [$IMG['welcome']]) as $gi => $img): ?>
           <?php echo function_exists('sbt_vfe_image') ? sbt_vfe_image('C.home.welcome_gallery.' . $gi, $img, ['alt' => $SITE['name'], 'data-lightbox' => '']) : '<img data-lightbox src="' . $img . '" alt="' . $SITE['name'] . '" />' ?>
@@ -38,6 +39,7 @@
       <div class="mc-dots"></div>
       <div class="frame"></div>
       <div class="stamp"><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.home.welcome_stamp', $p['welcome_stamp'], ['multiline'=>true]) : $p['welcome_stamp'] ?></div>
+      </div>
     </div>
   </div>
 </section>
@@ -112,7 +114,7 @@
 <!-- FEATURE ROWS -->
 <section class="feature pad" data-screen-label="SPA & Experience">
   <div class="wrap">
-    <div class="two-col">
+    <div class="two-col" id="spa">
       <div class="media reveal media-carousel" data-carousel>
         <div class="mc-track">
           <?php foreach (($p['spa_gallery'] ?? [$IMG['spa']]) as $gi => $img): ?>
@@ -132,7 +134,7 @@
         <?php echo function_exists('sbt_vfe_control') ? sbt_vfe_control('C.home.spa_teaser_url', $p['spa_teaser_url'], 'Link bottone', 'url') : '' ?>
       </div>
     </div>
-    <div class="two-col">
+    <div class="two-col" id="experience">
       <div class="reveal">
         <div class="label"><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.home.experience_label', $p['experience_label']) : $p['experience_label'] ?></div>
         <h3><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.home.experience_teaser_h3', $p['experience_teaser_h3']) : $p['experience_teaser_h3'] ?></h3>

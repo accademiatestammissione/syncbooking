@@ -19,6 +19,7 @@ $IMG = [
   'logo_foot' => $BASE.'2025/02/logo03-white-villarosaresort-conversano.png',
   'lgbtq'     => $BASE.'2025/07/lgbtq.png',
   'welcome'   => $BASE.'2025/03/8dc77600-2d08-4399-8d34-9019c864a9ae.jpg',
+  'hero'      => $BASE.'2025/03/8dc77600-2d08-4399-8d34-9019c864a9ae.jpg',
   'lunch'     => $BASE.'2025/03/Typical-lunch-or-dinner-in-Villa-Rosa-02.jpg',
   'spa'       => $BASE.'2025/03/Immagine-WhatsApp-2024-05-03-ore-19.16.09_9adc16c9.jpg',
   'villa'     => $BASE.'2025/03/p-YLCX1349.jpg',
@@ -157,11 +158,11 @@ $C['home'] = [
 
 /* house cards (shared by home + houses listing) */
 $HOUSE_CARDS = [
-  ['tag'=>'For 2 people','title'=>'Houses for 2','img'=>$IMG['a1'],'gallery'=>[$IMG['welcome'],$IMG['room2'],$IMG['room']],'url'=>'house-for-2.php',
+  ['tag'=>'For 2 people','title'=>'Houses for 2','img'=>$IMG['welcome'],'gallery'=>[$IMG['welcome'],$IMG['room2'],$IMG['room']],'url'=>'house-for-2.php',
    'specs'=>[['Surface','30–40 m²'],['Occupancy','2 adults + cot'],['Bed','King-size']]],
-  ['tag'=>'For 3 people','title'=>'Houses for 3','img'=>$IMG['room'],'gallery'=>[$IMG['lunch'],$IMG['room'],$IMG['garden']],'url'=>'house-for-3.php',
+  ['tag'=>'For 3 people','title'=>'Houses for 3','img'=>$IMG['lunch'],'gallery'=>[$IMG['lunch'],$IMG['room'],$IMG['garden']],'url'=>'house-for-3.php',
    'specs'=>[['Surface','40–50 m²'],['Occupancy','3 adults + cot'],['Beds','King + sofa bed']]],
-  ['tag'=>'For 4 people','title'=>'Houses for 4','img'=>$IMG['room2'],'gallery'=>[$IMG['spa'],$IMG['garden'],$IMG['villa']],'url'=>'house-for-4.php',
+  ['tag'=>'For 4 people','title'=>'Houses for 4','img'=>$IMG['spa'],'gallery'=>[$IMG['spa'],$IMG['garden'],$IMG['villa']],'url'=>'house-for-4.php',
    'specs'=>[['Surface','50–60 m²'],['Occupancy','4 adults + cot'],['Beds','King + double sofa']]],
 ];
 

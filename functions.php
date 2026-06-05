@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.13' );
+define( 'SBT_VERSION', '1.0.14' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
