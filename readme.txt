@@ -1,4 +1,4 @@
-=== SyncBooking Theme ===
+=== SyncBooking Hospitality ===
 Contributors: accademiatestammissione
 Requires at least: 6.0
 Tested up to: 6.9
@@ -13,6 +13,11 @@ Hospitality theme with selectable subthemes, editable pages, media galleries and
 SyncBooking Hospitality provides a WordPress theme package for hospitality websites. It includes selectable subthemes, editable header and menu fields, page-level content editing, media-library galleries, and language-aware page creation.
 
 == Changelog ==
+
+= 1.0.6 =
+* Replaced PHP short echo tags with full PHP echo tags for WordPress.org scanning.
+* Updated the text domain to match the public theme slug.
+* Added required WordPress theme supports and standard page markup hooks.
 
 = 1.0.5 =
 * Updated the public theme name for WordPress.org validation.

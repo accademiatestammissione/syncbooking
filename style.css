@@ -2,14 +2,53 @@
 Theme Name: SyncBooking Hospitality
 Theme URI: https://github.com/accademiatestammissione/syncbooking
 Author: Accademia Test Ammissione
+Author URI: https://github.com/accademiatestammissione
 Description: Hospitality theme with selectable subthemes, editable pages, media galleries and multilingual page generation.
-Version: 1.0.5
+Version: 1.0.6
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
 Tags: custom-menu, custom-logo, featured-images, translation-ready, threaded-comments, wide-blocks, blog, holiday
 License: GNU General Public License v2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
-Text Domain: syncbooking-theme
+Text Domain: syncbooking-hospitality
 Domain Path: /languages
 */
+
+.wp-caption,
+.wp-caption-text,
+.sticky,
+.gallery-caption,
+.bypostauthor,
+.alignright,
+.alignleft,
+.aligncenter {
+}
+
+.alignright {
+	float: right;
+	margin-left: 1.5rem;
+}
+
+.alignleft {
+	float: left;
+	margin-right: 1.5rem;
+}
+
+.aligncenter {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.screen-reader-text {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
+}

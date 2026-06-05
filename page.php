@@ -12,21 +12,34 @@ require sbt_subtheme_path('inc/header.php');
 ?>
 <section class="page-hero" data-screen-label="WordPress page">
   <div class="wrap">
-    <div class="overline"><?= $SITE['name'] ?></div>
+    <div class="overline"><?php echo $SITE['name'] ?></div>
     <h1><?php the_title(); ?></h1>
   </div>
 </section>
 
 <section class="pad">
   <div class="wrap">
-    <div class="body-text">
-      <?php
-      while (have_posts()) {
-        the_post();
-        the_content();
-      }
+    <?php
+    while (have_posts()) {
+      the_post();
       ?>
-    </div>
+      <div id="post-<?php the_ID(); ?>" <?php post_class('body-text'); ?>>
+        <?php
+        the_content();
+        wp_link_pages(
+          array(
+            'before' => '<nav class="page-links">',
+            'after'  => '</nav>',
+          )
+        );
+        ?>
+      </div>
+      <?php
+      if (comments_open() || get_comments_number()) {
+        comments_template();
+      }
+    }
+    ?>
   </div>
 </section>
 <?php require sbt_subtheme_path('inc/footer.php'); ?>

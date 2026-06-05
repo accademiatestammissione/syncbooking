@@ -9,18 +9,46 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.5' );
+define( 'SBT_VERSION', '1.0.6' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
 
 function sbt_setup() {
 	add_theme_support( 'title-tag' );
+	add_theme_support( 'automatic-feed-links' );
 	add_theme_support( 'post-thumbnails' );
 	add_theme_support( 'custom-logo' );
-	load_theme_textdomain( 'syncbooking-theme', get_template_directory() . '/languages' );
+	add_theme_support( 'wp-block-styles' );
+	add_theme_support( 'responsive-embeds' );
+	add_theme_support( 'align-wide' );
+	add_theme_support(
+		'html5',
+		array(
+			'search-form',
+			'comment-form',
+			'comment-list',
+			'gallery',
+			'caption',
+			'style',
+			'script',
+		)
+	);
+	register_nav_menus(
+		array(
+			'primary' => __( 'Primary Menu', 'syncbooking-hospitality' ),
+		)
+	);
+	load_theme_textdomain( 'syncbooking-hospitality', get_template_directory() . '/languages' );
 }
 add_action( 'after_setup_theme', 'sbt_setup' );
+
+function sbt_enqueue_comment_reply() {
+	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
+		wp_enqueue_script( 'comment-reply' );
+	}
+}
+add_action( 'wp_enqueue_scripts', 'sbt_enqueue_comment_reply' );
 
 function sbt_subthemes() {
 	return array(
