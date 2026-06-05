@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.9' );
+define( 'SBT_VERSION', '1.0.10' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -70,6 +70,21 @@ function sbt_register_block_assets() {
 	}
 }
 add_action( 'init', 'sbt_register_block_assets' );
+
+function sbt_widgets_init() {
+	register_sidebar(
+		array(
+			'name'          => __( 'Sidebar', 'syncbooking-hospitality' ),
+			'id'            => 'sidebar-1',
+			'description'   => __( 'Fallback widget area for standard WordPress pages and posts.', 'syncbooking-hospitality' ),
+			'before_widget' => '<section id="%1$s" class="widget %2$s">',
+			'after_widget'  => '</section>',
+			'before_title'  => '<h2 class="widget-title">',
+			'after_title'   => '</h2>',
+		)
+	);
+}
+add_action( 'widgets_init', 'sbt_widgets_init' );
 
 function sbt_enqueue_comment_reply() {
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {

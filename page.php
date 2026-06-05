@@ -44,6 +44,11 @@ require sbt_subtheme_path('inc/header.php');
       }
     }
     ?>
+    <?php if ( is_active_sidebar( 'sidebar-1' ) ) : ?>
+      <aside class="sidebar widget-area">
+        <?php dynamic_sidebar( 'sidebar-1' ); ?>
+      </aside>
+    <?php endif; ?>
   </div>
 </section>
 <?php require sbt_subtheme_path('inc/footer.php'); ?>

@@ -18,6 +18,11 @@ if ( is_home() && ! is_front_page() ) {
 				<?php endwhile; ?>
 				<?php the_posts_pagination(); ?>
 			<?php endif; ?>
+			<?php if ( is_active_sidebar( 'sidebar-1' ) ) : ?>
+				<aside class="sidebar widget-area">
+					<?php dynamic_sidebar( 'sidebar-1' ); ?>
+				</aside>
+			<?php endif; ?>
 		</div>
 	</section>
 	<?php

@@ -12,7 +12,20 @@ Hospitality theme with selectable subthemes, editable pages, media galleries and
 
 SyncBooking Hospitality provides a WordPress theme package for hospitality websites. It includes selectable subthemes, editable header and menu fields, page-level content editing, media-library galleries, and language-aware page creation.
 
+== External Services ==
+
+This theme can display embedded video and maps when the site owner configures the related fields.
+
+* Vimeo player: used by the Villa Rosa Resort homepage video background. The configured Vimeo video id is used in an iframe from https://player.vimeo.com/. Vimeo privacy policy: https://vimeo.com/privacy
+* YouTube player: used by the Masseria Le Cerase homepage video background when a YouTube id is configured. The configured YouTube video id is used in an iframe from https://www.youtube.com/. Google privacy policy: https://policies.google.com/privacy
+* Google Maps embed: used on contact pages when a map embed URL is configured. Google privacy policy: https://policies.google.com/privacy
+* Demo media import: when an administrator clicks "Scarica media demo" in General Settings, demo images are downloaded from https://villarosaresort.it/ or https://masserialecerase.com/ into the local WordPress uploads directory. No visitor data is sent by the theme for this import.
+
 == Changelog ==
+
+= 1.0.10 =
+* Added a standard fallback sidebar widget area.
+* Documented optional external embeds and demo media import endpoints.
 
 = 1.0.9 =
 * Replaced large local wellness PNG assets with compressed JPG assets.
