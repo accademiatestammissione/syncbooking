@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.10' );
+define( 'SBT_VERSION', '1.0.11' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -909,6 +909,13 @@ function sbt_visual_meta_editor_enabled() {
 	return 'visual' === sbt_edit_mode() && is_user_logged_in() && current_user_can( 'edit_theme_options' ) && ! is_admin();
 }
 
+function sbt_visual_meta_editor_enqueue_media() {
+	if ( sbt_visual_meta_editor_enabled() && function_exists( 'wp_enqueue_media' ) ) {
+		wp_enqueue_media();
+	}
+}
+add_action( 'wp_enqueue_scripts', 'sbt_visual_meta_editor_enqueue_media' );
+
 function sbt_visual_meta_editor_allowed_roots() {
 	return array( 'C', 'TEXT', 'SITE', 'NAV', 'HOUSE_CARDS', 'SERVICES', 'EXPERIENCES' );
 }
@@ -990,6 +997,10 @@ function sbt_visual_meta_editor_assets() {
 		.sbt-vfe-dialog h3 { color:#1d2327; font:600 18px/1.25 system-ui,sans-serif; margin:0 0 12px; }
 		.sbt-vfe-dialog textarea, .sbt-vfe-dialog input { border:1px solid #8c8f94; border-radius:4px; box-sizing:border-box; color:#1d2327; font:400 15px/1.45 system-ui,sans-serif; min-height:44px; padding:10px; width:100%; }
 		.sbt-vfe-dialog textarea { min-height:150px; resize:vertical; }
+		.sbt-vfe-preview { display:grid; gap:8px; margin:0 0 10px; }
+		.sbt-vfe-preview img { border:1px solid #dcdcde; border-radius:6px; height:120px; object-fit:cover; width:180px; }
+		.sbt-vfe-media-actions { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; }
+		.sbt-vfe-media-actions button { border:1px solid #8c8f94; border-radius:4px; cursor:pointer; font:600 13px/1 system-ui,sans-serif; padding:8px 11px; }
 		.sbt-vfe-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:14px; }
 		.sbt-vfe-actions button { border:1px solid #8c8f94; border-radius:4px; cursor:pointer; font:600 14px/1 system-ui,sans-serif; padding:9px 13px; }
 		.sbt-vfe-save { background:#2271b1; border-color:#2271b1!important; color:#fff; }
@@ -1020,6 +1031,104 @@ function sbt_visual_meta_editor_assets() {
 			return clone.innerHTML.trim();
 		}
 
+		function galleryParentPath(path){
+			return /\.\d+$/.test(path || '') ? path.replace(/\.\d+$/, '') : '';
+		}
+
+		function closestGalleryUrls(field){
+			var scope = field.closest('.media-carousel,.mosaic,.gallery,.house,.feature,.page-hero') || document;
+			var urls = [];
+			scope.querySelectorAll('img').forEach(function(img){
+				var src = img.getAttribute('src');
+				if (src && urls.indexOf(src) === -1) urls.push(src);
+			});
+			return urls;
+		}
+
+		function renderImageInput(wrap, value, galleryPath){
+			wrap.innerHTML = '<div class="sbt-vfe-preview"></div><input type="url"><div class="sbt-vfe-media-actions"><button type="button" class="sbt-vfe-pick-image">Scegli / carica immagine</button>' + (galleryPath ? '<button type="button" class="sbt-vfe-pick-gallery">Modifica tutta la gallery</button>' : '') + '</div>';
+			wrap.querySelector('input').value = value;
+			updateImagePreview(wrap, value);
+		}
+
+		function updateImagePreview(wrap, value){
+			var preview = wrap.querySelector('.sbt-vfe-preview');
+			if (!preview) return;
+			preview.innerHTML = value ? '<img alt="" src="' + value.replace(/"/g, '&quot;') + '">' : '<p>Nessuna immagine selezionata.</p>';
+		}
+
+		function openImageFrame(wrap){
+			if (!window.wp || !wp.media) return;
+			var frame = wp.media({ title: 'Seleziona immagine', multiple: false, library: { type: 'image' } });
+			frame.on('select', function(){
+				var item = frame.state().get('selection').first().toJSON();
+				var input = wrap.querySelector('input');
+				input.value = item.url;
+				updateImagePreview(wrap, item.url);
+			});
+			frame.open();
+		}
+
+		function openGalleryFrame(field){
+			if (!window.wp || !wp.media) return;
+			var path = field.getAttribute('data-sbt-vfe-path');
+			var parentPath = galleryParentPath(path);
+			if (!parentPath) return;
+			var frame = wp.media({ title: 'Seleziona immagini gallery', multiple: true, library: { type: 'image' } });
+			frame.on('open', function(){
+				var selection = frame.state().get('selection');
+				closestGalleryUrls(field).forEach(function(url){
+					var attachment = wp.media.attachment(url);
+					if (attachment) selection.add(attachment);
+				});
+			});
+			frame.on('select', function(){
+				var urls = [];
+				frame.state().get('selection').each(function(attachment){
+					var item = attachment.toJSON();
+					if (item.url) urls.push(item.url);
+				});
+				saveVisualField(field, parentPath, urls.join("\n"), 'gallery', true);
+			});
+			frame.open();
+		}
+
+		function refreshVisualField(field, value, saveType, reloadAfterSave){
+			if (field.classList.contains('sbt-vfe-control')) {
+				field.setAttribute('data-sbt-vfe-value', value);
+				if (saveType === 'image') {
+					var img = field.closest('.sbt-vfe-image-wrap') ? field.closest('.sbt-vfe-image-wrap').querySelector('img') : null;
+					if (img) img.setAttribute('src', value);
+				}
+			} else {
+				field.setAttribute('data-sbt-vfe-value', value);
+				field.innerHTML = value + '<button type="button" class="sbt-vfe-edit" aria-label="Modifica campo">&#9998;</button>';
+			}
+			modal.classList.remove('is-open');
+			activeField = null;
+			if (reloadAfterSave) {
+				window.location.reload();
+			}
+		}
+
+		function saveVisualField(field, path, value, saveType, reloadAfterSave){
+			var data = new FormData();
+			data.append('action', 'sbt_vfe_save');
+			data.append('nonce', config.nonce);
+			data.append('post_id', config.postId || 0);
+			data.append('language', config.language || 'en');
+			data.append('path', path || field.getAttribute('data-sbt-vfe-path'));
+			data.append('value', value);
+			data.append('type', saveType || field.getAttribute('data-sbt-vfe-type') || 'text');
+			fetch(config.ajaxUrl, { method:'POST', credentials:'same-origin', body:data })
+				.then(function(response){ return response.json(); })
+				.then(function(json){
+					if (!json || !json.success) throw new Error(json && json.data ? json.data : 'Errore salvataggio');
+					refreshVisualField(field, json.data.value, saveType, reloadAfterSave);
+				})
+				.catch(function(error){ alert(error.message); });
+		}
+
 		document.addEventListener('click', function(event){
 			var button = event.target.closest('.sbt-vfe-edit');
 			if (!button) return;
@@ -1030,11 +1139,27 @@ function sbt_visual_meta_editor_assets() {
 			var type = activeField.getAttribute('data-sbt-vfe-type') || 'text';
 			var wrap = modal.querySelector('.sbt-vfe-input');
 			var value = fieldHtml(activeField);
-			wrap.innerHTML = multiline ? '<textarea></textarea>' : '<input type="' + (type === 'url' || type === 'image' ? 'url' : 'text') + '">';
-			wrap.firstElementChild.value = value;
+			var parentGallery = type === 'image' ? galleryParentPath(activeField.getAttribute('data-sbt-vfe-path')) : '';
+			if (type === 'image') {
+				renderImageInput(wrap, value, parentGallery);
+			} else {
+				wrap.innerHTML = multiline ? '<textarea></textarea>' : '<input type="' + (type === 'url' ? 'url' : 'text') + '">';
+				wrap.firstElementChild.value = value;
+			}
 			modal.classList.add('is-open');
-			wrap.firstElementChild.focus();
+			(wrap.querySelector('textarea,input') || wrap.firstElementChild).focus();
 		}, true);
+
+		modal.addEventListener('click', function(event){
+			if (event.target.closest('.sbt-vfe-pick-image')) {
+				event.preventDefault();
+				openImageFrame(modal.querySelector('.sbt-vfe-input'));
+			}
+			if (event.target.closest('.sbt-vfe-pick-gallery') && activeField) {
+				event.preventDefault();
+				openGalleryFrame(activeField);
+			}
+		});
 
 		modal.querySelector('.sbt-vfe-cancel').addEventListener('click', function(){
 			modal.classList.remove('is-open');
@@ -1044,27 +1169,8 @@ function sbt_visual_meta_editor_assets() {
 		modal.querySelector('.sbt-vfe-save').addEventListener('click', function(){
 			if (!activeField) return;
 			var input = modal.querySelector('textarea,input');
-			var data = new FormData();
-			data.append('action', 'sbt_vfe_save');
-			data.append('nonce', config.nonce);
-			data.append('post_id', config.postId || 0);
-			data.append('language', config.language || 'en');
-			data.append('path', activeField.getAttribute('data-sbt-vfe-path'));
-			data.append('value', input.value);
-			fetch(config.ajaxUrl, { method:'POST', credentials:'same-origin', body:data })
-				.then(function(response){ return response.json(); })
-				.then(function(json){
-					if (!json || !json.success) throw new Error(json && json.data ? json.data : 'Errore salvataggio');
-					if (activeField.classList.contains('sbt-vfe-control')) {
-						activeField.setAttribute('data-sbt-vfe-value', json.data.value);
-					} else {
-						activeField.setAttribute('data-sbt-vfe-value', json.data.value);
-						activeField.innerHTML = json.data.value + '<button type="button" class="sbt-vfe-edit" aria-label="Modifica campo">&#9998;</button>';
-					}
-					modal.classList.remove('is-open');
-					activeField = null;
-				})
-				.catch(function(error){ alert(error.message); });
+			var type = activeField.getAttribute('data-sbt-vfe-type') || 'text';
+			saveVisualField(activeField, activeField.getAttribute('data-sbt-vfe-path'), input.value, type, false);
 		});
 	})();
 	</script>
@@ -1085,7 +1191,17 @@ function sbt_visual_meta_editor_save() {
 	}
 
 	$post_id = isset( $_POST['post_id'] ) ? absint( $_POST['post_id'] ) : 0;
-	$value = isset( $_POST['value'] ) ? wp_kses_post( wp_unslash( $_POST['value'] ) ) : '';
+	$type = isset( $_POST['type'] ) ? sanitize_key( wp_unslash( $_POST['type'] ) ) : 'text';
+	$raw_value = isset( $_POST['value'] ) ? wp_unslash( $_POST['value'] ) : '';
+	if ( 'image' === $type || 'url' === $type ) {
+		$value = esc_url_raw( $raw_value );
+	} elseif ( 'gallery' === $type ) {
+		$urls = preg_split( '/\r\n|\r|\n/', (string) $raw_value );
+		$urls = array_filter( array_map( 'esc_url_raw', array_map( 'trim', $urls ) ) );
+		$value = implode( "\n", $urls );
+	} else {
+		$value = wp_kses_post( $raw_value );
+	}
 	$options = sbt_get_options();
 	$key = sbt_active_subtheme_key();
 	$language = isset( $_POST['language'] ) ? sanitize_key( wp_unslash( $_POST['language'] ) ) : sbt_current_content_language();

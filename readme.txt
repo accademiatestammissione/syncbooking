@@ -23,6 +23,11 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 1.0.11 =
+* Added Media Library support to the frontend Visual Edit controls.
+* Added single-image replacement and full-gallery replacement from Visual Edit.
+* Improved AJAX sanitization for image and gallery values.
+
 = 1.0.10 =
 * Added a standard fallback sidebar widget area.
 * Documented optional external embeds and demo media import endpoints.
