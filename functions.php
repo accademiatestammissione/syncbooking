@@ -9,10 +9,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.7' );
+define( 'SBT_VERSION', '1.0.8' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
+define( 'SBT_MEDIA_OPTION', 'syncbooking_theme_media_imports' );
 
 function sbt_setup() {
 	add_theme_support( 'title-tag' );
@@ -253,6 +254,16 @@ function sbt_asset_url( $path ) {
 	return get_template_directory_uri() . '/subthemes/' . $subtheme['dir'] . '/' . ltrim( $path, '/' );
 }
 
+function sbt_media_remote_base_url( $subtheme_key = '' ) {
+	$key = $subtheme_key ? sanitize_key( $subtheme_key ) : sbt_active_subtheme_key();
+	$bases = array(
+		'theme01' => 'https://villarosaresort.it/wp-content/uploads/',
+		'theme02' => 'https://masserialecerase.com/wp-content/uploads/',
+	);
+
+	return isset( $bases[ $key ] ) ? $bases[ $key ] : '';
+}
+
 function sbt_media_base_url() {
 	$uploads = wp_get_upload_dir();
 	$key = sbt_active_subtheme_key();
@@ -262,7 +273,7 @@ function sbt_media_base_url() {
 		return trailingslashit( $uploads['baseurl'] ) . 'syncbooking-theme/' . $key . '/';
 	}
 
-	return sbt_asset_url( 'assets/uploads/' );
+	return sbt_media_remote_base_url( $key );
 }
 
 function sbt_theme_style_value( $key, $fallback = '' ) {
@@ -476,21 +487,134 @@ function sbt_register_upload_assets( $directory, $subtheme_key ) {
 	}
 }
 
-function sbt_install_upload_assets() {
-	$uploads = wp_get_upload_dir();
+function sbt_remote_media_manifest() {
+	return array(
+		'theme01' => array(
+			'base'  => sbt_media_remote_base_url( 'theme01' ),
+			'files' => array(
+				'2025/02/cropped-favicon-villarosaresort-conversano-270x270.png',
+				'2025/02/logo02-white-villarosaresort-conversano.png',
+				'2025/02/logo03-white-villarosaresort-conversano.png',
+				'2025/03/350a927d-d95e-401a-9c30-845b04364bc4.jpg',
+				'2025/03/7a97973d-9ff7-4e3e-bb14-7b6909ac32a7.jpg',
+				'2025/03/8dc77600-2d08-4399-8d34-9019c864a9ae.jpg',
+				'2025/03/a1-1240-900.jpg',
+				'2025/03/a5-1240-900.jpg',
+				'2025/03/Immagine-WhatsApp-2024-05-03-ore-19.16.09_9adc16c9.jpg',
+				'2025/03/p-YLCX1349.jpg',
+				'2025/03/Typical-lunch-or-dinner-in-Villa-Rosa-02.jpg',
+				'2025/03/VMLX0557.jpg',
+				'2025/07/lgbtq.png',
+			),
+		),
+		'theme02' => array(
+			'base'  => sbt_media_remote_base_url( 'theme02' ),
+			'files' => array(
+				'2025/05/cropped-favicon-masseria-le-cerase-conversano-270x270.png',
+				'2025/05/new-logo-black-masseria-le-cerase-conversano.png',
+				'2025/05/new-logo01-black-masseria-le-cerase-conversano.png',
+				'2025/06/1-1024x682.jpg',
+				'2025/06/11.jpg',
+				'2025/06/12-1024x682.jpg',
+				'2025/06/13-1024x682.jpg',
+				'2025/06/14-1024x682.jpg',
+				'2025/06/18.jpg',
+				'2025/06/21-1024x682.jpg',
+				'2025/06/22-1024x682.jpg',
+				'2025/06/23-1024x682.jpg',
+				'2025/06/24-1024x682.jpg',
+				'2025/06/25-1024x682.jpg',
+				'2025/06/26-1024x682.jpg',
+				'2025/06/27-1-1024x682.jpg',
+				'2025/06/28-1024x682.jpg',
+				'2025/06/30.jpg',
+				'2025/06/51378832_2245360615704005_4065300950707863552_n-min-qvudz0ogcww0qheuhmf0vyfruhcta447laf72278v0.jpg',
+				'2025/06/wedding-2.jpg',
+				'2025/07/IMG_5086.jpg',
+				'2025/07/IMG_5148-1024x682.jpg',
+				'2025/07/IMG_5165-1024x683.jpg',
+				'2025/07/IMG_5212-1024x676.jpg',
+				'2025/07/IMG_5232-1024x683.jpg',
+			),
+		),
+	);
+}
 
-	foreach ( sbt_subthemes() as $key => $subtheme ) {
-		$source = get_template_directory() . '/subthemes/' . $subtheme['dir'] . '/assets/uploads';
-		if ( ! is_dir( $source ) ) {
+function sbt_media_import_status( $subtheme_key = '' ) {
+	$key = $subtheme_key ? sanitize_key( $subtheme_key ) : sbt_active_subtheme_key();
+	$imports = get_option( SBT_MEDIA_OPTION, array() );
+	return isset( $imports[ $key ] ) && is_array( $imports[ $key ] ) ? $imports[ $key ] : array();
+}
+
+function sbt_download_demo_media( $subtheme_key = '' ) {
+	$key = $subtheme_key ? sanitize_key( $subtheme_key ) : sbt_active_subtheme_key();
+	$manifest = sbt_remote_media_manifest();
+
+	if ( empty( $manifest[ $key ]['base'] ) || empty( $manifest[ $key ]['files'] ) ) {
+		return new WP_Error( 'sbt_no_media_manifest', 'Nessun pacchetto media configurato per questo sottotema.' );
+	}
+
+	$uploads = wp_get_upload_dir();
+	if ( ! empty( $uploads['error'] ) ) {
+		return new WP_Error( 'sbt_uploads_error', $uploads['error'] );
+	}
+
+	require_once ABSPATH . 'wp-admin/includes/file.php';
+
+	$base = trailingslashit( $manifest[ $key ]['base'] );
+	$target_base = trailingslashit( $uploads['basedir'] ) . 'syncbooking-theme/' . $key . '/';
+	$downloaded = 0;
+	$skipped = 0;
+	$failed = array();
+
+	foreach ( $manifest[ $key ]['files'] as $relative ) {
+		$relative = ltrim( $relative, '/' );
+		$target = $target_base . $relative;
+
+		if ( file_exists( $target ) && filesize( $target ) > 0 ) {
+			$skipped++;
 			continue;
 		}
 
-		$target = trailingslashit( $uploads['basedir'] ) . 'syncbooking-theme/' . $key;
-		sbt_copy_directory( $source, $target );
-		sbt_register_upload_assets( $target, $key );
+		wp_mkdir_p( dirname( $target ) );
+		$temp = download_url( $base . $relative, 45 );
+
+		if ( is_wp_error( $temp ) ) {
+			$failed[] = $relative;
+			continue;
+		}
+
+		if ( ! @copy( $temp, $target ) ) {
+			$failed[] = $relative;
+			@unlink( $temp );
+			continue;
+		}
+
+		@unlink( $temp );
+		$downloaded++;
 	}
+
+	sbt_register_upload_assets( $target_base, $key );
+
+	$imports = get_option( SBT_MEDIA_OPTION, array() );
+	$imports[ $key ] = array(
+		'downloaded' => $downloaded,
+		'skipped'    => $skipped,
+		'failed'     => count( $failed ),
+		'updated_at' => current_time( 'mysql' ),
+	);
+	update_option( SBT_MEDIA_OPTION, $imports );
+
+	return array(
+		'downloaded' => $downloaded,
+		'skipped'    => $skipped,
+		'failed'     => $failed,
+	);
 }
-add_action( 'after_switch_theme', 'sbt_install_upload_assets' );
+
+function sbt_install_upload_assets() {
+	return sbt_download_demo_media();
+}
 
 function sbt_create_theme_pages() {
 	foreach ( sbt_enabled_languages() as $language ) {
@@ -1488,8 +1612,6 @@ function sbt_reset_subtheme_template( $subtheme ) {
 	} else {
 		sbt_create_theme_pages();
 	}
-	sbt_install_upload_assets();
-
 	return true;
 }
 
@@ -1943,6 +2065,7 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 	$unit_label = sbt_unit_label( $unit_overrides );
 	$plural_label = sbt_unit_plural_label( $unit_label );
 	$listing_slug = sbt_unit_listing_slug_for_label( $unit_label );
+	$media_status = sbt_media_import_status();
 	?>
 	<div class="sbt-panel">
 		<h2>General Settings</h2>
@@ -1968,6 +2091,24 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 		</div>
 
 		<div class="sbt-grid">
+			<div class="sbt-card">
+				<h3>Media demo</h3>
+				<p class="sbt-muted">Lo zip del tema resta leggero. Dopo l'installazione puoi scaricare le immagini demo del sottotema attivo dentro la Media Library di WordPress.</p>
+				<?php if ( ! empty( $media_status['updated_at'] ) ) : ?>
+					<p class="sbt-muted">
+						Ultimo import: <?php echo esc_html( $media_status['updated_at'] ); ?>.
+						Nuovi: <?php echo esc_html( $media_status['downloaded'] ?? 0 ); ?>,
+						gia presenti: <?php echo esc_html( $media_status['skipped'] ?? 0 ); ?>,
+						errori: <?php echo esc_html( $media_status['failed'] ?? 0 ); ?>.
+					</p>
+				<?php else : ?>
+					<p class="sbt-muted">Media demo non ancora scaricati per questo sottotema.</p>
+				<?php endif; ?>
+				<button type="submit" class="button button-primary" name="sbt_action" value="download_demo_media">
+					Scarica media demo
+				</button>
+			</div>
+
 			<div class="sbt-card">
 				<h3>Modalita modifica</h3>
 				<p class="sbt-muted">Scegli come vuoi lavorare sui contenuti delle pagine. Header, menu, footer, font e palette restano gestiti dalla tab Header & Menu.</p>
@@ -2229,11 +2370,23 @@ function sbt_render_admin_page() {
 			if ( sbt_reset_subtheme_template( $selected_subtheme ) ) {
 				echo '<div class="notice notice-success is-dismissible"><p>Template originale ripristinato per il sottotema selezionato.</p></div>';
 			}
+		} elseif ( 'download_demo_media' === $sbt_action ) {
+			$result = sbt_download_demo_media( $selected_subtheme );
+			if ( is_wp_error( $result ) ) {
+				echo '<div class="notice notice-error is-dismissible"><p>' . esc_html( $result->get_error_message() ) . '</p></div>';
+			} else {
+				$message = sprintf(
+					'Media demo scaricati: %1$d nuovi, %2$d gia presenti, %3$d non riusciti.',
+					absint( $result['downloaded'] ),
+					absint( $result['skipped'] ),
+					count( $result['failed'] )
+				);
+				echo '<div class="notice notice-success is-dismissible"><p>' . esc_html( $message ) . '</p></div>';
+			}
 		} else {
 			update_option( SBT_OPTION, sbt_sanitize_options( $raw_options ) );
 			sbt_sync_custom_house_pages();
 			sbt_create_theme_pages();
-			sbt_install_upload_assets();
 			echo '<div class="notice notice-success is-dismissible"><p>Impostazioni SyncBooking salvate.</p></div>';
 		}
 	}
