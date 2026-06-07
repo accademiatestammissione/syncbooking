@@ -1,30 +1,46 @@
-# SyncBooking Theme
+# SyncBooking Hospitality
 
-Tema WordPress multi-sottotema con due modelli completi:
+WordPress theme with selectable hospitality subthemes, editable content, visual frontend edit controls and downloadable demo media.
 
-- Theme 01: Villa Rosa Resort
-- Theme 02: Masseria Le Cerase
+## Source Of Truth
 
-Da WordPress vai in `Aspetto > SyncBooking Theme` per scegliere il sottotema attivo e modificare testi, immagini, gallerie, menu, card e dati generali. Gli override sono separati per ogni sottotema.
+When a new clean HTML package is provided for a subtheme, treat it as the absolute visual source.
 
-Quando apri una pagina WordPress del sottotema attivo, trovi anche il box `SyncBooking - contenuti pagina`: è un editor unico che mostra i campi della pagina corrente, indipendentemente dal sottotema scelto.
+- Keep the original Claude HTML package outside the WordPress theme package, under `C:\SyncBookingTheme\syncbooking_sources\`.
+- Do not copy original `.html` files or heavy `uploads` folders into this WordPress theme.
+- Rebuild the matching PHP templates, shared header, shared footer, CSS data and default content from the clean HTML.
+- Preserve the WordPress bridge features: options panel, multilingual content, visual editor, gallery modal, media downloader, page generation and WordPress.org compliance.
+- If the HTML package includes a version comment or version meta tags, expose the same source version/build date in the generated PHP pages.
+
+Current Theme 01 source package:
+
+- Path: `C:\SyncBookingTheme\syncbooking_sources\theme01\claude-html-2026-06-07-v5`
+- Source version: `1.0.0`
+- Build date: `2026-06-07`
+
+## Admin Editing
+
+From WordPress, open `Appearance > SyncBooking Theme`.
+
+- `Header & Menu` manages navigation, global links, fonts and color palette.
+- `General Settings` manages required plugin checks, subtheme, languages and unit type/count.
+- `Home` manages the active subtheme homepage.
+- `Pages` opens the unified editor for generated pages.
+- `Visual Edit` enables frontend pencil controls for logged-in admins.
 
 ## Media
 
-Ogni sottotema include i propri media reali in:
+The WordPress.org theme zip must stay light and must not bundle large demo uploads. Real demo media is downloaded after installation through the SyncBooking admin panel.
 
-- `subthemes/theme01/assets/uploads/`
-- `subthemes/theme02/assets/uploads/`
+The theme keeps only optimized local assets required for layout fidelity, while demo upload URLs are resolved through the media downloader/importer.
 
-Quando il tema viene attivato, o quando salvi le impostazioni del pannello SyncBooking, WordPress copia i media in:
+## WordPress.org
 
-- `wp-content/uploads/syncbooking-theme/theme01/`
-- `wp-content/uploads/syncbooking-theme/theme02/`
+Before packaging:
 
-Le immagini vengono anche registrate nella Media Library.
-
-## WordPress.org e licenze
-
-Il codice del tema dichiara licenza GPL v2 or later nel file `style.css`.
-
-Prima di caricare il tema su WordPress.org bisogna verificare e documentare la licenza di ogni asset incluso, in particolare immagini, video placeholder, font e script di terze parti. Gli asset reali presenti nelle cartelle `assets/uploads` possono essere pubblicati nella directory WordPress.org solo se il titolare conferma che sono GPL compatibili o rilasciati con una licenza compatibile.
+- No PHP short echo tags.
+- No bundled `uploads` directory.
+- Text domain must match the theme slug: `syncbooking-hospitality`.
+- Theme version in `style.css`, `readme.txt` and `SBT_VERSION` must move forward.
+- The zip must stay below the WordPress.org upload limit.
+- Included assets must be GPL-compatible or replaced with owner-approved assets.

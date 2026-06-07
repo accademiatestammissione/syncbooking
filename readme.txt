@@ -23,6 +23,12 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 1.0.19 =
+* Synced Theme 01 with clean HTML source package version 1.0.0 from 2026-06-07.
+* Added source version/build-date meta tags to every generated Theme 01 page.
+* Updated Theme 01 home house cards and band imagery to match the latest HTML source.
+* Documented the clean HTML source-of-truth workflow for future Theme 01 imports.
+
 = 1.0.18 =
 * Added page/post target selectors for editable button and menu links.
 * Kept direct https URL entry as an alternative for external links.

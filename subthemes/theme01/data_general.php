@@ -32,6 +32,7 @@ $IMG = [
   'apulian_table' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/apulian-table.jpg') : 'assets/images/apulian-table.jpg',
   'apulian_breakfast' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/apulian-breakfast.jpg') : 'assets/images/apulian-breakfast.jpg',
   'conversano_town' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/conversano-town.jpg') : 'assets/images/conversano-town.jpg',
+  'room_detail' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/room-detail.jpg') : 'assets/images/room-detail.jpg',
   'jacuzzi_detail' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/jacuzzi.jpg') : 'assets/images/jacuzzi.jpg',
   'sauna_detail' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/sauna.jpg') : 'assets/images/sauna.jpg',
   'turkish_bath_detail' => function_exists('sbt_asset_url') ? sbt_asset_url('assets/images/turkish-bath.jpg') : 'assets/images/turkish-bath.jpg',
@@ -75,6 +76,8 @@ $SITE = [
   'cin'      => 'IT072019B400085362',
   'year'     => '2026',
   'webdev'   => ['label' => 'web dev logovia', 'url' => 'https://www.logovia.it/'],
+  'source_version' => '1.0.0',
+  'source_build_date' => '2026-06-07',
 ];
 
 /* ---- NAVIGATION (drives header + drawer) ---- */
@@ -133,6 +136,7 @@ $C['home'] = [
   'band_over'  => 'The Apulian way of living',
   'band_h2'    => 'Slow days, long tables,<br>and the scent of the sea',
   'band_p'     => 'From the whitewashed lanes of Conversano to the trulli of the Itria Valley and the turquoise coast — everything you love about Puglia begins at your doorstep.',
+  'band_bg'    => $IMG['apulian_table'],
   'offers_over'=> 'Villa Rosa offers',
   'offers_h2'  => 'Summer Promotions',
   'offers_p'   => 'Discover our seasonal offers and reserve your stay in the heart of Puglia at the very best conditions.',
@@ -158,11 +162,11 @@ $C['home'] = [
 
 /* house cards (shared by home + houses listing) */
 $HOUSE_CARDS = [
-  ['tag'=>'For 2 people','title'=>'Houses for 2','img'=>$IMG['welcome'],'gallery'=>[$IMG['welcome'],$IMG['room2'],$IMG['room']],'url'=>'house-for-2.php',
+  ['tag'=>'For 2 people','title'=>'House for 2','img'=>$IMG['room2'],'gallery'=>[$IMG['room2'],$IMG['room'],$IMG['room_detail']],'url'=>'house-for-2.php',
    'specs'=>[['Surface','30–40 m²'],['Occupancy','2 adults + cot'],['Bed','King-size']]],
-  ['tag'=>'For 3 people','title'=>'Houses for 3','img'=>$IMG['lunch'],'gallery'=>[$IMG['lunch'],$IMG['room'],$IMG['garden']],'url'=>'house-for-3.php',
+  ['tag'=>'For 3 people','title'=>'House for 3','img'=>$IMG['room'],'gallery'=>[$IMG['room'],$IMG['room_detail'],$IMG['room2']],'url'=>'house-for-3.php',
    'specs'=>[['Surface','40–50 m²'],['Occupancy','3 adults + cot'],['Beds','King + sofa bed']]],
-  ['tag'=>'For 4 people','title'=>'Houses for 4','img'=>$IMG['spa'],'gallery'=>[$IMG['spa'],$IMG['garden'],$IMG['villa']],'url'=>'house-for-4.php',
+  ['tag'=>'For 4 people','title'=>'House for 4','img'=>$IMG['room_detail'],'gallery'=>[$IMG['room_detail'],$IMG['room2'],$IMG['room']],'url'=>'house-for-4.php',
    'specs'=>[['Surface','50–60 m²'],['Occupancy','4 adults + cot'],['Beds','King + double sofa']]],
 ];
 

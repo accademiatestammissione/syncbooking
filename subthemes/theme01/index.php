@@ -102,9 +102,9 @@
 </section>
 
 <!-- BAND -->
-<section class="band" id="band" style="<?php echo function_exists('sbt_vfe_background_style') ? sbt_vfe_background_style('IMG.lunch', $IMG['lunch']) : "background-image:url('" . $IMG['lunch'] . "');" ?>" data-screen-label="Surroundings band">
+<section class="band" id="band" style="<?php echo function_exists('sbt_vfe_background_style') ? sbt_vfe_background_style('C.home.band_bg', $p['band_bg']) : "background-image:url('" . $p['band_bg'] . "');" ?>" data-screen-label="Surroundings band">
   <div class="inner reveal">
-    <?php echo function_exists('sbt_vfe_control') ? sbt_vfe_control('IMG.lunch', $IMG['lunch'], 'Immagine sfondo', 'image') : '' ?>
+    <?php echo function_exists('sbt_vfe_control') ? sbt_vfe_control('C.home.band_bg', $p['band_bg'], 'Immagine sfondo', 'image') : '' ?>
     <div class="overline"><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.home.band_over', $p['band_over']) : $p['band_over'] ?></div>
     <h2><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.home.band_h2', $p['band_h2'], ['multiline'=>true]) : $p['band_h2'] ?></h2>
     <p><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.home.band_p', $p['band_p'], ['multiline'=>true]) : $p['band_p'] ?></p>

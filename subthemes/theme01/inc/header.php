@@ -3,20 +3,26 @@
    A page sets $PAGE (nav key) and $PAGE_TITLE before including this. */
 require_once __DIR__ . '/../data_general.php';
 if (!isset($PAGE))       $PAGE = '';
-if (!isset($PAGE_TITLE)) $PAGE_TITLE = $SITE['name'] . ' – ' . $SITE['tagline'];
+if (!isset($PAGE_TITLE)) $PAGE_TITLE = $SITE['name'] . ' - ' . $SITE['tagline'];
 
-/* WhatsApp glyph reused in header + footer */
+$SOURCE_VERSION = $SITE['source_version'] ?? '1.0.0';
+$SOURCE_BUILD_DATE = $SITE['source_build_date'] ?? '2026-06-07';
+
+/* WhatsApp glyph reused by the footer. */
 $WA_SVG = '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2Zm5.6 14.2c-.2.6-1.2 1.2-1.7 1.2-.4 0-1 .1-3.1-.8-2.6-1.1-4.3-3.8-4.4-4-.1-.2-1-1.4-1-2.6 0-1.2.6-1.8.9-2 .2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.2.1.4.1.5-.1l.7-.9c.2-.2.4-.2.6-.1l1.9.9c.2.1.4.2.4.3.1.2.1.6 0 1Z"/></svg>';
 ?>
+<!-- VERSION <?php echo esc_html($SOURCE_VERSION) ?> - <?php echo esc_html($SOURCE_BUILD_DATE) ?> - <?php echo esc_html($SITE['name']) ?> -->
 <!DOCTYPE html>
 <html <?php language_attributes(); ?>>
 <head>
 <meta charset="UTF-8" />
+<meta name="version" content="<?php echo esc_attr($SOURCE_VERSION) ?>" />
+<meta name="build-date" content="<?php echo esc_attr($SOURCE_BUILD_DATE) ?>" />
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <link rel="stylesheet" href="<?php echo function_exists('sbt_asset_url') ? sbt_asset_url('assets/site.css') : 'assets/site.css' ?>" />
 <?php if (function_exists('wp_head')) wp_head(); ?>
 </head>
-<body <?php if (function_exists('body_class')) body_class(); ?> data-page="<?php echo $PAGE ?>">
+<body <?php if (function_exists('body_class')) body_class(); ?> data-page="<?php echo $PAGE ?>" data-template-version="<?php echo esc_attr($SOURCE_VERSION) ?>">
 <?php if (function_exists('wp_body_open')) wp_body_open(); ?>
 
 <header id="hdr">
@@ -29,7 +35,7 @@ $WA_SVG = '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4
           <div class="sub">
             <?php foreach ($item['sub'] as $s): ?>
               <?php if (!empty($s['divide'])): ?><div class="divider"></div><?php endif; ?>
-              <a href="<?php echo function_exists('sbt_url') ? sbt_url($s['url']) : $s['url'] ?>"><span class="t"><?php echo $s['label'] ?></span><span class="d"><?php echo $s['desc'] ?></span></a>
+              <a href="<?php echo function_exists('sbt_url') ? sbt_url($s['url']) : $s['url'] ?>"><span class="t"><?php echo $s['label'] ?></span></a>
             <?php endforeach; ?>
           </div>
         </div>

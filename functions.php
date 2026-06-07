@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.18' );
+define( 'SBT_VERSION', '1.0.19' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -1696,7 +1696,7 @@ function sbt_content_editor_sections( $content_key, $content ) {
 		'services'  => array( 'title' => 'Sezione servizi', 'keys' => array( 'services_over', 'services_h2' ) ),
 		'gallery'   => array( 'title' => 'Gallery', 'keys' => array( 'gallery' ) ),
 		'cards'     => array( 'title' => 'Card / liste', 'keys' => array( 'cards', 'offers', 'feat_rows', 'amenities', 'included', 'specs' ) ),
-		'band'      => array( 'title' => 'Sezione band', 'keys' => array( 'band_over', 'band_h2', 'band_p' ) ),
+		'band'      => array( 'title' => 'Sezione band', 'keys' => array( 'band_over', 'band_h2', 'band_p', 'band_bg' ) ),
 		'offers'    => array( 'title' => 'Sezione offerte', 'keys' => array( 'offers_over', 'offers_h2', 'offers_p' ) ),
 		'form'      => array( 'title' => 'Note form', 'keys' => array( 'form_note' ) ),
 		'cta'       => array( 'title' => 'Call to action', 'keys' => array( 'cta_over', 'cta_h2', 'cta_p', 'cta_btn', 'cta_url', 'cta_bg' ) ),
