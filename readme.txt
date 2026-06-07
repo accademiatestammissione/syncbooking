@@ -23,6 +23,11 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 1.0.20 =
+* Rebuilt Theme 01 PHP templates, CSS and JavaScript from the clean HTML source package version 1.0.2 from 2026-06-07.
+* Added the new Theme 01 home gallery mosaic and the single House template from the source package.
+* Reworked Theme 01 header, drawer, footer, page templates and single/article layout to match the latest HTML source.
+
 = 1.0.19 =
 * Synced Theme 01 with clean HTML source package version 1.0.0 from 2026-06-07.
 * Added source version/build-date meta tags to every generated Theme 01 page.

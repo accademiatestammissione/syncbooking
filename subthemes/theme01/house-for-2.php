@@ -1,1 +1,6 @@
-<?php $PAGE = 'houses'; $CONTENT_KEY = 'house2'; $PAGE_TITLE = $C['house2']['title']; require __DIR__ . '/inc/header.php'; $p = $C['house2']; require __DIR__ . '/inc/house-detail.php'; require __DIR__ . '/inc/footer.php'; ?>
+<?php
+$PAGE = 'houses';
+$CONTENT_KEY = 'house2';
+require __DIR__ . '/inc/header.php';
+require __DIR__ . '/inc/house-detail.php';
+require __DIR__ . '/inc/footer.php';

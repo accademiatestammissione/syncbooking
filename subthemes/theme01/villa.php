@@ -1,59 +1,53 @@
-<?php $PAGE = 'villa'; $PAGE_TITLE = $C['villa']['title']; require __DIR__ . '/inc/header.php'; $p = $C['villa']; ?>
-
-<section class="page-hero" data-screen-label="Villa banner">
-  <?php echo function_exists('sbt_vfe_image') ? sbt_vfe_image('C.villa.banner', $p['banner'], ['class' => 'bg', 'alt' => $p['h1']]) : '<img class="bg" src="' . $p['banner'] . '" alt="' . $p['h1'] . '" />' ?>
-  <div class="wrap">
-    <div class="overline"><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.villa.over', $p['over']) : $p['over'] ?></div>
-    <h1><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.villa.h1', $p['h1']) : $p['h1'] ?></h1>
-    <nav class="crumb"><a href="<?php echo function_exists('sbt_url') ? sbt_url('index.php') : 'index.php' ?>"><?php echo $TEXT['home'] ?? 'Home' ?></a><span>/</span>Villa</nav>
-  </div>
-</section>
+<?php
+$PAGE = 'villa';
+require __DIR__ . '/inc/header.php';
+$p = $C['villa'];
+sbt_t1_page_hero( 'villa', $p, 'Villa' );
+?>
 
 <section class="pad" data-screen-label="Villa intro">
-  <div class="wrap two-col">
-    <div class="reveal">
-      <div class="overline"><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.villa.intro_over', $p['intro_over']) : $p['intro_over'] ?></div>
-      <h2 class="lead"><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.villa.intro_h2', $p['intro_h2'], ['multiline'=>true]) : $p['intro_h2'] ?></h2>
-    </div>
-    <div class="reveal">
-      <?php foreach ($p['intro_p'] as $i => $par): ?>
-        <p class="body-text"<?php echo $i ? ' style="margin-top:18px;"' : ' style="max-width:54ch;"' ?>><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.villa.intro_p.' . $i, $par, ['multiline'=>true]) : $par ?></p>
-      <?php endforeach; ?>
-    </div>
-  </div>
+	<div class="wrap two-col">
+		<div class="reveal">
+			<div class="overline"><?php echo sbt_t1_text( 'C.villa.intro_over', $p['intro_over'] ); ?></div>
+			<h2 class="lead"><?php echo sbt_t1_text( 'C.villa.intro_h2', $p['intro_h2'], array( 'multiline' => true ) ); ?></h2>
+		</div>
+		<div class="reveal">
+			<?php foreach ( $p['intro_p'] as $index => $text ) : ?>
+				<p class="body-text" style="max-width:54ch;<?php echo $index ? 'margin-top:18px;' : ''; ?>"><?php echo sbt_t1_text( 'C.villa.intro_p.' . $index, $text, array( 'multiline' => true ) ); ?></p>
+			<?php endforeach; ?>
+		</div>
+	</div>
 </section>
 
 <section class="pad-s" style="padding-top:0;" data-screen-label="Villa gallery">
-  <div class="wrap">
-    <div class="gallery">
-      <?php foreach ($p['gallery'] as $i => $g): ?><?php echo function_exists('sbt_vfe_image') ? sbt_vfe_image('C.villa.gallery.' . $i, $g, ['data-lightbox' => '', 'alt' => 'Villa Rosa']) : '<img data-lightbox src="' . $g . '" alt="Villa Rosa" />' ?><?php endforeach; ?>
-    </div>
-  </div>
+	<div class="wrap">
+		<div class="gallery">
+			<?php foreach ( $p['gallery'] as $index => $image ) : ?>
+				<?php echo sbt_t1_img( 'C.villa.gallery.' . $index, $image, $SITE['name'], array( 'data-lightbox' => '' ) ); ?>
+			<?php endforeach; ?>
+		</div>
+	</div>
 </section>
 
 <section class="pad" style="background:var(--surface);" data-screen-label="Villa amenities">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <div class="overline"><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.villa.am_over', $p['am_over']) : $p['am_over'] ?></div>
-      <h2><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.villa.am_h2', $p['am_h2']) : $p['am_h2'] ?></h2>
-      <p><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.villa.am_p', $p['am_p'], ['multiline'=>true]) : $p['am_p'] ?></p>
-    </div>
-    <div class="amenity-grid">
-      <?php foreach ($p['amenities'] as $i => $a): ?>
-      <div class="amenity reveal"><svg viewBox="0 0 24 24"><?php echo $ICON[$a[0]] ?></svg><h4><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.villa.amenities.' . $i . '.1', $a[1]) : $a[1] ?></h4><p><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.villa.amenities.' . $i . '.2', $a[2], ['multiline'=>true]) : $a[2] ?></p></div>
-      <?php endforeach; ?>
-    </div>
-  </div>
+	<div class="wrap">
+		<div class="section-head reveal">
+			<div class="overline"><?php echo sbt_t1_text( 'C.villa.am_over', $p['am_over'] ); ?></div>
+			<h2><?php echo sbt_t1_text( 'C.villa.am_h2', $p['am_h2'] ); ?></h2>
+			<p><?php echo sbt_t1_text( 'C.villa.am_p', $p['am_p'], array( 'multiline' => true ) ); ?></p>
+		</div>
+		<?php sbt_t1_amenities( 'C.villa.amenities', $p['amenities'], $ICON ); ?>
+	</div>
 </section>
 
-<section class="band" style="<?php echo function_exists('sbt_vfe_background_style') ? sbt_vfe_background_style('C.villa.cta_bg', $p['cta_bg']) : "background-image:url('" . $p['cta_bg'] . "');" ?>" data-screen-label="Villa CTA">
-  <div class="inner reveal">
-    <?php echo function_exists('sbt_vfe_control') ? sbt_vfe_control('C.villa.cta_bg', $p['cta_bg'], 'Immagine sfondo', 'image') : '' ?>
-    <div class="overline"><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.villa.cta_over', $p['cta_over']) : $p['cta_over'] ?></div>
-    <h2><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.villa.cta_h2', $p['cta_h2']) : $p['cta_h2'] ?></h2>
-    <a class="btn btn--light" href="<?php echo function_exists('sbt_url') ? sbt_url($p['cta_url']) : $p['cta_url'] ?>" style="margin-top:8px;"><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.villa.cta_btn', $p['cta_btn']) : $p['cta_btn'] ?></a>
-    <?php echo function_exists('sbt_vfe_control') ? sbt_vfe_control('C.villa.cta_url', $p['cta_url'], 'Link bottone', 'url') : '' ?>
-  </div>
+<section class="band" style="<?php echo esc_attr( sbt_t1_bg_style( 'C.villa.cta_bg', $p['cta_bg'] ) ); ?>" data-screen-label="Villa CTA">
+	<div class="inner reveal">
+		<?php echo sbt_t1_control( 'C.villa.cta_bg', $p['cta_bg'], 'Immagine sfondo', 'image' ); ?>
+		<div class="overline"><?php echo sbt_t1_text( 'C.villa.cta_over', $p['cta_over'] ); ?></div>
+		<h2><?php echo sbt_t1_text( 'C.villa.cta_h2', $p['cta_h2'] ); ?></h2>
+		<a class="btn btn--light" href="<?php echo esc_url( sbt_t1_url( $p['cta_url'] ) ); ?>" style="margin-top:8px;"><?php echo sbt_t1_text( 'C.villa.cta_btn', $p['cta_btn'] ); ?></a>
+		<?php echo sbt_t1_control( 'C.villa.cta_url', $p['cta_url'], 'Link bottone', 'url' ); ?>
+	</div>
 </section>
 
 <?php require __DIR__ . '/inc/footer.php'; ?>

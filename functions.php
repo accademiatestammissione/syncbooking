@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.19' );
+define( 'SBT_VERSION', '1.0.20' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -102,6 +102,7 @@ function sbt_subthemes() {
 				'home'                => array( 'title' => 'Home', 'file' => 'index.php' ),
 				'villa'               => array( 'title' => 'Villa', 'file' => 'villa.php', 'content_key' => 'villa' ),
 				'houses'              => array( 'title' => 'Houses', 'file' => 'houses.php', 'content_key' => 'houses' ),
+				'house'               => array( 'title' => 'House', 'file' => 'house.php', 'content_key' => 'house' ),
 				'price-and-condition' => array( 'title' => 'Price & Condition', 'file' => 'price-and-condition.php', 'content_key' => 'price' ),
 				'spa-wellness'        => array( 'title' => 'SPA & Wellness', 'file' => 'spa-wellness.php', 'content_key' => 'spa' ),
 				'experiences'         => array( 'title' => 'Experiences', 'file' => 'experiences.php', 'content_key' => 'experiences' ),
@@ -893,16 +894,30 @@ function sbt_custom_house_default_content( $title, $base = array() ) {
 		'h1'       => $title,
 		'lead'     => 'A private house designed for comfort and quiet days in Puglia.',
 		'p'        => 'Edit this text from the SyncBooking page editor.',
+		'intro_over' => 'Intimate & refined',
+		'intro_h2' => 'A private retreat',
+		'intro_p' => 'Edit this text from the SyncBooking page editor.',
 		'banner'   => '',
 		'main'     => '',
+		'overview_gallery' => array(),
 		'specs'    => array( array( 'Surface', '40-50 m2' ), array( 'Occupancy', '2 guests' ), array( 'Bed', 'King-size' ) ),
 		'gallery'  => array(),
+		'gallery_over' => 'A look inside',
+		'gallery_h2' => 'The room, in detail',
+		'included_over' => "What's included",
+		'included_h2' => 'Comfort in every corner',
 		'included' => array(),
+		'cta_over' => 'Ready when you are',
+		'cta_h2' => 'Book your house',
+		'cta_btn' => 'Contact us',
+		'cta_url' => 'contacts.php',
+		'cta_bg' => '',
 	);
 
 	$content['title'] = $title;
 	$content['key'] = $title;
 	$content['h1'] = $title;
+	$content['crumb_label'] = $title;
 
 	return $content;
 }
@@ -929,10 +944,17 @@ function sbt_apply_unit_structure( &$SITE, &$NAV, &$C, &$HOUSE_CARDS, &$TEXT ) {
 	foreach ( $detail_pages as $index => $house_page ) {
 		$content_key = $house_page['content_key'] ?? '';
 		$content = $content_key && isset( $C[ $content_key ] ) && is_array( $C[ $content_key ] ) ? $C[ $content_key ] : array();
+		$card_image = $content['main'] ?? ( $content['overview_gallery'][0] ?? ( $content['banner'] ?? '' ) );
+		$card_gallery = isset( $content['overview_gallery'] ) && is_array( $content['overview_gallery'] ) ? $content['overview_gallery'] : array();
+		if ( ! $card_gallery && $card_image ) {
+			$card_gallery = array( $card_image );
+		}
 		$cards[] = array(
 			'tag'   => $unit_label . ' ' . ( $index + 1 ),
 			'title' => $content['h1'] ?? $house_page['title'],
-			'img'   => $content['main'] ?? ( $content['banner'] ?? '' ),
+			'listing_title' => $content['h1'] ?? $house_page['title'],
+			'img'   => $card_image,
+			'gallery' => $card_gallery,
 			'url'   => $house_page['slug'] . '.php',
 			'specs' => isset( $content['specs'] ) && is_array( $content['specs'] ) ? $content['specs'] : array(),
 		);
@@ -945,16 +967,14 @@ function sbt_apply_unit_structure( &$SITE, &$NAV, &$C, &$HOUSE_CARDS, &$TEXT ) {
 		if ( isset( $item['key'] ) && 'houses' === $item['key'] ) {
 			$item['label'] = $plural_label;
 			$item['url'] = 'houses.php';
-			$item['sub'] = array();
-			foreach ( $detail_pages as $index => $house_page ) {
-				$content_key = $house_page['content_key'] ?? '';
-				$content = $content_key && isset( $C[ $content_key ] ) && is_array( $C[ $content_key ] ) ? $C[ $content_key ] : array();
-				$item['sub'][] = array(
-					'url'   => $house_page['slug'] . '.php',
-					'label' => $content['h1'] ?? $house_page['title'],
-					'desc'  => $content['lead'] ?? $unit_label . ' ' . ( $index + 1 ),
-				);
-			}
+			$item['sub'] = array(
+				array(
+					'url'               => 'houses.php',
+					'label'             => $plural_label,
+					'desc'              => '',
+					'no_divider_before' => true,
+				),
+			);
 			$item['sub'][] = array(
 				'url'    => 'price-and-condition.php',
 				'label'  => 'Price & Condition',
@@ -976,7 +996,7 @@ function sbt_bootstrap_content( &$IMG, &$SITE, &$NAV, &$C, &$HOUSE_CARDS = array
 			}
 
 			if ( ! isset( $C[ $house_page['content_key'] ] ) ) {
-				$C[ $house_page['content_key'] ] = sbt_custom_house_default_content( $house_page['title'], $C['house2'] ?? array() );
+				$C[ $house_page['content_key'] ] = sbt_custom_house_default_content( $house_page['title'], $C['house'] ?? array() );
 			}
 		}
 	}
@@ -1602,7 +1622,7 @@ function sbt_page_editor_sections( $slug, $data ) {
 	$theme = sbt_active_subtheme_key();
 	if ( 'home' === $slug ) {
 		$home_image_keys = 'theme01' === $theme
-			? array( 'welcome', 'lunch', 'spa' )
+			? array( 'welcome', 'a1', 'a5', 'room', 'room2', 'garden', 'villa', 'apulian_table', 'jacuzzi_detail', 'room_detail' )
 			: array( 'welcome', 'band', 'teaser_hospitality', 'teaser_wedding', 'teaser_events', 'exp_massage', 'exp_boat', 'exp_cooking', 'exp_dinner' );
 		$home_images = array();
 		foreach ( $home_image_keys as $image_key ) {
@@ -1694,7 +1714,7 @@ function sbt_content_editor_sections( $content_key, $content ) {
 		'intro'     => array( 'title' => 'Sezione introduttiva', 'keys' => array( 'welcome_over', 'welcome_h2', 'welcome_p1', 'welcome_p2', 'intro_over', 'intro_h2', 'intro_p', 'lead', 'p' ) ),
 		'houses'    => array( 'title' => 'Sezione Houses', 'keys' => array( 'houses_over', 'houses_h2', 'houses_p' ) ),
 		'services'  => array( 'title' => 'Sezione servizi', 'keys' => array( 'services_over', 'services_h2' ) ),
-		'gallery'   => array( 'title' => 'Gallery', 'keys' => array( 'gallery' ) ),
+		'gallery'   => array( 'title' => 'Gallery', 'keys' => array( 'gallery_over', 'gallery_h2', 'gallery', 'welcome_gallery', 'overview_gallery', 'wellness_gallery', 'spa_gallery', 'experience_gallery' ) ),
 		'cards'     => array( 'title' => 'Card / liste', 'keys' => array( 'cards', 'offers', 'feat_rows', 'amenities', 'included', 'specs' ) ),
 		'band'      => array( 'title' => 'Sezione band', 'keys' => array( 'band_over', 'band_h2', 'band_p', 'band_bg' ) ),
 		'offers'    => array( 'title' => 'Sezione offerte', 'keys' => array( 'offers_over', 'offers_h2', 'offers_p' ) ),

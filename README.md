@@ -14,8 +14,8 @@ When a new clean HTML package is provided for a subtheme, treat it as the absolu
 
 Current Theme 01 source package:
 
-- Path: `C:\SyncBookingTheme\syncbooking_sources\theme01\claude-html-2026-06-07-v5`
-- Source version: `1.0.0`
+- Path: `C:\SyncBookingTheme\syncbooking_sources\theme01\claude-html-2026-06-07-desktop-v6`
+- Source version: `1.0.2`
 - Build date: `2026-06-07`
 
 ## Admin Editing

@@ -6,11 +6,11 @@ Theme 01 is generated from the clean Villa Rosa Resort HTML package and then ada
 
 Use this source package as the visual reference for Theme 01:
 
-`C:\SyncBookingTheme\syncbooking_sources\theme01\claude-html-2026-06-07-v5`
+`C:\SyncBookingTheme\syncbooking_sources\theme01\claude-html-2026-06-07-desktop-v6`
 
 Current source metadata:
 
-- Source version: `1.0.0`
+- Source version: `1.0.2`
 - Build date: `2026-06-07`
 
 Every PHP page rendered by this subtheme must expose the source metadata through:

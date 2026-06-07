@@ -1,45 +1,41 @@
-<?php $PAGE = 'offers'; $PAGE_TITLE = $C['offers']['title']; require __DIR__ . '/inc/header.php'; $p = $C['offers']; ?>
-
-<section class="page-hero" data-screen-label="Offers banner">
-  <?php echo function_exists('sbt_vfe_image') ? sbt_vfe_image('C.offers.banner', $p['banner'], ['class' => 'bg', 'alt' => $p['h1']]) : '<img class="bg" src="' . $p['banner'] . '" alt="' . $p['h1'] . '" />' ?>
-  <div class="wrap">
-    <div class="overline"><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.offers.over', $p['over']) : $p['over'] ?></div>
-    <h1><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.offers.h1', $p['h1']) : $p['h1'] ?></h1>
-    <nav class="crumb"><a href="<?php echo function_exists('sbt_url') ? sbt_url('index.php') : 'index.php' ?>"><?php echo $TEXT['home'] ?? 'Home' ?></a><span>/</span>Offers</nav>
-  </div>
-</section>
+<?php
+$PAGE = 'offers';
+require __DIR__ . '/inc/header.php';
+$p = $C['offers'];
+sbt_t1_page_hero( 'offers', $p, 'Offers' );
+?>
 
 <section class="pad" data-screen-label="Offers intro">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <div class="overline"><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.offers.intro_over', $p['intro_over']) : $p['intro_over'] ?></div>
-      <h2><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.offers.intro_h2', $p['intro_h2']) : $p['intro_h2'] ?></h2>
-      <?php $offers_intro = $p['intro_p_html'] ?? $p['intro_p']; ?>
-      <p><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.offers.intro_p_html', $offers_intro, ['multiline'=>true]) : $offers_intro ?></p>
-    </div>
-    <div class="offer-grid">
-      <?php foreach ($p['cards'] as $i => $c): ?>
-      <article class="offer-card reveal">
-        <?php echo function_exists('sbt_vfe_image') ? sbt_vfe_image('C.offers.cards.' . $i . '.img', $c['img'], ['alt' => $c['h3']]) : '<img src="' . $c['img'] . '" alt="' . $c['h3'] . '" />' ?>
-        <div class="oc-body">
-          <span class="badge"><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.offers.cards.' . $i . '.badge', $c['badge']) : $c['badge'] ?></span>
-          <h3><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.offers.cards.' . $i . '.h3', $c['h3']) : $c['h3'] ?></h3>
-          <p><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.offers.cards.' . $i . '.p', $c['p'], ['multiline'=>true]) : $c['p'] ?></p>
-        </div>
-      </article>
-      <?php endforeach; ?>
-    </div>
-  </div>
+	<div class="wrap">
+		<div class="section-head reveal">
+			<div class="overline"><?php echo sbt_t1_text( 'C.offers.intro_over', $p['intro_over'] ); ?></div>
+			<h2><?php echo sbt_t1_text( 'C.offers.intro_h2', $p['intro_h2'] ); ?></h2>
+			<p><?php echo sbt_t1_text( 'C.offers.intro_p', $p['intro_p'], array( 'multiline' => true ) ); ?></p>
+		</div>
+		<div class="offer-grid">
+			<?php foreach ( $p['cards'] as $index => $card ) : ?>
+				<a class="offer-card reveal" href="<?php echo esc_url( sbt_t1_url( $card['url'] ) ); ?>">
+					<?php echo sbt_t1_img( 'C.offers.cards.' . $index . '.img', $card['img'], $card['h3'] ); ?>
+					<div class="oc-body">
+						<span class="badge"><?php echo sbt_t1_text( 'C.offers.cards.' . $index . '.badge', $card['badge'] ); ?></span>
+						<h3><?php echo sbt_t1_text( 'C.offers.cards.' . $index . '.h3', $card['h3'] ); ?></h3>
+						<p><?php echo sbt_t1_text( 'C.offers.cards.' . $index . '.p', $card['p'], array( 'multiline' => true ) ); ?></p>
+					</div>
+					<?php echo sbt_t1_control( 'C.offers.cards.' . $index . '.url', $card['url'], 'Link card', 'url' ); ?>
+				</a>
+			<?php endforeach; ?>
+		</div>
+	</div>
 </section>
 
-<section class="band" style="<?php echo function_exists('sbt_vfe_background_style') ? sbt_vfe_background_style('C.offers.cta_bg', $p['cta_bg'] ?? $IMG['a5']) : "background-image:url('" . ($p['cta_bg'] ?? $IMG['a5']) . "');" ?>" data-screen-label="Offers CTA">
-  <div class="inner reveal">
-    <?php echo function_exists('sbt_vfe_control') ? sbt_vfe_control('C.offers.cta_bg', $p['cta_bg'] ?? $IMG['a5'], 'Immagine sfondo', 'image') : '' ?>
-    <div class="overline"><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.offers.cta_over', $p['cta_over']) : $p['cta_over'] ?></div>
-    <h2><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.offers.cta_h2', $p['cta_h2']) : $p['cta_h2'] ?></h2>
-    <a class="btn btn--light" href="<?php echo function_exists('sbt_url') ? sbt_url($p['cta_url'] ?? 'contacts.php') : ($p['cta_url'] ?? 'contacts.php') ?>" style="margin-top:8px;"><?php echo function_exists('sbt_vfe') ? sbt_vfe('C.offers.cta_btn', $p['cta_btn']) : $p['cta_btn'] ?></a>
-    <?php echo function_exists('sbt_vfe_control') ? sbt_vfe_control('C.offers.cta_url', $p['cta_url'] ?? 'contacts.php', 'Link bottone', 'url') : '' ?>
-  </div>
+<section class="band" style="<?php echo esc_attr( sbt_t1_bg_style( 'C.offers.cta_bg', $p['cta_bg'] ) ); ?>" data-screen-label="Offers CTA">
+	<div class="inner reveal">
+		<?php echo sbt_t1_control( 'C.offers.cta_bg', $p['cta_bg'], 'Immagine sfondo', 'image' ); ?>
+		<div class="overline"><?php echo sbt_t1_text( 'C.offers.cta_over', $p['cta_over'] ); ?></div>
+		<h2><?php echo sbt_t1_text( 'C.offers.cta_h2', $p['cta_h2'] ); ?></h2>
+		<a class="btn btn--light" href="<?php echo esc_url( sbt_t1_url( $p['cta_url'] ) ); ?>" style="margin-top:8px;"><?php echo sbt_t1_text( 'C.offers.cta_btn', $p['cta_btn'] ); ?></a>
+		<?php echo sbt_t1_control( 'C.offers.cta_url', $p['cta_url'], 'Link bottone', 'url' ); ?>
+	</div>
 </section>
 
 <?php require __DIR__ . '/inc/footer.php'; ?>
