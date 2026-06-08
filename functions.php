@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.20' );
+define( 'SBT_VERSION', '1.0.21' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -102,7 +102,6 @@ function sbt_subthemes() {
 				'home'                => array( 'title' => 'Home', 'file' => 'index.php' ),
 				'villa'               => array( 'title' => 'Villa', 'file' => 'villa.php', 'content_key' => 'villa' ),
 				'houses'              => array( 'title' => 'Houses', 'file' => 'houses.php', 'content_key' => 'houses' ),
-				'house'               => array( 'title' => 'House', 'file' => 'house.php', 'content_key' => 'house' ),
 				'price-and-condition' => array( 'title' => 'Price & Condition', 'file' => 'price-and-condition.php', 'content_key' => 'price' ),
 				'spa-wellness'        => array( 'title' => 'SPA & Wellness', 'file' => 'spa-wellness.php', 'content_key' => 'spa' ),
 				'experiences'         => array( 'title' => 'Experiences', 'file' => 'experiences.php', 'content_key' => 'experiences' ),
@@ -246,7 +245,7 @@ function sbt_unit_listing_slug_for_label( $unit_label ) {
 }
 
 function sbt_unit_detail_slug( $unit_label, $number ) {
-	return sanitize_title( $unit_label . ' ' . absint( $number ) );
+	return sanitize_title( $unit_label . ' for ' . absint( $number ) );
 }
 
 function sbt_option_override_value( $subtheme, $language, $path, $default = '' ) {
@@ -942,21 +941,22 @@ function sbt_apply_unit_structure( &$SITE, &$NAV, &$C, &$HOUSE_CARDS, &$TEXT ) {
 
 	$cards = array();
 	foreach ( $detail_pages as $index => $house_page ) {
+		$capacity = $index + 2;
 		$content_key = $house_page['content_key'] ?? '';
 		$content = $content_key && isset( $C[ $content_key ] ) && is_array( $C[ $content_key ] ) ? $C[ $content_key ] : array();
 		$card_image = $content['main'] ?? ( $content['overview_gallery'][0] ?? ( $content['banner'] ?? '' ) );
-		$card_gallery = isset( $content['overview_gallery'] ) && is_array( $content['overview_gallery'] ) ? $content['overview_gallery'] : array();
+		$card_gallery = isset( $content['card_gallery'] ) && is_array( $content['card_gallery'] ) ? $content['card_gallery'] : ( isset( $content['overview_gallery'] ) && is_array( $content['overview_gallery'] ) ? $content['overview_gallery'] : array() );
 		if ( ! $card_gallery && $card_image ) {
 			$card_gallery = array( $card_image );
 		}
 		$cards[] = array(
-			'tag'   => $unit_label . ' ' . ( $index + 1 ),
-			'title' => $content['h1'] ?? $house_page['title'],
+			'tag'   => 'For ' . $capacity . ' people',
+			'title' => $unit_label . ' for ' . $capacity,
 			'listing_title' => $content['h1'] ?? $house_page['title'],
 			'img'   => $card_image,
 			'gallery' => $card_gallery,
 			'url'   => $house_page['slug'] . '.php',
-			'specs' => isset( $content['specs'] ) && is_array( $content['specs'] ) ? $content['specs'] : array(),
+			'specs' => isset( $content['listing_specs'] ) && is_array( $content['listing_specs'] ) ? $content['listing_specs'] : ( isset( $content['specs'] ) && is_array( $content['specs'] ) ? $content['specs'] : array() ),
 		);
 	}
 	if ( $cards ) {
@@ -967,14 +967,14 @@ function sbt_apply_unit_structure( &$SITE, &$NAV, &$C, &$HOUSE_CARDS, &$TEXT ) {
 		if ( isset( $item['key'] ) && 'houses' === $item['key'] ) {
 			$item['label'] = $plural_label;
 			$item['url'] = 'houses.php';
-			$item['sub'] = array(
-				array(
-					'url'               => 'houses.php',
-					'label'             => $plural_label,
-					'desc'              => '',
-					'no_divider_before' => true,
-				),
-			);
+			$item['sub'] = array();
+			foreach ( $detail_pages as $house_page ) {
+				$item['sub'][] = array(
+					'url'   => $house_page['slug'] . '.php',
+					'label' => $house_page['title'],
+					'desc'  => '',
+				);
+			}
 			$item['sub'][] = array(
 				'url'    => 'price-and-condition.php',
 				'label'  => 'Price & Condition',
@@ -996,7 +996,7 @@ function sbt_bootstrap_content( &$IMG, &$SITE, &$NAV, &$C, &$HOUSE_CARDS = array
 			}
 
 			if ( ! isset( $C[ $house_page['content_key'] ] ) ) {
-				$C[ $house_page['content_key'] ] = sbt_custom_house_default_content( $house_page['title'], $C['house'] ?? array() );
+				$C[ $house_page['content_key'] ] = sbt_custom_house_default_content( $house_page['title'], $C['house2'] ?? array() );
 			}
 		}
 	}
@@ -2085,12 +2085,13 @@ function sbt_sync_custom_house_pages() {
 
 	while ( count( $current ) < $desired_count ) {
 		$number = count( $current ) + 1;
-		$title = $unit_label . ' ' . $number;
-		$slug = sbt_unit_detail_slug( $unit_label, $number );
+		$capacity = $number + 1;
+		$title = $unit_label . ' for ' . $capacity;
+		$slug = sbt_unit_detail_slug( $unit_label, $capacity );
 		$current[] = array(
 			'title'       => $title,
 			'slug'        => $slug,
-			'content_key' => 'unit_' . $number,
+			'content_key' => 'house' . $capacity,
 		);
 	}
 
@@ -2108,11 +2109,12 @@ function sbt_sync_custom_house_pages() {
 
 	foreach ( $current as $index => &$house_page ) {
 		$number = $index + 1;
+		$capacity = $number + 1;
 		$old_slug = isset( $house_page['slug'] ) ? sanitize_title( $house_page['slug'] ) : '';
-		$new_slug = sbt_unit_detail_slug( $unit_label, $number );
-		$house_page['title'] = $unit_label . ' ' . $number;
+		$new_slug = sbt_unit_detail_slug( $unit_label, $capacity );
+		$house_page['title'] = $unit_label . ' for ' . $capacity;
 		$house_page['slug'] = $new_slug;
-		$house_page['content_key'] = 'unit_' . $number;
+		$house_page['content_key'] = 'house' . $capacity;
 
 		if ( $old_slug && $old_slug !== $new_slug ) {
 			sbt_update_generated_unit_page_slugs( $old_slug, $new_slug, $house_page['content_key'] );
@@ -2171,7 +2173,7 @@ function sbt_delete_custom_house_page( $slug ) {
 
 function sbt_admin_current_tab() {
 	$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'themes';
-	return in_array( $tab, array( 'themes', 'general', 'home', 'header', 'pages' ), true ) ? $tab : 'themes';
+	return in_array( $tab, array( 'themes', 'general', 'header', 'pages' ), true ) ? $tab : 'themes';
 }
 
 function sbt_admin_tab_url( $tab ) {
@@ -2251,7 +2253,6 @@ function sbt_render_admin_shell_start( $active_tab ) {
 		'themes'   => 'Temi',
 		'general'  => 'General Settings',
 		'header'   => 'Header & Menu',
-		'home'     => 'Home',
 		'pages'    => 'Pages',
 	);
 	?>
@@ -2630,27 +2631,6 @@ function sbt_render_section_language_tabs( $tab, $active_language ) {
 	<?php
 }
 
-function sbt_render_home_tab( $data, $overrides, $edit_language = 'en' ) {
-	$sections = sbt_page_editor_sections( 'home', $data );
-	?>
-	<div class="sbt-panel">
-		<h2>Home</h2>
-		<p class="sbt-muted">Gestisci da qui tutti i contenuti principali della homepage del sottotema attivo.</p>
-		<div class="sbt-page-editor-layout">
-			<?php foreach ( $sections as $path => $section ) : ?>
-				<div class="sbt-preview-section sbt-preview-section--no-preview">
-					<div class="sbt-preview-section__editor">
-						<?php sbt_render_section_language_tabs( 'home', $edit_language ); ?>
-						<?php sbt_render_admin_fields( $section['path'] ?? $path, $section['value'], $overrides, $section['title'] ); ?>
-					</div>
-				</div>
-			<?php endforeach; ?>
-			<?php submit_button( 'Salva Home' ); ?>
-		</div>
-	</div>
-	<?php
-}
-
 function sbt_render_pages_tab() {
 	$pages = sbt_page_templates();
 	$languages = sbt_enabled_languages();
@@ -2658,7 +2638,7 @@ function sbt_render_pages_tab() {
 	?>
 	<div class="sbt-panel">
 		<h2>Pages del sottotema</h2>
-		<p class="sbt-muted">Da qui vai direttamente alla modifica completa delle pagine interne. La homepage ora si gestisce dalla tab Home.</p>
+		<p class="sbt-muted">Da qui vai direttamente alla modifica completa di Home e delle pagine interne. Ogni pagina apre l'editor unico con tab lingua.</p>
 		<?php if ( 'theme01' === sbt_active_subtheme_key() ) : ?>
 			<h2 style="margin-top:24px;">Schede <?php echo esc_html( $unit_label ); ?></h2>
 			<p class="sbt-muted">Queste schede vengono generate dal numero impostato in General Settings. Apri la scheda una volta sola: dentro l'editor trovi i tab lingua.</p>
@@ -2702,7 +2682,7 @@ function sbt_render_pages_tab() {
 			<thead><tr><th>Pagina</th><th>Lingue</th><th>Slug base</th><th>Stato</th><th>Azioni</th></tr></thead>
 			<tbody>
 				<?php foreach ( $pages as $slug => $page ) : ?>
-					<?php if ( 'home' === $slug || ! empty( $page['custom_house'] ) ) : ?>
+					<?php if ( ! empty( $page['custom_house'] ) ) : ?>
 						<?php continue; ?>
 					<?php endif; ?>
 					<?php
@@ -2790,8 +2770,6 @@ function sbt_render_admin_page() {
 				sbt_render_theme_tab( $active, $subthemes );
 			} elseif ( 'general' === $active_tab ) {
 				sbt_render_general_settings_tab( $data, $overrides );
-			} elseif ( 'home' === $active_tab ) {
-				sbt_render_home_tab( $data, $overrides, $edit_language );
 			} elseif ( 'header' === $active_tab ) {
 				sbt_render_header_menu_tab( $data, $overrides, $edit_language );
 			} elseif ( 'pages' === $active_tab ) {

@@ -4,9 +4,9 @@ These instructions are part of the theme maintenance workflow and must be follow
 
 ## Source Of Truth
 
-- Treat the newest clean HTML package in `C:\SyncBookingTheme\syncbooking_sources` as the visual and structural source of truth.
+- Treat the newest clean HTML package in `C:\SyncBookingTheme\syncbooking_source\sourcethemeHTML` as the visual and structural source of truth.
 - Do not copy the raw Claude HTML files into the WordPress theme package.
-- Keep the raw HTML package only in `syncbooking_sources`; generate/update the WordPress theme files in `syncbooking_upload`.
+- Keep the raw HTML package only in `syncbooking_source\sourcethemeHTML`; generate/update the WordPress theme files in `syncbooking_upload`.
 
 ## Full Theme Refresh Rule
 

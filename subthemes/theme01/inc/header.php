@@ -9,7 +9,7 @@ if ( ! isset( $PAGE_TITLE ) ) {
 	$PAGE_TITLE = ( $SITE['name'] ?? 'Villa Rosa Resort' ) . ' - ' . ( $SITE['tagline'] ?? 'An Apulia Villa' );
 }
 
-$SOURCE_VERSION = $SITE['source_version'] ?? '1.0.2';
+$SOURCE_VERSION = $SITE['source_version'] ?? '1.0.0';
 $SOURCE_BUILD_DATE = $SITE['source_build_date'] ?? '2026-06-07';
 $WA_SVG = '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2Zm5.6 14.2c-.2.6-1.2 1.2-1.7 1.2-.4 0-1 .1-3.1-.8-2.6-1.1-4.3-3.8-4.4-4-.1-.2-1-1.4-1-2.6 0-1.2.6-1.8.9-2 .2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.2.1.4.1.5-.1l.7-.9c.2-.2.4-.2.6-.1l1.9.9c.2.1.4.2.4.3.1.2.1.6 0 1Z"/></svg>';
 ?>
@@ -58,8 +58,13 @@ $WA_SVG = '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4
 	<a href="<?php echo esc_url( sbt_t1_url( 'villa.php' ) ); ?>">Villa</a>
 	<a href="<?php echo esc_url( sbt_t1_url( 'houses.php' ) ); ?>"><?php echo esc_html( $TEXT['houses'] ?? 'Houses' ); ?></a>
 	<div class="sub-m">
-		<a href="<?php echo esc_url( sbt_t1_url( 'house.php' ) ); ?>"><?php echo esc_html( $TEXT['view_house'] ?? 'View a House' ); ?></a>
-		<a href="<?php echo esc_url( sbt_t1_url( 'price-and-condition.php' ) ); ?>">Price &amp; Condition</a>
+		<?php foreach ( $NAV as $item ) : ?>
+			<?php if ( isset( $item['key'] ) && 'houses' === $item['key'] && ! empty( $item['sub'] ) ) : ?>
+				<?php foreach ( $item['sub'] as $sub_item ) : ?>
+					<a href="<?php echo esc_url( sbt_t1_url( $sub_item['url'] ) ); ?>"><?php echo esc_html( $sub_item['label'] ); ?></a>
+				<?php endforeach; ?>
+			<?php endif; ?>
+		<?php endforeach; ?>
 	</div>
 	<a href="<?php echo esc_url( sbt_t1_url( 'spa-wellness.php' ) ); ?>">SPA &amp; Wellness</a>
 	<a href="<?php echo esc_url( sbt_t1_url( 'experiences.php' ) ); ?>">Experiences</a>

@@ -6,7 +6,7 @@ WordPress theme with selectable hospitality subthemes, editable content, visual 
 
 When a new clean HTML package is provided for a subtheme, treat it as the absolute visual source.
 
-- Keep the original Claude HTML package outside the WordPress theme package, under `C:\SyncBookingTheme\syncbooking_sources\`.
+- Keep the original Claude HTML package outside the WordPress theme package, under `C:\SyncBookingTheme\syncbooking_source\sourcethemeHTML\`.
 - Do not copy original `.html` files or heavy `uploads` folders into this WordPress theme.
 - Rebuild the matching PHP templates, shared header, shared footer, CSS data and default content from the clean HTML.
 - Preserve the WordPress bridge features: options panel, multilingual content, visual editor, gallery modal, media downloader, page generation and WordPress.org compliance.
@@ -14,8 +14,8 @@ When a new clean HTML package is provided for a subtheme, treat it as the absolu
 
 Current Theme 01 source package:
 
-- Path: `C:\SyncBookingTheme\syncbooking_sources\theme01\claude-html-2026-06-07-desktop-v6`
-- Source version: `1.0.2`
+- Path: `C:\SyncBookingTheme\syncbooking_source\sourcethemeHTML\theme01`
+- Source version: `1.0.0`
 - Build date: `2026-06-07`
 
 ## Admin Editing
@@ -24,8 +24,7 @@ From WordPress, open `Appearance > SyncBooking Theme`.
 
 - `Header & Menu` manages navigation, global links, fonts and color palette.
 - `General Settings` manages required plugin checks, subtheme, languages and unit type/count.
-- `Home` manages the active subtheme homepage.
-- `Pages` opens the unified editor for generated pages.
+- `Pages` opens the unified editor for Home and generated pages.
 - `Visual Edit` enables frontend pencil controls for logged-in admins.
 
 ## Media

@@ -1,5 +1,5 @@
 <?php
-/* Theme 01 - Villa Rosa Resort. Rebuilt from clean HTML source 1.0.2. */
+/* Theme 01 - Villa Rosa Resort. Rebuilt from clean HTML source 1.0.0. */
 
 $BASE = function_exists( 'sbt_media_base_url' ) ? sbt_media_base_url() : 'assets/uploads/';
 
@@ -66,7 +66,7 @@ $SITE = array(
 	'cin' => 'IT072019B400085362',
 	'year' => '2026',
 	'webdev' => array( 'label' => 'web dev logovia', 'url' => 'https://www.logovia.it/' ),
-	'source_version' => '1.0.2',
+	'source_version' => '1.0.0',
 	'source_build_date' => '2026-06-07',
 );
 
@@ -78,7 +78,9 @@ $NAV = array(
 		'label' => 'Houses',
 		'key' => 'houses',
 		'sub' => array(
-			array( 'url' => 'houses.php', 'label' => 'Houses', 'no_divider_before' => true ),
+			array( 'url' => 'house-for-2.php', 'label' => 'House for 2' ),
+			array( 'url' => 'house-for-3.php', 'label' => 'House for 3' ),
+			array( 'url' => 'house-for-4.php', 'label' => 'House for 4' ),
 			array( 'url' => 'price-and-condition.php', 'label' => 'Price & Condition', 'divide' => true ),
 		),
 	),
@@ -150,9 +152,6 @@ $C['home'] = array(
 	'welcome_url' => 'villa.php',
 	'welcome_stamp' => 'Since<br/>1930',
 	'welcome_gallery' => array( $IMG['welcome'], $IMG['a1'], $IMG['a5'], $IMG['room'], $IMG['garden'] ),
-	'gallery_over' => 'A look inside',
-	'gallery_h2' => 'Spaces that tell a story',
-	'gallery' => array( $IMG['welcome'], $IMG['room2'], $IMG['room'], $IMG['garden'], $IMG['villa'] ),
 	'houses_over' => 'The Houses',
 	'houses_h2' => 'Your private retreat',
 	'houses_p' => 'The new luxury in holidays is more freedom: an entire house with an external pergola at your disposal. Refined design, a mix of modern and ancient, and every comfort make the homes of Villa Rosa very exclusive.',
@@ -172,6 +171,11 @@ $C['home'] = array(
 	'experience_teaser_p' => 'We craft tailor-made experiences for each guest, customized according to individual needs - from cooking classes and wine tastings to private tours of the surrounding wonders.',
 	'experience_teaser_url' => 'experiences.php',
 	'experience_gallery' => array( $IMG['apulian_table'], $IMG['villa'], $IMG['welcome'], $IMG['a1'], $IMG['room'] ),
+	'offers_over' => 'Villa Rosa offers',
+	'offers_h2' => 'Summer Promotions',
+	'offers_p' => 'Discover our seasonal offers and reserve your stay in the heart of Puglia at the very best conditions.',
+	'offers_btn' => 'See the offers',
+	'offers_url' => 'offers.php',
 	'house_cta_over' => 'Your private retreat awaits',
 	'house_cta_h2' => 'Choose your house<br/>in Villa Rosa',
 	'house_cta_btn' => 'Explore the houses',
@@ -186,7 +190,7 @@ $HOUSE_CARDS = array(
 		'listing_title' => 'Houses for 2',
 		'img' => $IMG['a1'],
 		'gallery' => array( $IMG['room2'], $IMG['room'], $IMG['room_detail'] ),
-		'url' => 'house.php',
+		'url' => 'house-for-2.php',
 		'specs' => array( array( 'Average surface', '30-40 m2' ), array( 'Maximum occupancy', '2 adults + 1 cot' ), array( 'Bed', 'King-size' ) ),
 	),
 	array(
@@ -195,7 +199,7 @@ $HOUSE_CARDS = array(
 		'listing_title' => 'Houses for 3',
 		'img' => $IMG['room'],
 		'gallery' => array( $IMG['room'], $IMG['room_detail'], $IMG['room2'] ),
-		'url' => 'house.php',
+		'url' => 'house-for-3.php',
 		'specs' => array( array( 'Average surface', '40-50 m2' ), array( 'Maximum occupancy', '3 adults + 1 cot' ), array( 'Beds', 'King-size + sofa bed' ) ),
 	),
 	array(
@@ -204,7 +208,7 @@ $HOUSE_CARDS = array(
 		'listing_title' => 'Houses for 4',
 		'img' => $IMG['room2'],
 		'gallery' => array( $IMG['room_detail'], $IMG['room2'], $IMG['room'] ),
-		'url' => 'house.php',
+		'url' => 'house-for-4.php',
 		'specs' => array( array( 'Average surface', '50-60 m2' ), array( 'Maximum occupancy', '4 adults + 1 cot' ), array( 'Beds', 'King-size + double sofa' ) ),
 	),
 );
@@ -267,17 +271,20 @@ $C['houses'] = array(
 	'cta_bg' => $IMG['villa'],
 );
 
-$C['house'] = array(
+$C['house2'] = array(
 	'title' => 'Houses for 2 - Villa Rosa Resort',
 	'over' => 'The Houses',
 	'h1' => 'Houses for 2',
 	'crumb_label' => 'For 2 people',
 	'banner' => $IMG['welcome'],
+	'main' => $IMG['a1'],
+	'card_gallery' => array( $IMG['room2'], $IMG['room'], $IMG['room_detail'] ),
 	'overview_gallery' => array( $IMG['room2'], $IMG['room_detail'], $IMG['room'] ),
 	'intro_over' => 'Intimate & refined',
 	'intro_h2' => 'A romantic retreat for two',
 	'intro_p' => 'An elegant private house with its own external pergola - the perfect base for a couple\'s escape in the heart of Conversano. Refined design, the comfort of a five-star resort, and the freedom of a home of your own.',
 	'specs' => array( array( 'Maximum occupancy', '2 adults + 1 baby cot' ) ),
+	'listing_specs' => array( array( 'Average surface', '30-40 m2' ), array( 'Maximum occupancy', '2 adults + 1 cot' ), array( 'Bed', 'King-size' ) ),
 	'gallery_over' => 'A look inside',
 	'gallery_h2' => 'The room, in detail',
 	'gallery' => array( $IMG['a1'], $IMG['room2'], $IMG['room'], $IMG['garden'], $IMG['a5'] ),
@@ -297,9 +304,38 @@ $C['house'] = array(
 	'cta_url' => 'contacts.php',
 	'cta_bg' => $IMG['villa'],
 );
-$C['house2'] = $C['house'];
-$C['house3'] = array_replace( $C['house'], array( 'title' => 'Houses for 3 - Villa Rosa Resort', 'h1' => 'Houses for 3', 'crumb_label' => 'For 3 people', 'intro_h2' => 'A private retreat for three', 'cta_h2' => 'Book your house for three' ) );
-$C['house4'] = array_replace( $C['house'], array( 'title' => 'Houses for 4 - Villa Rosa Resort', 'h1' => 'Houses for 4', 'crumb_label' => 'For 4 people', 'intro_h2' => 'A generous retreat for four', 'cta_h2' => 'Book your house for four' ) );
+$C['house3'] = array_replace( $C['house2'], array(
+	'title' => 'Houses for 3 - Villa Rosa Resort',
+	'h1' => 'Houses for 3',
+	'crumb_label' => 'For 3 people',
+	'banner' => $IMG['garden'],
+	'main' => $IMG['room'],
+	'card_gallery' => array( $IMG['room'], $IMG['room_detail'], $IMG['room2'] ),
+	'overview_gallery' => array( $IMG['a5'] ),
+	'intro_over' => 'Space for family or friends',
+	'intro_h2' => 'Room to share, comfort to spare',
+	'intro_p' => 'A generous private house with a king-size bed and an additional sofa bed, plus a private pergola for slow Apulian evenings. Ideal for a small family or three friends who want independence without giving up the comforts of a resort.',
+	'specs' => array( array( 'Average surface', '40-50 m2' ), array( 'Maximum occupancy', '3 adults + 1 baby cot' ), array( 'Beds', 'King-size + sofa bed' ), array( 'Outdoor', 'Private pergola' ) ),
+	'listing_specs' => array( array( 'Average surface', '40-50 m2' ), array( 'Maximum occupancy', '3 adults + 1 cot' ), array( 'Beds', 'King-size + sofa bed' ) ),
+	'gallery' => array( $IMG['room'], $IMG['garden'], $IMG['a5'], $IMG['a1'], $IMG['room2'] ),
+	'cta_h2' => 'Book houses for 3',
+) );
+$C['house4'] = array_replace( $C['house2'], array(
+	'title' => 'Houses for 4 - Villa Rosa Resort',
+	'h1' => 'Houses for 4',
+	'crumb_label' => 'For 4 people',
+	'banner' => $IMG['villa'],
+	'main' => $IMG['room2'],
+	'card_gallery' => array( $IMG['room_detail'], $IMG['room2'], $IMG['room'] ),
+	'overview_gallery' => array( $IMG['garden'] ),
+	'intro_over' => 'The whole family, at home',
+	'intro_h2' => 'An entire home for four',
+	'intro_p' => 'Our largest houses welcome up to four guests with a king-size bed and a double sofa bed, a fully equipped kitchen and a private external pergola. The ideal solution for a family holiday in total privacy and independence.',
+	'specs' => array( array( 'Average surface', '50-60 m2' ), array( 'Maximum occupancy', '4 adults + 1 baby cot' ), array( 'Beds', 'King-size + double sofa bed' ), array( 'Outdoor', 'Private pergola' ) ),
+	'listing_specs' => array( array( 'Average surface', '50-60 m2' ), array( 'Maximum occupancy', '4 adults + 1 cot' ), array( 'Beds', 'King-size + double sofa' ) ),
+	'gallery' => array( $IMG['room2'], $IMG['a1'], $IMG['garden'], $IMG['room'], $IMG['a5'] ),
+	'cta_h2' => 'Book houses for 4',
+) );
 
 $C['price'] = array(
 	'title' => 'Price & Condition - Villa Rosa Resort',

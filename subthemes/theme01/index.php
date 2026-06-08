@@ -46,16 +46,6 @@ $p = $C['home'];
 	</div>
 </section>
 
-<section class="pad-s" data-screen-label="Gallery">
-	<div class="wrap">
-		<div class="section-head reveal" style="margin-bottom:40px;">
-			<div class="overline"><?php echo sbt_t1_text( 'C.home.gallery_over', $p['gallery_over'] ); ?></div>
-			<h2><?php echo sbt_t1_text( 'C.home.gallery_h2', $p['gallery_h2'] ); ?></h2>
-		</div>
-		<?php sbt_t1_mosaic( 'C.home.gallery', $p['gallery'], $SITE['name'], $TEXT['show_all_photos'] ); ?>
-	</div>
-</section>
-
 <section class="houses pad" id="houses" data-screen-label="Houses">
 	<div class="wrap">
 		<div class="section-head reveal">
@@ -139,6 +129,16 @@ $p = $C['home'];
 			</div>
 			<?php sbt_t1_carousel( 'C.home.experience_gallery', $p['experience_gallery'], 'Apulian Experience', true, true ); ?>
 		</div>
+	</div>
+</section>
+
+<section class="offers" id="offers" data-screen-label="Offers">
+	<div class="wrap inner reveal">
+		<div class="overline"><?php echo sbt_t1_text( 'C.home.offers_over', $p['offers_over'] ); ?></div>
+		<h2><?php echo sbt_t1_text( 'C.home.offers_h2', $p['offers_h2'] ); ?></h2>
+		<p class="body-text" style="margin:0 auto 36px;color:rgba(255,255,255,.88);max-width:50ch;"><?php echo sbt_t1_text( 'C.home.offers_p', $p['offers_p'], array( 'multiline' => true ) ); ?></p>
+		<a class="btn btn--light" href="<?php echo esc_url( sbt_t1_url( $p['offers_url'] ) ); ?>"><?php echo sbt_t1_text( 'C.home.offers_btn', $p['offers_btn'] ); ?></a>
+		<?php echo sbt_t1_control( 'C.home.offers_url', $p['offers_url'], 'Link bottone', 'url' ); ?>
 	</div>
 </section>
 

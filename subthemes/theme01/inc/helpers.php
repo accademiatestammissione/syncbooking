@@ -69,6 +69,20 @@ if ( ! function_exists( 'sbt_t1_page_hero' ) ) {
 
 if ( ! function_exists( 'sbt_t1_carousel' ) ) {
 	function sbt_t1_carousel( $path, $images, $alt, $lightbox = true, $frame = false ) {
+		$images = is_array( $images ) ? array_values( $images ) : array();
+		if ( 2 > count( $images ) ) {
+			$image = $images ? $images[0] : '';
+			$attrs = $lightbox ? array( 'data-lightbox' => '' ) : array();
+			?>
+			<div class="media reveal">
+				<?php echo sbt_t1_img( $path . '.0', $image, $alt, $attrs ); ?>
+				<?php if ( $frame ) : ?>
+					<div class="frame"></div>
+				<?php endif; ?>
+			</div>
+			<?php
+			return;
+		}
 		?>
 		<div class="media reveal media-carousel" data-carousel>
 			<div class="mc-track">

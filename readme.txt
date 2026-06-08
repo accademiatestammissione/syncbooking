@@ -23,6 +23,12 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 1.0.21 =
+* Rebuilt Theme 01 from the latest clean HTML package "SyncBooking Theme 01 (5).zip" using source version 1.0.0 from 2026-06-07.
+* Removed the obsolete generic House template and aligned generated unit pages to House for 2, House for 3 and House for 4.
+* Moved Home editing into Pages and removed the separate Home admin tab.
+* Cleaned the local source workflow to use syncbooking_source/sourcethemeHTML as the only raw HTML source folder.
+
 = 1.0.20 =
 * Rebuilt Theme 01 PHP templates, CSS and JavaScript from the clean HTML source package version 1.0.2 from 2026-06-07.
 * Added the new Theme 01 home gallery mosaic and the single House template from the source package.
