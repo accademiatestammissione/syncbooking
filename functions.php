@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.25' );
+define( 'SBT_VERSION', '1.0.26' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -1025,6 +1025,50 @@ function sbt_theme01_seed_articles() {
 			'group'         => 'theme01_offers',
 			'excerpt'       => 'Discover Puglia in its gentlest seasons with reduced shoulder-season rates and a slower local rhythm.',
 			'content'       => '<p>Spring and autumn are among the most beautiful moments to discover Puglia. The light is softer, the towns are quieter and the countryside around Conversano reveals colours and scents that are easy to miss in the busiest months.</p><p>This seasonal offer is made for travellers who love mild temperatures, authentic local life and a more peaceful way to explore the region. It is a smart choice for couples, small groups and remote workers who want space and comfort.</p><h2>What makes it special</h2><ul><li>Reduced rates in selected shoulder-season periods.</li><li>Excellent conditions for day trips and outdoor experiences.</li><li>A calmer version of Puglia, close to the sea and inland villages.</li></ul><p>Availability changes by date and house type. <a href="' . esc_url( $contact_url ) . '">Contact us for more information</a> and we will recommend the best period for your stay.</p>',
+		),
+		array(
+			'slug'          => 'cooking-classes',
+			'title'         => 'Cooking Classes in the heart of Puglia',
+			'over'          => 'Taste',
+			'hero'          => $asset_base . 'apulian-breakfast.jpg',
+			'category'      => 'Experiences',
+			'category_slug' => 'experiences',
+			'group'         => 'theme01_experiences',
+			'excerpt'       => 'A hands-on Apulian cooking class shaped around local ingredients, family recipes and the pleasure of sharing a table.',
+			'content'       => '<p>Live Puglia, your way: we craft bespoke experiences for every guest, shaped around your tastes and curiosities. A cooking class is one of the warmest ways to enter the region, through flour, olive oil, vegetables, herbs and the stories that turn simple ingredients into memories.</p><p>Depending on the season, the experience can focus on fresh pasta, traditional focaccia, vegetables from the local market or a full Apulian menu to prepare and enjoy together.</p><h2>What to expect</h2><ul><li>A relaxed, hands-on lesson with local flavours.</li><li>Seasonal ingredients and traditional techniques.</li><li>A shared meal or tasting moment at the end of the class.</li></ul><p>Each class can be adapted to guests, timing and preferences. <a href="' . esc_url( $contact_url ) . '">Contact us for more information</a> and we will help you design the right culinary experience.</p>',
+		),
+		array(
+			'slug'          => 'wine-tastings',
+			'title'         => 'Wine Tastings',
+			'over'          => 'Cellar',
+			'hero'          => $remote_base . '2025/03/a5-1240-900.jpg',
+			'category'      => 'Experiences',
+			'category_slug' => 'experiences',
+			'group'         => 'theme01_experiences',
+			'excerpt'       => 'Discover local labels, native grapes and the generous character of Apulian wine through a tailored tasting experience.',
+			'content'       => '<p>Puglia is a land of generous wines, sunlit vineyards and native grapes with a strong personality. A private tasting is the perfect way to discover this side of the region without rushing, guided by stories, pairings and the pleasure of comparison.</p><p>We can arrange an intimate tasting at the resort or suggest nearby wineries according to the style of experience you prefer: relaxed, educational, romantic or convivial.</p><h2>Designed around you</h2><ul><li>Local red, white and rose wines from selected producers.</li><li>Suggested pairings with Apulian flavours.</li><li>Options for couples, families, small groups and special occasions.</li></ul><p>Tell us your dates and what you love to drink. <a href="' . esc_url( $contact_url ) . '">Contact us for more information</a> and we will prepare a tasting proposal for your stay.</p>',
+		),
+		array(
+			'slug'          => 'private-tours',
+			'title'         => 'Private Tours',
+			'over'          => 'Discover',
+			'hero'          => $remote_base . '2025/03/7a97973d-d95e-401a-9c30-845b04364bc4.jpg',
+			'category'      => 'Experiences',
+			'category_slug' => 'experiences',
+			'group'         => 'theme01_experiences',
+			'excerpt'       => 'Tailor-made tours from Conversano to the villages, landscapes and hidden corners that make Puglia unforgettable.',
+			'content'       => '<p>From the flavours of the Apulian table to the wonders just beyond our gates, let us design moments you will remember long after you leave. Private tours are ideal for guests who want to discover Puglia with freedom, comfort and a route shaped around personal interests.</p><p>Starting from Villa Rosa Resort, you can explore whitewashed villages, countryside roads, historic centres, artisan workshops, coastal towns and places that are easier to love with the right local guidance.</p><h2>Possible itineraries</h2><ul><li>Conversano, Polignano a Mare and the Adriatic coast.</li><li>Alberobello, Locorotondo and the Itria Valley.</li><li>Bari old town, local markets and cultural stops.</li></ul><p>Every tour can be adjusted by duration, pace and theme. <a href="' . esc_url( $contact_url ) . '">Contact us for more information</a> and we will help you create your private itinerary.</p>',
+		),
+		array(
+			'slug'          => 'coast-beaches',
+			'title'         => 'Coast & Beaches',
+			'over'          => 'Sea',
+			'hero'          => $remote_base . '2025/03/p-YLCX1349.jpg',
+			'category'      => 'Experiences',
+			'category_slug' => 'experiences',
+			'group'         => 'theme01_experiences',
+			'excerpt'       => 'Reach the Adriatic coast from Conversano and discover beaches, cliffs, sea caves and relaxed seaside days.',
+			'content'       => '<p>The coast is one of the great pleasures of staying in Conversano. In a short drive you can reach cliffs, coves, beach clubs, fishing towns and panoramic terraces where the Adriatic becomes part of the day.</p><p>We can help you choose the right seaside experience: a quiet beach morning, a scenic stop in Polignano a Mare, a boat excursion, a long lunch by the water or a full coastal itinerary with time to swim and wander.</p><h2>Perfect for</h2><ul><li>Guests who want sea views and easy beach days.</li><li>Families looking for comfortable seaside options.</li><li>Couples planning a romantic coastal afternoon.</li></ul><p>The best beach depends on season, weather and the type of day you imagine. <a href="' . esc_url( $contact_url ) . '">Contact us for more information</a> and we will suggest the best coast and beach options for your stay.</p>',
 		),
 	);
 }
