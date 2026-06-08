@@ -2173,6 +2173,10 @@ function sbt_delete_custom_house_page( $slug ) {
 
 function sbt_admin_current_tab() {
 	$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'themes';
+	if ( 'home' === $tab ) {
+		return 'pages';
+	}
+
 	return in_array( $tab, array( 'themes', 'general', 'header', 'pages' ), true ) ? $tab : 'themes';
 }
 
@@ -2185,6 +2189,20 @@ function sbt_admin_tab_url( $tab ) {
 		admin_url( 'themes.php' )
 	);
 }
+
+function sbt_redirect_legacy_home_tab() {
+	if ( ! is_admin() || ! current_user_can( 'edit_theme_options' ) ) {
+		return;
+	}
+
+	$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+	$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : '';
+	if ( 'syncbooking-theme' === $page && 'home' === $tab ) {
+		wp_safe_redirect( sbt_admin_tab_url( 'pages' ) );
+		exit;
+	}
+}
+add_action( 'admin_init', 'sbt_redirect_legacy_home_tab' );
 
 function sbt_theme_page_edit_url( $slug ) {
 	$page = get_page_by_path( $slug );
