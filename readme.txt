@@ -23,6 +23,10 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 1.0.30 =
+* Improved the frontend Visual Edit gallery modal so admins can replace an entire gallery from the WordPress Media Library.
+* Preselected existing imported demo images when opening the gallery editor whenever matching attachments are available.
+
 = 1.0.29 =
 * Loaded Theme 01 CSS after WordPress and SyncBooking plugin styles so interior-page headers match the homepage header.
 * Printed Theme 01 design variables after the main stylesheet to preserve admin color and font settings.

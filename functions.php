@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.29' );
+define( 'SBT_VERSION', '1.0.30' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -1665,17 +1665,40 @@ function sbt_visual_meta_editor_assets() {
 			});
 		}
 
+		function preloadGallerySelection(frame, urls){
+			if (!urls.length) return;
+			var data = new FormData();
+			data.append('action', 'sbt_vfe_gallery_attachment_ids');
+			data.append('nonce', config.nonce);
+			urls.forEach(function(url){
+				data.append('urls[]', url);
+			});
+			fetch(config.ajaxUrl, { method:'POST', credentials:'same-origin', body:data })
+				.then(function(response){ return response.json(); })
+				.then(function(json){
+					if (!json || !json.success || !json.data || !json.data.ids) return;
+					var selection = frame.state().get('selection');
+					json.data.ids.forEach(function(id){
+						var attachment = wp.media.attachment(id);
+						attachment.fetch();
+						selection.add(attachment);
+					});
+				});
+		}
+
 		function openGalleryFrame(field){
 			if (!window.wp || !wp.media) return;
 			var parentPath = galleryPathFromElement(field);
 			if (!parentPath) return;
-			var frame = wp.media({ title: 'Seleziona immagini gallery', multiple: true, library: { type: 'image' } });
+			var galleryUrls = closestGalleryUrls(field);
+			var frame = wp.media({
+				title: 'Modifica tutta la galleria',
+				button: { text: 'Usa queste immagini' },
+				multiple: true,
+				library: { type: 'image' }
+			});
 			frame.on('open', function(){
-				var selection = frame.state().get('selection');
-				closestGalleryUrls(field).forEach(function(url){
-					var attachment = wp.media.attachment(url);
-					if (attachment) selection.add(attachment);
-				});
+				preloadGallerySelection(frame, galleryUrls);
 			});
 			frame.on('select', function(){
 				var urls = [];
@@ -1844,6 +1867,51 @@ function sbt_visual_meta_editor_save() {
 	wp_send_json_success( array( 'value' => $value ) );
 }
 add_action( 'wp_ajax_sbt_vfe_save', 'sbt_visual_meta_editor_save' );
+
+function sbt_visual_meta_editor_gallery_attachment_ids() {
+	if ( ! current_user_can( 'edit_theme_options' ) ) {
+		wp_send_json_error( 'Permessi insufficienti.' );
+	}
+
+	check_ajax_referer( 'sbt_vfe_save', 'nonce' );
+
+	$raw_urls = isset( $_POST['urls'] ) && is_array( $_POST['urls'] ) ? wp_unslash( $_POST['urls'] ) : array();
+	$ids = array();
+
+	foreach ( $raw_urls as $raw_url ) {
+		$url = esc_url_raw( $raw_url );
+		if ( '' === $url ) {
+			continue;
+		}
+
+		$id = attachment_url_to_postid( $url );
+		if ( ! $id ) {
+			$path = wp_parse_url( $url, PHP_URL_PATH );
+			$marker = '/syncbooking-theme/';
+			if ( is_string( $path ) && false !== strpos( $path, $marker ) ) {
+				$relative = ltrim( substr( $path, strpos( $path, $marker ) + strlen( $marker ) ), '/' );
+				$matches = get_posts(
+					array(
+						'post_type'      => 'attachment',
+						'post_status'    => 'inherit',
+						'posts_per_page' => 1,
+						'fields'         => 'ids',
+						'meta_key'       => '_sbt_bundled_media_path',
+						'meta_value'     => wp_normalize_path( $relative ),
+					)
+				);
+				$id = $matches ? absint( $matches[0] ) : 0;
+			}
+		}
+
+		if ( $id ) {
+			$ids[] = $id;
+		}
+	}
+
+	wp_send_json_success( array( 'ids' => array_values( array_unique( array_map( 'absint', $ids ) ) ) ) );
+}
+add_action( 'wp_ajax_sbt_vfe_gallery_attachment_ids', 'sbt_visual_meta_editor_gallery_attachment_ids' );
 
 function sbt_admin_menu() {
 	add_theme_page( 'SyncBooking Theme', 'SyncBooking Theme', 'edit_theme_options', 'syncbooking-theme', 'sbt_render_admin_page' );
