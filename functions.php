@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.24' );
+define( 'SBT_VERSION', '1.0.25' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -487,10 +487,53 @@ function sbt_page_map() {
 	return $map;
 }
 
+function sbt_syncbooking_booking_page_id() {
+	$page_id = absint( get_option( 'syncbooking_booking_page' ) );
+	if ( $page_id && 'publish' === get_post_status( $page_id ) ) {
+		return $page_id;
+	}
+
+	$pages = get_posts( array(
+		'post_type'      => 'page',
+		'post_status'    => 'publish',
+		'posts_per_page' => 1,
+		'fields'         => 'ids',
+		'meta_key'       => '_wp_page_template',
+		'meta_value'     => 'syncbooking-template.php',
+	) );
+	if ( $pages ) {
+		return (int) $pages[0];
+	}
+
+	foreach ( array( 'search-and-book', 'booking-direct', 'booking-website', 'search', 'booking-sync', 'booking-search' ) as $slug ) {
+		$page = get_page_by_path( $slug, OBJECT, 'page' );
+		if ( $page && 'publish' === get_post_status( $page ) ) {
+			return (int) $page->ID;
+		}
+	}
+
+	return 0;
+}
+
+function sbt_syncbooking_booking_url() {
+	$page_id = sbt_syncbooking_booking_page_id();
+	return $page_id ? get_permalink( $page_id ) : home_url( '/search-and-book/' );
+}
+
+function sbt_is_syncbooking_booking_url( $url ) {
+	$url = untrailingslashit( set_url_scheme( (string) $url, 'https' ) );
+	$booking_url = untrailingslashit( set_url_scheme( sbt_syncbooking_booking_url(), 'https' ) );
+	return '' !== $url && $url === $booking_url;
+}
+
 function sbt_url( $url ) {
 	$map = sbt_page_map();
 	$file = strtok( (string) $url, '#' );
 	$hash = false === strpos( (string) $url, '#' ) ? '' : '#' . substr( (string) $url, strpos( (string) $url, '#' ) + 1 );
+
+	if ( 'syncbooking:booking' === (string) $file ) {
+		return sbt_syncbooking_booking_url() . $hash;
+	}
 
 	if ( 0 === strpos( (string) $url, 'post:' ) ) {
 		$post_slug = sanitize_title( substr( (string) $file, 5 ) );
@@ -534,7 +577,15 @@ function sbt_editable_url_value( $url ) {
 		return '';
 	}
 
+	if ( 'syncbooking:booking' === strtok( $url, '#' ) ) {
+		return $url;
+	}
+
 	if ( preg_match( '#^https?://#i', $url ) ) {
+		if ( sbt_is_syncbooking_booking_url( $url ) || preg_match( '#/booking/?$#i', wp_parse_url( $url, PHP_URL_PATH ) ?: '' ) ) {
+			return 'syncbooking:booking';
+		}
+
 		return set_url_scheme( $url, 'https' );
 	}
 
@@ -558,12 +609,17 @@ function sbt_editable_url_value( $url ) {
 	return set_url_scheme( home_url( '/' . ltrim( $url, '/' ) ), 'https' );
 }
 
+function sbt_sanitize_editable_url( $url ) {
+	$url = sbt_editable_url_value( $url );
+	return 0 === strpos( (string) $url, 'syncbooking:' ) ? sanitize_text_field( $url ) : esc_url_raw( $url );
+}
+
 function sbt_sanitize_editable_override( $path, $value ) {
 	$value = wp_unslash( $value );
 	$kind = sbt_field_kind( $path, $value );
 
 	if ( 'url' === $kind ) {
-		return esc_url_raw( sbt_editable_url_value( $value ) );
+		return sbt_sanitize_editable_url( $value );
 	}
 
 	if ( 'image' === $kind ) {
@@ -580,7 +636,9 @@ function sbt_sanitize_editable_override( $path, $value ) {
 }
 
 function sbt_link_target_options() {
-	$options = array();
+	$options = array(
+		'syncbooking:booking' => 'Pagina booking SyncBooking',
+	);
 	$posts = get_posts(
 		array(
 			'post_type'      => array( 'page', 'post' ),
@@ -617,7 +675,7 @@ function sbt_render_link_target_control( $name, $current ) {
 			<?php endforeach; ?>
 		</select>
 		<input type="url" value="<?php echo esc_attr( $has_current ? '' : $current ); ?>" class="sbt-link-direct" placeholder="https://example.com/page/">
-		<span class="sbt-link-hint">Scegli una pagina/articolo oppure inserisci un URL diretto https://...</span>
+		<span class="sbt-link-hint">Scegli una pagina/articolo, la pagina booking SyncBooking, oppure inserisci un URL diretto https://...</span>
 	</span>
 	<?php
 }
@@ -1133,8 +1191,8 @@ function sbt_custom_house_default_content( $title, $base = array() ) {
 		'included' => array(),
 		'cta_over' => 'Ready when you are',
 		'cta_h2' => 'Book your house',
-		'cta_btn' => 'Contact us',
-		'cta_url' => 'contacts.php',
+		'cta_btn' => 'Request availability',
+		'cta_url' => 'syncbooking:booking',
 		'cta_bg' => '',
 	);
 
@@ -1261,7 +1319,7 @@ function sbt_rewrite_content_urls( &$value ) {
 
 	foreach ( $value as $key => &$child ) {
 		if ( is_string( $child ) && preg_match( '/(^|_)url$/', (string) $key ) ) {
-			$child = sbt_url( $child );
+			$child = sbt_url( sbt_editable_url_value( $child ) );
 		} else {
 			sbt_rewrite_content_urls( $child );
 		}
@@ -1628,7 +1686,7 @@ function sbt_visual_meta_editor_save() {
 	$type = isset( $_POST['type'] ) ? sanitize_key( wp_unslash( $_POST['type'] ) ) : 'text';
 	$raw_value = isset( $_POST['value'] ) ? wp_unslash( $_POST['value'] ) : '';
 	if ( 'url' === $type ) {
-		$value = esc_url_raw( sbt_editable_url_value( $raw_value ) );
+		$value = sbt_sanitize_editable_url( $raw_value );
 	} elseif ( 'image' === $type ) {
 		$value = esc_url_raw( $raw_value );
 	} elseif ( 'gallery' === $type ) {

@@ -22,7 +22,7 @@ sbt_t1_page_hero(
 				<?php endforeach; ?>
 			</ul>
 			<div class="house-actions">
-				<a class="btn" href="<?php echo esc_url( sbt_t1_url( 'contacts.php' ) ); ?>"><?php echo sbt_t1_text( 'TEXT.request_availability', $TEXT['request_availability'] ); ?></a>
+				<a class="btn" href="<?php echo esc_url( sbt_t1_url( 'syncbooking:booking' ) ); ?>"><?php echo sbt_t1_text( 'TEXT.request_availability', $TEXT['request_availability'] ); ?></a>
 				<a class="btn btn--ghost" href="<?php echo esc_url( sbt_t1_url( 'price-and-condition.php' ) ); ?>"><?php echo sbt_t1_text( 'TEXT.price_condition', $TEXT['price_condition'] ); ?></a>
 			</div>
 		</div>

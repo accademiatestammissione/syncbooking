@@ -23,6 +23,11 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 1.0.25 =
+* Added a SyncBooking booking-page resolver for theme booking links.
+* Connected Theme 01 request availability and booking CTA buttons to the generated SyncBooking booking page.
+* Preserved the special SyncBooking booking target in admin and visual link editors.
+
 = 1.0.24 =
 * Added initial WordPress seed posts for the four Theme 01 Offers articles.
 * Connected Offers cards to the generated post permalinks.

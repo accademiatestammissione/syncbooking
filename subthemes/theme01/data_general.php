@@ -300,8 +300,8 @@ $C['house2'] = array(
 	),
 	'cta_over' => 'Ready when you are',
 	'cta_h2' => 'Book your house for two',
-	'cta_btn' => 'Contact us',
-	'cta_url' => 'contacts.php',
+	'cta_btn' => 'Request availability',
+	'cta_url' => 'syncbooking:booking',
 	'cta_bg' => $IMG['villa'],
 );
 $C['house3'] = array_replace( $C['house2'], array(
@@ -349,7 +349,7 @@ $C['price'] = array(
 	'book_h3' => 'Check dates & book online',
 	'book_p' => 'Select your house, see live prices for your dates and complete your reservation through our secure booking system.',
 	'book_btn' => 'Book your stay',
-	'book_url' => 'https://villarosaresort.it/booking',
+	'book_url' => 'syncbooking:booking',
 	'book_note' => 'Best rate guaranteed when you book direct.',
 	'cond_over' => 'Good to know',
 	'cond_h2' => 'Conditions',
