@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.30' );
+define( 'SBT_VERSION', '1.0.31' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -163,6 +163,14 @@ function sbt_enabled_languages() {
 	} ) ) );
 
 	return $languages ? $languages : array( 'en' );
+}
+
+function sbt_header_language_codes() {
+	return array_map( 'strtoupper', sbt_enabled_languages() );
+}
+
+function sbt_current_header_language_code() {
+	return strtoupper( function_exists( 'sbt_current_content_language' ) ? sbt_current_content_language() : 'en' );
 }
 
 function sbt_admin_language() {
@@ -3114,8 +3122,6 @@ function sbt_render_header_menu_tab( $data, $overrides, $edit_language = 'en' ) 
 			sbt_render_header_field( 'IMG.logo_foot', 'Logo footer URL', $data['IMG']['logo_foot'] ?? '', $overrides, 'url' );
 			sbt_render_header_field( 'SITE.wa', 'WhatsApp URL', $data['SITE']['wa'] ?? '', $overrides, 'url' );
 			sbt_render_header_field( 'SITE.whatsapp_label', 'Testo WhatsApp', $data['SITE']['whatsapp_label'] ?? 'WhatsApp', $overrides );
-			sbt_render_header_field( 'SITE.lang_primary', 'Lingua primaria header', $data['SITE']['lang_primary'] ?? 'EN', $overrides );
-			sbt_render_header_field( 'SITE.lang_secondary', 'Lingua secondaria header', $data['SITE']['lang_secondary'] ?? 'IT', $overrides );
 			sbt_render_header_field( 'SITE.phone1', 'Telefono principale', $data['SITE']['phone1'] ?? '', $overrides );
 			sbt_render_header_field( 'SITE.email', 'Email', $data['SITE']['email'] ?? '', $overrides, 'email' );
 			?>
@@ -3375,8 +3381,6 @@ function sbt_humanize_key( $key ) {
 		'email'            => 'Email',
 		'address'          => 'Indirizzo',
 		'whatsapp_label'   => 'Testo WhatsApp',
-		'lang_primary'     => 'Lingua principale',
-		'lang_secondary'   => 'Lingua secondaria',
 		'unit_label'       => 'Nome sezione unita',
 		'unit_count'       => 'Numero unita',
 	);

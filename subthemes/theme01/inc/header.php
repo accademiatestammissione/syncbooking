@@ -18,6 +18,8 @@ if ( function_exists( 'add_query_arg' ) ) {
 } else {
 	$SITE_CSS_URL .= ( false === strpos( $SITE_CSS_URL, '?' ) ? '?' : '&' ) . 'ver=' . rawurlencode( $ASSET_VERSION );
 }
+$HEADER_LANGUAGES = function_exists( 'sbt_header_language_codes' ) ? sbt_header_language_codes() : array( 'EN' );
+$CURRENT_HEADER_LANGUAGE = function_exists( 'sbt_current_header_language_code' ) ? sbt_current_header_language_code() : 'EN';
 $WA_SVG = '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2Zm5.6 14.2c-.2.6-1.2 1.2-1.7 1.2-.4 0-1 .1-3.1-.8-2.6-1.1-4.3-3.8-4.4-4-.1-.2-1-1.4-1-2.6 0-1.2.6-1.8.9-2 .2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.2.1.4.1.5-.1l.7-.9c.2-.2.4-.2.6-.1l1.9.9c.2.1.4.2.4.3.1.2.1.6 0 1Z"/></svg>';
 ?>
 <!-- VERSION <?php echo esc_html( $SOURCE_VERSION ); ?> - <?php echo esc_html( $SOURCE_BUILD_DATE ); ?> - <?php echo esc_html( $SITE['name'] ); ?> -->
@@ -55,7 +57,12 @@ $WA_SVG = '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4
 		<?php endforeach; ?>
 	</nav>
 	<div class="actions-desktop">
-		<div class="lang-toggle"><a href="#" class="active"><?php echo esc_html( $SITE['lang_primary'] ?? 'EN' ); ?></a><span class="sep">/</span><a href="#"><?php echo esc_html( $SITE['lang_secondary'] ?? 'IT' ); ?></a></div>
+		<div class="lang-toggle">
+			<?php foreach ( $HEADER_LANGUAGES as $index => $language_code ) : ?>
+				<?php if ( $index ) : ?><span class="sep">/</span><?php endif; ?>
+				<a href="#"<?php echo $CURRENT_HEADER_LANGUAGE === $language_code ? ' class="active"' : ''; ?>><?php echo esc_html( $language_code ); ?></a>
+			<?php endforeach; ?>
+		</div>
 	</div>
 	<button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
 </header>

@@ -23,6 +23,10 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 1.0.31 =
+* Removed manual primary and secondary header language fields from Header & Menu.
+* Rendered header language toggles automatically from the enabled site languages.
+
 = 1.0.30 =
 * Improved the frontend Visual Edit gallery modal so admins can replace an entire gallery from the WordPress Media Library.
 * Preselected existing imported demo images when opening the gallery editor whenever matching attachments are available.
