@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.22' );
+define( 'SBT_VERSION', '1.0.23' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -492,12 +492,40 @@ function sbt_url( $url ) {
 	$file = strtok( (string) $url, '#' );
 	$hash = false === strpos( (string) $url, '#' ) ? '' : '#' . substr( (string) $url, strpos( (string) $url, '#' ) + 1 );
 
+	if ( 0 === strpos( (string) $url, 'post:' ) ) {
+		$post_slug = sanitize_title( substr( (string) $file, 5 ) );
+		$post_id = sbt_seed_post_id( $post_slug );
+		return $post_id ? get_permalink( $post_id ) . $hash : home_url( '/' . $post_slug . '/' ) . $hash;
+	}
+
 	if ( isset( $map[ $file ] ) ) {
 		$language_slug = sbt_language_page_slug( $map[ $file ], sbt_current_content_language() );
 		return 'home' === $map[ $file ] && 'en' === sbt_current_content_language() ? home_url( '/' ) . $hash : home_url( '/' . $language_slug . '/' ) . $hash;
 	}
 
 	return $url;
+}
+
+function sbt_seed_post_id( $seed_slug ) {
+	$seed_slug = sanitize_title( $seed_slug );
+	if ( '' === $seed_slug ) {
+		return 0;
+	}
+
+	$existing = get_posts( array(
+		'post_type'      => 'post',
+		'post_status'    => 'any',
+		'posts_per_page' => 1,
+		'fields'         => 'ids',
+		'meta_key'       => '_sbt_seed_slug',
+		'meta_value'     => $seed_slug,
+	) );
+	if ( $existing ) {
+		return (int) $existing[0];
+	}
+
+	$post = get_page_by_path( $seed_slug, OBJECT, 'post' );
+	return $post ? (int) $post->ID : 0;
 }
 
 function sbt_editable_url_value( $url ) {
@@ -844,6 +872,96 @@ function sbt_create_theme_pages() {
 }
 add_action( 'after_switch_theme', 'sbt_create_theme_pages' );
 add_action( 'after_switch_theme', 'sbt_sync_custom_house_pages' );
+add_action( 'after_switch_theme', 'sbt_create_seed_posts' );
+
+function sbt_theme01_seed_articles() {
+	$remote_base = sbt_media_remote_base_url( 'theme01' );
+	$asset_base = get_template_directory_uri() . '/subthemes/theme01/assets/images/';
+
+	return array(
+		array(
+			'slug'    => 'conversano',
+			'title'   => 'Conversano, the noble heart of Puglia',
+			'over'    => '2 min walk',
+			'hero'    => $asset_base . 'conversano-town.jpg',
+			'excerpt' => 'A graceful old town of stone lanes, noble palaces and quiet squares, just a short walk from Villa Rosa Resort.',
+			'content' => '<p>Conversano is the first discovery waiting beyond the gates of Villa Rosa Resort. Elegant, walkable and deeply authentic, the town keeps the rhythm of Puglia without the rush of the coast.</p><p>Its Norman-Swabian Castle dominates the historic centre, while churches, monasteries and aristocratic palaces reveal the layered history of a place that has always known how to welcome travellers.</p><h2>What to see</h2><p>Start with the castle and the cathedral, then let the small streets guide you toward hidden courtyards, local bakeries and sunset aperitifs in the old town.</p><blockquote>Conversano is close enough to become part of your daily ritual: morning coffee, evening stroll, one more gelato before returning home.</blockquote><h3>Perfect for</h3><ul><li>A slow walk after breakfast.</li><li>An easy dinner without taking the car.</li><li>Guests who want culture, shops and local life within reach.</li></ul>',
+		),
+		array(
+			'slug'    => 'polignano-a-mare',
+			'title'   => 'Polignano a Mare and the Adriatic cliffs',
+			'over'    => '25 min',
+			'hero'    => $remote_base . '2025/03/p-YLCX1349.jpg',
+			'excerpt' => 'White balconies, sea caves and dramatic cliffs make Polignano a Mare one of the essential coastal stops near Conversano.',
+			'content' => '<p>Polignano a Mare is one of the most iconic views of the Adriatic coast: houses rising above the cliffs, narrow lanes opening suddenly to blue water, and terraces where the sea feels close enough to touch.</p><p>It is a place to explore without hurry. Wander through the old centre, pause at the viewpoints, then follow the sound of the waves toward Lama Monachile, the town beach framed by stone walls.</p><h2>How to enjoy it</h2><p>Visit early in the morning for quiet streets, or arrive in the late afternoon for golden light and dinner by the sea.</p><blockquote>The best moments in Polignano are often the simplest: a balcony, the wind, and the colour of the Adriatic below.</blockquote><h3>Perfect for</h3><ul><li>Sea views and photography.</li><li>A half-day coastal trip.</li><li>Romantic dinners and aperitifs by the water.</li></ul>',
+		),
+		array(
+			'slug'    => 'alberobello-itria-valley',
+			'title'   => 'Alberobello and the Itria Valley',
+			'over'    => '35 min',
+			'hero'    => $remote_base . '2025/03/a5-1240-900.jpg',
+			'excerpt' => 'Trulli, dry-stone walls, olive groves and whitewashed villages define one of the most recognisable landscapes in Puglia.',
+			'content' => '<p>The Itria Valley is the postcard image of inland Puglia: rolling countryside, ancient olive trees, white villages and the unmistakable silhouettes of the trulli.</p><p>Alberobello is the most famous stop, protected by UNESCO and loved for its cone-roofed houses. Around it, towns like Locorotondo, Cisternino and Martina Franca offer a quieter, equally beautiful rhythm.</p><h2>A day among villages</h2><p>Plan a relaxed itinerary with one main town and one smaller stop. The distances are short, but the pleasure is in slowing down, tasting local food and letting the landscape do the rest.</p><blockquote>The Itria Valley is not only a place to visit. It is a landscape to move through slowly.</blockquote><h3>Perfect for</h3><ul><li>Architecture and countryside drives.</li><li>Lunch in a whitewashed village.</li><li>Guests who want the classic trulli experience.</li></ul>',
+		),
+		array(
+			'slug'    => 'bari',
+			'title'   => 'Bari, between old town and seafront',
+			'over'    => '40 min',
+			'hero'    => $remote_base . '2025/03/8dc77600-2d08-4399-8d34-9019c864a9ae.jpg',
+			'excerpt' => 'The regional capital mixes the charm of Bari Vecchia with elegant shopping streets, churches, theatres and a long seafront promenade.',
+			'content' => '<p>Bari is the lively capital of Puglia and a rewarding contrast to the quiet rhythm of Conversano. Its old town, Bari Vecchia, is a maze of stone alleys, shrines, laundry lines and the scent of fresh pasta.</p><p>Beyond the old centre, the city opens into broad shopping streets, historic theatres and one of the most pleasant seafront promenades in southern Italy.</p><h2>What not to miss</h2><p>Visit the Basilica di San Nicola, walk through Bari Vecchia, then continue toward the Murat district for shopping, cafes and a different side of the city.</p><blockquote>Bari is generous and direct: a city of voices, sea air, street food and daily life.</blockquote><h3>Perfect for</h3><ul><li>A full day of culture and shopping.</li><li>Street food and local markets.</li><li>Travellers arriving or departing from Bari airport.</li></ul>',
+		),
+	);
+}
+
+function sbt_create_seed_posts() {
+	if ( 'theme01' !== sbt_active_subtheme_key() ) {
+		return;
+	}
+
+	$term = term_exists( 'Surroundings', 'category' );
+	if ( ! $term ) {
+		$term = wp_insert_term( 'Surroundings', 'category', array( 'slug' => 'surroundings' ) );
+	}
+	$category_id = is_array( $term ) && ! is_wp_error( $term ) ? (int) $term['term_id'] : ( is_numeric( $term ) ? (int) $term : 0 );
+
+	foreach ( sbt_theme01_seed_articles() as $article ) {
+		$post_id = sbt_seed_post_id( $article['slug'] );
+		if ( $post_id ) {
+			update_post_meta( $post_id, '_sbt_seed_slug', $article['slug'] );
+			update_post_meta( $post_id, '_sbt_article_hero', esc_url_raw( $article['hero'] ) );
+			if ( $category_id ) {
+				wp_set_post_terms( $post_id, array( $category_id ), 'category', true );
+			}
+			continue;
+		}
+
+		$post_id = wp_insert_post( array(
+			'post_type'    => 'post',
+			'post_status'  => 'publish',
+			'post_title'   => $article['title'],
+			'post_name'    => $article['slug'],
+			'post_excerpt' => $article['excerpt'],
+			'post_content' => $article['content'],
+		) );
+
+		if ( $post_id && ! is_wp_error( $post_id ) ) {
+			update_post_meta( $post_id, '_sbt_seed_slug', $article['slug'] );
+			update_post_meta( $post_id, '_sbt_seed_article', 'theme01_surroundings' );
+			update_post_meta( $post_id, '_sbt_article_hero', esc_url_raw( $article['hero'] ) );
+			if ( $category_id ) {
+				wp_set_post_terms( $post_id, array( $category_id ), 'category', true );
+			}
+		}
+	}
+}
+
+function sbt_maybe_create_seed_posts() {
+	if ( is_admin() && current_user_can( 'edit_theme_options' ) ) {
+		sbt_create_seed_posts();
+	}
+}
+add_action( 'admin_init', 'sbt_maybe_create_seed_posts' );
 
 function sbt_language_page_slug( $base_slug, $language ) {
 	$base_slug = sanitize_title( $base_slug );

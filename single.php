@@ -4,7 +4,8 @@ require sbt_subtheme_path( 'inc/header.php' );
 
 while ( have_posts() ) :
 	the_post();
-	$hero = has_post_thumbnail() ? get_the_post_thumbnail_url( get_the_ID(), 'full' ) : ( $IMG['lunch'] ?? '' );
+	$hero_meta = get_post_meta( get_the_ID(), '_sbt_article_hero', true );
+	$hero = has_post_thumbnail() ? get_the_post_thumbnail_url( get_the_ID(), 'full' ) : ( $hero_meta ?: ( $IMG['lunch'] ?? '' ) );
 	?>
 	<section class="page-hero" data-screen-label="Article banner">
 		<?php echo sbt_t1_img( 'post.' . get_the_ID() . '.banner', $hero, get_the_title(), array( 'class' => 'bg' ) ); ?>

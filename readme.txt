@@ -23,6 +23,11 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 1.0.23 =
+* Added initial WordPress seed posts for the four Theme 01 Surroundings articles.
+* Connected Surroundings cards to the generated post permalinks.
+* Added article hero image fallback from theme-managed post meta.
+
 = 1.0.22 =
 * Added editable generated unit names in General Settings.
 * Changed the generated unit logic so the selected count creates that exact number of pages, such as House 1, House 2 and House 3.
