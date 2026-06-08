@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.21' );
+define( 'SBT_VERSION', '1.0.22' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -245,7 +245,39 @@ function sbt_unit_listing_slug_for_label( $unit_label ) {
 }
 
 function sbt_unit_detail_slug( $unit_label, $number ) {
-	return sanitize_title( $unit_label . ' for ' . absint( $number ) );
+	return sanitize_title( sbt_unit_default_title( $unit_label, $number ) );
+}
+
+function sbt_unit_default_title( $unit_label, $number ) {
+	$unit_label = wp_strip_all_tags( (string) $unit_label );
+	$unit_label = '' !== $unit_label ? $unit_label : 'House';
+	return trim( $unit_label . ' ' . absint( $number ) );
+}
+
+function sbt_unit_content_key( $number ) {
+	$number = absint( $number );
+	$source_keys = array(
+		1 => 'house2',
+		2 => 'house3',
+		3 => 'house4',
+	);
+
+	return isset( $source_keys[ $number ] ) ? $source_keys[ $number ] : 'unit_' . $number;
+}
+
+function sbt_unit_slug_from_title( $title, $number, &$used_slugs = array() ) {
+	$slug = sanitize_title( $title );
+	if ( '' === $slug ) {
+		$slug = 'unit-' . absint( $number );
+	}
+
+	$protected = array( 'home', 'villa', 'houses', 'price-and-condition', 'spa-wellness', 'experiences', 'article', 'surroundings', 'offers', 'contacts' );
+	if ( in_array( $slug, $protected, true ) || in_array( $slug, $used_slugs, true ) ) {
+		$slug .= '-' . absint( $number );
+	}
+
+	$used_slugs[] = $slug;
+	return $slug;
 }
 
 function sbt_option_override_value( $subtheme, $language, $path, $default = '' ) {
@@ -941,18 +973,27 @@ function sbt_apply_unit_structure( &$SITE, &$NAV, &$C, &$HOUSE_CARDS, &$TEXT ) {
 
 	$cards = array();
 	foreach ( $detail_pages as $index => $house_page ) {
-		$capacity = $index + 2;
+		$number = $index + 1;
 		$content_key = $house_page['content_key'] ?? '';
 		$content = $content_key && isset( $C[ $content_key ] ) && is_array( $C[ $content_key ] ) ? $C[ $content_key ] : array();
+		$display_title = ! empty( $house_page['title'] ) ? $house_page['title'] : ( $content['h1'] ?? sbt_unit_default_title( $unit_label, $number ) );
+		if ( $content_key && isset( $C[ $content_key ] ) && is_array( $C[ $content_key ] ) ) {
+			$C[ $content_key ]['title'] = $display_title . ' - ' . ( $SITE['name'] ?? 'SyncBooking' );
+			$C[ $content_key ]['h1'] = $display_title;
+			$C[ $content_key ]['crumb_label'] = $display_title;
+			if ( isset( $C[ $content_key ]['cta_h2'] ) ) {
+				$C[ $content_key ]['cta_h2'] = 'Book ' . strtolower( $display_title );
+			}
+		}
 		$card_image = $content['main'] ?? ( $content['overview_gallery'][0] ?? ( $content['banner'] ?? '' ) );
 		$card_gallery = isset( $content['card_gallery'] ) && is_array( $content['card_gallery'] ) ? $content['card_gallery'] : ( isset( $content['overview_gallery'] ) && is_array( $content['overview_gallery'] ) ? $content['overview_gallery'] : array() );
 		if ( ! $card_gallery && $card_image ) {
 			$card_gallery = array( $card_image );
 		}
 		$cards[] = array(
-			'tag'   => 'For ' . $capacity . ' people',
-			'title' => $unit_label . ' for ' . $capacity,
-			'listing_title' => $content['h1'] ?? $house_page['title'],
+			'tag'   => sbt_unit_default_title( $unit_label, $number ),
+			'title' => $display_title,
+			'listing_title' => $display_title,
 			'img'   => $card_image,
 			'gallery' => $card_gallery,
 			'url'   => $house_page['slug'] . '.php',
@@ -990,13 +1031,14 @@ function sbt_bootstrap_content( &$IMG, &$SITE, &$NAV, &$C, &$HOUSE_CARDS = array
 	$overrides = sbt_active_overrides();
 
 	if ( 'theme01' === sbt_active_subtheme_key() ) {
-		foreach ( sbt_custom_house_pages( 'theme01' ) as $house_page ) {
+		foreach ( sbt_custom_house_pages( 'theme01' ) as $index => $house_page ) {
 			if ( empty( $house_page['content_key'] ) ) {
 				continue;
 			}
 
 			if ( ! isset( $C[ $house_page['content_key'] ] ) ) {
-				$C[ $house_page['content_key'] ] = sbt_custom_house_default_content( $house_page['title'], $C['house2'] ?? array() );
+				$template_key = sbt_unit_content_key( $index + 1 );
+				$C[ $house_page['content_key'] ] = sbt_custom_house_default_content( $house_page['title'], $C[ $template_key ] ?? ( $C['house4'] ?? array() ) );
 			}
 		}
 	}
@@ -1956,6 +1998,31 @@ function sbt_sanitize_options( $raw ) {
 		}
 	}
 
+	if ( 'theme01' === $options['subtheme'] && isset( $raw['unit_names'] ) && is_array( $raw['unit_names'] ) ) {
+		$theme_overrides = $options['overrides']['theme01']['_languages']['en'] ?? array();
+		$unit_label = isset( $theme_overrides['SITE.unit_label'] ) && '' !== $theme_overrides['SITE.unit_label'] ? $theme_overrides['SITE.unit_label'] : sbt_structural_override_value( 'theme01', 'SITE.unit_label', 'House' );
+		$unit_count = isset( $theme_overrides['SITE.unit_count'] ) ? absint( $theme_overrides['SITE.unit_count'] ) : sbt_desired_unit_count( 'theme01' );
+		$unit_count = max( 1, min( 20, $unit_count ) );
+		$current = isset( $options['custom_house_pages']['theme01'] ) && is_array( $options['custom_house_pages']['theme01'] ) ? array_values( $options['custom_house_pages']['theme01'] ) : array();
+		$raw_names = wp_unslash( $raw['unit_names'] );
+
+		for ( $number = 1; $number <= $unit_count; $number++ ) {
+			$default_title = sbt_unit_default_title( $unit_label, $number );
+			$name = isset( $raw_names[ $number ] ) ? trim( sanitize_text_field( $raw_names[ $number ] ) ) : '';
+			$title = '' !== $name ? $name : $default_title;
+			if ( ! isset( $current[ $number - 1 ] ) || ! is_array( $current[ $number - 1 ] ) ) {
+				$current[ $number - 1 ] = array();
+			}
+			$current[ $number - 1 ]['title'] = $title;
+			$current[ $number - 1 ]['custom_title'] = $title !== $default_title;
+			if ( empty( $current[ $number - 1 ]['content_key'] ) ) {
+				$current[ $number - 1 ]['content_key'] = sbt_unit_content_key( $number );
+			}
+		}
+
+		$options['custom_house_pages']['theme01'] = $current;
+	}
+
 	return $options;
 }
 
@@ -2085,13 +2152,13 @@ function sbt_sync_custom_house_pages() {
 
 	while ( count( $current ) < $desired_count ) {
 		$number = count( $current ) + 1;
-		$capacity = $number + 1;
-		$title = $unit_label . ' for ' . $capacity;
-		$slug = sbt_unit_detail_slug( $unit_label, $capacity );
+		$title = sbt_unit_default_title( $unit_label, $number );
+		$slug = sbt_unit_detail_slug( $unit_label, $number );
 		$current[] = array(
 			'title'       => $title,
 			'slug'        => $slug,
-			'content_key' => 'house' . $capacity,
+			'content_key' => sbt_unit_content_key( $number ),
+			'custom_title' => false,
 		);
 	}
 
@@ -2107,14 +2174,17 @@ function sbt_sync_custom_house_pages() {
 		}
 	}
 
+	$used_slugs = array();
 	foreach ( $current as $index => &$house_page ) {
 		$number = $index + 1;
-		$capacity = $number + 1;
 		$old_slug = isset( $house_page['slug'] ) ? sanitize_title( $house_page['slug'] ) : '';
-		$new_slug = sbt_unit_detail_slug( $unit_label, $capacity );
-		$house_page['title'] = $unit_label . ' for ' . $capacity;
+		$default_title = sbt_unit_default_title( $unit_label, $number );
+		$title = ! empty( $house_page['custom_title'] ) && ! empty( $house_page['title'] ) ? wp_strip_all_tags( $house_page['title'] ) : $default_title;
+		$new_slug = sbt_unit_slug_from_title( $title, $number, $used_slugs );
+		$house_page['title'] = $title;
 		$house_page['slug'] = $new_slug;
-		$house_page['content_key'] = 'house' . $capacity;
+		$house_page['content_key'] = sbt_unit_content_key( $number );
+		$house_page['custom_title'] = $title !== $default_title;
 
 		if ( $old_slug && $old_slug !== $new_slug ) {
 			sbt_update_generated_unit_page_slugs( $old_slug, $new_slug, $house_page['content_key'] );
@@ -2464,6 +2534,8 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 	$unit_label = sbt_unit_label( $unit_overrides );
 	$plural_label = sbt_unit_plural_label( $unit_label );
 	$listing_slug = sbt_unit_listing_slug_for_label( $unit_label );
+	$unit_count = max( 1, min( 20, absint( $unit_overrides['SITE.unit_count'] ) ) );
+	$unit_pages = sbt_custom_house_pages( 'theme01' );
 	$media_status = sbt_media_import_status();
 	?>
 	<div class="sbt-panel">
@@ -2537,10 +2609,45 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 				), $unit_overrides ); ?>
 			</div>
 			<div class="sbt-card">
+				<h3>Nomi pagine vendibili</h3>
+				<p class="sbt-muted">Se selezioni 3, verranno create 3 pagine. Qui scegli il nome reale di ogni scheda.</p>
+				<div class="sbt-field-grid" data-sbt-unit-names>
+					<?php for ( $number = 1; $number <= 20; $number++ ) : ?>
+						<?php
+						$default_title = sbt_unit_default_title( $unit_label, $number );
+						$current_page = isset( $unit_pages[ $number - 1 ] ) && is_array( $unit_pages[ $number - 1 ] ) ? $unit_pages[ $number - 1 ] : array();
+						$current_title = ! empty( $current_page['custom_title'] ) && ! empty( $current_page['title'] ) ? $current_page['title'] : $default_title;
+						?>
+						<div class="sbt-editor-field" data-sbt-unit-name-row="<?php echo esc_attr( (string) $number ); ?>" <?php echo $number > $unit_count ? 'style="display:none;"' : ''; ?>>
+							<label>
+								<?php echo esc_html( $default_title ); ?>
+								<span class="sbt-field-path"><?php echo esc_html( 'name_' . $number ); ?></span>
+							</label>
+							<input type="text" class="large-text" name="<?php echo esc_attr( SBT_OPTION . '[unit_names][' . $number . ']' ); ?>" value="<?php echo esc_attr( $current_title ); ?>" placeholder="<?php echo esc_attr( $default_title ); ?>">
+						</div>
+					<?php endfor; ?>
+				</div>
+				<script>
+					document.addEventListener('DOMContentLoaded', function () {
+						var count = document.querySelector('[name="<?php echo esc_js( SBT_OPTION ); ?>[overrides][SITE.unit_count]"]');
+						var rows = document.querySelectorAll('[data-sbt-unit-name-row]');
+						function syncRows() {
+							var active = parseInt(count && count.value ? count.value : '<?php echo esc_js( (string) $unit_count ); ?>', 10) || 1;
+							rows.forEach(function (row) {
+								var rowNumber = parseInt(row.getAttribute('data-sbt-unit-name-row'), 10);
+								row.style.display = rowNumber <= active ? '' : 'none';
+							});
+						}
+						if (count) count.addEventListener('change', syncRows);
+						syncRows();
+					});
+				</script>
+			</div>
+			<div class="sbt-card">
 				<h3>Pagine generate</h3>
 				<p class="sbt-muted">Con questa configurazione viene usata la pagina archivio:</p>
 				<p><code>/<?php echo esc_html( $listing_slug ); ?>/</code></p>
-				<p class="sbt-muted">Le schede dettaglio saranno generate come <?php echo esc_html( $unit_label ); ?> 1, <?php echo esc_html( $unit_label ); ?> 2, ecc. fino a <?php echo esc_html( $unit_overrides['SITE.unit_count'] ); ?>.</p>
+				<p class="sbt-muted">Le schede dettaglio saranno create nel numero selezionato e useranno i nomi scelti nel riquadro "Nomi pagine vendibili".</p>
 				<p><strong>Tipo selezionato:</strong> <?php echo esc_html( $plural_label ); ?></p>
 			</div>
 		</div>
