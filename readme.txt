@@ -23,6 +23,11 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 1.0.24 =
+* Added initial WordPress seed posts for the four Theme 01 Offers articles.
+* Connected Offers cards to the generated post permalinks.
+* Assigned seed articles to their matching Surroundings or Offers category.
+
 = 1.0.23 =
 * Added initial WordPress seed posts for the four Theme 01 Surroundings articles.
 * Connected Surroundings cards to the generated post permalinks.

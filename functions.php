@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.23' );
+define( 'SBT_VERSION', '1.0.24' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -877,39 +877,96 @@ add_action( 'after_switch_theme', 'sbt_create_seed_posts' );
 function sbt_theme01_seed_articles() {
 	$remote_base = sbt_media_remote_base_url( 'theme01' );
 	$asset_base = get_template_directory_uri() . '/subthemes/theme01/assets/images/';
+	$contact_url = home_url( '/contacts/' );
 
 	return array(
 		array(
-			'slug'    => 'conversano',
-			'title'   => 'Conversano, the noble heart of Puglia',
-			'over'    => '2 min walk',
-			'hero'    => $asset_base . 'conversano-town.jpg',
-			'excerpt' => 'A graceful old town of stone lanes, noble palaces and quiet squares, just a short walk from Villa Rosa Resort.',
-			'content' => '<p>Conversano is the first discovery waiting beyond the gates of Villa Rosa Resort. Elegant, walkable and deeply authentic, the town keeps the rhythm of Puglia without the rush of the coast.</p><p>Its Norman-Swabian Castle dominates the historic centre, while churches, monasteries and aristocratic palaces reveal the layered history of a place that has always known how to welcome travellers.</p><h2>What to see</h2><p>Start with the castle and the cathedral, then let the small streets guide you toward hidden courtyards, local bakeries and sunset aperitifs in the old town.</p><blockquote>Conversano is close enough to become part of your daily ritual: morning coffee, evening stroll, one more gelato before returning home.</blockquote><h3>Perfect for</h3><ul><li>A slow walk after breakfast.</li><li>An easy dinner without taking the car.</li><li>Guests who want culture, shops and local life within reach.</li></ul>',
+			'slug'          => 'conversano',
+			'title'         => 'Conversano, the noble heart of Puglia',
+			'over'          => '2 min walk',
+			'hero'          => $asset_base . 'conversano-town.jpg',
+			'category'      => 'Surroundings',
+			'category_slug' => 'surroundings',
+			'group'         => 'theme01_surroundings',
+			'excerpt'       => 'A graceful old town of stone lanes, noble palaces and quiet squares, just a short walk from Villa Rosa Resort.',
+			'content'       => '<p>Conversano is the first discovery waiting beyond the gates of Villa Rosa Resort. Elegant, walkable and deeply authentic, the town keeps the rhythm of Puglia without the rush of the coast.</p><p>Its Norman-Swabian Castle dominates the historic centre, while churches, monasteries and aristocratic palaces reveal the layered history of a place that has always known how to welcome travellers.</p><h2>What to see</h2><p>Start with the castle and the cathedral, then let the small streets guide you toward hidden courtyards, local bakeries and sunset aperitifs in the old town.</p><blockquote>Conversano is close enough to become part of your daily ritual: morning coffee, evening stroll, one more gelato before returning home.</blockquote><h3>Perfect for</h3><ul><li>A slow walk after breakfast.</li><li>An easy dinner without taking the car.</li><li>Guests who want culture, shops and local life within reach.</li></ul>',
 		),
 		array(
-			'slug'    => 'polignano-a-mare',
-			'title'   => 'Polignano a Mare and the Adriatic cliffs',
-			'over'    => '25 min',
-			'hero'    => $remote_base . '2025/03/p-YLCX1349.jpg',
-			'excerpt' => 'White balconies, sea caves and dramatic cliffs make Polignano a Mare one of the essential coastal stops near Conversano.',
-			'content' => '<p>Polignano a Mare is one of the most iconic views of the Adriatic coast: houses rising above the cliffs, narrow lanes opening suddenly to blue water, and terraces where the sea feels close enough to touch.</p><p>It is a place to explore without hurry. Wander through the old centre, pause at the viewpoints, then follow the sound of the waves toward Lama Monachile, the town beach framed by stone walls.</p><h2>How to enjoy it</h2><p>Visit early in the morning for quiet streets, or arrive in the late afternoon for golden light and dinner by the sea.</p><blockquote>The best moments in Polignano are often the simplest: a balcony, the wind, and the colour of the Adriatic below.</blockquote><h3>Perfect for</h3><ul><li>Sea views and photography.</li><li>A half-day coastal trip.</li><li>Romantic dinners and aperitifs by the water.</li></ul>',
+			'slug'          => 'polignano-a-mare',
+			'title'         => 'Polignano a Mare and the Adriatic cliffs',
+			'over'          => '25 min',
+			'hero'          => $remote_base . '2025/03/p-YLCX1349.jpg',
+			'category'      => 'Surroundings',
+			'category_slug' => 'surroundings',
+			'group'         => 'theme01_surroundings',
+			'excerpt'       => 'White balconies, sea caves and dramatic cliffs make Polignano a Mare one of the essential coastal stops near Conversano.',
+			'content'       => '<p>Polignano a Mare is one of the most iconic views of the Adriatic coast: houses rising above the cliffs, narrow lanes opening suddenly to blue water, and terraces where the sea feels close enough to touch.</p><p>It is a place to explore without hurry. Wander through the old centre, pause at the viewpoints, then follow the sound of the waves toward Lama Monachile, the town beach framed by stone walls.</p><h2>How to enjoy it</h2><p>Visit early in the morning for quiet streets, or arrive in the late afternoon for golden light and dinner by the sea.</p><blockquote>The best moments in Polignano are often the simplest: a balcony, the wind, and the colour of the Adriatic below.</blockquote><h3>Perfect for</h3><ul><li>Sea views and photography.</li><li>A half-day coastal trip.</li><li>Romantic dinners and aperitifs by the water.</li></ul>',
 		),
 		array(
-			'slug'    => 'alberobello-itria-valley',
-			'title'   => 'Alberobello and the Itria Valley',
-			'over'    => '35 min',
-			'hero'    => $remote_base . '2025/03/a5-1240-900.jpg',
-			'excerpt' => 'Trulli, dry-stone walls, olive groves and whitewashed villages define one of the most recognisable landscapes in Puglia.',
-			'content' => '<p>The Itria Valley is the postcard image of inland Puglia: rolling countryside, ancient olive trees, white villages and the unmistakable silhouettes of the trulli.</p><p>Alberobello is the most famous stop, protected by UNESCO and loved for its cone-roofed houses. Around it, towns like Locorotondo, Cisternino and Martina Franca offer a quieter, equally beautiful rhythm.</p><h2>A day among villages</h2><p>Plan a relaxed itinerary with one main town and one smaller stop. The distances are short, but the pleasure is in slowing down, tasting local food and letting the landscape do the rest.</p><blockquote>The Itria Valley is not only a place to visit. It is a landscape to move through slowly.</blockquote><h3>Perfect for</h3><ul><li>Architecture and countryside drives.</li><li>Lunch in a whitewashed village.</li><li>Guests who want the classic trulli experience.</li></ul>',
+			'slug'          => 'alberobello-itria-valley',
+			'title'         => 'Alberobello and the Itria Valley',
+			'over'          => '35 min',
+			'hero'          => $remote_base . '2025/03/a5-1240-900.jpg',
+			'category'      => 'Surroundings',
+			'category_slug' => 'surroundings',
+			'group'         => 'theme01_surroundings',
+			'excerpt'       => 'Trulli, dry-stone walls, olive groves and whitewashed villages define one of the most recognisable landscapes in Puglia.',
+			'content'       => '<p>The Itria Valley is the postcard image of inland Puglia: rolling countryside, ancient olive trees, white villages and the unmistakable silhouettes of the trulli.</p><p>Alberobello is the most famous stop, protected by UNESCO and loved for its cone-roofed houses. Around it, towns like Locorotondo, Cisternino and Martina Franca offer a quieter, equally beautiful rhythm.</p><h2>A day among villages</h2><p>Plan a relaxed itinerary with one main town and one smaller stop. The distances are short, but the pleasure is in slowing down, tasting local food and letting the landscape do the rest.</p><blockquote>The Itria Valley is not only a place to visit. It is a landscape to move through slowly.</blockquote><h3>Perfect for</h3><ul><li>Architecture and countryside drives.</li><li>Lunch in a whitewashed village.</li><li>Guests who want the classic trulli experience.</li></ul>',
 		),
 		array(
-			'slug'    => 'bari',
-			'title'   => 'Bari, between old town and seafront',
-			'over'    => '40 min',
-			'hero'    => $remote_base . '2025/03/8dc77600-2d08-4399-8d34-9019c864a9ae.jpg',
-			'excerpt' => 'The regional capital mixes the charm of Bari Vecchia with elegant shopping streets, churches, theatres and a long seafront promenade.',
-			'content' => '<p>Bari is the lively capital of Puglia and a rewarding contrast to the quiet rhythm of Conversano. Its old town, Bari Vecchia, is a maze of stone alleys, shrines, laundry lines and the scent of fresh pasta.</p><p>Beyond the old centre, the city opens into broad shopping streets, historic theatres and one of the most pleasant seafront promenades in southern Italy.</p><h2>What not to miss</h2><p>Visit the Basilica di San Nicola, walk through Bari Vecchia, then continue toward the Murat district for shopping, cafes and a different side of the city.</p><blockquote>Bari is generous and direct: a city of voices, sea air, street food and daily life.</blockquote><h3>Perfect for</h3><ul><li>A full day of culture and shopping.</li><li>Street food and local markets.</li><li>Travellers arriving or departing from Bari airport.</li></ul>',
+			'slug'          => 'bari',
+			'title'         => 'Bari, between old town and seafront',
+			'over'          => '40 min',
+			'hero'          => $remote_base . '2025/03/8dc77600-2d08-4399-8d34-9019c864a9ae.jpg',
+			'category'      => 'Surroundings',
+			'category_slug' => 'surroundings',
+			'group'         => 'theme01_surroundings',
+			'excerpt'       => 'The regional capital mixes the charm of Bari Vecchia with elegant shopping streets, churches, theatres and a long seafront promenade.',
+			'content'       => '<p>Bari is the lively capital of Puglia and a rewarding contrast to the quiet rhythm of Conversano. Its old town, Bari Vecchia, is a maze of stone alleys, shrines, laundry lines and the scent of fresh pasta.</p><p>Beyond the old centre, the city opens into broad shopping streets, historic theatres and one of the most pleasant seafront promenades in southern Italy.</p><h2>What not to miss</h2><p>Visit the Basilica di San Nicola, walk through Bari Vecchia, then continue toward the Murat district for shopping, cafes and a different side of the city.</p><blockquote>Bari is generous and direct: a city of voices, sea air, street food and daily life.</blockquote><h3>Perfect for</h3><ul><li>A full day of culture and shopping.</li><li>Street food and local markets.</li><li>Travellers arriving or departing from Bari airport.</li></ul>',
+		),
+		array(
+			'slug'          => 'book-early-save-more',
+			'title'         => 'Book Early, Save More',
+			'over'          => 'Early booking',
+			'hero'          => $remote_base . '2025/03/a5-1240-900.jpg',
+			'category'      => 'Offers',
+			'category_slug' => 'offers',
+			'group'         => 'theme01_offers',
+			'excerpt'       => 'Reserve in advance and access a dedicated early-booking rate for your favourite house at Villa Rosa Resort.',
+			'content'       => '<p>Planning ahead is the easiest way to secure the house you prefer and enjoy a more convenient rate. The Book Early, Save More offer is designed for guests who already know their travel period and want to reserve Villa Rosa Resort with calm, clarity and the best available conditions.</p><p>The offer can be adapted to the selected dates, house type and length of stay. It is ideal for summer holidays, family trips and special occasions that deserve to be organised without last-minute pressure.</p><h2>What the offer includes</h2><ul><li>Priority choice among available houses.</li><li>Dedicated early-booking conditions.</li><li>Personal assistance before arrival.</li></ul><p>For updated availability, conditions and a personalised quotation, <a href="' . esc_url( $contact_url ) . '">contact us for more information</a>. We will be happy to prepare the best proposal for your stay.</p>',
+		),
+		array(
+			'slug'          => 'seven-nights-six',
+			'title'         => '7 Nights = 6',
+			'over'          => 'Long stay',
+			'hero'          => $remote_base . '2025/03/7a97973d-d95e-401a-9c30-845b04364bc4.jpg',
+			'category'      => 'Offers',
+			'category_slug' => 'offers',
+			'group'         => 'theme01_offers',
+			'excerpt'       => 'Stay a full week in Puglia and enjoy one night offered, subject to availability and selected periods.',
+			'content'       => '<p>A week at Villa Rosa Resort gives you time to truly settle into Puglia: slow breakfasts, days by the pool, evenings in Conversano and relaxed trips to the coast. With the 7 Nights = 6 offer, longer stays become even more inviting.</p><p>This promotion is perfect for guests who want to experience the region without rushing from one place to the next. Choose your house, plan your rhythm and let every day feel different.</p><h2>Why choose a long stay</h2><ul><li>More time to enjoy the resort and its spaces.</li><li>Enough days for sea, villages, food and rest.</li><li>A better value for weekly holidays.</li></ul><p>The offer is subject to dates, house availability and booking conditions. <a href="' . esc_url( $contact_url ) . '">Contact us for more information</a> and we will send you the best available solution.</p>',
+		),
+		array(
+			'slug'          => 'spa-escape',
+			'title'         => 'SPA Escape',
+			'over'          => 'Wellness',
+			'hero'          => $asset_base . 'jacuzzi.jpg',
+			'category'      => 'Offers',
+			'category_slug' => 'offers',
+			'group'         => 'theme01_offers',
+			'excerpt'       => 'A romantic wellness escape for two, with a private stay and dedicated moments in the SPA.',
+			'content'       => '<p>The SPA Escape offer is created for couples and guests who want to add a deeper sense of wellbeing to their stay. Between the privacy of your house and the quiet atmosphere of the wellness area, Villa Rosa Resort becomes a place to pause and recharge.</p><p>Depending on the selected period, the experience can include dedicated access to wellness spaces, romantic details and suggestions for a slow itinerary around Conversano and the coast.</p><h2>Ideal for</h2><ul><li>Romantic weekends and anniversaries.</li><li>Short wellness breaks in Puglia.</li><li>Guests looking for privacy, comfort and calm.</li></ul><p>Every wellness stay can be shaped around your dates and preferences. <a href="' . esc_url( $contact_url ) . '">Contact us for more information</a> and tell us how you would like to experience your escape.</p>',
+		),
+		array(
+			'slug'          => 'spring-autumn',
+			'title'         => 'Spring & Autumn',
+			'over'          => 'Season',
+			'hero'          => $remote_base . '2025/03/p-YLCX1349.jpg',
+			'category'      => 'Offers',
+			'category_slug' => 'offers',
+			'group'         => 'theme01_offers',
+			'excerpt'       => 'Discover Puglia in its gentlest seasons with reduced shoulder-season rates and a slower local rhythm.',
+			'content'       => '<p>Spring and autumn are among the most beautiful moments to discover Puglia. The light is softer, the towns are quieter and the countryside around Conversano reveals colours and scents that are easy to miss in the busiest months.</p><p>This seasonal offer is made for travellers who love mild temperatures, authentic local life and a more peaceful way to explore the region. It is a smart choice for couples, small groups and remote workers who want space and comfort.</p><h2>What makes it special</h2><ul><li>Reduced rates in selected shoulder-season periods.</li><li>Excellent conditions for day trips and outdoor experiences.</li><li>A calmer version of Puglia, close to the sea and inland villages.</li></ul><p>Availability changes by date and house type. <a href="' . esc_url( $contact_url ) . '">Contact us for more information</a> and we will recommend the best period for your stay.</p>',
 		),
 	);
 }
@@ -919,16 +976,34 @@ function sbt_create_seed_posts() {
 		return;
 	}
 
-	$term = term_exists( 'Surroundings', 'category' );
-	if ( ! $term ) {
-		$term = wp_insert_term( 'Surroundings', 'category', array( 'slug' => 'surroundings' ) );
-	}
-	$category_id = is_array( $term ) && ! is_wp_error( $term ) ? (int) $term['term_id'] : ( is_numeric( $term ) ? (int) $term : 0 );
+	$category_cache = array();
 
 	foreach ( sbt_theme01_seed_articles() as $article ) {
+		$category_name = isset( $article['category'] ) ? $article['category'] : 'Articles';
+		$category_slug = isset( $article['category_slug'] ) ? sanitize_title( $article['category_slug'] ) : sanitize_title( $category_name );
+
+		if ( ! isset( $category_cache[ $category_slug ] ) ) {
+			$term = term_exists( $category_slug, 'category' );
+			if ( ! $term ) {
+				$term = wp_insert_term( $category_name, 'category', array( 'slug' => $category_slug ) );
+			}
+
+			if ( is_wp_error( $term ) && isset( $term->error_data['term_exists'] ) ) {
+				$category_cache[ $category_slug ] = (int) $term->error_data['term_exists'];
+			} elseif ( is_array( $term ) && ! is_wp_error( $term ) ) {
+				$category_cache[ $category_slug ] = (int) $term['term_id'];
+			} elseif ( is_numeric( $term ) ) {
+				$category_cache[ $category_slug ] = (int) $term;
+			} else {
+				$category_cache[ $category_slug ] = 0;
+			}
+		}
+
+		$category_id = $category_cache[ $category_slug ];
 		$post_id = sbt_seed_post_id( $article['slug'] );
 		if ( $post_id ) {
 			update_post_meta( $post_id, '_sbt_seed_slug', $article['slug'] );
+			update_post_meta( $post_id, '_sbt_seed_article', isset( $article['group'] ) ? $article['group'] : 'theme01_article' );
 			update_post_meta( $post_id, '_sbt_article_hero', esc_url_raw( $article['hero'] ) );
 			if ( $category_id ) {
 				wp_set_post_terms( $post_id, array( $category_id ), 'category', true );
@@ -947,7 +1022,7 @@ function sbt_create_seed_posts() {
 
 		if ( $post_id && ! is_wp_error( $post_id ) ) {
 			update_post_meta( $post_id, '_sbt_seed_slug', $article['slug'] );
-			update_post_meta( $post_id, '_sbt_seed_article', 'theme01_surroundings' );
+			update_post_meta( $post_id, '_sbt_seed_article', isset( $article['group'] ) ? $article['group'] : 'theme01_article' );
 			update_post_meta( $post_id, '_sbt_article_hero', esc_url_raw( $article['hero'] ) );
 			if ( $category_id ) {
 				wp_set_post_terms( $post_id, array( $category_id ), 'category', true );
