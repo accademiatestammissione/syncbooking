@@ -1,3 +1,13 @@
+<?php
+$THEME_JS_URL = function_exists( 'sbt_asset_url' ) ? sbt_asset_url( 'assets/theme.js' ) : 'assets/theme.js';
+$THEME_JS_VERSION = defined( 'SBT_VERSION' ) ? SBT_VERSION : ( $SOURCE_VERSION ?? '1.0.0' );
+if ( function_exists( 'add_query_arg' ) ) {
+	$THEME_JS_URL = add_query_arg( 'ver', $THEME_JS_VERSION, $THEME_JS_URL );
+} else {
+	$THEME_JS_URL .= ( false === strpos( $THEME_JS_URL, '?' ) ? '?' : '&' ) . 'ver=' . rawurlencode( $THEME_JS_VERSION );
+}
+?>
+
 <footer data-screen-label="Footer">
 	<div class="wrap">
 		<div class="foot-grid">
@@ -36,6 +46,6 @@
 <div class="lightbox" id="lightbox"><button class="lx-close" aria-label="Close">&times;</button><button class="lx-nav lx-prev" aria-label="Previous">&#8249;</button><div class="lx-stage"><img alt="" /><span class="lx-count"></span></div><button class="lx-nav lx-next" aria-label="Next">&#8250;</button></div>
 
 <?php if ( function_exists( 'wp_footer' ) ) wp_footer(); ?>
-<script src="<?php echo esc_url( function_exists( 'sbt_asset_url' ) ? sbt_asset_url( 'assets/theme.js' ) : 'assets/theme.js' ); ?>"></script>
+<script src="<?php echo esc_url( $THEME_JS_URL ); ?>"></script>
 </body>
 </html>

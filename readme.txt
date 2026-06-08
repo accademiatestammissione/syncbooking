@@ -23,6 +23,11 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 1.0.28 =
+* Realigned Theme 01 header and footer rendering on interior pages with the clean HTML source model.
+* Removed extra dropdown dividers from the Houses menu and synchronized the mobile drawer with the active menu data.
+* Added theme-version cache busting for Theme 01 CSS and JavaScript assets.
+
 = 1.0.27 =
 * Migrated legacy Theme 01 card links from the generic Article page to their generated seed posts.
 * Added runtime normalization for old Surroundings, Experiences and Offers card-link overrides.
