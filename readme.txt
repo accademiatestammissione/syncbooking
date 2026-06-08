@@ -23,6 +23,10 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 1.0.27 =
+* Migrated legacy Theme 01 card links from the generic Article page to their generated seed posts.
+* Added runtime normalization for old Surroundings, Experiences and Offers card-link overrides.
+
 = 1.0.26 =
 * Added initial WordPress seed posts for the four Theme 01 Experiences articles.
 * Connected Experience cards to the generated post permalinks.

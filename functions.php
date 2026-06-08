@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.26' );
+define( 'SBT_VERSION', '1.0.27' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -1322,6 +1322,86 @@ function sbt_apply_unit_structure( &$SITE, &$NAV, &$C, &$HOUSE_CARDS, &$TEXT ) {
 	unset( $item );
 }
 
+function sbt_theme01_seed_article_card_map() {
+	return array(
+		'surroundings' => array( 'conversano', 'polignano-a-mare', 'alberobello-itria-valley', 'bari' ),
+		'experiences'  => array( 'cooking-classes', 'wine-tastings', 'private-tours', 'coast-beaches' ),
+		'offers'       => array( 'book-early-save-more', 'seven-nights-six', 'spa-escape', 'spring-autumn' ),
+	);
+}
+
+function sbt_is_legacy_article_target( $url ) {
+	$url = trim( (string) $url );
+	if ( '' === $url ) {
+		return false;
+	}
+
+	$file = strtok( $url, '#' );
+	if ( in_array( trim( $file, '/' ), array( 'article', 'article.php' ), true ) ) {
+		return true;
+	}
+
+	$path = wp_parse_url( $file, PHP_URL_PATH );
+	return is_string( $path ) && (bool) preg_match( '#/(?:[^/]+/)?article(?:\.php)?/?$#i', $path );
+}
+
+function sbt_normalize_theme01_seed_article_card_urls( &$C ) {
+	if ( 'theme01' !== sbt_active_subtheme_key() || ! is_array( $C ) ) {
+		return;
+	}
+
+	foreach ( sbt_theme01_seed_article_card_map() as $section => $slugs ) {
+		if ( empty( $C[ $section ]['cards'] ) || ! is_array( $C[ $section ]['cards'] ) ) {
+			continue;
+		}
+
+		foreach ( $slugs as $index => $slug ) {
+			if ( isset( $C[ $section ]['cards'][ $index ]['url'] ) && sbt_is_legacy_article_target( $C[ $section ]['cards'][ $index ]['url'] ) ) {
+				$C[ $section ]['cards'][ $index ]['url'] = 'post:' . $slug;
+			}
+		}
+	}
+}
+
+function sbt_migrate_theme01_seed_article_card_overrides() {
+	if ( ! is_admin() || ! current_user_can( 'edit_theme_options' ) ) {
+		return;
+	}
+
+	$options = sbt_get_options();
+	if ( empty( $options['overrides']['theme01'] ) || ! is_array( $options['overrides']['theme01'] ) ) {
+		return;
+	}
+
+	$changed = false;
+	foreach ( sbt_theme01_seed_article_card_map() as $section => $slugs ) {
+		foreach ( $slugs as $index => $slug ) {
+			$path = 'C.' . $section . '.cards.' . $index . '.url';
+			if ( isset( $options['overrides']['theme01'][ $path ] ) && sbt_is_legacy_article_target( $options['overrides']['theme01'][ $path ] ) ) {
+				$options['overrides']['theme01'][ $path ] = 'post:' . $slug;
+				$changed = true;
+			}
+
+			if ( empty( $options['overrides']['theme01']['_languages'] ) || ! is_array( $options['overrides']['theme01']['_languages'] ) ) {
+				continue;
+			}
+
+			foreach ( $options['overrides']['theme01']['_languages'] as &$language_overrides ) {
+				if ( is_array( $language_overrides ) && isset( $language_overrides[ $path ] ) && sbt_is_legacy_article_target( $language_overrides[ $path ] ) ) {
+					$language_overrides[ $path ] = 'post:' . $slug;
+					$changed = true;
+				}
+			}
+			unset( $language_overrides );
+		}
+	}
+
+	if ( $changed ) {
+		update_option( SBT_OPTION, $options );
+	}
+}
+add_action( 'admin_init', 'sbt_migrate_theme01_seed_article_card_overrides' );
+
 function sbt_bootstrap_content( &$IMG, &$SITE, &$NAV, &$C, &$HOUSE_CARDS = array(), &$SERVICES = array(), &$TEXT = array(), &$GALLERY = array(), &$WEDDING_GALLERY = array(), &$EXPERIENCES = array() ) {
 	$overrides = sbt_active_overrides();
 
@@ -1348,6 +1428,7 @@ function sbt_bootstrap_content( &$IMG, &$SITE, &$NAV, &$C, &$HOUSE_CARDS = array
 	sbt_apply_flat_overrides( $GALLERY, 'GALLERY', $overrides );
 	sbt_apply_flat_overrides( $WEDDING_GALLERY, 'WEDDING_GALLERY', $overrides );
 	sbt_apply_flat_overrides( $EXPERIENCES, 'EXPERIENCES', $overrides );
+	sbt_normalize_theme01_seed_article_card_urls( $C );
 
 	sbt_apply_unit_structure( $SITE, $NAV, $C, $HOUSE_CARDS, $TEXT );
 	sbt_rewrite_content_urls( $NAV );
