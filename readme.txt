@@ -23,6 +23,10 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 1.0.29 =
+* Loaded Theme 01 CSS after WordPress and SyncBooking plugin styles so interior-page headers match the homepage header.
+* Printed Theme 01 design variables after the main stylesheet to preserve admin color and font settings.
+
 = 1.0.28 =
 * Realigned Theme 01 header and footer rendering on interior pages with the clean HTML source model.
 * Removed extra dropdown dividers from the Houses menu and synchronized the mobile drawer with the active menu data.

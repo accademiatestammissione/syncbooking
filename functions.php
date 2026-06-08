@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.28' );
+define( 'SBT_VERSION', '1.0.29' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -389,7 +389,6 @@ function sbt_theme_design_css() {
 	}
 	echo '<style id="sbt-theme-design-vars">:root{' . implode( ';', $lines ) . ';}</style>' . "\n";
 }
-add_action( 'wp_head', 'sbt_theme_design_css', 25 );
 
 function sbt_enqueue_theme_fonts() {
 	if ( 'theme01' !== sbt_active_subtheme_key() ) {
