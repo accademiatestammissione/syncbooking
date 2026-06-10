@@ -23,6 +23,11 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 1.0.32 =
+* Refreshed Theme 01 and Theme 02 source HTML references and frontend styling from the latest packages.
+* Added the General Settings rental mode for separate Houses/Rooms versus Entire Villa/Masseria/House.
+* Regenerated Theme 02 page templates for Masseria, Rooms, Whole Masseria, Price, SPA, Experiences, Weddings and Offers.
+
 = 1.0.31 =
 * Removed manual primary and secondary header language fields from Header & Menu.
 * Rendered header language toggles automatically from the enabled site languages.

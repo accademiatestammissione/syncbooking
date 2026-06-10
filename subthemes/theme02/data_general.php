@@ -14,7 +14,7 @@ $BASE = function_exists('sbt_media_base_url') ? rtrim(sbt_media_base_url(), '/')
 /* ---- SITE: identity, contacts, social, legal ---- */
 $SITE = [
   'name'      => 'Masseria Le Cerase',
-  'tagline'   => 'An Apulian Masseria',
+  'tagline'   => 'A 17th-century Masseria in Puglia',
   'address'   => 'Via Martuccello n. 8<br>70014 Conversano (Bari)<br>Puglia, Italy',
   'phone1'    => '+39 338 250 7545',
   'phone1_t'  => '+393382507545',
@@ -24,6 +24,10 @@ $SITE = [
   'instagram' => 'https://www.instagram.com/masseria_lecerase_montefieno/',
   'lang_primary' => 'EN',
   'lang_secondary' => 'IT',
+  'rental_mode' => 'units',
+  'entire_label' => 'Entire Masseria',
+  'unit_label' => 'Room',
+  'unit_count' => '3',
   'whatsapp_label' => 'WhatsApp',
   'shop'      => 'https://shop.masserialecerase.com/',
   'map'       => 'https://maps.google.com/?q=Masseria+Le+Cerase+Conversano',
@@ -33,6 +37,8 @@ $SITE = [
   'vat'       => 'IT08825490728',
   'cin'       => 'IT072019B400085362',
   'webdev'    => ['label' => 'web dev logovia', 'url' => 'https://www.logovia.it/'],
+  'source_version' => '2.0.0',
+  'source_build_date' => '2026-06-08',
 ];
 
 /* ---- IMAGES (by friendly key) ---- */
@@ -60,6 +66,13 @@ $IMG = [
   'exp_cooking' => "$BASE/2025/06/12-1024x682.jpg",
   'exp_dinner'  => "$BASE/2025/06/13-1024x682.jpg",
 ];
+
+$IMG['masseria_aerial'] = $IMG['welcome'];
+$IMG['masseria_facade'] = $IMG['teaser_hospitality'];
+$IMG['masseria_courtyard'] = $IMG['contacts_hero'];
+$IMG['masseria_pool'] = $IMG['band'];
+$IMG['room_main'] = $IMG['contacts_hero'];
+$IMG['whole'] = $IMG['welcome'];
 
 /* Hospitality photo gallery (lightbox). */
 $GALLERY = [
@@ -90,12 +103,16 @@ $WEDDING_GALLERY = [
 /* ---- NAVIGATION ---- */
 $NAV = [
   ['key'=>'home',         'label'=>'Home',              'url'=>'index.php'],
-  ['key'=>'hospitality',  'label'=>'Hospitality',       'url'=>'hospitality.php'],
-  ['key'=>'events',       'label'=>'Events &amp; Weddings', 'url'=>'events-weddings.php', 'sub'=>[
-      ['label'=>'Wedding in Masseria', 'desc'=>'Your dream wedding in the masseria', 'url'=>'wedding-in-masseria.php'],
-      ['label'=>'Partys &amp; Meeting','desc'=>'Celebrations, feasts &amp; meetings',  'url'=>'partys-meeting.php'],
+  ['key'=>'villa',        'label'=>'Masseria',          'url'=>'villa.php'],
+  ['key'=>'house',        'label'=>'Rooms',             'url'=>'house.php', 'sub'=>[
+      ['label'=>'Whole Masseria', 'desc'=>'Exclusive rental', 'url'=>'whole-masseria.php'],
+      ['label'=>'Price &amp; Condition','desc'=>'Rates, check-in &amp; terms', 'url'=>'price-and-condition.php', 'divide'=>true],
   ]],
+  ['key'=>'spa',          'label'=>'SPA &amp; Wellness', 'url'=>'spa-wellness.php'],
+  ['key'=>'experiences',  'label'=>'Experiences',       'url'=>'experiences.php'],
+  ['key'=>'weddings',     'label'=>'Weddings',          'url'=>'weddings.php'],
   ['key'=>'surroundings', 'label'=>'Surroundings',      'url'=>'surroundings.php'],
+  ['key'=>'offers',       'label'=>'Offers',            'url'=>'offers.php'],
   ['key'=>'contacts',     'label'=>'Contacts',          'url'=>'contacts.php'],
 ];
 
@@ -131,9 +148,9 @@ $EXPERIENCES = [
 
 /* ---- HOME teaser cards ---- over, title, img key, url ---- */
 $TEASERS = [
-  ['Stay',      'Hospitality',          'teaser_hospitality', 'hospitality.php'],
-  ['Celebrate', 'Wedding in Masseria',  'teaser_wedding',     'wedding-in-masseria.php'],
-  ['Gather',    'Events &amp; Weddings','teaser_events',      'events-weddings.php'],
+  ['Stay',      'The Masseria',         'teaser_hospitality', 'villa.php'],
+  ['Celebrate', 'Weddings',             'teaser_wedding',     'weddings.php'],
+  ['Gather',    'Whole Masseria',       'teaser_events',      'whole-masseria.php'],
 ];
 
 /* ---- SURROUNDINGS destination cards ---- over, title, img ---- */
@@ -179,6 +196,36 @@ $C['home'] = [
   'cta_h2'       => 'Plan your stay',
   'cta_p'        => 'Rent the entire living area of Masseria Le Cerase — five bedrooms, a private pool and the open countryside — for an unforgettable holiday in sunny Puglia.',
 ];
+
+$C['home'] = array_merge($C['home'], [
+  'title' => 'Masseria Le Cerase - A 17th-century Masseria in Puglia',
+  'hero_over' => 'Masseria Le Cerase - Conversano - Puglia',
+  'hero_h1' => 'A 17th-century<br>masseria, only yours',
+  'hero_sub' => 'A fortified country house among olive groves, cherry orchards and vineyards - yours to live, for up to ten guests.',
+  'scroll_label' => 'Scroll',
+  'welcome_h2' => 'Centuries of stone,<br>surrounded by countryside',
+  'welcome_p1' => 'Masseria Le Cerase is a fortified seventeenth-century farmhouse in the countryside of Conversano, in the heart of Puglia. Built in local limestone, it stands among organic olive groves, cherry orchards and vineyards - the trees that give the masseria its name.',
+  'welcome_p2' => 'Restored with respect for its history, the masseria welcomes a single party at a time: vaulted halls, wrought-iron beds, a pool framed by olive trees, and the deep silence of the open land.',
+  'welcome_url' => 'villa.php',
+  'welcome_stamp' => 'XVII<br>century',
+  'welcome_gallery' => [$IMG['masseria_aerial'], $IMG['masseria_facade'], $IMG['masseria_courtyard'], $IMG['masseria_pool']],
+  'gallery_over' => 'A look inside',
+  'gallery_h2' => 'Spaces that tell a story',
+  'gallery' => [$IMG['masseria_aerial'], $IMG['masseria_facade'], $IMG['masseria_courtyard'], $IMG['masseria_pool'], $IMG['room_main']],
+  'houses_over' => 'The Rooms',
+  'houses_h2' => 'Sleeping under the vaults',
+  'houses_p' => 'Five double bedrooms, each carved beneath ancient stone vaults and furnished with wrought-iron beds, antique wardrobes and warm linen.',
+  'whole_over' => 'Exclusive use',
+  'whole_h2' => 'Or take the whole masseria',
+  'whole_p' => 'One booking, the entire estate: all five bedrooms, the vaulted halls, the country kitchen, the pool and the gardens - reserved exclusively for your party.',
+  'whole_url' => 'whole-masseria.php',
+  'whole_btn' => 'Discover the whole masseria',
+  'whole_gallery' => [$IMG['whole'], $IMG['masseria_pool'], $IMG['masseria_facade'], $IMG['masseria_courtyard']],
+  'services_over' => 'Comfort & Care',
+  'services_h2' => 'The estate at your service',
+  'cta_url' => 'syncbooking:booking',
+  'cta_btn' => 'Request availability',
+]);
 
 /* ---------- HOSPITALITY ---------- */
 $C['hospitality'] = [
@@ -254,9 +301,155 @@ $C['contacts'] = [
   'intro_p'    => 'For availability, tailored quotes or any request, our team will be delighted to help. Reach us by phone, email or WhatsApp — or send a message using the form and we will reply as soon as possible.',
 ];
 
+$C['villa'] = [
+  'title' => 'Masseria - Masseria Le Cerase',
+  'over' => 'Masseria Le Cerase',
+  'h1' => 'The Masseria',
+  'banner' => $IMG['masseria_facade'],
+  'intro_over' => 'The soul of the estate',
+  'intro_h2' => 'Centuries of stone,<br>restored with care',
+  'intro_p' => 'A fortified country house in the countryside of Conversano, surrounded by olive groves, cherry orchards and vineyards. The masseria is designed for slow days, long tables and complete privacy.',
+  'gallery' => [$IMG['masseria_aerial'], $IMG['masseria_facade'], $IMG['masseria_courtyard'], $IMG['masseria_pool']],
+  'cta_over' => 'Plan your stay',
+  'cta_h2' => 'Discover the whole estate',
+  'cta_url' => 'whole-masseria.php',
+  'cta_btn' => 'Whole Masseria',
+  'cta_bg' => $IMG['whole'],
+];
+
+$C['house'] = [
+  'title' => 'Rooms - Masseria Le Cerase',
+  'over' => 'The Rooms',
+  'h1' => 'Rooms',
+  'banner' => $IMG['room_main'],
+  'intro_over' => 'Sleeping under the vaults',
+  'intro_h2' => 'A quiet room<br>inside the masseria',
+  'intro_p' => 'Double bedrooms beneath ancient stone vaults, furnished with warm linen, antique details and the calm of the countryside.',
+  'overview_gallery' => [$IMG['room_main'], $IMG['masseria_courtyard'], $IMG['masseria_pool']],
+  'specs' => [['Type', 'Double room'], ['Use', 'Inside the estate'], ['Style', 'Vaulted stone room']],
+  'gallery_over' => 'A look inside',
+  'gallery_h2' => 'Room details',
+  'gallery' => [$IMG['room_main'], $IMG['masseria_courtyard'], $IMG['masseria_facade'], $IMG['masseria_pool']],
+  'included_over' => 'What is included',
+  'included_h2' => 'Comfort in every corner',
+  'included' => [['wifi', 'Wi-Fi', 'Connectivity across the property.'], ['tree', 'Countryside', 'Access to the estate atmosphere and outdoor spaces.'], ['kitchen', 'Country kitchen', 'Shared estate kitchen use depending on your booking.']],
+  'cta_over' => 'Ready when you are',
+  'cta_h2' => 'Request availability',
+  'cta_btn' => 'Request availability',
+  'cta_url' => 'syncbooking:booking',
+  'cta_bg' => $IMG['whole'],
+];
+
+$C['whole'] = array_merge($C['house'], [
+  'title' => 'Whole Masseria - Masseria Le Cerase',
+  'over' => 'Exclusive use',
+  'h1' => 'Whole Masseria',
+  'banner' => $IMG['whole'],
+  'intro_over' => 'The whole estate, only yours',
+  'intro_h2' => 'Rent the entire<br>Masseria Le Cerase',
+  'intro_p' => 'One booking, the entire estate: bedrooms, vaulted halls, country kitchen, pool and gardens reserved exclusively for your party.',
+  'overview_gallery' => [$IMG['whole'], $IMG['masseria_pool'], $IMG['masseria_facade'], $IMG['masseria_courtyard']],
+  'specs' => [['Guests', 'Up to 10'], ['Use', 'Entire estate'], ['Spaces', 'Pool, halls, gardens and kitchen']],
+  'gallery_h2' => 'The estate in detail',
+  'gallery' => [$IMG['whole'], $IMG['masseria_pool'], $IMG['masseria_facade'], $IMG['masseria_courtyard'], $IMG['room_main']],
+  'cta_h2' => 'Request availability for the whole masseria',
+]);
+
+$C['price'] = [
+  'title' => 'Price & Condition - Masseria Le Cerase',
+  'over' => 'Rates & terms',
+  'h1' => 'Price & Condition',
+  'banner' => $IMG['whole'],
+  'intro_over' => 'Clear conditions',
+  'intro_h2' => 'Plan your stay<br>with clarity',
+  'intro_p' => 'Rates and conditions may change by season, length of stay and booking type. Contact us for a tailored quote and updated availability.',
+  'cta_over' => 'Ask for a quote',
+  'cta_h2' => 'Request availability',
+  'cta_url' => 'syncbooking:booking',
+  'cta_btn' => 'Request availability',
+  'cta_bg' => $IMG['masseria_pool'],
+];
+
+$C['spa'] = [
+  'title' => 'SPA & Wellness - Masseria Le Cerase',
+  'over' => 'Wellness',
+  'h1' => 'SPA & Wellness',
+  'banner' => $IMG['masseria_pool'],
+  'intro_over' => 'Slow wellbeing',
+  'intro_h2' => 'Quiet rituals<br>in the countryside',
+  'intro_p' => 'Wellness moments can be arranged around your stay, from massages to private relaxation experiences.',
+  'cta_over' => 'Your wellness stay',
+  'cta_h2' => 'Tell us what you need',
+  'cta_url' => 'contacts.php',
+  'cta_btn' => 'Contact us',
+  'cta_bg' => $IMG['whole'],
+];
+
+$C['experiences'] = [
+  'title' => 'Experiences - Masseria Le Cerase',
+  'over' => 'Apulian Experience',
+  'h1' => 'Experiences',
+  'banner' => $IMG['exp_cooking'],
+  'intro_over' => 'Live Puglia, your way',
+  'intro_h2' => 'Moments shaped<br>around you',
+  'intro_p' => 'Cooking classes, wine tastings, private tours and seaside days can be arranged around your tastes and curiosities.',
+  'cards' => [
+    ['over' => 'Taste', 'h3' => 'Cooking Classes', 'img' => $IMG['exp_cooking'], 'url' => 'post:cooking-classes'],
+    ['over' => 'Cellar', 'h3' => 'Wine Tastings', 'img' => $IMG['exp_dinner'], 'url' => 'post:wine-tastings'],
+    ['over' => 'Discover', 'h3' => 'Private Tours', 'img' => $IMG['exp_boat'], 'url' => 'post:private-tours'],
+    ['over' => 'Sea', 'h3' => 'Coast & Beaches', 'img' => $IMG['exp_boat'], 'url' => 'post:coast-beaches'],
+  ],
+  'cta_over' => 'Plan your experience',
+  'cta_h2' => 'Ask us what is possible',
+  'cta_url' => 'contacts.php',
+  'cta_btn' => 'Contact us',
+  'cta_bg' => $IMG['masseria_pool'],
+];
+
+$C['weddings'] = [
+  'title' => 'Weddings - Masseria Le Cerase',
+  'over' => 'Weddings',
+  'h1' => 'Weddings',
+  'banner' => $IMG['wedding_hero'],
+  'intro_over' => 'A wedding in masseria',
+  'intro_h2' => 'Say yes<br>among the olive trees',
+  'intro_p' => 'White stone, countryside, long tables and an intimate atmosphere for a wedding shaped around your story.',
+  'cta_over' => 'Your day, your way',
+  'cta_h2' => 'Let us plan your wedding',
+  'cta_url' => 'contacts.php',
+  'cta_btn' => 'Contact us',
+  'cta_bg' => $IMG['wedding_hero'],
+];
+
+$C['offers'] = [
+  'title' => 'Offers - Masseria Le Cerase',
+  'over' => 'Offers',
+  'h1' => 'Offers',
+  'banner' => $IMG['masseria_pool'],
+  'intro_over' => 'Seasonal proposals',
+  'intro_h2' => 'Special stays<br>in the countryside',
+  'intro_p' => 'Offers can be adapted to the selected period, booking type and length of stay. Contact us for updated availability and a tailored proposal.',
+  'cta_over' => 'Ask for details',
+  'cta_h2' => 'Contact us for more information',
+  'cta_url' => 'contacts.php',
+  'cta_btn' => 'Contact us',
+  'cta_bg' => $IMG['whole'],
+];
+
+$TEXT = [
+  'home' => 'Home',
+  'houses' => 'Rooms',
+  'discover' => 'Discover',
+  'show_all_photos' => 'Show all photos',
+  'request_availability' => 'Request availability',
+  'price_condition' => 'Price & Condition',
+  'contacts' => 'Contacts',
+  'stay_in_touch' => 'Stay in touch',
+  'privacy_policy' => 'Privacy Policy',
+  'all_rights_reserved' => 'All rights reserved',
+];
+
 if (function_exists('sbt_bootstrap_content')) {
-  $TEXT = [];
   $HOUSE_CARDS = [];
   sbt_bootstrap_content($IMG, $SITE, $NAV, $C, $HOUSE_CARDS, $SERVICES, $TEXT, $GALLERY, $WEDDING_GALLERY, $EXPERIENCES);
 }
-

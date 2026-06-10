@@ -46,6 +46,32 @@ $p = $C['home'];
 	</div>
 </section>
 
+<section class="sbtw-pad-s pad-s" data-screen-label="Gallery">
+	<div class="sbtw-wrap wrap">
+		<div class="sbtw-section-head sbtw-reveal section-head reveal" style="margin-bottom:40px;">
+			<div class="sbtw-overline overline"><?php echo sbt_t1_text( 'C.home.gallery_over', $p['gallery_over'] ?? 'A look inside' ); ?></div>
+			<h2><?php echo sbt_t1_text( 'C.home.gallery_h2', $p['gallery_h2'] ?? 'Spaces that tell a story' ); ?></h2>
+		</div>
+		<?php sbt_t1_mosaic( 'C.home.gallery', $p['gallery'] ?? $p['welcome_gallery'], $SITE['name'], $TEXT['show_all_photos'] ?? 'Show all photos' ); ?>
+	</div>
+</section>
+
+<section class="sbtw-pad-s pad-s" id="entire-villa" style="background:var(--surface);" data-screen-label="Entire villa">
+	<div class="sbtw-wrap sbtw-two-col wrap two-col">
+		<?php sbt_t1_carousel( 'C.home.entire_gallery', $p['entire_gallery'] ?? $p['welcome_gallery'], $p['entire_h2'] ?? $SITE['name'], true, true ); ?>
+		<div class="sbtw-reveal reveal">
+			<div class="sbtw-overline overline"><?php echo sbt_t1_text( 'C.home.entire_over', $p['entire_over'] ?? 'Rent the entire villa' ); ?></div>
+			<h2 class="sbtw-lead lead"><?php echo sbt_t1_text( 'C.home.entire_h2', $p['entire_h2'] ?? 'Villa Rosa,<br/>all to yourself', array( 'multiline' => true ) ); ?></h2>
+			<p class="sbtw-body-text body-text"><?php echo sbt_t1_text( 'C.home.entire_p', $p['entire_p'] ?? '', array( 'multiline' => true ) ); ?></p>
+			<div class="sbtw-house-actions house-actions">
+				<a class="sbtw-btn btn" href="<?php echo esc_url( sbt_t1_url( $p['entire_url'] ?? sbt_entire_nav_url( 'theme01' ) ) ); ?>"><?php echo sbt_t1_text( 'C.home.entire_btn', $p['entire_btn'] ?? sbt_entire_label( 'theme01' ) ); ?></a>
+				<?php echo sbt_t1_control( 'C.home.entire_url', $p['entire_url'] ?? sbt_entire_nav_url( 'theme01' ), 'Link bottone', 'url' ); ?>
+			</div>
+		</div>
+	</div>
+</section>
+
+<?php if ( ! function_exists( 'sbt_is_entire_rental_mode' ) || ! sbt_is_entire_rental_mode( 'theme01' ) ) : ?>
 <section class="houses pad" id="houses" data-screen-label="Houses">
 	<div class="wrap">
 		<div class="section-head reveal">
@@ -79,6 +105,7 @@ $p = $C['home'];
 		</div>
 	</div>
 </section>
+<?php endif; ?>
 
 <section class="services pad" id="services" data-screen-label="Services">
 	<div class="wrap">
@@ -142,13 +169,18 @@ $p = $C['home'];
 	</div>
 </section>
 
+<?php
+$home_cta_url = ( function_exists( 'sbt_is_entire_rental_mode' ) && sbt_is_entire_rental_mode( 'theme01' ) ) ? ( $p['entire_url'] ?? sbt_entire_nav_url( 'theme01' ) ) : $p['house_cta_url'];
+$home_cta_h2 = ( function_exists( 'sbt_is_entire_rental_mode' ) && sbt_is_entire_rental_mode( 'theme01' ) ) ? ( $p['entire_h2'] ?? $p['house_cta_h2'] ) : $p['house_cta_h2'];
+$home_cta_btn = ( function_exists( 'sbt_is_entire_rental_mode' ) && sbt_is_entire_rental_mode( 'theme01' ) ) ? ( $p['entire_btn'] ?? $p['house_cta_btn'] ) : $p['house_cta_btn'];
+?>
 <section class="cta-band" id="house-cta" style="<?php echo esc_attr( sbt_t1_bg_style( 'C.home.house_cta_bg', $p['house_cta_bg'] ) ); ?>" data-screen-label="Houses CTA">
 	<div class="inner reveal">
 		<?php echo sbt_t1_control( 'C.home.house_cta_bg', $p['house_cta_bg'], 'Immagine sfondo', 'image' ); ?>
 		<div class="overline"><?php echo sbt_t1_text( 'C.home.house_cta_over', $p['house_cta_over'] ); ?></div>
-		<h2><?php echo sbt_t1_text( 'C.home.house_cta_h2', $p['house_cta_h2'], array( 'multiline' => true ) ); ?></h2>
-		<a class="btn btn--light" href="<?php echo esc_url( sbt_t1_url( $p['house_cta_url'] ) ); ?>"><?php echo sbt_t1_text( 'C.home.house_cta_btn', $p['house_cta_btn'] ); ?></a>
-		<?php echo sbt_t1_control( 'C.home.house_cta_url', $p['house_cta_url'], 'Link bottone', 'url' ); ?>
+		<h2><?php echo sbt_t1_text( 'C.home.house_cta_h2', $home_cta_h2, array( 'multiline' => true ) ); ?></h2>
+		<a class="btn btn--light" href="<?php echo esc_url( sbt_t1_url( $home_cta_url ) ); ?>"><?php echo sbt_t1_text( 'C.home.house_cta_btn', $home_cta_btn ); ?></a>
+		<?php echo sbt_t1_control( 'C.home.house_cta_url', $home_cta_url, 'Link bottone', 'url' ); ?>
 	</div>
 </section>
 

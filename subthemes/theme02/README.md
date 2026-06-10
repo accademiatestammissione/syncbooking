@@ -9,10 +9,14 @@ A static, hand-coded PHP theme. **Every text, link and image lives in one file:
 syncbooking_theme/
 ├── data_general.php        ← EDIT EVERYTHING HERE (texts, images, contacts, nav, cards)
 ├── index.php               ← Home
-├── hospitality.php         ← Hospitality (stay, gallery, services, experiences)
-├── events-weddings.php     ← Events & Weddings (overview)
-├── wedding-in-masseria.php ← Wedding in Masseria
-├── partys-meeting.php      ← Partys & Meeting
+├── villa.php               ← Masseria overview
+├── house.php               ← Rooms overview/detail template
+├── whole-masseria.php      ← Whole Masseria exclusive rental
+├── price-and-condition.php ← Rates and conditions
+├── spa-wellness.php        ← SPA & Wellness
+├── experiences.php         ← Experiences
+├── weddings.php            ← Weddings
+├── offers.php              ← Offers
 ├── surroundings.php        ← Surroundings
 ├── contacts.php            ← Contacts (form + map)
 ├── inc/

@@ -1,7 +1,7 @@
 <?php
 $CONTENT_KEY = isset( $CONTENT_KEY ) && isset( $C[ $CONTENT_KEY ] ) ? $CONTENT_KEY : 'house';
 $p = $C[ $CONTENT_KEY ];
-$parent_page = 'entire' === $CONTENT_KEY ? null : array( 'url' => 'houses.php', 'label' => $TEXT['houses'] ?? 'Houses' );
+$parent_page = in_array( $CONTENT_KEY, array( 'entire', 'whole' ), true ) ? null : array( 'url' => 'house.php', 'label' => $TEXT['houses'] ?? 'Rooms' );
 sbt_t1_page_hero(
 	$CONTENT_KEY,
 	$p,

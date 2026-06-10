@@ -1,5 +1,5 @@
 <?php
-/* Theme 01 - Villa Rosa Resort. Rebuilt from clean HTML source 1.0.0. */
+/* Theme 01 - Villa Rosa Resort. Rebuilt from clean HTML source 1.0.2. */
 
 $BASE = function_exists( 'sbt_media_base_url' ) ? sbt_media_base_url() : 'assets/uploads/';
 
@@ -47,6 +47,8 @@ $SITE = array(
 	'instagram' => 'https://www.instagram.com/villarosaresortpuglia/',
 	'lang_primary' => 'EN',
 	'lang_secondary' => 'IT',
+	'rental_mode' => 'units',
+	'entire_label' => 'Entire Villa',
 	'unit_label' => 'House',
 	'unit_count' => '3',
 	'font_pairing' => 'classic',
@@ -66,7 +68,7 @@ $SITE = array(
 	'cin' => 'IT072019B400085362',
 	'year' => '2026',
 	'webdev' => array( 'label' => 'web dev logovia', 'url' => 'https://www.logovia.it/' ),
-	'source_version' => '1.0.0',
+	'source_version' => '1.0.2',
 	'source_build_date' => '2026-06-07',
 );
 
@@ -78,9 +80,9 @@ $NAV = array(
 		'label' => 'Houses',
 		'key' => 'houses',
 		'sub' => array(
-			array( 'url' => 'house-for-2.php', 'label' => 'House for 2' ),
-			array( 'url' => 'house-for-3.php', 'label' => 'House for 3' ),
-			array( 'url' => 'house-for-4.php', 'label' => 'House for 4' ),
+			array( 'url' => 'houses.php', 'label' => 'House for 2' ),
+			array( 'url' => 'houses.php', 'label' => 'House for 3' ),
+			array( 'url' => 'houses.php', 'label' => 'House for 4' ),
 			array( 'url' => 'price-and-condition.php', 'label' => 'Price & Condition', 'divide' => true ),
 		),
 	),
@@ -152,6 +154,15 @@ $C['home'] = array(
 	'welcome_url' => 'villa.php',
 	'welcome_stamp' => 'Since<br/>1930',
 	'welcome_gallery' => array( $IMG['welcome'], $IMG['a1'], $IMG['a5'], $IMG['room'], $IMG['garden'] ),
+	'gallery_over' => 'A look inside',
+	'gallery_h2' => 'Spaces that tell a story',
+	'gallery' => array( $IMG['villa'], $IMG['garden'], $IMG['a5'], $IMG['a1'], $IMG['welcome'] ),
+	'entire_over' => 'Rent the entire villa',
+	'entire_h2' => 'Villa Rosa,<br/>all to yourself',
+	'entire_p' => 'Choose the whole property for your family or group: the villa atmosphere, the park, the pool, the wellness area and all the quiet corners of Villa Rosa reserved for your stay.',
+	'entire_url' => 'entire-villa.php',
+	'entire_btn' => 'Discover entire villa',
+	'entire_gallery' => array( $IMG['villa'], $IMG['garden'], $IMG['a1'], $IMG['welcome'] ),
 	'houses_over' => 'The Houses',
 	'houses_h2' => 'Your private retreat',
 	'houses_p' => 'The new luxury in holidays is more freedom: an entire house with an external pergola at your disposal. Refined design, a mix of modern and ancient, and every comfort make the homes of Villa Rosa very exclusive.',
@@ -190,7 +201,7 @@ $HOUSE_CARDS = array(
 		'listing_title' => 'Houses for 2',
 		'img' => $IMG['a1'],
 		'gallery' => array( $IMG['room2'], $IMG['room'], $IMG['room_detail'] ),
-		'url' => 'house-for-2.php',
+		'url' => 'houses.php',
 		'specs' => array( array( 'Average surface', '30-40 m2' ), array( 'Maximum occupancy', '2 adults + 1 cot' ), array( 'Bed', 'King-size' ) ),
 	),
 	array(
@@ -199,7 +210,7 @@ $HOUSE_CARDS = array(
 		'listing_title' => 'Houses for 3',
 		'img' => $IMG['room'],
 		'gallery' => array( $IMG['room'], $IMG['room_detail'], $IMG['room2'] ),
-		'url' => 'house-for-3.php',
+		'url' => 'houses.php',
 		'specs' => array( array( 'Average surface', '40-50 m2' ), array( 'Maximum occupancy', '3 adults + 1 cot' ), array( 'Beds', 'King-size + sofa bed' ) ),
 	),
 	array(
@@ -208,7 +219,7 @@ $HOUSE_CARDS = array(
 		'listing_title' => 'Houses for 4',
 		'img' => $IMG['room2'],
 		'gallery' => array( $IMG['room_detail'], $IMG['room2'], $IMG['room'] ),
-		'url' => 'house-for-4.php',
+		'url' => 'houses.php',
 		'specs' => array( array( 'Average surface', '50-60 m2' ), array( 'Maximum occupancy', '4 adults + 1 cot' ), array( 'Beds', 'King-size + double sofa' ) ),
 	),
 );
@@ -222,6 +233,33 @@ $SERVICES = array(
 	array( 'bbq', 'BBQ', 'Our BBQ area in the park - the experience of grilling outdoors in style.' ),
 	array( 'car', 'Car Rental', 'A car rental service, to enjoy every part of Puglia independently.' ),
 	array( 'gym', 'Gym', 'To keep perfectly fit, even on holiday.' ),
+);
+
+$C['entire'] = array(
+	'title' => 'Entire Villa - Villa Rosa Resort',
+	'over' => 'Exclusive rental',
+	'h1' => 'Entire Villa',
+	'banner' => $IMG['villa'],
+	'intro_over' => 'The whole property, just for you',
+	'intro_h2' => 'Rent Villa Rosa<br/>as one private retreat',
+	'intro_p' => 'For families, celebrations and groups who want privacy, Villa Rosa can become one complete residence: independent homes, park, pool, wellness spaces and outdoor corners reserved for your stay.',
+	'overview_gallery' => array( $IMG['villa'], $IMG['garden'], $IMG['a1'], $IMG['welcome'] ),
+	'specs' => array( array( 'Use', 'Entire property' ), array( 'Spaces', 'Homes, pool, park and SPA' ), array( 'Style', 'Private villa retreat' ) ),
+	'gallery_over' => 'A look inside',
+	'gallery_h2' => 'Spaces reserved for you',
+	'gallery' => array( $IMG['villa'], $IMG['garden'], $IMG['a1'], $IMG['a5'], $IMG['welcome'] ),
+	'included_over' => 'What is included',
+	'included_h2' => 'Privacy and comfort',
+	'included' => array(
+		array( 'pool', 'Private pool', 'The pool and garden become part of your private villa experience.' ),
+		array( 'spa', 'Wellness area', 'SPA and wellness spaces can be arranged around your stay.' ),
+		array( 'park', 'Park & outdoor living', 'Outdoor pergolas and quiet corners for slow days in Puglia.' ),
+	),
+	'cta_over' => 'Ready when you are',
+	'cta_h2' => 'Request availability for the entire villa',
+	'cta_btn' => 'Request availability',
+	'cta_url' => 'syncbooking:booking',
+	'cta_bg' => $IMG['a1'],
 );
 
 $C['villa'] = array(

@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.31' );
+define( 'SBT_VERSION', '1.0.32' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -116,11 +116,15 @@ function sbt_subthemes() {
 			'dir'   => 'theme02',
 			'pages' => array(
 				'home'                => array( 'title' => 'Home', 'file' => 'index.php', 'content_key' => 'home' ),
-				'hospitality'         => array( 'title' => 'Hospitality', 'file' => 'hospitality.php', 'content_key' => 'hospitality' ),
-				'events-weddings'     => array( 'title' => 'Events & Weddings', 'file' => 'events-weddings.php', 'content_key' => 'events' ),
-				'wedding-in-masseria' => array( 'title' => 'Wedding in Masseria', 'file' => 'wedding-in-masseria.php', 'content_key' => 'wedding' ),
-				'partys-meeting'      => array( 'title' => 'Partys & Meeting', 'file' => 'partys-meeting.php', 'content_key' => 'partys' ),
+				'villa'               => array( 'title' => 'Masseria', 'file' => 'villa.php', 'content_key' => 'villa' ),
+				'house'               => array( 'title' => 'Rooms', 'file' => 'house.php', 'content_key' => 'house' ),
+				'whole-masseria'      => array( 'title' => 'Whole Masseria', 'file' => 'whole-masseria.php', 'content_key' => 'whole' ),
+				'price-and-condition' => array( 'title' => 'Price & Condition', 'file' => 'price-and-condition.php', 'content_key' => 'price' ),
+				'spa-wellness'        => array( 'title' => 'SPA & Wellness', 'file' => 'spa-wellness.php', 'content_key' => 'spa' ),
+				'experiences'         => array( 'title' => 'Experiences', 'file' => 'experiences.php', 'content_key' => 'experiences' ),
+				'weddings'            => array( 'title' => 'Weddings', 'file' => 'weddings.php', 'content_key' => 'weddings' ),
 				'surroundings'        => array( 'title' => 'Surroundings', 'file' => 'surroundings.php', 'content_key' => 'surroundings' ),
+				'offers'              => array( 'title' => 'Offers', 'file' => 'offers.php', 'content_key' => 'offers' ),
 				'contacts'            => array( 'title' => 'Contacts', 'file' => 'contacts.php', 'content_key' => 'contacts' ),
 			),
 		),
@@ -237,6 +241,55 @@ function sbt_unit_label_options() {
 	);
 }
 
+function sbt_entire_label_options() {
+	return array(
+		'Entire Villa'    => 'Entire Villa',
+		'Entire Masseria' => 'Entire Masseria',
+		'Entire House'    => 'Entire House',
+	);
+}
+
+function sbt_default_entire_label( $subtheme = '' ) {
+	$subtheme = '' === $subtheme ? sbt_active_subtheme_key() : $subtheme;
+	return 'theme02' === $subtheme ? 'Entire Masseria' : 'Entire Villa';
+}
+
+function sbt_rental_mode( $subtheme = '' ) {
+	$subtheme = '' === $subtheme ? sbt_active_subtheme_key() : $subtheme;
+	$mode = sbt_structural_override_value( $subtheme, 'SITE.rental_mode', 'units' );
+	return 'entire' === $mode ? 'entire' : 'units';
+}
+
+function sbt_is_entire_rental_mode( $subtheme = '' ) {
+	return 'entire' === sbt_rental_mode( $subtheme );
+}
+
+function sbt_entire_label( $subtheme = '' ) {
+	$subtheme = '' === $subtheme ? sbt_active_subtheme_key() : $subtheme;
+	$value = sbt_structural_override_value( $subtheme, 'SITE.entire_label', sbt_default_entire_label( $subtheme ) );
+	$options = sbt_entire_label_options();
+
+	return isset( $options[ $value ] ) ? $value : sbt_default_entire_label( $subtheme );
+}
+
+function sbt_entire_page_slug( $subtheme = '' ) {
+	$subtheme = '' === $subtheme ? sbt_active_subtheme_key() : $subtheme;
+	if ( 'theme02' === $subtheme ) {
+		return 'whole-masseria';
+	}
+
+	return sanitize_title( sbt_entire_label( $subtheme ) );
+}
+
+function sbt_entire_page_file( $subtheme = '' ) {
+	$subtheme = '' === $subtheme ? sbt_active_subtheme_key() : $subtheme;
+	return 'theme02' === $subtheme ? 'whole-masseria.php' : 'entire.php';
+}
+
+function sbt_entire_nav_url( $subtheme = '' ) {
+	return sbt_entire_page_slug( $subtheme ) . '.php';
+}
+
 function sbt_unit_plural_label( $unit_label = '' ) {
 	$options = sbt_unit_label_options();
 	$unit_label = '' === $unit_label ? sbt_unit_label( array( 'SITE.unit_label' => sbt_structural_override_value( 'theme01', 'SITE.unit_label', 'House' ) ) ) : $unit_label;
@@ -279,7 +332,7 @@ function sbt_unit_slug_from_title( $title, $number, &$used_slugs = array() ) {
 		$slug = 'unit-' . absint( $number );
 	}
 
-	$protected = array( 'home', 'villa', 'houses', 'price-and-condition', 'spa-wellness', 'experiences', 'article', 'surroundings', 'offers', 'contacts' );
+	$protected = array( 'home', 'villa', 'houses', 'house', 'whole-masseria', 'price-and-condition', 'spa-wellness', 'experiences', 'weddings', 'article', 'surroundings', 'offers', 'contacts' );
 	if ( in_array( $slug, $protected, true ) || in_array( $slug, $used_slugs, true ) ) {
 		$slug .= '-' . absint( $number );
 	}
@@ -413,21 +466,50 @@ function sbt_enqueue_theme_fonts() {
 add_action( 'wp_enqueue_scripts', 'sbt_enqueue_theme_fonts' );
 
 function sbt_page_templates() {
+	$subtheme_key = sbt_active_subtheme_key();
 	$subtheme = sbt_active_subtheme();
 	$pages = $subtheme['pages'];
+	if ( 'theme01' === $subtheme_key ) {
+		$entire_slug = sbt_entire_page_slug( $subtheme_key );
+		$pages[ $entire_slug ] = array(
+			'title'       => sbt_entire_label( $subtheme_key ),
+			'file'        => sbt_entire_page_file( $subtheme_key ),
+			'content_key' => 'entire',
+		);
+	}
 
-	if ( 'theme01' === sbt_active_subtheme_key() ) {
-		if ( isset( $pages['houses'] ) ) {
-			$pages['houses']['title'] = sbt_unit_plural_label();
-		}
-		foreach ( sbt_custom_house_pages( 'theme01' ) as $house_page ) {
-			$pages[ $house_page['slug'] ] = array(
-				'title'         => $house_page['title'],
-				'file'          => $house_page['slug'] . '.php',
-				'template_file' => 'house-custom.php',
-				'content_key'   => $house_page['content_key'],
-				'custom_house'  => true,
+	if ( sbt_is_entire_rental_mode( $subtheme_key ) ) {
+		unset( $pages['houses'], $pages['house'] );
+		$entire_slug = sbt_entire_page_slug( $subtheme_key );
+		if ( ! isset( $pages[ $entire_slug ] ) ) {
+			$pages[ $entire_slug ] = array(
+				'title'       => sbt_entire_label( $subtheme_key ),
+				'file'        => sbt_entire_page_file( $subtheme_key ),
+				'content_key' => 'theme02' === $subtheme_key ? 'whole' : 'entire',
 			);
+		} else {
+			$pages[ $entire_slug ]['title'] = sbt_entire_label( $subtheme_key );
+		}
+
+		return $pages;
+	}
+
+	if ( isset( $pages['houses'] ) ) {
+		$pages['houses']['title'] = sbt_unit_plural_label();
+	}
+	if ( isset( $pages['house'] ) ) {
+		$pages['house']['title'] = sbt_unit_plural_label();
+	}
+	foreach ( sbt_custom_house_pages( $subtheme_key ) as $house_page ) {
+		$pages[ $house_page['slug'] ] = array(
+			'title'         => $house_page['title'],
+			'file'          => $house_page['slug'] . '.php',
+			'template_file' => 'house-custom.php',
+			'content_key'   => $house_page['content_key'],
+			'custom_house'  => true,
+		);
+		if ( 'theme02' === $subtheme_key ) {
+			$pages[ $house_page['slug'] ]['template_file'] = 'room-custom.php';
 		}
 	}
 
@@ -1256,13 +1338,43 @@ function sbt_custom_house_default_content( $title, $base = array() ) {
 }
 
 function sbt_apply_unit_structure( &$SITE, &$NAV, &$C, &$HOUSE_CARDS, &$TEXT ) {
-	if ( 'theme01' !== sbt_active_subtheme_key() ) {
+	$subtheme = sbt_active_subtheme_key();
+	if ( ! in_array( $subtheme, array( 'theme01', 'theme02' ), true ) ) {
 		return;
 	}
 
-	$unit_label = sbt_unit_label( array( 'SITE.unit_label' => $SITE['unit_label'] ?? sbt_structural_override_value( 'theme01', 'SITE.unit_label', 'House' ) ) );
+	$entire_label = sbt_entire_label( $subtheme );
+	$entire_url = sbt_entire_nav_url( $subtheme );
+	if ( sbt_is_entire_rental_mode( $subtheme ) ) {
+		$TEXT['houses'] = $entire_label;
+		$HOUSE_CARDS = array();
+		foreach ( $NAV as &$item ) {
+			if ( isset( $item['key'] ) && in_array( $item['key'], array( 'houses', 'house', 'hospitality' ), true ) ) {
+				$item['key'] = 'theme02' === $subtheme ? 'house' : 'houses';
+				$item['label'] = $entire_label;
+				$item['url'] = $entire_url;
+				$item['sub'] = array(
+					array(
+						'url'   => $entire_url,
+						'label' => $entire_label,
+						'desc'  => 'Exclusive rental',
+					),
+					array(
+						'url'    => 'price-and-condition.php',
+						'label'  => 'Price & Condition',
+						'desc'   => 'Rates, check-in & terms',
+						'divide' => true,
+					),
+				);
+			}
+		}
+		unset( $item );
+		return;
+	}
+
+	$unit_label = sbt_unit_label( array( 'SITE.unit_label' => $SITE['unit_label'] ?? sbt_structural_override_value( $subtheme, 'SITE.unit_label', 'theme02' === $subtheme ? 'Room' : 'House' ) ) );
 	$plural_label = sbt_unit_plural_label( $unit_label );
-	$detail_pages = sbt_custom_house_pages( 'theme01' );
+	$detail_pages = sbt_custom_house_pages( $subtheme );
 	$TEXT['houses'] = $plural_label;
 
 	if ( isset( $C['houses'] ) && is_array( $C['houses'] ) ) {
@@ -1271,6 +1383,10 @@ function sbt_apply_unit_structure( &$SITE, &$NAV, &$C, &$HOUSE_CARDS, &$TEXT ) {
 		if ( isset( $C['houses']['intro_over'] ) ) {
 			$C['houses']['intro_over'] = 'Your ' . strtolower( $plural_label );
 		}
+	}
+	if ( isset( $C['house'] ) && is_array( $C['house'] ) ) {
+		$C['house']['title'] = $plural_label . ' - ' . ( $SITE['name'] ?? 'SyncBooking' );
+		$C['house']['h1'] = $plural_label;
 	}
 
 	$cards = array();
@@ -1307,10 +1423,16 @@ function sbt_apply_unit_structure( &$SITE, &$NAV, &$C, &$HOUSE_CARDS, &$TEXT ) {
 	}
 
 	foreach ( $NAV as &$item ) {
-		if ( isset( $item['key'] ) && 'houses' === $item['key'] ) {
+		if ( isset( $item['key'] ) && in_array( $item['key'], array( 'houses', 'house', 'hospitality' ), true ) ) {
+			$listing_url = 'theme02' === $subtheme ? 'house.php' : 'houses.php';
 			$item['label'] = $plural_label;
-			$item['url'] = 'houses.php';
+			$item['url'] = $listing_url;
 			$item['sub'] = array();
+			$item['sub'][] = array(
+				'url'   => $entire_url,
+				'label' => $entire_label,
+				'desc'  => 'Exclusive rental',
+			);
 			foreach ( $detail_pages as $house_page ) {
 				$item['sub'][] = array(
 					'url'   => $house_page['slug'] . '.php',
@@ -1412,15 +1534,17 @@ add_action( 'admin_init', 'sbt_migrate_theme01_seed_article_card_overrides' );
 function sbt_bootstrap_content( &$IMG, &$SITE, &$NAV, &$C, &$HOUSE_CARDS = array(), &$SERVICES = array(), &$TEXT = array(), &$GALLERY = array(), &$WEDDING_GALLERY = array(), &$EXPERIENCES = array() ) {
 	$overrides = sbt_active_overrides();
 
-	if ( 'theme01' === sbt_active_subtheme_key() ) {
-		foreach ( sbt_custom_house_pages( 'theme01' ) as $index => $house_page ) {
+	if ( in_array( sbt_active_subtheme_key(), array( 'theme01', 'theme02' ), true ) ) {
+		$active_subtheme = sbt_active_subtheme_key();
+		foreach ( sbt_custom_house_pages( $active_subtheme ) as $index => $house_page ) {
 			if ( empty( $house_page['content_key'] ) ) {
 				continue;
 			}
 
 			if ( ! isset( $C[ $house_page['content_key'] ] ) ) {
 				$template_key = sbt_unit_content_key( $index + 1 );
-				$C[ $house_page['content_key'] ] = sbt_custom_house_default_content( $house_page['title'], $C[ $template_key ] ?? ( $C['house4'] ?? array() ) );
+				$fallback = 'theme02' === $active_subtheme ? ( $C['house'] ?? array() ) : ( $C['house4'] ?? array() );
+				$C[ $house_page['content_key'] ] = sbt_custom_house_default_content( $house_page['title'], $C[ $template_key ] ?? $fallback );
 			}
 		}
 	}
@@ -1610,7 +1734,7 @@ function sbt_visual_meta_editor_assets() {
 		}
 
 		function closestGalleryUrls(field){
-			var scope = field.closest('.media-carousel,.mosaic,.gallery,.house,.feature,.page-hero') || document;
+			var scope = field.closest('.sbtw-media-carousel,.media-carousel,.sbtw-mosaic,.mosaic,.sbtw-gallery,.gallery,.sbtw-house,.house,.sbtw-feature,.feature,.sbtw-page-hero,.page-hero') || document;
 			var urls = [];
 			scope.querySelectorAll('img').forEach(function(img){
 				var src = img.getAttribute('src');
@@ -1654,7 +1778,7 @@ function sbt_visual_meta_editor_assets() {
 		}
 
 		function addGalleryEditors(){
-			document.querySelectorAll('.gallery,.mosaic,.media-carousel').forEach(function(scope){
+			document.querySelectorAll('.sbtw-gallery,.gallery,.sbtw-mosaic,.mosaic,.sbtw-media-carousel,.media-carousel').forEach(function(scope){
 				if (scope.querySelector('.sbt-vfe-gallery-edit')) return;
 				var firstField = scope.querySelector('img[data-sbt-vfe-gallery-item][data-sbt-vfe-gallery-path]');
 				if (!firstField) return;
@@ -2442,36 +2566,39 @@ function sbt_sanitize_options( $raw ) {
 			$key = sanitize_text_field( wp_unslash( $key ) );
 			if ( is_string( $value ) ) {
 				$options['overrides'][ $options['subtheme'] ]['_languages'][ $edit_language ][ $key ] = sbt_sanitize_editable_override( $key, $value );
-				if ( in_array( $key, array( 'SITE.unit_label', 'SITE.unit_count' ), true ) ) {
+				if ( in_array( $key, array( 'SITE.rental_mode', 'SITE.entire_label', 'SITE.unit_label', 'SITE.unit_count' ), true ) ) {
 					$options['overrides'][ $options['subtheme'] ]['_languages']['en'][ $key ] = sbt_sanitize_editable_override( $key, $value );
 				}
 			}
 		}
 	}
 
-	if ( 'theme01' === $options['subtheme'] && isset( $raw['unit_names'] ) && is_array( $raw['unit_names'] ) ) {
-		$theme_overrides = $options['overrides']['theme01']['_languages']['en'] ?? array();
-		$unit_label = isset( $theme_overrides['SITE.unit_label'] ) && '' !== $theme_overrides['SITE.unit_label'] ? $theme_overrides['SITE.unit_label'] : sbt_structural_override_value( 'theme01', 'SITE.unit_label', 'House' );
-		$unit_count = isset( $theme_overrides['SITE.unit_count'] ) ? absint( $theme_overrides['SITE.unit_count'] ) : sbt_desired_unit_count( 'theme01' );
+	if ( in_array( $options['subtheme'], array( 'theme01', 'theme02' ), true ) && isset( $raw['unit_names'] ) && is_array( $raw['unit_names'] ) ) {
+		$subtheme = $options['subtheme'];
+		$theme_overrides = $options['overrides'][ $subtheme ]['_languages']['en'] ?? array();
+		$unit_label = isset( $theme_overrides['SITE.unit_label'] ) && '' !== $theme_overrides['SITE.unit_label'] ? $theme_overrides['SITE.unit_label'] : sbt_structural_override_value( $subtheme, 'SITE.unit_label', 'theme02' === $subtheme ? 'Room' : 'House' );
+		$unit_count = isset( $theme_overrides['SITE.unit_count'] ) ? absint( $theme_overrides['SITE.unit_count'] ) : sbt_desired_unit_count( $subtheme );
 		$unit_count = max( 1, min( 20, $unit_count ) );
-		$current = isset( $options['custom_house_pages']['theme01'] ) && is_array( $options['custom_house_pages']['theme01'] ) ? array_values( $options['custom_house_pages']['theme01'] ) : array();
+		$current = isset( $options['custom_house_pages'][ $subtheme ] ) && is_array( $options['custom_house_pages'][ $subtheme ] ) ? array_values( $options['custom_house_pages'][ $subtheme ] ) : array();
 		$raw_names = wp_unslash( $raw['unit_names'] );
 
-		for ( $number = 1; $number <= $unit_count; $number++ ) {
-			$default_title = sbt_unit_default_title( $unit_label, $number );
-			$name = isset( $raw_names[ $number ] ) ? trim( sanitize_text_field( $raw_names[ $number ] ) ) : '';
-			$title = '' !== $name ? $name : $default_title;
-			if ( ! isset( $current[ $number - 1 ] ) || ! is_array( $current[ $number - 1 ] ) ) {
-				$current[ $number - 1 ] = array();
-			}
-			$current[ $number - 1 ]['title'] = $title;
-			$current[ $number - 1 ]['custom_title'] = $title !== $default_title;
-			if ( empty( $current[ $number - 1 ]['content_key'] ) ) {
-				$current[ $number - 1 ]['content_key'] = sbt_unit_content_key( $number );
+		if ( 'entire' !== ( $theme_overrides['SITE.rental_mode'] ?? sbt_rental_mode( $subtheme ) ) ) {
+			for ( $number = 1; $number <= $unit_count; $number++ ) {
+				$default_title = sbt_unit_default_title( $unit_label, $number );
+				$name = isset( $raw_names[ $number ] ) ? trim( sanitize_text_field( $raw_names[ $number ] ) ) : '';
+				$title = '' !== $name ? $name : $default_title;
+				if ( ! isset( $current[ $number - 1 ] ) || ! is_array( $current[ $number - 1 ] ) ) {
+					$current[ $number - 1 ] = array();
+				}
+				$current[ $number - 1 ]['title'] = $title;
+				$current[ $number - 1 ]['custom_title'] = $title !== $default_title;
+				if ( empty( $current[ $number - 1 ]['content_key'] ) ) {
+					$current[ $number - 1 ]['content_key'] = sbt_unit_content_key( $number );
+				}
 			}
 		}
 
-		$options['custom_house_pages']['theme01'] = $current;
+		$options['custom_house_pages'][ $subtheme ] = $current;
 	}
 
 	return $options;
@@ -2503,11 +2630,7 @@ function sbt_reset_subtheme_template( $subtheme ) {
 		$options['custom_house_pages'][ $subtheme ] = array();
 	}
 	update_option( SBT_OPTION, $options );
-	if ( 'theme01' === $subtheme ) {
-		sbt_sync_custom_house_pages();
-	} else {
-		sbt_create_theme_pages();
-	}
+	sbt_sync_custom_house_pages();
 	return true;
 }
 
@@ -2592,14 +2715,41 @@ function sbt_update_generated_unit_page_slugs( $old_slug, $new_slug, $content_ke
 }
 
 function sbt_sync_custom_house_pages() {
-	if ( 'theme01' !== sbt_active_subtheme_key() ) {
+	$subtheme = sbt_active_subtheme_key();
+	if ( ! in_array( $subtheme, array( 'theme01', 'theme02' ), true ) ) {
 		return;
 	}
 
 	$options = sbt_get_options();
-	$unit_label = sbt_unit_label( array( 'SITE.unit_label' => sbt_structural_override_value( 'theme01', 'SITE.unit_label', 'House' ) ) );
-	$desired_count = sbt_desired_unit_count( 'theme01' );
-	$current = isset( $options['custom_house_pages']['theme01'] ) && is_array( $options['custom_house_pages']['theme01'] ) ? array_values( $options['custom_house_pages']['theme01'] ) : array();
+	$current = isset( $options['custom_house_pages'][ $subtheme ] ) && is_array( $options['custom_house_pages'][ $subtheme ] ) ? array_values( $options['custom_house_pages'][ $subtheme ] ) : array();
+
+	if ( sbt_is_entire_rental_mode( $subtheme ) ) {
+		foreach ( $current as $removed ) {
+			if ( ! empty( $removed['slug'] ) ) {
+				foreach ( sbt_enabled_languages() as $language ) {
+					$page = get_page_by_path( sbt_language_page_slug( $removed['slug'], $language ) );
+					if ( $page ) {
+						wp_trash_post( $page->ID );
+					}
+				}
+			}
+		}
+		foreach ( array( 'houses', 'house' ) as $listing_slug ) {
+			foreach ( sbt_enabled_languages() as $language ) {
+				$page = get_page_by_path( sbt_language_page_slug( $listing_slug, $language ) );
+				if ( $page ) {
+					wp_trash_post( $page->ID );
+				}
+			}
+		}
+		$options['custom_house_pages'][ $subtheme ] = array();
+		update_option( SBT_OPTION, $options );
+		sbt_create_theme_pages();
+		return;
+	}
+
+	$unit_label = sbt_unit_label( array( 'SITE.unit_label' => sbt_structural_override_value( $subtheme, 'SITE.unit_label', 'theme02' === $subtheme ? 'Room' : 'House' ) ) );
+	$desired_count = sbt_desired_unit_count( $subtheme );
 
 	while ( count( $current ) < $desired_count ) {
 		$number = count( $current ) + 1;
@@ -2643,7 +2793,7 @@ function sbt_sync_custom_house_pages() {
 	}
 	unset( $house_page );
 
-	$options['custom_house_pages']['theme01'] = $current;
+	$options['custom_house_pages'][ $subtheme ] = $current;
 	update_option( SBT_OPTION, $options );
 	sbt_create_theme_pages();
 }
@@ -2978,15 +3128,21 @@ function sbt_render_menu_row( $path, $item, $overrides, $page_options, $is_child
 function sbt_render_general_settings_tab( $data, $overrides ) {
 	$plugin_status = sbt_syncbooking_plugin_status();
 	$edit_mode = sbt_edit_mode();
+	$subtheme = sbt_active_subtheme_key();
+	$default_unit_label = 'theme02' === $subtheme ? 'Room' : ( $data['SITE']['unit_label'] ?? 'House' );
 	$unit_overrides = array(
-		'SITE.unit_label' => sbt_structural_override_value( 'theme01', 'SITE.unit_label', $data['SITE']['unit_label'] ?? 'House' ),
-		'SITE.unit_count' => sbt_structural_override_value( 'theme01', 'SITE.unit_count', $data['SITE']['unit_count'] ?? '3' ),
+		'SITE.rental_mode'  => sbt_structural_override_value( $subtheme, 'SITE.rental_mode', 'units' ),
+		'SITE.entire_label' => sbt_structural_override_value( $subtheme, 'SITE.entire_label', sbt_default_entire_label( $subtheme ) ),
+		'SITE.unit_label'   => sbt_structural_override_value( $subtheme, 'SITE.unit_label', $default_unit_label ),
+		'SITE.unit_count'   => sbt_structural_override_value( $subtheme, 'SITE.unit_count', $data['SITE']['unit_count'] ?? '3' ),
 	);
 	$unit_label = sbt_unit_label( $unit_overrides );
 	$plural_label = sbt_unit_plural_label( $unit_label );
-	$listing_slug = sbt_unit_listing_slug_for_label( $unit_label );
+	$listing_slug = 'theme02' === $subtheme ? 'house' : sbt_unit_listing_slug_for_label( $unit_label );
 	$unit_count = max( 1, min( 20, absint( $unit_overrides['SITE.unit_count'] ) ) );
-	$unit_pages = sbt_custom_house_pages( 'theme01' );
+	$unit_pages = sbt_custom_house_pages( $subtheme );
+	$is_entire = 'entire' === $unit_overrides['SITE.rental_mode'];
+	$entire_slug = sbt_entire_page_slug( $subtheme );
 	$media_status = sbt_media_import_status();
 	?>
 	<div class="sbt-panel">
@@ -3053,15 +3209,17 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 			</div>
 			<div class="sbt-card">
 				<h3>Struttura vendibile</h3>
-				<p class="sbt-muted">Scegli cosa vendi e quante schede/pagine creare nel sottotema attivo.</p>
+				<p class="sbt-muted">Scegli se vendi l'intera struttura o singole Houses/Rooms. Se scegli intera struttura non vengono create pagine Accommodation aggiuntive.</p>
 				<?php sbt_render_admin_fields( 'SITE', array(
+					'rental_mode'  => $unit_overrides['SITE.rental_mode'],
+					'entire_label' => $unit_overrides['SITE.entire_label'],
 					'unit_label' => $unit_overrides['SITE.unit_label'],
 					'unit_count' => $unit_overrides['SITE.unit_count'],
 				), $unit_overrides ); ?>
 			</div>
 			<div class="sbt-card">
 				<h3>Nomi pagine vendibili</h3>
-				<p class="sbt-muted">Se selezioni 3, verranno create 3 pagine. Qui scegli il nome reale di ogni scheda.</p>
+				<p class="sbt-muted"><?php echo $is_entire ? 'Modalita intera struttura attiva: questi nomi non vengono usati finche non torni a Houses/Rooms separate.' : 'Se selezioni 3, verranno create 3 pagine. Qui scegli il nome reale di ogni scheda.'; ?></p>
 				<div class="sbt-field-grid" data-sbt-unit-names>
 					<?php for ( $number = 1; $number <= 20; $number++ ) : ?>
 						<?php
@@ -3081,25 +3239,34 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 				<script>
 					document.addEventListener('DOMContentLoaded', function () {
 						var count = document.querySelector('[name="<?php echo esc_js( SBT_OPTION ); ?>[overrides][SITE.unit_count]"]');
+						var mode = document.querySelector('[name="<?php echo esc_js( SBT_OPTION ); ?>[overrides][SITE.rental_mode]"]');
 						var rows = document.querySelectorAll('[data-sbt-unit-name-row]');
 						function syncRows() {
+							var entire = mode && mode.value === 'entire';
 							var active = parseInt(count && count.value ? count.value : '<?php echo esc_js( (string) $unit_count ); ?>', 10) || 1;
 							rows.forEach(function (row) {
 								var rowNumber = parseInt(row.getAttribute('data-sbt-unit-name-row'), 10);
-								row.style.display = rowNumber <= active ? '' : 'none';
+								row.style.display = !entire && rowNumber <= active ? '' : 'none';
 							});
 						}
 						if (count) count.addEventListener('change', syncRows);
+						if (mode) mode.addEventListener('change', syncRows);
 						syncRows();
 					});
 				</script>
 			</div>
 			<div class="sbt-card">
 				<h3>Pagine generate</h3>
-				<p class="sbt-muted">Con questa configurazione viene usata la pagina archivio:</p>
-				<p><code>/<?php echo esc_html( $listing_slug ); ?>/</code></p>
-				<p class="sbt-muted">Le schede dettaglio saranno create nel numero selezionato e useranno i nomi scelti nel riquadro "Nomi pagine vendibili".</p>
-				<p><strong>Tipo selezionato:</strong> <?php echo esc_html( $plural_label ); ?></p>
+				<?php if ( $is_entire ) : ?>
+					<p class="sbt-muted">Con questa configurazione viene usata solo la pagina intera struttura:</p>
+					<p><code>/<?php echo esc_html( $entire_slug ); ?>/</code></p>
+					<p><strong>Tipo selezionato:</strong> <?php echo esc_html( sbt_entire_label( $subtheme ) ); ?></p>
+				<?php else : ?>
+					<p class="sbt-muted">Con questa configurazione viene usata la pagina archivio:</p>
+					<p><code>/<?php echo esc_html( $listing_slug ); ?>/</code></p>
+					<p class="sbt-muted">Le schede dettaglio saranno create nel numero selezionato e useranno i nomi scelti nel riquadro "Nomi pagine vendibili".</p>
+					<p><strong>Tipo selezionato:</strong> <?php echo esc_html( $plural_label ); ?></p>
+				<?php endif; ?>
 			</div>
 		</div>
 		<?php submit_button( 'Salva General Settings' ); ?>
@@ -3213,7 +3380,7 @@ function sbt_render_pages_tab() {
 	<div class="sbt-panel">
 		<h2>Pages del sottotema</h2>
 		<p class="sbt-muted">Da qui vai direttamente alla modifica completa di Home e delle pagine interne. Ogni pagina apre l'editor unico con tab lingua.</p>
-		<?php if ( 'theme01' === sbt_active_subtheme_key() ) : ?>
+		<?php if ( in_array( sbt_active_subtheme_key(), array( 'theme01', 'theme02' ), true ) && ! sbt_is_entire_rental_mode() ) : ?>
 			<h2 style="margin-top:24px;">Schede <?php echo esc_html( $unit_label ); ?></h2>
 			<p class="sbt-muted">Queste schede vengono generate dal numero impostato in General Settings. Apri la scheda una volta sola: dentro l'editor trovi i tab lingua.</p>
 			<table class="sbt-table" style="margin-bottom:28px;">
@@ -3383,6 +3550,8 @@ function sbt_humanize_key( $key ) {
 		'whatsapp_label'   => 'Testo WhatsApp',
 		'unit_label'       => 'Nome sezione unita',
 		'unit_count'       => 'Numero unita',
+		'rental_mode'      => 'Modalita vendita',
+		'entire_label'     => 'Tipo intera struttura',
 	);
 
 	$key = strtolower( (string) $key );
@@ -3435,6 +3604,8 @@ function sbt_field_kind( $path, $value ) {
 		'map_embed'=> 'url',
 		'unit_count' => 'number',
 		'unit_label' => 'select',
+		'rental_mode' => 'select',
+		'entire_label' => 'select',
 	);
 
 	if ( isset( $map[ $key ] ) ) {
@@ -3547,6 +3718,17 @@ function sbt_render_single_admin_field( $path, $label, $value, $overrides, $fiel
 		<?php if ( 'SITE.unit_label' === $path ) : ?>
 			<select name="<?php echo esc_attr( $name ); ?>" class="large-text">
 				<?php foreach ( sbt_unit_label_options() as $value => $label ) : ?>
+					<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $current, $value ); ?>><?php echo esc_html( $label ); ?></option>
+				<?php endforeach; ?>
+			</select>
+		<?php elseif ( 'SITE.rental_mode' === $path ) : ?>
+			<select name="<?php echo esc_attr( $name ); ?>" class="large-text">
+				<option value="units" <?php selected( $current, 'units' ); ?>>Houses / Rooms separate</option>
+				<option value="entire" <?php selected( $current, 'entire' ); ?>>Intera struttura</option>
+			</select>
+		<?php elseif ( 'SITE.entire_label' === $path ) : ?>
+			<select name="<?php echo esc_attr( $name ); ?>" class="large-text">
+				<?php foreach ( sbt_entire_label_options() as $value => $label ) : ?>
 					<option value="<?php echo esc_attr( $value ); ?>" <?php selected( $current, $value ); ?>><?php echo esc_html( $label ); ?></option>
 				<?php endforeach; ?>
 			</select>

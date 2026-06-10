@@ -28,7 +28,7 @@
   <div class="inner reveal">
     <div class="overline"><?php echo $p['band_over'] ?></div>
     <h2><?php echo $p['band_h2'] ?></h2>
-    <a class="btn btn--light" href="<?php echo function_exists('sbt_url') ? sbt_url('hospitality.php') : 'hospitality.php' ?>" style="margin-top:8px;">Our experiences</a>
+    <a class="btn btn--light" href="<?php echo function_exists('sbt_url') ? sbt_url('experiences.php') : 'experiences.php' ?>" style="margin-top:8px;">Our experiences</a>
   </div>
 </section>
 
