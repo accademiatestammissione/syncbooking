@@ -23,6 +23,9 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 2.1.4 =
+* Added a generated WordPress compatibility CSS layer for imported prefixed assets/site.css files so the current PHP templates and online CSS match correctly.
+
 = 2.1.3 =
 * Changed the online assets importer to run progressively in small AJAX steps.
 * Downloads assets.zip with HTTP byte ranges, extracts a limited number of zip entries per request, and registers media-library images in small batches.
