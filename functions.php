@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.32' );
+define( 'SBT_VERSION', '1.0.33' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -86,6 +86,25 @@ function sbt_widgets_init() {
 }
 add_action( 'widgets_init', 'sbt_widgets_init' );
 
+function sbt_register_inquiry_post_type() {
+	register_post_type(
+		'sbt_inquiry',
+		array(
+			'labels'       => array(
+				'name'          => __( 'SyncBooking Inquiries', 'syncbooking-hospitality' ),
+				'singular_name' => __( 'SyncBooking Inquiry', 'syncbooking-hospitality' ),
+				'menu_name'     => __( 'SyncBooking Inquiries', 'syncbooking-hospitality' ),
+			),
+			'public'       => false,
+			'show_ui'      => true,
+			'show_in_menu' => true,
+			'supports'     => array( 'title', 'editor', 'custom-fields' ),
+			'capability_type' => 'post',
+		)
+	);
+}
+add_action( 'init', 'sbt_register_inquiry_post_type' );
+
 function sbt_enqueue_comment_reply() {
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 		wp_enqueue_script( 'comment-reply' );
@@ -135,8 +154,9 @@ function sbt_default_options() {
 	return array(
 		'subtheme'           => 'theme01',
 		'admin_language'     => 'it',
+		'default_language'   => 'en',
 		'edit_mode'          => 'visual',
-		'languages'          => array( 'en' ),
+		'languages'          => array( 'en', 'it' ),
 		'overrides'          => array(),
 		'custom_house_pages' => array(),
 	);
@@ -158,10 +178,15 @@ function sbt_available_languages() {
 }
 
 function sbt_enabled_languages() {
+	$raw_options = get_option( SBT_OPTION, array() );
 	$options = sbt_get_options();
 	$available = sbt_available_languages();
-	$languages = isset( $options['languages'] ) && is_array( $options['languages'] ) ? array_map( 'sanitize_key', $options['languages'] ) : array( 'en' );
+	$languages = isset( $options['languages'] ) && is_array( $options['languages'] ) ? array_map( 'sanitize_key', $options['languages'] ) : array( 'en', 'it' );
+	if ( ! is_array( $raw_options ) || ! array_key_exists( 'default_language', $raw_options ) ) {
+		$languages[] = 'it';
+	}
 	$languages[] = 'en';
+	$languages[] = sbt_default_language();
 	$languages = array_values( array_unique( array_filter( $languages, function( $language ) use ( $available ) {
 		return isset( $available[ $language ] );
 	} ) ) );
@@ -171,6 +196,64 @@ function sbt_enabled_languages() {
 
 function sbt_header_language_codes() {
 	return array_map( 'strtoupper', sbt_enabled_languages() );
+}
+
+function sbt_default_language() {
+	$options = sbt_get_options();
+	$available = sbt_available_languages();
+	$language = isset( $options['default_language'] ) ? sanitize_key( $options['default_language'] ) : 'en';
+
+	return isset( $available[ $language ] ) ? $language : 'en';
+}
+
+function sbt_header_language_base_slug( $page_key = '', $content_key = '' ) {
+	if ( function_exists( 'get_queried_object_id' ) && get_queried_object_id() ) {
+		$post_slug = sbt_page_base_slug_for_post( get_queried_object_id() );
+		$pages = sbt_page_templates();
+		if ( isset( $pages[ $post_slug ] ) ) {
+			return $post_slug;
+		}
+	}
+
+	$page_key = $page_key ? sanitize_title( $page_key ) : 'home';
+	$content_key = $content_key ? sanitize_key( $content_key ) : '';
+	$pages = sbt_page_templates();
+	if ( isset( $pages[ $page_key ] ) ) {
+		return $page_key;
+	}
+
+	if ( $content_key ) {
+		foreach ( $pages as $slug => $page ) {
+			if ( isset( $page['content_key'] ) && $page['content_key'] === $content_key ) {
+				return $slug;
+			}
+		}
+	}
+
+	$fallbacks = array(
+		'spa'   => 'spa-wellness',
+		'price' => 'price-and-condition',
+		'whole' => 'whole-masseria',
+	);
+
+	return isset( $fallbacks[ $page_key ] ) && isset( $pages[ $fallbacks[ $page_key ] ] ) ? $fallbacks[ $page_key ] : 'home';
+}
+
+function sbt_header_language_items( $slug = '', $content_key = '' ) {
+	$slug = sbt_header_language_base_slug( $slug, $content_key );
+	$current_language = sbt_current_content_language();
+	$items = array();
+
+	foreach ( sbt_enabled_languages() as $language ) {
+		$items[] = array(
+			'language' => $language,
+			'code'     => strtoupper( $language ),
+			'url'      => sbt_theme_page_public_url( $slug, $language ),
+			'active'   => $current_language === $language,
+		);
+	}
+
+	return $items;
 }
 
 function sbt_current_header_language_code() {
@@ -194,6 +277,7 @@ function sbt_t( $key ) {
 			'theme_note'      => 'Ogni sottotema mantiene layout, header, footer, menu, pagine e contenuti modificabili separati.',
 			'save_theme'      => 'Salva impostazioni tema',
 			'admin_language'  => 'Lingua gestionale',
+			'default_language' => 'Lingua base sito',
 			'site_languages'  => 'Lingue pagine',
 			'reset_template'  => 'Reset template',
 			'reset_note'      => 'Riporta il sottotema selezionato ai contenuti originali e cancella le modifiche salvate per quel sottotema.',
@@ -203,6 +287,7 @@ function sbt_t( $key ) {
 			'theme_note'      => 'Each subtheme keeps separate layout, header, footer, menu, pages and editable content.',
 			'save_theme'      => 'Save theme settings',
 			'admin_language'  => 'Admin language',
+			'default_language' => 'Default site language',
 			'site_languages'  => 'Page languages',
 			'reset_template'  => 'Reset template',
 			'reset_note'      => 'Restore the selected subtheme to its original content and remove saved changes for that subtheme.',
@@ -544,20 +629,20 @@ function sbt_page_base_slug_for_post( $post_id ) {
 
 function sbt_page_language_for_post( $post_id ) {
 	$language = get_post_meta( $post_id, '_sbt_language', true );
-	$language = $language ? sanitize_key( $language ) : 'en';
-	return in_array( $language, sbt_enabled_languages(), true ) ? $language : 'en';
+	$language = $language ? sanitize_key( $language ) : sbt_default_language();
+	return in_array( $language, sbt_enabled_languages(), true ) ? $language : sbt_default_language();
 }
 
 function sbt_current_content_language() {
 	if ( is_admin() ) {
 		if ( isset( $_GET['edit_lang'] ) ) {
 			$language = sanitize_key( wp_unslash( $_GET['edit_lang'] ) );
-			return in_array( $language, sbt_enabled_languages(), true ) ? $language : 'en';
+			return in_array( $language, sbt_enabled_languages(), true ) ? $language : sbt_default_language();
 		}
 
 		if ( isset( $_POST['sbt_edit_language'] ) ) {
 			$language = sanitize_key( wp_unslash( $_POST['sbt_edit_language'] ) );
-			return in_array( $language, sbt_enabled_languages(), true ) ? $language : 'en';
+			return in_array( $language, sbt_enabled_languages(), true ) ? $language : sbt_default_language();
 		}
 	}
 
@@ -565,7 +650,7 @@ function sbt_current_content_language() {
 		return sbt_page_language_for_post( get_queried_object_id() );
 	}
 
-	return 'en';
+	return sbt_default_language();
 }
 
 function sbt_page_map() {
@@ -609,6 +694,159 @@ function sbt_syncbooking_booking_url() {
 	return $page_id ? get_permalink( $page_id ) : home_url( '/search-and-book/' );
 }
 
+function sbt_form_runtime_config() {
+	return array(
+		'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+		'action'  => 'sbt_submit_form',
+		'nonce'   => wp_create_nonce( 'sbt_submit_form' ),
+		'i18n'    => array(
+			'sending' => __( 'Sending...', 'syncbooking-hospitality' ),
+			'success' => __( 'Thank you, your request has been sent. We will contact you shortly.', 'syncbooking-hospitality' ),
+			'error'   => __( 'We could not send the request. Please try again or contact us directly.', 'syncbooking-hospitality' ),
+		),
+	);
+}
+
+function sbt_print_form_runtime_config() {
+	if ( is_admin() ) {
+		return;
+	}
+	?>
+	<script>
+	window.SBT_FORM = <?php echo wp_json_encode( sbt_form_runtime_config() ); ?>;
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'sbt_print_form_runtime_config', 5 );
+
+function sbt_form_recipient_email() {
+	$data = function_exists( 'sbt_load_active_data' ) ? sbt_load_active_data() : array();
+	$site = isset( $data['SITE'] ) && is_array( $data['SITE'] ) ? $data['SITE'] : array();
+	$email = isset( $site['email'] ) ? sanitize_email( wp_strip_all_tags( $site['email'] ) ) : '';
+
+	return is_email( $email ) ? $email : get_option( 'admin_email' );
+}
+
+function sbt_store_form_inquiry( $payload, $mail_sent ) {
+	$title = sprintf(
+		'%1$s - %2$s - %3$s',
+		'quote' === $payload['form_type'] ? __( 'Wedding quote', 'syncbooking-hospitality' ) : __( 'Contact request', 'syncbooking-hospitality' ),
+		$payload['name'],
+		current_time( 'Y-m-d H:i' )
+	);
+	$content = implode(
+		"\n",
+		array(
+			'Name: ' . $payload['name'],
+			'Email: ' . $payload['email'],
+			'Phone: ' . $payload['phone'],
+			'Form: ' . $payload['form_type'],
+			'Language: ' . strtoupper( $payload['language'] ),
+			'Source: ' . $payload['source_url'],
+			'Mail sent: ' . ( $mail_sent ? 'yes' : 'no' ),
+			'',
+			'Message:',
+			$payload['message'],
+		)
+	);
+
+	$post_id = wp_insert_post(
+		array(
+			'post_type'    => 'sbt_inquiry',
+			'post_status'  => 'private',
+			'post_title'   => wp_strip_all_tags( $title ),
+			'post_content' => $content,
+		)
+	);
+
+	if ( $post_id && ! is_wp_error( $post_id ) ) {
+		foreach ( $payload as $key => $value ) {
+			update_post_meta( $post_id, '_sbt_' . sanitize_key( $key ), $value );
+		}
+		update_post_meta( $post_id, '_sbt_mail_sent', $mail_sent ? '1' : '0' );
+	}
+
+	return $post_id;
+}
+
+function sbt_handle_form_submission() {
+	if ( ! check_ajax_referer( 'sbt_submit_form', 'nonce', false ) ) {
+		wp_send_json_error( array( 'message' => __( 'Security check failed.', 'syncbooking-hospitality' ) ), 403 );
+	}
+
+	$honeypot = isset( $_POST['website'] ) ? trim( (string) wp_unslash( $_POST['website'] ) ) : '';
+	if ( '' !== $honeypot ) {
+		wp_send_json_success( array( 'message' => __( 'Thank you, your request has been sent. We will contact you shortly.', 'syncbooking-hospitality' ) ) );
+	}
+
+	$form_type = isset( $_POST['form_type'] ) ? sanitize_key( wp_unslash( $_POST['form_type'] ) ) : 'contact';
+	$form_type = in_array( $form_type, array( 'contact', 'quote' ), true ) ? $form_type : 'contact';
+	$name = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
+	$email = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
+	$phone = isset( $_POST['phone'] ) ? sanitize_text_field( wp_unslash( $_POST['phone'] ) ) : '';
+	$message = isset( $_POST['message'] ) ? sanitize_textarea_field( wp_unslash( $_POST['message'] ) ) : '';
+	if ( '' === $message && isset( $_POST['notes'] ) ) {
+		$message = sanitize_textarea_field( wp_unslash( $_POST['notes'] ) );
+	}
+
+	if ( '' === $name || ! is_email( $email ) ) {
+		wp_send_json_error( array( 'message' => __( 'Please enter a valid name and email address.', 'syncbooking-hospitality' ) ), 400 );
+	}
+
+	$payload = array(
+		'form_type'  => $form_type,
+		'name'       => $name,
+		'email'      => $email,
+		'phone'      => $phone,
+		'message'    => $message,
+		'language'   => isset( $_POST['language'] ) ? sanitize_key( wp_unslash( $_POST['language'] ) ) : sbt_current_content_language(),
+		'source_url' => isset( $_POST['source_url'] ) ? esc_url_raw( wp_unslash( $_POST['source_url'] ) ) : wp_get_referer(),
+	);
+	$recipient = sbt_form_recipient_email();
+	$subject = sprintf(
+		/* translators: 1: form type, 2: sender name */
+		__( 'New %1$s from %2$s', 'syncbooking-hospitality' ),
+		'quote' === $form_type ? __( 'wedding quote request', 'syncbooking-hospitality' ) : __( 'contact request', 'syncbooking-hospitality' ),
+		$name
+	);
+	$body = implode(
+		"\n",
+		array(
+			'Name: ' . $name,
+			'Email: ' . $email,
+			'Phone: ' . $phone,
+			'Form: ' . $form_type,
+			'Language: ' . strtoupper( $payload['language'] ),
+			'Source: ' . $payload['source_url'],
+			'',
+			'Message:',
+			$message,
+		)
+	);
+	$headers = array( 'Reply-To: ' . $name . ' <' . $email . '>' );
+	$mail_sent = wp_mail( $recipient, $subject, $body, $headers );
+	$inquiry_id = sbt_store_form_inquiry( $payload, $mail_sent );
+
+	if ( ! $mail_sent ) {
+		wp_send_json_error(
+			array(
+				'message'   => __( 'The request was saved but the email could not be sent. Please check WordPress mail settings.', 'syncbooking-hospitality' ),
+				'inquiryId' => is_wp_error( $inquiry_id ) ? 0 : (int) $inquiry_id,
+			),
+			500
+		);
+	}
+
+	wp_send_json_success(
+		array(
+			'message'   => __( 'Thank you, your request has been sent. We will contact you shortly.', 'syncbooking-hospitality' ),
+			'inquiryId' => is_wp_error( $inquiry_id ) ? 0 : (int) $inquiry_id,
+		)
+	);
+}
+add_action( 'wp_ajax_sbt_submit_form', 'sbt_handle_form_submission' );
+add_action( 'wp_ajax_nopriv_sbt_submit_form', 'sbt_handle_form_submission' );
+
 function sbt_is_syncbooking_booking_url( $url ) {
 	$url = untrailingslashit( set_url_scheme( (string) $url, 'https' ) );
 	$booking_url = untrailingslashit( set_url_scheme( sbt_syncbooking_booking_url(), 'https' ) );
@@ -631,8 +869,7 @@ function sbt_url( $url ) {
 	}
 
 	if ( isset( $map[ $file ] ) ) {
-		$language_slug = sbt_language_page_slug( $map[ $file ], sbt_current_content_language() );
-		return 'home' === $map[ $file ] && 'en' === sbt_current_content_language() ? home_url( '/' ) . $hash : home_url( '/' . $language_slug . '/' ) . $hash;
+		return sbt_theme_page_public_url( $map[ $file ], sbt_current_content_language() ) . $hash;
 	}
 
 	return $url;
@@ -973,10 +1210,82 @@ function sbt_install_upload_assets() {
 	return sbt_download_demo_media();
 }
 
+function sbt_legacy_language_page_slug( $base_slug, $language ) {
+	$base_slug = sanitize_title( $base_slug );
+	$language = sanitize_key( $language );
+	if ( 'houses' === $base_slug ) {
+		$base_slug = sbt_unit_listing_slug();
+	}
+
+	return 'en' === $language ? $base_slug : $language . '-' . $base_slug;
+}
+
+function sbt_theme_slug_is_claimed_by_other_page( $page_slug, $base_slug, $language, $existing_id = 0 ) {
+	$claimed = get_page_by_path( $page_slug, OBJECT, 'page' );
+	if ( ! $claimed ) {
+		return false;
+	}
+
+	if ( $existing_id && (int) $claimed->ID === (int) $existing_id ) {
+		return false;
+	}
+
+	return sbt_page_base_slug_for_post( $claimed->ID ) !== sanitize_title( $base_slug ) || sbt_page_language_for_post( $claimed->ID ) !== sanitize_key( $language );
+}
+
+function sbt_note_language_slug_conflict( $language, $page_slug ) {
+	$conflicts = get_option( 'sbt_language_slug_conflicts', array() );
+	$conflicts = is_array( $conflicts ) ? $conflicts : array();
+	$conflicts[ sanitize_key( $language ) ] = sanitize_title( $page_slug );
+	update_option( 'sbt_language_slug_conflicts', $conflicts, false );
+}
+
+function sbt_clear_language_slug_conflict( $language ) {
+	$conflicts = get_option( 'sbt_language_slug_conflicts', array() );
+	if ( ! is_array( $conflicts ) ) {
+		return;
+	}
+
+	unset( $conflicts[ sanitize_key( $language ) ] );
+	if ( $conflicts ) {
+		update_option( 'sbt_language_slug_conflicts', $conflicts, false );
+	} else {
+		delete_option( 'sbt_language_slug_conflicts' );
+	}
+}
+
+function sbt_resolved_theme_page_slug( $base_slug, $language, $existing_id = 0 ) {
+	$page_slug = sbt_language_page_slug( $base_slug, $language );
+	if ( 'home' === sanitize_title( $base_slug ) && sanitize_key( $language ) !== sbt_default_language() ) {
+		if ( sbt_theme_slug_is_claimed_by_other_page( $page_slug, $base_slug, $language, $existing_id ) ) {
+			sbt_note_language_slug_conflict( $language, $page_slug );
+			return sbt_legacy_language_page_slug( $base_slug, $language );
+		}
+
+		sbt_clear_language_slug_conflict( $language );
+	}
+
+	return $page_slug;
+}
+
+function sbt_language_slug_conflict_notice() {
+	$conflicts = get_option( 'sbt_language_slug_conflicts', array() );
+	if ( ! is_array( $conflicts ) || ! $conflicts || ! current_user_can( 'edit_theme_options' ) ) {
+		return;
+	}
+
+	foreach ( $conflicts as $language => $slug ) {
+		printf(
+			'<div class="notice notice-warning"><p>%s</p></div>',
+			esc_html( sprintf( 'SyncBooking Theme: lo slug /%1$s/ e gia occupato da una pagina non gestita dal tema. Libera quello slug per usare la Home %2$s su /%1$s/.', $slug, strtoupper( $language ) ) )
+		);
+	}
+}
+add_action( 'admin_notices', 'sbt_language_slug_conflict_notice' );
+
 function sbt_create_theme_pages() {
 	foreach ( sbt_enabled_languages() as $language ) {
 		foreach ( sbt_page_templates() as $slug => $page ) {
-			$page_slug = sbt_language_page_slug( $slug, $language );
 			$existing = get_posts( array(
 				'post_type'      => 'page',
 				'post_status'    => 'any',
@@ -991,6 +1300,7 @@ function sbt_create_theme_pages() {
 					),
 				),
 			) );
+			$page_slug = sbt_resolved_theme_page_slug( $slug, $language, $existing ? (int) $existing[0] : 0 );
 			$page_title = 'en' === $language ? $page['title'] : $page['title'] . ' (' . strtoupper( $language ) . ')';
 
 			if ( $existing ) {
@@ -1020,6 +1330,20 @@ function sbt_create_theme_pages() {
 add_action( 'after_switch_theme', 'sbt_create_theme_pages' );
 add_action( 'after_switch_theme', 'sbt_sync_custom_house_pages' );
 add_action( 'after_switch_theme', 'sbt_create_seed_posts' );
+
+function sbt_maybe_sync_theme_pages() {
+	if ( ! is_admin() || ! current_user_can( 'edit_theme_options' ) ) {
+		return;
+	}
+
+	if ( get_option( 'sbt_theme_pages_synced_version' ) === SBT_VERSION ) {
+		return;
+	}
+
+	sbt_create_theme_pages();
+	update_option( 'sbt_theme_pages_synced_version', SBT_VERSION, false );
+}
+add_action( 'admin_init', 'sbt_maybe_sync_theme_pages' );
 
 function sbt_theme01_seed_articles() {
 	$remote_base = sbt_media_remote_base_url( 'theme01' );
@@ -1236,7 +1560,11 @@ function sbt_language_page_slug( $base_slug, $language ) {
 		$base_slug = sbt_unit_listing_slug();
 	}
 
-	return 'en' === $language ? $base_slug : $language . '-' . $base_slug;
+	if ( 'home' === $base_slug ) {
+		return $language === sbt_default_language() ? 'home' : $language;
+	}
+
+	return $language === sbt_default_language() ? $base_slug : $language . '-' . $base_slug;
 }
 
 function sbt_route_page_template( $template ) {
@@ -2385,11 +2713,11 @@ add_action( 'add_meta_boxes', 'sbt_add_page_editor_metabox' );
 function sbt_theme_page_public_url( $slug, $language = '' ) {
 	$language = '' === $language ? sbt_current_content_language() : sanitize_key( $language );
 	$page_slug = sbt_language_page_slug( $slug, $language );
-	if ( 'home' === $slug && 'en' === $language ) {
+	if ( 'home' === $slug && sbt_default_language() === $language ) {
 		return home_url( '/' );
 	}
 
-	$page = get_page_by_path( $page_slug );
+	$page = sbt_theme_page_post( $slug, $language );
 	return $page ? get_permalink( $page ) : home_url( '/' . $page_slug . '/' );
 }
 
@@ -2544,8 +2872,11 @@ function sbt_sanitize_options( $raw ) {
 	$options['admin_language'] = isset( $raw['admin_language'] ) && in_array( sanitize_key( wp_unslash( $raw['admin_language'] ) ), array( 'it', 'en' ), true ) ? sanitize_key( wp_unslash( $raw['admin_language'] ) ) : sbt_admin_language();
 	$options['edit_mode'] = isset( $raw['edit_mode'] ) && in_array( sanitize_key( wp_unslash( $raw['edit_mode'] ) ), array( 'standard', 'visual' ), true ) ? sanitize_key( wp_unslash( $raw['edit_mode'] ) ) : sbt_edit_mode();
 	$available_languages = sbt_available_languages();
+	$default_language = isset( $raw['default_language'] ) ? sanitize_key( wp_unslash( $raw['default_language'] ) ) : sbt_default_language();
+	$options['default_language'] = isset( $available_languages[ $default_language ] ) ? $default_language : 'en';
 	$languages = isset( $raw['languages'] ) && is_array( $raw['languages'] ) ? array_map( 'sanitize_key', wp_unslash( $raw['languages'] ) ) : sbt_enabled_languages();
 	$languages[] = 'en';
+	$languages[] = $options['default_language'];
 	$options['languages'] = array_values( array_unique( array_filter( $languages, function( $language ) use ( $available_languages ) {
 		return isset( $available_languages[ $language ] );
 	} ) ) );
@@ -3027,6 +3358,15 @@ function sbt_render_theme_tab( $active, $subthemes ) {
 					<option value="it" <?php selected( sbt_admin_language(), 'it' ); ?>>Italiano</option>
 					<option value="en" <?php selected( sbt_admin_language(), 'en' ); ?>>English</option>
 				</select>
+			</div>
+			<div class="sbt-field">
+				<label><?php echo esc_html( sbt_t( 'default_language' ) ); ?></label>
+				<select name="<?php echo esc_attr( SBT_OPTION ); ?>[default_language]">
+					<?php foreach ( $available_languages as $language => $label ) : ?>
+						<option value="<?php echo esc_attr( $language ); ?>" <?php selected( sbt_default_language(), $language ); ?>><?php echo esc_html( strtoupper( $language ) . ' - ' . $label ); ?></option>
+					<?php endforeach; ?>
+				</select>
+				<span class="sbt-muted">La lingua base usa la homepage principale /; le altre lingue hanno una homepage dedicata.</span>
 			</div>
 			<div class="sbt-field">
 				<label><?php echo esc_html( sbt_t( 'site_languages' ) ); ?></label>

@@ -23,6 +23,13 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 1.0.33 =
+* Added the default frontend language option with EN as the initial base language.
+* Generated the Italian homepage at /it/ while preserving existing translated page slugs such as /it-villa/.
+* Connected the header language switcher to real translated page URLs.
+* Replaced demo contact and wedding quote forms with WordPress AJAX submissions, email delivery and archived inquiries.
+* Rebuilt the Theme 02 Weddings page from the latest clean HTML package, including gallery, sidebar quote card, mobile bar and modal.
+
 = 1.0.32 =
 * Refreshed Theme 01 and Theme 02 source HTML references and frontend styling from the latest packages.
 * Added the General Settings rental mode for separate Houses/Rooms versus Entire Villa/Masseria/House.

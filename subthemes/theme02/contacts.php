@@ -35,13 +35,14 @@
           <a class="wa" href="<?php echo $SITE['wa'] ?>" style="background:#25d366;"><?php echo $WA_SVG ?>Chat on WhatsApp</a>
         </div>
       </div>
-      <form class="contact-form reveal" id="contactForm" onsubmit="return false;">
-        <div class="field"><label>Name</label><input type="text" placeholder="Your name" /></div>
-        <div class="field"><label>Email</label><input type="email" placeholder="you@email.com" /></div>
-        <div class="field"><label>Phone</label><input type="tel" placeholder="+39 ..." /></div>
-        <div class="field"><label>Message</label><textarea placeholder="Tell us about your stay or event, dates and number of guests…"></textarea></div>
+      <form class="contact-form reveal" id="contactForm" data-sbt-form="contact" method="post">
+        <div class="field"><label>Name</label><input type="text" name="name" required autocomplete="name" placeholder="Your name" /></div>
+        <div class="field"><label>Email</label><input type="email" name="email" required autocomplete="email" placeholder="you@email.com" /></div>
+        <div class="field"><label>Phone</label><input type="tel" name="phone" autocomplete="tel" placeholder="+39 ..." /></div>
+        <div class="field"><label>Message</label><textarea name="message" required placeholder="Tell us about your stay or event, dates and number of guests..."></textarea></div>
+        <div class="field" style="position:absolute;left:-9999px;" aria-hidden="true"><label>Website</label><input type="text" name="website" tabindex="-1" autocomplete="off" /></div>
         <button class="btn" type="submit" style="align-self:flex-start;">Send message</button>
-        <p class="form-result" style="display:none;color:var(--green);font-size:14px;">Thank you — your message has been noted. We'll be in touch soon.</p>
+        <p class="form-result" aria-live="polite" style="display:none;color:var(--green);font-size:14px;">Thank you - your request has been sent. We will contact you shortly.</p>
       </form>
     </div>
   </div>

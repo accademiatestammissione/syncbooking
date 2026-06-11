@@ -30,13 +30,14 @@ sbt_t1_page_hero( 'contacts', $p, 'Contacts' );
 					<p class="big"><a href="mailto:<?php echo esc_attr( $SITE['email'] ); ?>"><?php echo esc_html( $SITE['email'] ); ?></a></p>
 				</div>
 			</div>
-			<form class="contact-form reveal" id="contactForm" onsubmit="return false;">
-				<div class="field"><label><?php echo sbt_t1_text( 'TEXT.form_name', $TEXT['form_name'] ); ?></label><input type="text" placeholder="<?php echo esc_attr( $TEXT['form_name_placeholder'] ); ?>" /></div>
-				<div class="field"><label><?php echo sbt_t1_text( 'TEXT.form_email', $TEXT['form_email'] ); ?></label><input type="email" placeholder="<?php echo esc_attr( $TEXT['form_email_placeholder'] ); ?>" /></div>
-				<div class="field"><label><?php echo sbt_t1_text( 'TEXT.form_phone', $TEXT['form_phone'] ); ?></label><input type="tel" placeholder="<?php echo esc_attr( $TEXT['form_phone_placeholder'] ); ?>" /></div>
-				<div class="field"><label><?php echo sbt_t1_text( 'TEXT.form_message', $TEXT['form_message'] ); ?></label><textarea placeholder="<?php echo esc_attr( $TEXT['form_message_placeholder'] ); ?>"></textarea></div>
+			<form class="contact-form reveal" id="contactForm" data-sbt-form="contact" method="post">
+				<div class="field"><label><?php echo sbt_t1_text( 'TEXT.form_name', $TEXT['form_name'] ); ?></label><input type="text" name="name" required autocomplete="name" placeholder="<?php echo esc_attr( $TEXT['form_name_placeholder'] ); ?>" /></div>
+				<div class="field"><label><?php echo sbt_t1_text( 'TEXT.form_email', $TEXT['form_email'] ); ?></label><input type="email" name="email" required autocomplete="email" placeholder="<?php echo esc_attr( $TEXT['form_email_placeholder'] ); ?>" /></div>
+				<div class="field"><label><?php echo sbt_t1_text( 'TEXT.form_phone', $TEXT['form_phone'] ); ?></label><input type="tel" name="phone" autocomplete="tel" placeholder="<?php echo esc_attr( $TEXT['form_phone_placeholder'] ); ?>" /></div>
+				<div class="field"><label><?php echo sbt_t1_text( 'TEXT.form_message', $TEXT['form_message'] ); ?></label><textarea name="message" required placeholder="<?php echo esc_attr( $TEXT['form_message_placeholder'] ); ?>"></textarea></div>
+				<div class="field" style="position:absolute;left:-9999px;" aria-hidden="true"><label>Website</label><input type="text" name="website" tabindex="-1" autocomplete="off" /></div>
 				<button class="btn" type="submit" style="align-self:flex-start;"><?php echo sbt_t1_text( 'TEXT.form_send', $TEXT['form_send'] ); ?></button>
-				<p class="form-result" style="display:none;color:var(--green);font-size:14px;"><?php echo sbt_t1_text( 'TEXT.form_result', $TEXT['form_result'], array( 'multiline' => true ) ); ?></p>
+				<p class="form-result" aria-live="polite" style="display:none;color:var(--green);font-size:14px;"><?php echo sbt_t1_text( 'TEXT.form_result', $TEXT['form_result'], array( 'multiline' => true ) ); ?></p>
 			</form>
 		</div>
 	</div>

@@ -125,14 +125,23 @@
     var lbCount = lb.querySelector('.sbtw-lx-count, .lx-count');
     var imgs = [].slice.call(document.querySelectorAll('img[data-lightbox]'));
     var idx = 0;
+    var albumSrcs = null;
 
     function show(index) {
-      if (!imgs.length || !lbImg) return;
+      if (!lbImg) return;
+      if (albumSrcs && albumSrcs.length) {
+        idx = (index + albumSrcs.length) % albumSrcs.length;
+        lbImg.src = albumSrcs[idx];
+        if (lbCount) lbCount.textContent = (idx + 1) + ' / ' + albumSrcs.length;
+        return;
+      }
+      if (!imgs.length) return;
       idx = (index + imgs.length) % imgs.length;
       lbImg.src = imgs[idx].getAttribute('data-full') || imgs[idx].src;
       if (lbCount) lbCount.textContent = (idx + 1) + ' / ' + imgs.length;
     }
     function openAt(index) {
+      albumSrcs = null;
       show(index);
       lb.classList.add('open', 'sbtw-open');
     }
@@ -143,6 +152,11 @@
     imgs.forEach(function (img, index) {
       img.addEventListener('click', function () { openAt(index); });
     });
+    window.sbtwOpenAlbum = function (srcs, start) {
+      albumSrcs = [].slice.call(srcs || []);
+      show(start || 0);
+      lb.classList.add('open', 'sbtw-open');
+    };
     document.querySelectorAll('.sbtw-m-allbtn, .m-allbtn').forEach(function (button) {
       button.addEventListener('click', function () {
         var mosaic = button.closest('.sbtw-mosaic, .mosaic, .sbtw-gallery, .gallery');
@@ -178,13 +192,105 @@
     });
   }
 
-  var form = document.getElementById('contactForm');
-  if (form) {
+  function setFormMessage(element, message, isError) {
+    if (!element) return;
+    element.textContent = message;
+    element.style.display = 'block';
+    element.style.color = isError ? '#a33' : 'var(--green)';
+  }
+
+  function submitSyncBookingForm(form, options) {
+    var config = window.SBT_FORM || {};
+    var result = options.result || form.querySelector('.form-result, .sbtw-form-result');
+    var ok = options.ok || null;
     form.addEventListener('submit', function (event) {
       event.preventDefault();
-      var result = form.querySelector('.form-result, .sbtw-form-result');
-      if (result) result.style.display = 'block';
-      form.reset();
+      if (!config.ajaxUrl || !config.nonce || !window.fetch) {
+        setFormMessage(result, (config.i18n && config.i18n.error) || 'Unable to send the request.', true);
+        return;
+      }
+
+      var submit = form.querySelector('button[type="submit"], input[type="submit"]');
+      var previousText = submit ? submit.textContent : '';
+      var data = new FormData(form);
+      data.append('action', config.action || 'sbt_submit_form');
+      data.append('nonce', config.nonce);
+      data.append('form_type', options.type || form.getAttribute('data-sbt-form') || 'contact');
+      data.append('source_url', window.location.href);
+      data.append('language', document.documentElement.lang || '');
+
+      if (submit) {
+        submit.disabled = true;
+        submit.textContent = (config.i18n && config.i18n.sending) || 'Sending...';
+      }
+
+      window.fetch(config.ajaxUrl, {
+        method: 'POST',
+        credentials: 'same-origin',
+        body: data
+      }).then(function (response) {
+        return response.json().catch(function () { return {}; });
+      }).then(function (json) {
+        if (!json || !json.success) {
+          throw new Error(json && json.data && json.data.message ? json.data.message : ((config.i18n && config.i18n.error) || 'Unable to send the request.'));
+        }
+        if (ok) {
+          form.hidden = true;
+          ok.hidden = false;
+        }
+        setFormMessage(result, (json.data && json.data.message) || ((config.i18n && config.i18n.success) || 'Thank you, your request has been sent.'), false);
+        form.reset();
+      }).catch(function (error) {
+        setFormMessage(result, error.message || ((config.i18n && config.i18n.error) || 'Unable to send the request.'), true);
+      }).finally(function () {
+        if (submit) {
+          submit.disabled = false;
+          submit.textContent = previousText;
+        }
+      });
     });
   }
+
+  var contactForm = document.getElementById('contactForm');
+  if (contactForm) submitSyncBookingForm(contactForm, { type: 'contact' });
+
+  var quoteModal = document.getElementById('quoteModal');
+  var quoteForm = document.getElementById('quoteForm');
+  var quoteOk = document.getElementById('quoteOk');
+  function openQuote(event) {
+    if (event) event.preventDefault();
+    if (!quoteModal) return;
+    quoteModal.classList.add('sbtw-open');
+    quoteModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeQuote() {
+    if (!quoteModal) return;
+    quoteModal.classList.remove('sbtw-open');
+    quoteModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+  ['quoteBtn', 'quoteBtnM'].forEach(function (id) {
+    var button = document.getElementById(id);
+    if (button) button.addEventListener('click', openQuote);
+  });
+  if (quoteModal) {
+    quoteModal.querySelectorAll('[data-close-modal]').forEach(function (el) {
+      el.addEventListener('click', closeQuote);
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') closeQuote();
+    });
+  }
+  if (quoteForm) submitSyncBookingForm(quoteForm, { type: 'quote', ok: quoteOk, result: quoteForm.querySelector('.form-result, .sbtw-form-result') });
+
+  document.querySelectorAll('.sbtw-w-rev[data-album]').forEach(function (card) {
+    card.addEventListener('click', function () {
+      var base = card.getAttribute('data-album-base') || '';
+      var srcs = card.getAttribute('data-album').split('|').map(function (name) {
+        return name.indexOf('/') > -1 ? name : base + name + '.jpg';
+      });
+      if (window.sbtwOpenAlbum) window.sbtwOpenAlbum(srcs, 0);
+    });
+  });
 })();

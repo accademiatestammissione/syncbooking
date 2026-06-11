@@ -136,7 +136,7 @@ $TEXT = array(
 	'form_phone_placeholder' => '+39 ...',
 	'form_message_placeholder' => 'Tell us about your stay, dates and number of guests...',
 	'form_send' => 'Send message',
-	'form_result' => 'Thank you - this is a demo form. Connect it to your booking system or mailer.',
+	'form_result' => 'Thank you - your request has been sent. We will contact you shortly.',
 );
 
 $C = array();

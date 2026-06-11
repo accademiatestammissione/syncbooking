@@ -892,3 +892,166 @@ footer a:hover{color:var(--green);}
   .amenity-grid{grid-template-columns:1fr;}
   .gallery{grid-template-columns:1fr;}
 }
+
+
+/* SyncBooking Weddings detail CSS - copied from source HTML 2.0.0 */
+/* Weddings venue-detail page â€” scoped under .sbtw, prefixed sbtw-w- */
+
+/* sub-nav */
+.sbtw-w-subnav{position:sticky;top:0;z-index:40;background:var(--surface);border-bottom:1px solid var(--line);}
+.sbtw-w-subnav .sbtw-wrap{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;}
+.sbtw-w-subnav .sbtw-wrap::-webkit-scrollbar{display:none;}
+.sbtw-w-subnav a{flex:0 0 auto;padding:18px 18px;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);border-bottom:2px solid transparent;transition:.25s;white-space:nowrap;}
+.sbtw-w-subnav a:hover{color:var(--ink);}
+.sbtw-w-subnav a.sbtw-on{color:var(--green);border-bottom-color:var(--green);}
+
+/* gallery mosaic */
+.sbtw-w-gallery{display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:8px;height:clamp(360px,52vw,560px);position:relative;}
+.sbtw-w-gallery .sbtw-g-item{overflow:hidden;position:relative;cursor:pointer;}
+.sbtw-w-gallery .sbtw-g-item:first-child{grid-row:1 / 3;}
+.sbtw-w-gallery img{width:100%;height:100%;object-fit:cover;transition:transform .9s cubic-bezier(.2,.7,.2,1);display:block;}
+.sbtw-w-gallery .sbtw-g-item:hover img{transform:scale(1.05);}
+.sbtw-w-galbtns{position:absolute;right:18px;bottom:18px;display:flex;gap:10px;z-index:3;}
+.sbtw-w-galbtn{display:inline-flex;align-items:center;gap:9px;background:rgba(255,255,255,.94);color:var(--ink);border:0;padding:11px 18px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:.25s;font-family:'Jost',sans-serif;}
+.sbtw-w-galbtn:hover{background:#fff;transform:translateY(-1px);}
+.sbtw-w-galbtn svg{width:16px;height:16px;fill:none;stroke:var(--green);stroke-width:1.7;}
+.sbtw-w-tour{position:absolute;left:18px;top:18px;z-index:3;display:inline-flex;align-items:center;gap:9px;background:rgba(33,24,23,.6);color:#fff;padding:10px 16px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;backdrop-filter:blur(4px);}
+.sbtw-w-tour svg{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:1.7;}
+
+/* layout */
+.sbtw-w-layout{display:grid;grid-template-columns:1fr 372px;gap:54px;align-items:start;}
+
+/* title card */
+.sbtw-w-head{border-bottom:1px solid var(--line);padding-bottom:30px;margin-bottom:8px;}
+.sbtw-w-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:14px;}
+.sbtw-w-head h1{font-family:'Cormorant Garamond',serif;font-size:clamp(40px,5.5vw,66px);font-weight:500;line-height:1;margin:0 0 18px;color:var(--ink);}
+.sbtw-w-meta{display:flex;flex-wrap:wrap;align-items:center;gap:10px 22px;}
+.sbtw-w-stars{display:inline-flex;align-items:center;gap:9px;font-size:13px;letter-spacing:.04em;color:var(--muted);}
+.sbtw-w-stars .sbtw-st{color:var(--gold);font-size:15px;letter-spacing:2px;}
+.sbtw-w-stars b{color:var(--ink);font-weight:500;}
+.sbtw-w-loc{display:inline-flex;align-items:center;gap:7px;font-size:13px;color:var(--muted);}
+.sbtw-w-loc svg{width:15px;height:15px;fill:none;stroke:var(--green);stroke-width:1.6;}
+.sbtw-w-chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:20px;}
+.sbtw-w-chip{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);padding:8px 14px;font-size:11.5px;letter-spacing:.05em;color:var(--ink);}
+.sbtw-w-chip svg{width:14px;height:14px;fill:none;stroke:var(--green);stroke-width:1.6;}
+
+/* sections */
+.sbtw-w-sec{padding:40px 0;border-bottom:1px solid var(--line);scroll-margin-top:120px;}
+.sbtw-w-sec:last-child{border-bottom:0;}
+.sbtw-w-sec h2{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,3.4vw,40px);font-weight:500;margin:0 0 6px;color:var(--ink);}
+.sbtw-w-sec h3{font-family:'Jost',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--green);font-weight:500;margin:26px 0 12px;}
+.sbtw-w-sec p{font-size:15.5px;line-height:1.85;color:var(--muted);margin:0 0 16px;}
+.sbtw-w-sec p strong{color:var(--ink);font-weight:600;}
+.sbtw-w-since{display:inline-flex;align-items:center;gap:9px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:22px;}
+.sbtw-w-since svg{width:17px;height:17px;fill:none;stroke:var(--gold);stroke-width:1.5;}
+
+/* services list */
+.sbtw-w-list{list-style:none;margin:8px 0 0;padding:0;columns:2;column-gap:32px;}
+.sbtw-w-list li{break-inside:avoid;display:flex;align-items:flex-start;gap:11px;padding:9px 0;font-size:14.5px;color:var(--ink);line-height:1.5;}
+.sbtw-w-list li svg{flex:0 0 auto;width:17px;height:17px;margin-top:1px;fill:none;stroke:var(--green);stroke-width:1.8;}
+
+/* amenities grid */
+.sbtw-w-amen{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:2px 26px;margin-top:6px;}
+.sbtw-w-amen span{display:flex;align-items:center;gap:10px;padding:11px 0;font-size:14px;color:var(--ink);border-bottom:1px solid var(--line);}
+.sbtw-w-amen svg{flex:0 0 auto;width:16px;height:16px;fill:none;stroke:var(--green);stroke-width:1.8;}
+
+/* qa blocks */
+.sbtw-w-qa{margin-top:26px;}
+.sbtw-w-qa h4{font-family:'Cormorant Garamond',serif;font-size:23px;font-weight:600;color:var(--ink);margin:0 0 10px;}
+
+/* reviews */
+.sbtw-w-reviews{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px;margin-top:8px;}
+.sbtw-w-rev{position:relative;overflow:hidden;aspect-ratio:3/4;cursor:pointer;}
+.sbtw-w-rev img{width:100%;height:100%;object-fit:cover;transition:transform .8s cubic-bezier(.2,.7,.2,1);}
+.sbtw-w-rev:hover img{transform:scale(1.06);}
+.sbtw-w-rev::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 40%,rgba(33,24,23,.82));}
+.sbtw-w-rev .sbtw-rv-c{position:absolute;left:0;right:0;bottom:0;padding:16px;z-index:2;color:#fff;}
+.sbtw-w-rev .sbtw-rv-c b{display:block;font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;}
+.sbtw-w-rev .sbtw-rv-c span{font-size:11px;letter-spacing:.12em;text-transform:uppercase;opacity:.85;}
+
+/* promos */
+.sbtw-w-promos{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px;}
+.sbtw-w-promo{border:1px dashed var(--gold);padding:24px 26px;background:var(--surface);position:relative;}
+.sbtw-w-promo .sbtw-pr-tag{display:inline-flex;align-items:center;gap:7px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:12px;}
+.sbtw-w-promo h4{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:600;color:var(--ink);margin:0 0 10px;line-height:1.15;}
+.sbtw-w-promo .sbtw-pr-exp{font-size:12.5px;color:var(--muted);margin-bottom:16px;}
+.sbtw-w-promo a{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--green);border-bottom:1.5px solid var(--green);padding-bottom:3px;}
+
+/* map */
+.sbtw-w-map iframe{width:100%;height:380px;border:0;filter:saturate(.92);display:block;}
+
+/* faq accordion */
+.sbtw-w-faq{margin-top:10px;}
+.sbtw-w-faq details{border-bottom:1px solid var(--line);}
+.sbtw-w-faq summary{list-style:none;cursor:pointer;padding:20px 40px 20px 0;position:relative;font-family:'Cormorant Garamond',serif;font-size:21px;font-weight:600;color:var(--ink);}
+.sbtw-w-faq summary::-webkit-details-marker{display:none;}
+.sbtw-w-faq summary::after{content:"+";position:absolute;right:6px;top:18px;font-size:24px;color:var(--green);font-family:'Jost',sans-serif;transition:transform .3s;}
+.sbtw-w-faq details[open] summary::after{content:"â€“";}
+.sbtw-w-faq details p{padding:0 0 22px;font-size:15px;line-height:1.8;color:var(--muted);margin:0;}
+
+/* sticky sidebar card */
+.sbtw-w-aside{position:sticky;top:96px;}
+.sbtw-w-quote{border:1px solid var(--line);background:#fff;box-shadow:0 30px 60px -38px rgba(33,24,23,.4);}
+.sbtw-w-quote-top{padding:26px 26px 22px;border-bottom:1px solid var(--line);}
+.sbtw-w-rating{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.sbtw-w-rating .sbtw-score{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:600;color:var(--green);line-height:1;}
+.sbtw-w-rating .sbtw-rt-t b{display:block;font-size:13px;letter-spacing:.06em;color:var(--ink);}
+.sbtw-w-rating .sbtw-rt-t span{font-size:12px;color:var(--muted);}
+.sbtw-w-rating .sbtw-st{color:var(--gold);font-size:13px;letter-spacing:1px;}
+.sbtw-w-qrow{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:13px;color:var(--muted);}
+.sbtw-w-qrow svg{flex:0 0 auto;width:16px;height:16px;fill:none;stroke:var(--green);stroke-width:1.6;}
+.sbtw-w-prices{padding:20px 26px;border-bottom:1px solid var(--line);}
+.sbtw-w-price{display:flex;justify-content:space-between;align-items:baseline;padding:7px 0;font-size:13.5px;color:var(--ink);}
+.sbtw-w-price b{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--green);font-weight:600;}
+.sbtw-w-cta{padding:22px 26px;}
+.sbtw-w-cta .sbtw-btn{width:100%;justify-content:center;display:inline-flex;}
+.sbtw-w-resp{display:flex;align-items:center;justify-content:center;gap:8px;font-size:11.5px;letter-spacing:.06em;color:var(--muted);margin-top:14px;}
+.sbtw-w-resp svg{width:14px;height:14px;fill:none;stroke:var(--green);stroke-width:1.6;}
+.sbtw-w-badges{margin-top:18px;display:flex;flex-direction:column;gap:1px;border:1px solid var(--line);background:#fff;}
+.sbtw-w-badge{display:flex;align-items:center;gap:12px;padding:14px 18px;font-size:12.5px;color:var(--ink);border-bottom:1px solid var(--line);}
+.sbtw-w-badge:last-child{border-bottom:0;}
+.sbtw-w-badge svg{flex:0 0 auto;width:20px;height:20px;fill:none;stroke:var(--gold);stroke-width:1.5;}
+
+@media(max-width:980px){
+  .sbtw-w-layout{grid-template-columns:1fr;gap:0;}
+  .sbtw-w-aside{position:static;margin-top:40px;}
+  .sbtw-w-gallery{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;}
+  .sbtw-w-gallery .sbtw-g-item:first-child{grid-row:auto;grid-column:1 / 3;}
+  .sbtw-w-gallery .sbtw-g-item:nth-child(n+4){display:none;}
+}
+@media(max-width:620px){
+  .sbtw-w-list{columns:1;}
+  .sbtw-w-promos{grid-template-columns:1fr;}
+}
+
+/* quote modal */
+.sbtw-w-modal{position:fixed;inset:0;z-index:120;display:none;}
+.sbtw-w-modal.sbtw-open{display:block;}
+.sbtw-w-modal-back{position:absolute;inset:0;background:rgba(33,24,23,.55);backdrop-filter:blur(3px);}
+.sbtw-w-modal-card{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(480px,calc(100vw - 32px));max-height:calc(100vh - 40px);overflow:auto;background:#fff;padding:38px 38px 32px;box-shadow:0 40px 90px -30px rgba(33,24,23,.55);}
+.sbtw-w-modal-card h3{font-family:'Cormorant Garamond',serif;font-size:34px;font-weight:500;color:var(--ink);margin:8px 0 6px;}
+.sbtw-w-modal-sub{font-size:14px;line-height:1.7;color:var(--muted);margin:0 0 22px;}
+.sbtw-w-modal-x{position:absolute;top:14px;right:16px;background:none;border:0;font-size:30px;line-height:1;color:var(--muted);cursor:pointer;transition:.25s;}
+.sbtw-w-modal-x:hover{color:var(--ink);}
+.sbtw-w-form{display:flex;flex-direction:column;gap:16px;}
+.sbtw-w-form label{display:flex;flex-direction:column;gap:7px;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--green);font-family:'Jost',sans-serif;}
+.sbtw-w-form input,.sbtw-w-form textarea{border:1px solid var(--line);background:var(--surface);padding:12px 14px;font-family:'Jost',sans-serif;font-size:14.5px;color:var(--ink);letter-spacing:0;text-transform:none;transition:border-color .25s;resize:vertical;}
+.sbtw-w-form input:focus,.sbtw-w-form textarea:focus{outline:none;border-color:var(--gold);}
+.sbtw-w-form-ok{text-align:center;padding:26px 0 10px;}
+.sbtw-w-form-ok svg{width:54px;height:54px;fill:none;stroke:var(--green);stroke-width:1.5;margin-bottom:14px;}
+.sbtw-w-form-ok h4{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--ink);margin:0 0 8px;}
+.sbtw-w-form-ok p{font-size:14px;color:var(--muted);margin:0;}
+
+/* mobile contact bar */
+.sbtw-w-mbar{display:none;}
+@media(max-width:900px){
+  .sbtw-w-mbar{position:fixed;left:0;right:0;bottom:0;z-index:90;display:flex;align-items:center;justify-content:space-between;gap:14px;background:#fff;border-top:1px solid var(--line);padding:12px 18px calc(12px + env(safe-area-inset-bottom));box-shadow:0 -12px 30px -18px rgba(33,24,23,.35);}
+  .sbtw-w-mbar-txt{display:flex;flex-direction:column;gap:2px;min-width:0;}
+  .sbtw-w-mbar-txt b{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .sbtw-w-mbar-txt span{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+  .sbtw-w-mbar .sbtw-btn{flex:none;padding:12px 22px;}
+  .sbtw body{padding-bottom:0;}
+  body.sbtw[data-page="weddings"]{padding-bottom:74px;}
+}
+
+/* End SyncBooking Weddings detail CSS */
