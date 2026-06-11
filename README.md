@@ -29,9 +29,9 @@ From WordPress, open `Appearance > SyncBooking Theme`.
 
 ## Media
 
-The WordPress.org theme zip must stay light and must not bundle large demo uploads. Real demo media is downloaded after installation through the SyncBooking admin panel.
+The WordPress.org theme zip must not bundle demo media or subtheme asset folders. Real demo media, CSS, JavaScript, video and brochure files are downloaded after installation through the SyncBooking admin panel.
 
-The theme keeps only optimized local assets required for layout fidelity, while demo upload URLs are resolved through the media downloader/importer.
+The importer has no local fallback: assets are downloaded online from the configured `assets.zip` for the selected subtheme.
 
 ## WordPress.org
 
@@ -39,7 +39,8 @@ Before packaging:
 
 - No PHP short echo tags.
 - No bundled `uploads` directory.
+- No bundled `subthemes/*/assets` directories.
 - Text domain must match the theme slug: `syncbooking-hospitality`.
 - Theme version in `style.css`, `readme.txt` and `SBT_VERSION` must move forward.
 - The zip must stay below the WordPress.org upload limit.
-- Included assets must be GPL-compatible or replaced with owner-approved assets.
+- Online assets must be GPL-compatible or owner-approved before being published in `assets.zip`.

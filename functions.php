@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.0.1' );
+define( 'SBT_VERSION', '2.1.2' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -87,7 +87,7 @@ function sbt_widgets_init() {
 add_action( 'widgets_init', 'sbt_widgets_init' );
 
 function sbt_display_version() {
-	return 'V2.01';
+	return 'V2.12';
 }
 
 function sbt_enqueue_comment_reply() {
@@ -106,7 +106,7 @@ function sbt_subthemes() {
 				'home'                => array( 'title' => 'Home', 'file' => 'index.php' ),
 				'villa'               => array( 'title' => 'Villa', 'file' => 'villa.php', 'content_key' => 'villa' ),
 				'houses'              => array( 'title' => 'Houses', 'file' => 'houses.php', 'content_key' => 'houses' ),
-				'entire-villa'        => array( 'title' => 'Entire Villa', 'file' => 'entire.php', 'content_key' => 'entire' ),
+				'whole-villa'         => array( 'title' => 'The whole Villa', 'file' => 'entire.php', 'content_key' => 'entire' ),
 				'price-and-condition' => array( 'title' => 'Price & Condition', 'file' => 'price-and-condition.php', 'content_key' => 'price' ),
 				'spa-wellness'        => array( 'title' => 'SPA & Wellness', 'file' => 'spa-wellness.php', 'content_key' => 'spa' ),
 				'experiences'         => array( 'title' => 'Experiences', 'file' => 'experiences.php', 'content_key' => 'experiences' ),
@@ -145,6 +145,7 @@ function sbt_default_options() {
 		'languages'          => array( 'en', 'it' ),
 		'overrides'          => array(),
 		'custom_house_pages' => array(),
+		'disabled_theme_pages' => array(),
 	);
 }
 
@@ -313,6 +314,8 @@ function sbt_unit_label_options() {
 
 function sbt_entire_label_options() {
 	return array(
+		'The whole Villa'  => 'The whole Villa',
+		'The whole Masseria' => 'The whole Masseria',
 		'Entire Villa'    => 'Entire Villa',
 		'Whole Masseria' => 'Whole Masseria',
 		'Entire House'    => 'Entire House',
@@ -322,7 +325,7 @@ function sbt_entire_label_options() {
 
 function sbt_default_entire_label( $subtheme = '' ) {
 	$subtheme = '' === $subtheme ? sbt_active_subtheme_key() : $subtheme;
-	return 'theme02' === $subtheme ? 'Whole Masseria' : 'Entire Villa';
+	return 'theme02' === $subtheme ? 'The whole Masseria' : 'The whole Villa';
 }
 
 function sbt_rental_mode( $subtheme = '' ) {
@@ -349,7 +352,7 @@ function sbt_entire_page_slug( $subtheme = '' ) {
 		return 'whole-masseria';
 	}
 
-	return sanitize_title( sbt_entire_label( $subtheme ) );
+	return 'whole-villa';
 }
 
 function sbt_entire_page_file( $subtheme = '' ) {
@@ -403,7 +406,7 @@ function sbt_unit_slug_from_title( $title, $number, &$used_slugs = array() ) {
 		$slug = 'unit-' . absint( $number );
 	}
 
-	$protected = array( 'home', 'villa', 'masseria', 'houses', 'house', 'rooms', 'entire-villa', 'whole-masseria', 'price-and-condition', 'spa-wellness', 'experiences', 'weddings', 'article', 'surroundings', 'offers', 'contacts' );
+	$protected = array( 'home', 'villa', 'masseria', 'houses', 'house', 'rooms', 'whole-villa', 'entire-villa', 'whole-masseria', 'price-and-condition', 'spa-wellness', 'experiences', 'weddings', 'article', 'surroundings', 'offers', 'contacts' );
 	if ( in_array( $slug, $protected, true ) || in_array( $slug, $used_slugs, true ) ) {
 		$slug .= '-' . absint( $number );
 	}
@@ -456,15 +459,34 @@ function sbt_subtheme_path( $path = '' ) {
 }
 
 function sbt_asset_url( $path ) {
-	$subtheme = sbt_active_subtheme();
-	return get_template_directory_uri() . '/subthemes/' . $subtheme['dir'] . '/' . ltrim( $path, '/' );
+	$subtheme_key = sbt_active_subtheme_key();
+	$path = ltrim( (string) $path, '/' );
+	$uploads = wp_get_upload_dir();
+	if ( empty( $uploads['error'] ) ) {
+		$local = trailingslashit( $uploads['basedir'] ) . 'syncbooking-theme/' . $subtheme_key . '/' . $path;
+		if ( file_exists( $local ) ) {
+			return trailingslashit( $uploads['baseurl'] ) . 'syncbooking-theme/' . $subtheme_key . '/' . str_replace( '%2F', '/', rawurlencode( $path ) );
+		}
+	}
+
+	return trailingslashit( sbt_remote_assets_base_url( $subtheme_key ) ) . str_replace( '%2F', '/', rawurlencode( $path ) );
 }
 
-function sbt_media_remote_base_url( $subtheme_key = '' ) {
+function sbt_remote_assets_zip_url( $subtheme_key = '' ) {
+	$key = $subtheme_key ? sanitize_key( $subtheme_key ) : sbt_active_subtheme_key();
+	$urls = array(
+		'theme01' => 'https://syncbooking.com/clone-theme/theme-01/assets.zip',
+		'theme02' => 'https://syncbooking.com/clone-theme/theme-02/assets.zip',
+	);
+
+	return isset( $urls[ $key ] ) ? $urls[ $key ] : '';
+}
+
+function sbt_remote_assets_base_url( $subtheme_key = '' ) {
 	$key = $subtheme_key ? sanitize_key( $subtheme_key ) : sbt_active_subtheme_key();
 	$bases = array(
-		'theme01' => 'https://villarosaresort.it/wp-content/uploads/',
-		'theme02' => 'https://masserialecerase.com/wp-content/uploads/',
+		'theme01' => 'https://syncbooking.com/clone-theme/theme-01/',
+		'theme02' => 'https://syncbooking.com/clone-theme/theme-02/',
 	);
 
 	return isset( $bases[ $key ] ) ? $bases[ $key ] : '';
@@ -479,7 +501,7 @@ function sbt_media_base_url() {
 		return trailingslashit( $uploads['baseurl'] ) . 'syncbooking-theme/' . $key . '/';
 	}
 
-	return sbt_media_remote_base_url( $key );
+	return sbt_remote_assets_base_url( $key );
 }
 
 function sbt_demo_media_url( $relative, $subtheme_key = '' ) {
@@ -493,12 +515,7 @@ function sbt_demo_media_url( $relative, $subtheme_key = '' ) {
 		}
 	}
 
-	$remote_relative = $relative;
-	if ( 'theme01' === $key && 0 === strpos( $remote_relative, 'uploads/' ) ) {
-		$remote_relative = substr( $remote_relative, 8 );
-	}
-
-	return trailingslashit( sbt_media_remote_base_url( $key ) ) . str_replace( '%2F', '/', rawurlencode( $remote_relative ) );
+	return trailingslashit( sbt_remote_assets_base_url( $key ) ) . str_replace( '%2F', '/', rawurlencode( $relative ) );
 }
 
 function sbt_theme_style_value( $key, $fallback = '' ) {
@@ -605,6 +622,18 @@ function sbt_page_templates() {
 	return $pages;
 }
 
+function sbt_disabled_theme_pages( $subtheme = '' ) {
+	$options = sbt_get_options();
+	$subtheme = '' === $subtheme ? sbt_active_subtheme_key() : sanitize_key( $subtheme );
+	$disabled = isset( $options['disabled_theme_pages'][ $subtheme ] ) && is_array( $options['disabled_theme_pages'][ $subtheme ] ) ? $options['disabled_theme_pages'][ $subtheme ] : array();
+
+	return array_values( array_unique( array_filter( array_map( 'sanitize_title', $disabled ) ) ) );
+}
+
+function sbt_is_theme_page_disabled( $slug, $subtheme = '' ) {
+	return in_array( sanitize_title( $slug ), sbt_disabled_theme_pages( $subtheme ), true );
+}
+
 function sbt_custom_house_pages( $subtheme = '' ) {
 	$options = sbt_get_options();
 	$subtheme = '' === $subtheme ? sbt_active_subtheme_key() : $subtheme;
@@ -661,8 +690,15 @@ function sbt_page_map() {
 	$map = array();
 	foreach ( sbt_page_templates() as $slug => $page ) {
 		$map[ $page['file'] ] = $slug;
+		$map[ $slug . '.php' ] = $slug;
 	}
 	return $map;
+}
+
+function sbt_page_slug_for_url_value( $url ) {
+	$file = strtok( (string) $url, '#' );
+	$map = sbt_page_map();
+	return isset( $map[ $file ] ) ? $map[ $file ] : '';
 }
 
 function sbt_syncbooking_booking_page_id() {
@@ -823,7 +859,7 @@ function sbt_url( $url ) {
 
 	if ( 0 === strpos( (string) $url, 'post:' ) ) {
 		$post_slug = sanitize_title( substr( (string) $file, 5 ) );
-		$post_id = sbt_seed_post_id( $post_slug );
+		$post_id = sbt_seed_post_id( $post_slug, sbt_current_content_language() );
 		return $post_id ? get_permalink( $post_id ) . $hash : home_url( '/' . $post_slug . '/' ) . $hash;
 	}
 
@@ -834,10 +870,33 @@ function sbt_url( $url ) {
 	return $url;
 }
 
-function sbt_seed_post_id( $seed_slug ) {
+function sbt_seed_post_id( $seed_slug, $language = '' ) {
 	$seed_slug = sanitize_title( $seed_slug );
+	$language = '' === $language ? '' : sanitize_key( $language );
 	if ( '' === $seed_slug ) {
 		return 0;
+	}
+
+	if ( $language ) {
+		$existing = get_posts( array(
+			'post_type'      => 'post',
+			'post_status'    => 'any',
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+			'meta_query'     => array(
+				array(
+					'key'   => '_sbt_seed_base_slug',
+					'value' => $seed_slug,
+				),
+				array(
+					'key'   => '_sbt_language',
+					'value' => $language,
+				),
+			),
+		) );
+		if ( $existing ) {
+			return (int) $existing[0];
+		}
 	}
 
 	$existing = get_posts( array(
@@ -965,97 +1024,6 @@ function sbt_render_link_target_control( $name, $current ) {
 	<?php
 }
 
-function sbt_copy_directory( $source, $target ) {
-	if ( ! is_dir( $target ) ) {
-		wp_mkdir_p( $target );
-	}
-
-	$items = scandir( $source );
-	if ( false === $items ) {
-		return;
-	}
-
-	foreach ( $items as $item ) {
-		if ( '.' === $item || '..' === $item ) {
-			continue;
-		}
-
-		$from = trailingslashit( $source ) . $item;
-		$to = trailingslashit( $target ) . $item;
-
-		if ( is_dir( $from ) ) {
-			sbt_copy_directory( $from, $to );
-		} elseif ( ! file_exists( $to ) ) {
-			copy( $from, $to );
-		}
-	}
-}
-
-function sbt_copy_bundled_demo_media( $subtheme_key = '' ) {
-	$key = $subtheme_key ? sanitize_key( $subtheme_key ) : sbt_active_subtheme_key();
-	if ( ! in_array( $key, array( 'theme01', 'theme02' ), true ) ) {
-		return new WP_Error( 'sbt_unknown_subtheme', __( 'Unknown subtheme.', 'syncbooking-hospitality' ) );
-	}
-
-	$uploads = wp_get_upload_dir();
-	if ( ! empty( $uploads['error'] ) ) {
-		return new WP_Error( 'sbt_uploads_error', $uploads['error'] );
-	}
-
-	$theme_base = trailingslashit( get_template_directory() ) . 'subthemes/' . $key . '/';
-	$target_base = trailingslashit( $uploads['basedir'] ) . 'syncbooking-theme/' . $key . '/';
-	$folders = array( 'uploads', 'assets/images', 'assets/photos', 'assets/brochure' );
-	$copied = 0;
-	$skipped = 0;
-
-	foreach ( $folders as $folder ) {
-		$source = $theme_base . $folder;
-		if ( ! is_dir( $source ) ) {
-			continue;
-		}
-
-		$iterator = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $source, RecursiveDirectoryIterator::SKIP_DOTS ) );
-		foreach ( $iterator as $file ) {
-			if ( ! $file->isFile() ) {
-				continue;
-			}
-
-			$relative = str_replace( wp_normalize_path( $theme_base ), '', wp_normalize_path( $file->getPathname() ) );
-			$target = $target_base . $relative;
-			if ( file_exists( $target ) && filesize( $target ) > 0 ) {
-				$skipped++;
-				continue;
-			}
-
-			wp_mkdir_p( dirname( $target ) );
-			if ( @copy( $file->getPathname(), $target ) ) {
-				$copied++;
-			}
-		}
-	}
-
-	if ( $copied || $skipped ) {
-		sbt_register_upload_assets( $target_base, $key );
-
-		$imports = get_option( SBT_MEDIA_OPTION, array() );
-		$imports[ $key ] = array(
-			'downloaded' => $copied,
-			'skipped'    => $skipped,
-			'failed'     => 0,
-			'updated_at' => current_time( 'mysql' ),
-			'source'     => 'bundled',
-		);
-		update_option( SBT_MEDIA_OPTION, $imports );
-	}
-
-	return array(
-		'downloaded' => $copied,
-		'skipped'    => $skipped,
-		'failed'     => array(),
-		'source'     => 'bundled',
-	);
-}
-
 function sbt_register_upload_assets( $directory, $subtheme_key ) {
 	if ( ! function_exists( 'wp_insert_attachment' ) || ! is_dir( $directory ) ) {
 		return;
@@ -1105,56 +1073,78 @@ function sbt_register_upload_assets( $directory, $subtheme_key ) {
 	}
 }
 
-function sbt_remote_media_manifest() {
+function sbt_count_files_in_directory( $directory ) {
+	if ( ! is_dir( $directory ) ) {
+		return 0;
+	}
+
+	$count = 0;
+	$iterator = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $directory, RecursiveDirectoryIterator::SKIP_DOTS ) );
+	foreach ( $iterator as $file ) {
+		if ( $file->isFile() ) {
+			$count++;
+		}
+	}
+
+	return $count;
+}
+
+function sbt_download_remote_assets_zip( $subtheme_key = '' ) {
+	$key = $subtheme_key ? sanitize_key( $subtheme_key ) : sbt_active_subtheme_key();
+	$url = sbt_remote_assets_zip_url( $key );
+	if ( ! $url ) {
+		return new WP_Error( 'sbt_no_assets_zip', __( 'No remote assets.zip is configured for this subtheme.', 'syncbooking-hospitality' ) );
+	}
+
+	if ( ! class_exists( 'ZipArchive' ) ) {
+		return new WP_Error( 'sbt_zip_missing', __( 'The PHP ZipArchive extension is required to import assets.zip.', 'syncbooking-hospitality' ) );
+	}
+
+	$uploads = wp_get_upload_dir();
+	if ( ! empty( $uploads['error'] ) ) {
+		return new WP_Error( 'sbt_uploads_error', $uploads['error'] );
+	}
+
+	require_once ABSPATH . 'wp-admin/includes/file.php';
+
+	$temp = download_url( $url, 60 );
+	if ( is_wp_error( $temp ) ) {
+		return $temp;
+	}
+
+	$target_base = trailingslashit( $uploads['basedir'] ) . 'syncbooking-theme/' . $key . '/';
+	wp_mkdir_p( $target_base );
+
+	$zip = new ZipArchive();
+	if ( true !== $zip->open( $temp ) ) {
+		@unlink( $temp );
+		return new WP_Error( 'sbt_zip_open_failed', __( 'The downloaded assets.zip could not be opened.', 'syncbooking-hospitality' ) );
+	}
+
+	$before = sbt_count_files_in_directory( $target_base );
+	$zip->extractTo( $target_base );
+	$zip->close();
+	@unlink( $temp );
+
+	sbt_register_upload_assets( $target_base, $key );
+	$after = sbt_count_files_in_directory( $target_base );
+	$downloaded = max( 0, $after - $before );
+
+	$imports = get_option( SBT_MEDIA_OPTION, array() );
+	$imports[ $key ] = array(
+		'downloaded' => $downloaded,
+		'skipped'    => $before,
+		'failed'     => 0,
+		'updated_at' => current_time( 'mysql' ),
+		'source'     => $url,
+	);
+	update_option( SBT_MEDIA_OPTION, $imports );
+
 	return array(
-		'theme01' => array(
-			'base'  => sbt_media_remote_base_url( 'theme01' ),
-			'files' => array(
-				'2025/02/cropped-favicon-villarosaresort-conversano-270x270.png',
-				'2025/02/logo02-white-villarosaresort-conversano.png',
-				'2025/02/logo03-white-villarosaresort-conversano.png',
-				'2025/03/350a927d-d95e-401a-9c30-845b04364bc4.jpg',
-				'2025/03/7a97973d-9ff7-4e3e-bb14-7b6909ac32a7.jpg',
-				'2025/03/8dc77600-2d08-4399-8d34-9019c864a9ae.jpg',
-				'2025/03/a1-1240-900.jpg',
-				'2025/03/a5-1240-900.jpg',
-				'2025/03/Immagine-WhatsApp-2024-05-03-ore-19.16.09_9adc16c9.jpg',
-				'2025/03/p-YLCX1349.jpg',
-				'2025/03/Typical-lunch-or-dinner-in-Villa-Rosa-02.jpg',
-				'2025/03/VMLX0557.jpg',
-				'2025/07/lgbtq.png',
-			),
-		),
-		'theme02' => array(
-			'base'  => sbt_media_remote_base_url( 'theme02' ),
-			'files' => array(
-				'2025/05/cropped-favicon-masseria-le-cerase-conversano-270x270.png',
-				'2025/05/new-logo-black-masseria-le-cerase-conversano.png',
-				'2025/05/new-logo01-black-masseria-le-cerase-conversano.png',
-				'2025/06/1-1024x682.jpg',
-				'2025/06/11.jpg',
-				'2025/06/12-1024x682.jpg',
-				'2025/06/13-1024x682.jpg',
-				'2025/06/14-1024x682.jpg',
-				'2025/06/18.jpg',
-				'2025/06/21-1024x682.jpg',
-				'2025/06/22-1024x682.jpg',
-				'2025/06/23-1024x682.jpg',
-				'2025/06/24-1024x682.jpg',
-				'2025/06/25-1024x682.jpg',
-				'2025/06/26-1024x682.jpg',
-				'2025/06/27-1-1024x682.jpg',
-				'2025/06/28-1024x682.jpg',
-				'2025/06/30.jpg',
-				'2025/06/51378832_2245360615704005_4065300950707863552_n-min-qvudz0ogcww0qheuhmf0vyfruhcta447laf72278v0.jpg',
-				'2025/06/wedding-2.jpg',
-				'2025/07/IMG_5086.jpg',
-				'2025/07/IMG_5148-1024x682.jpg',
-				'2025/07/IMG_5165-1024x683.jpg',
-				'2025/07/IMG_5212-1024x676.jpg',
-				'2025/07/IMG_5232-1024x683.jpg',
-			),
-		),
+		'downloaded' => $downloaded,
+		'skipped'    => $before,
+		'failed'     => array(),
+		'source'     => $url,
 	);
 }
 
@@ -1166,73 +1156,7 @@ function sbt_media_import_status( $subtheme_key = '' ) {
 
 function sbt_download_demo_media( $subtheme_key = '' ) {
 	$key = $subtheme_key ? sanitize_key( $subtheme_key ) : sbt_active_subtheme_key();
-	$bundled = sbt_copy_bundled_demo_media( $key );
-	if ( ! is_wp_error( $bundled ) && ( ! empty( $bundled['downloaded'] ) || ! empty( $bundled['skipped'] ) ) ) {
-		return $bundled;
-	}
-
-	$manifest = sbt_remote_media_manifest();
-
-	if ( empty( $manifest[ $key ]['base'] ) || empty( $manifest[ $key ]['files'] ) ) {
-		return new WP_Error( 'sbt_no_media_manifest', __( 'No demo media package is configured for this subtheme.', 'syncbooking-hospitality' ) );
-	}
-
-	$uploads = wp_get_upload_dir();
-	if ( ! empty( $uploads['error'] ) ) {
-		return new WP_Error( 'sbt_uploads_error', $uploads['error'] );
-	}
-
-	require_once ABSPATH . 'wp-admin/includes/file.php';
-
-	$base = trailingslashit( $manifest[ $key ]['base'] );
-	$target_base = trailingslashit( $uploads['basedir'] ) . 'syncbooking-theme/' . $key . '/';
-	$downloaded = 0;
-	$skipped = 0;
-	$failed = array();
-
-	foreach ( $manifest[ $key ]['files'] as $relative ) {
-		$relative = ltrim( $relative, '/' );
-		$target = $target_base . $relative;
-
-		if ( file_exists( $target ) && filesize( $target ) > 0 ) {
-			$skipped++;
-			continue;
-		}
-
-		wp_mkdir_p( dirname( $target ) );
-		$temp = download_url( $base . $relative, 45 );
-
-		if ( is_wp_error( $temp ) ) {
-			$failed[] = $relative;
-			continue;
-		}
-
-		if ( ! @copy( $temp, $target ) ) {
-			$failed[] = $relative;
-			@unlink( $temp );
-			continue;
-		}
-
-		@unlink( $temp );
-		$downloaded++;
-	}
-
-	sbt_register_upload_assets( $target_base, $key );
-
-	$imports = get_option( SBT_MEDIA_OPTION, array() );
-	$imports[ $key ] = array(
-		'downloaded' => $downloaded,
-		'skipped'    => $skipped,
-		'failed'     => count( $failed ),
-		'updated_at' => current_time( 'mysql' ),
-	);
-	update_option( SBT_MEDIA_OPTION, $imports );
-
-	return array(
-		'downloaded' => $downloaded,
-		'skipped'    => $skipped,
-		'failed'     => $failed,
-	);
+	return sbt_download_remote_assets_zip( $key );
 }
 
 function sbt_install_upload_assets() {
@@ -1247,6 +1171,46 @@ function sbt_legacy_language_page_slug( $base_slug, $language ) {
 	}
 
 	return 'en' === $language ? $base_slug : $language . '-' . $base_slug;
+}
+
+function sbt_language_page_post_name( $base_slug, $language ) {
+	$base_slug = sanitize_title( $base_slug );
+	$language = sanitize_key( $language );
+	if ( 'houses' === $base_slug ) {
+		$base_slug = sbt_unit_listing_slug();
+	}
+
+	if ( 'home' === $base_slug ) {
+		return $language === sbt_default_language() ? 'home' : $language;
+	}
+
+	return $base_slug;
+}
+
+function sbt_language_parent_page_id( $language ) {
+	$language = sanitize_key( $language );
+	if ( $language === sbt_default_language() ) {
+		return 0;
+	}
+
+	$pages = get_posts( array(
+		'post_type'      => 'page',
+		'post_status'    => 'any',
+		'posts_per_page' => 1,
+		'fields'         => 'ids',
+		'meta_query'     => array(
+			array(
+				'key'   => '_sbt_base_slug',
+				'value' => 'home',
+			),
+			array(
+				'key'   => '_sbt_language',
+				'value' => $language,
+			),
+		),
+	) );
+
+	return $pages ? (int) $pages[0] : 0;
 }
 
 function sbt_theme_slug_is_claimed_by_other_page( $page_slug, $base_slug, $language, $existing_id = 0 ) {
@@ -1315,6 +1279,10 @@ add_action( 'admin_notices', 'sbt_language_slug_conflict_notice' );
 function sbt_create_theme_pages() {
 	foreach ( sbt_enabled_languages() as $language ) {
 		foreach ( sbt_page_templates() as $slug => $page ) {
+			if ( sbt_is_theme_page_disabled( $slug ) ) {
+				continue;
+			}
+
 			$existing = get_posts( array(
 				'post_type'      => 'page',
 				'post_status'    => 'any',
@@ -1330,13 +1298,17 @@ function sbt_create_theme_pages() {
 				),
 			) );
 			$page_slug = sbt_resolved_theme_page_slug( $slug, $language, $existing ? (int) $existing[0] : 0 );
+			$post_parent = ( $language !== sbt_default_language() && 'home' !== sanitize_title( $slug ) && false !== strpos( $page_slug, '/' ) ) ? sbt_language_parent_page_id( $language ) : 0;
+			$post_name = false !== strpos( $page_slug, '/' ) ? basename( $page_slug ) : $page_slug;
 			$page_title = 'en' === $language ? $page['title'] : $page['title'] . ' (' . strtoupper( $language ) . ')';
 
 			if ( $existing ) {
 				wp_update_post( array(
 					'ID'         => $existing[0],
 					'post_title' => $page_title,
-					'post_name'  => $page_slug,
+					'post_name'  => $post_name,
+					'post_parent'=> $post_parent,
+					'post_status'=> 'publish',
 				) );
 				continue;
 			}
@@ -1345,7 +1317,8 @@ function sbt_create_theme_pages() {
 				'post_type'    => 'page',
 				'post_status'  => 'publish',
 				'post_title'   => $page_title,
-				'post_name'    => $page_slug,
+				'post_name'    => $post_name,
+				'post_parent'  => $post_parent,
 				'post_content' => '',
 			) );
 
@@ -1375,9 +1348,63 @@ function sbt_maybe_sync_theme_pages() {
 }
 add_action( 'admin_init', 'sbt_maybe_sync_theme_pages' );
 
+function sbt_trash_theme_page_posts( $slug ) {
+	$slug = sanitize_title( $slug );
+	foreach ( sbt_enabled_languages() as $language ) {
+		$page = sbt_theme_page_post( $slug, $language );
+		if ( $page && 'trash' !== get_post_status( $page->ID ) ) {
+			wp_trash_post( $page->ID );
+		}
+	}
+}
+
+function sbt_disable_theme_page( $slug, $subtheme = '' ) {
+	$slug = sanitize_title( $slug );
+	$subtheme = '' === $subtheme ? sbt_active_subtheme_key() : sanitize_key( $subtheme );
+	if ( '' === $slug || 'home' === $slug ) {
+		return false;
+	}
+
+	$pages = sbt_page_templates();
+	if ( ! isset( $pages[ $slug ] ) ) {
+		return false;
+	}
+
+	$options = sbt_get_options();
+	if ( ! isset( $options['disabled_theme_pages'] ) || ! is_array( $options['disabled_theme_pages'] ) ) {
+		$options['disabled_theme_pages'] = array();
+	}
+	if ( ! isset( $options['disabled_theme_pages'][ $subtheme ] ) || ! is_array( $options['disabled_theme_pages'][ $subtheme ] ) ) {
+		$options['disabled_theme_pages'][ $subtheme ] = array();
+	}
+
+	$options['disabled_theme_pages'][ $subtheme ][] = $slug;
+	$options['disabled_theme_pages'][ $subtheme ] = array_values( array_unique( array_map( 'sanitize_title', $options['disabled_theme_pages'][ $subtheme ] ) ) );
+	update_option( SBT_OPTION, $options );
+
+	sbt_trash_theme_page_posts( $slug );
+	return true;
+}
+
+function sbt_restore_theme_page( $slug, $subtheme = '' ) {
+	$slug = sanitize_title( $slug );
+	$subtheme = '' === $subtheme ? sbt_active_subtheme_key() : sanitize_key( $subtheme );
+	if ( '' === $slug ) {
+		return false;
+	}
+
+	$options = sbt_get_options();
+	if ( isset( $options['disabled_theme_pages'][ $subtheme ] ) && is_array( $options['disabled_theme_pages'][ $subtheme ] ) ) {
+		$options['disabled_theme_pages'][ $subtheme ] = array_values( array_diff( array_map( 'sanitize_title', $options['disabled_theme_pages'][ $subtheme ] ), array( $slug ) ) );
+	}
+	update_option( SBT_OPTION, $options );
+
+	sbt_create_theme_pages();
+	return true;
+}
+
 function sbt_theme01_seed_articles() {
-	$remote_base = sbt_media_remote_base_url( 'theme01' );
-	$asset_base = get_template_directory_uri() . '/subthemes/theme01/assets/images/';
+	$asset_base = trailingslashit( sbt_remote_assets_base_url( 'theme01' ) ) . 'assets/images/';
 	$contact_url = home_url( '/contacts/' );
 
 	return array(
@@ -1396,7 +1423,7 @@ function sbt_theme01_seed_articles() {
 			'slug'          => 'polignano-a-mare',
 			'title'         => 'Polignano a Mare and the Adriatic cliffs',
 			'over'          => '25 min',
-			'hero'          => $remote_base . '2025/03/p-YLCX1349.jpg',
+			'hero'          => $asset_base . 'exterior-090.jpg',
 			'category'      => 'Surroundings',
 			'category_slug' => 'surroundings',
 			'group'         => 'theme01_surroundings',
@@ -1407,7 +1434,7 @@ function sbt_theme01_seed_articles() {
 			'slug'          => 'alberobello-itria-valley',
 			'title'         => 'Alberobello and the Itria Valley',
 			'over'          => '35 min',
-			'hero'          => $remote_base . '2025/03/a5-1240-900.jpg',
+			'hero'          => $asset_base . 'exterior-072.jpg',
 			'category'      => 'Surroundings',
 			'category_slug' => 'surroundings',
 			'group'         => 'theme01_surroundings',
@@ -1418,7 +1445,7 @@ function sbt_theme01_seed_articles() {
 			'slug'          => 'bari',
 			'title'         => 'Bari, between old town and seafront',
 			'over'          => '40 min',
-			'hero'          => $remote_base . '2025/03/8dc77600-2d08-4399-8d34-9019c864a9ae.jpg',
+			'hero'          => $asset_base . 'exterior-085.jpg',
 			'category'      => 'Surroundings',
 			'category_slug' => 'surroundings',
 			'group'         => 'theme01_surroundings',
@@ -1429,7 +1456,7 @@ function sbt_theme01_seed_articles() {
 			'slug'          => 'book-early-save-more',
 			'title'         => 'Book Early, Save More',
 			'over'          => 'Early booking',
-			'hero'          => $remote_base . '2025/03/a5-1240-900.jpg',
+			'hero'          => $asset_base . 'exterior-072.jpg',
 			'category'      => 'Offers',
 			'category_slug' => 'offers',
 			'group'         => 'theme01_offers',
@@ -1440,7 +1467,7 @@ function sbt_theme01_seed_articles() {
 			'slug'          => 'seven-nights-six',
 			'title'         => '7 Nights = 6',
 			'over'          => 'Long stay',
-			'hero'          => $remote_base . '2025/03/7a97973d-d95e-401a-9c30-845b04364bc4.jpg',
+			'hero'          => $asset_base . 'exterior-081.jpg',
 			'category'      => 'Offers',
 			'category_slug' => 'offers',
 			'group'         => 'theme01_offers',
@@ -1451,7 +1478,7 @@ function sbt_theme01_seed_articles() {
 			'slug'          => 'spa-escape',
 			'title'         => 'SPA Escape',
 			'over'          => 'Wellness',
-			'hero'          => $asset_base . 'jacuzzi.jpg',
+			'hero'          => $asset_base . 'jacuzzi.png',
 			'category'      => 'Offers',
 			'category_slug' => 'offers',
 			'group'         => 'theme01_offers',
@@ -1462,7 +1489,7 @@ function sbt_theme01_seed_articles() {
 			'slug'          => 'spring-autumn',
 			'title'         => 'Spring & Autumn',
 			'over'          => 'Season',
-			'hero'          => $remote_base . '2025/03/p-YLCX1349.jpg',
+			'hero'          => $asset_base . 'exterior-090.jpg',
 			'category'      => 'Offers',
 			'category_slug' => 'offers',
 			'group'         => 'theme01_offers',
@@ -1484,7 +1511,7 @@ function sbt_theme01_seed_articles() {
 			'slug'          => 'wine-tastings',
 			'title'         => 'Wine Tastings',
 			'over'          => 'Cellar',
-			'hero'          => $remote_base . '2025/03/a5-1240-900.jpg',
+			'hero'          => $asset_base . 'exterior-072.jpg',
 			'category'      => 'Experiences',
 			'category_slug' => 'experiences',
 			'group'         => 'theme01_experiences',
@@ -1495,7 +1522,7 @@ function sbt_theme01_seed_articles() {
 			'slug'          => 'private-tours',
 			'title'         => 'Private Tours',
 			'over'          => 'Discover',
-			'hero'          => $remote_base . '2025/03/7a97973d-d95e-401a-9c30-845b04364bc4.jpg',
+			'hero'          => $asset_base . 'exterior-078.jpg',
 			'category'      => 'Experiences',
 			'category_slug' => 'experiences',
 			'group'         => 'theme01_experiences',
@@ -1506,7 +1533,7 @@ function sbt_theme01_seed_articles() {
 			'slug'          => 'coast-beaches',
 			'title'         => 'Coast & Beaches',
 			'over'          => 'Sea',
-			'hero'          => $remote_base . '2025/03/p-YLCX1349.jpg',
+			'hero'          => $asset_base . 'exterior-090.jpg',
 			'category'      => 'Experiences',
 			'category_slug' => 'experiences',
 			'group'         => 'theme01_experiences',
@@ -1516,16 +1543,62 @@ function sbt_theme01_seed_articles() {
 	);
 }
 
+function sbt_italian_seed_article_translations() {
+	return array(
+		'conversano' => array( 'title' => 'Conversano, il cuore nobile della Puglia', 'excerpt' => 'Un centro storico elegante, fatto di pietra, palazzi nobiliari e piazze tranquille, a pochi passi da Villa Rosa Resort.', 'content' => '<p>Conversano e la prima scoperta fuori dai cancelli di Villa Rosa Resort. Elegante, autentica e facile da vivere a piedi, custodisce il ritmo della Puglia piu vera.</p><p>Il castello normanno-svevo domina il centro storico, mentre chiese, monasteri e palazzi raccontano una storia stratificata e accogliente.</p><h2>Cosa vedere</h2><p>Inizia dal castello e dalla cattedrale, poi lasciati guidare dalle stradine verso cortili nascosti, forni locali e aperitivi al tramonto.</p><h3>Perfetto per</h3><ul><li>Una passeggiata lenta dopo colazione.</li><li>Una cena senza prendere l auto.</li><li>Chi cerca cultura e vita locale a portata di mano.</li></ul>' ),
+		'polignano-a-mare' => array( 'title' => 'Polignano a Mare e le scogliere adriatiche', 'excerpt' => 'Balconi bianchi, grotte marine e scogliere spettacolari rendono Polignano una tappa essenziale vicino Conversano.', 'content' => '<p>Polignano a Mare e una delle immagini piu iconiche della costa adriatica: case sospese sulle scogliere, vicoli chiari e terrazze aperte sul blu.</p><p>Visitala senza fretta, attraversando il centro storico fino a Lama Monachile, la celebre spiaggia incastonata nella pietra.</p><h2>Come viverla</h2><p>Arriva al mattino per le strade piu tranquille, oppure nel tardo pomeriggio per la luce dorata e una cena vista mare.</p><h3>Perfetto per</h3><ul><li>Panorami e fotografie.</li><li>Una mezza giornata sulla costa.</li><li>Cene romantiche e aperitivi sul mare.</li></ul>' ),
+		'alberobello-itria-valley' => array( 'title' => 'Alberobello e la Valle d Itria', 'excerpt' => 'Trulli, muretti a secco, ulivi e borghi bianchi: uno dei paesaggi piu riconoscibili della Puglia.', 'content' => '<p>La Valle d Itria e la Puglia dell immaginario: campagne morbide, ulivi antichi, borghi bianchi e il profilo inconfondibile dei trulli.</p><p>Alberobello e la tappa piu famosa, protetta dall UNESCO; intorno, Locorotondo, Cisternino e Martina Franca offrono un ritmo piu quieto e altrettanto affascinante.</p><h2>Una giornata tra i borghi</h2><p>Scegli un itinerario lento, con una tappa principale e una secondaria. Il piacere e nel fermarsi, assaggiare e guardare il paesaggio.</p><h3>Perfetto per</h3><ul><li>Architettura e strade di campagna.</li><li>Pranzi nei borghi bianchi.</li><li>Chi vuole vivere l esperienza dei trulli.</li></ul>' ),
+		'bari' => array( 'title' => 'Bari, tra citta vecchia e lungomare', 'excerpt' => 'Il capoluogo regionale unisce Bari Vecchia, vie dello shopping, chiese, teatri e un grande lungomare.', 'content' => '<p>Bari e il capoluogo vivace della Puglia e un bel contrasto con la quiete di Conversano. Bari Vecchia e un labirinto di vicoli, edicole votive e profumo di pasta fresca.</p><p>Oltre il centro antico, la citta si apre in strade eleganti, teatri storici e un lungomare tra i piu piacevoli del Sud.</p><h2>Da non perdere</h2><p>Visita la Basilica di San Nicola, attraversa Bari Vecchia e continua verso il quartiere Murat per shopping e caffe.</p><h3>Perfetto per</h3><ul><li>Una giornata di cultura e shopping.</li><li>Street food e mercati locali.</li><li>Arrivi o partenze dall aeroporto di Bari.</li></ul>' ),
+		'book-early-save-more' => array( 'title' => 'Prenota prima, risparmia di piu', 'excerpt' => 'Prenota in anticipo e accedi a condizioni dedicate per il tuo soggiorno preferito.', 'content' => '<p>Organizzarsi in anticipo e il modo migliore per scegliere la soluzione piu adatta e ottenere condizioni piu convenienti.</p><p>L offerta e pensata per chi conosce gia il periodo di viaggio e vuole prenotare con serenita.</p><h2>Cosa include</h2><ul><li>Scelta prioritaria tra le disponibilita.</li><li>Condizioni dedicate early booking.</li><li>Assistenza personalizzata prima dell arrivo.</li></ul><p>Contattaci per disponibilita aggiornate e un preventivo su misura.</p>' ),
+		'seven-nights-six' => array( 'title' => '7 notti = 6', 'excerpt' => 'Resta una settimana in Puglia e approfitta di una notte offerta in periodi selezionati.', 'content' => '<p>Una settimana permette di entrare davvero nel ritmo della Puglia: colazioni lente, piscina, mare, borghi e serate a Conversano.</p><p>Con l offerta 7 notti = 6, i soggiorni lunghi diventano ancora piu invitanti.</p><h2>Perche sceglierla</h2><ul><li>Piu tempo per vivere la struttura.</li><li>Giorni sufficienti per mare, borghi e relax.</li><li>Maggiore valore per le vacanze settimanali.</li></ul><p>L offerta dipende da date, disponibilita e condizioni di prenotazione.</p>' ),
+		'spa-escape' => array( 'title' => 'Fuga SPA', 'excerpt' => 'Un soggiorno romantico per due con momenti dedicati al benessere.', 'content' => '<p>La Fuga SPA e pensata per coppie e ospiti che desiderano aggiungere un tempo di benessere al soggiorno.</p><p>Tra privacy, quiete e atmosfere rilassanti, la struttura diventa un luogo dove fermarsi e ricaricarsi.</p><h2>Ideale per</h2><ul><li>Weekend romantici e anniversari.</li><li>Brevi pause wellness in Puglia.</li><li>Chi cerca privacy, comfort e calma.</li></ul><p>Ogni proposta puo essere modellata sulle tue date e preferenze.</p>' ),
+		'spring-autumn' => array( 'title' => 'Primavera e autunno', 'excerpt' => 'Scopri la Puglia nelle stagioni piu dolci, con tariffe dedicate e un ritmo piu lento.', 'content' => '<p>Primavera e autunno sono momenti splendidi per scoprire la Puglia: luce morbida, borghi piu tranquilli e campagna ricca di colori.</p><p>Questa offerta e pensata per chi ama temperature miti, vita locale autentica e un modo piu quieto di esplorare.</p><h2>Cosa la rende speciale</h2><ul><li>Tariffe ridotte in periodi selezionati.</li><li>Ottime condizioni per escursioni e attivita all aperto.</li><li>Una Puglia piu calma, tra mare e borghi interni.</li></ul><p>Contattaci e ti consiglieremo il periodo migliore.</p>' ),
+		'cooking-classes' => array( 'title' => 'Cooking class nel cuore della Puglia', 'excerpt' => 'Una lezione di cucina pugliese con ingredienti locali, ricette di famiglia e piacere della condivisione.', 'content' => '<p>Vivi la Puglia a modo tuo: una cooking class e uno dei modi piu caldi per entrare nel territorio, tra farina, olio, verdure, erbe e racconti.</p><p>In base alla stagione, l esperienza puo concentrarsi su pasta fresca, focaccia tradizionale, mercato locale o un menu pugliese completo.</p><h2>Cosa aspettarsi</h2><ul><li>Una lezione rilassata e pratica.</li><li>Ingredienti stagionali e tecniche tradizionali.</li><li>Un momento finale di assaggio o pranzo condiviso.</li></ul><p>Ogni classe puo essere adattata a ospiti, tempi e preferenze.</p>' ),
+		'wine-tastings' => array( 'title' => 'Degustazioni di vino', 'excerpt' => 'Scopri etichette locali, vitigni autoctoni e il carattere generoso del vino pugliese.', 'content' => '<p>La Puglia e terra di vini generosi, vigne al sole e vitigni autoctoni dal carattere deciso.</p><p>Una degustazione privata e il modo ideale per conoscere questo lato del territorio con calma, racconti e abbinamenti.</p><h2>Su misura per te</h2><ul><li>Vini rossi, bianchi e rosati di produttori selezionati.</li><li>Abbinamenti con sapori pugliesi.</li><li>Proposte per coppie, famiglie e piccoli gruppi.</li></ul><p>Raccontaci le tue date e le tue preferenze.</p>' ),
+		'private-tours' => array( 'title' => 'Tour privati', 'excerpt' => 'Itinerari su misura da Conversano verso borghi, paesaggi e angoli nascosti della Puglia.', 'content' => '<p>Dai sapori della tavola pugliese alle meraviglie oltre i nostri cancelli, possiamo disegnare momenti da ricordare.</p><p>I tour privati sono ideali per chi vuole scoprire la Puglia con liberta, comfort e un percorso costruito sui propri interessi.</p><h2>Possibili itinerari</h2><ul><li>Conversano, Polignano a Mare e costa adriatica.</li><li>Alberobello, Locorotondo e Valle d Itria.</li><li>Bari vecchia, mercati e tappe culturali.</li></ul><p>Ogni tour puo essere adattato per durata, ritmo e tema.</p>' ),
+		'coast-beaches' => array( 'title' => 'Costa e spiagge', 'excerpt' => 'Raggiungi la costa adriatica e scopri spiagge, scogliere, grotte marine e giornate di mare.', 'content' => '<p>La costa e uno dei grandi piaceri di un soggiorno a Conversano. In poco tempo puoi raggiungere scogliere, calette, lidi e borghi marinari.</p><p>Possiamo aiutarti a scegliere l esperienza giusta: mattina in spiaggia, tappa panoramica a Polignano, escursione in barca o pranzo sul mare.</p><h2>Perfetto per</h2><ul><li>Chi cerca mare e panorami.</li><li>Famiglie che vogliono opzioni comode.</li><li>Coppie che immaginano un pomeriggio romantico sulla costa.</li></ul><p>La spiaggia migliore dipende da stagione, meteo e dal tipo di giornata che desideri.</p>' ),
+	);
+}
+
+function sbt_seed_article_for_language( $article, $language ) {
+	$language = sanitize_key( $language );
+	if ( 'it' !== $language ) {
+		return $article;
+	}
+
+	$translations = sbt_italian_seed_article_translations();
+	$slug = isset( $article['slug'] ) ? sanitize_title( $article['slug'] ) : '';
+	if ( isset( $translations[ $slug ] ) ) {
+		$article = array_merge( $article, $translations[ $slug ] );
+	}
+
+	$category_map = array(
+		'experiences'  => 'Esperienze',
+		'surroundings' => 'Dintorni',
+		'offers'       => 'Offerte',
+	);
+	if ( isset( $article['category_slug'], $category_map[ $article['category_slug'] ] ) ) {
+		$article['category'] = $category_map[ $article['category_slug'] ];
+	}
+
+	return $article;
+}
+
 function sbt_create_seed_posts() {
-	if ( 'theme01' !== sbt_active_subtheme_key() ) {
+	if ( ! in_array( sbt_active_subtheme_key(), array( 'theme01', 'theme02' ), true ) ) {
 		return;
 	}
 
 	$category_cache = array();
 
-	foreach ( sbt_theme01_seed_articles() as $article ) {
+	foreach ( sbt_enabled_languages() as $language ) {
+	foreach ( sbt_theme01_seed_articles() as $base_article ) {
+		$article = sbt_seed_article_for_language( $base_article, $language );
 		$category_name = isset( $article['category'] ) ? $article['category'] : 'Articles';
 		$category_slug = isset( $article['category_slug'] ) ? sanitize_title( $article['category_slug'] ) : sanitize_title( $category_name );
+		if ( $language !== sbt_default_language() ) {
+			$category_slug = $language . '-' . $category_slug;
+		}
 
 		if ( ! isset( $category_cache[ $category_slug ] ) ) {
 			$term = term_exists( $category_slug, 'category' );
@@ -1545,13 +1618,23 @@ function sbt_create_seed_posts() {
 		}
 
 		$category_id = $category_cache[ $category_slug ];
-		$post_id = sbt_seed_post_id( $article['slug'] );
+		$post_slug = $language === sbt_default_language() ? $article['slug'] : $language . '-' . $article['slug'];
+		$post_id = sbt_seed_post_id( $article['slug'], $language );
 		if ( $post_id ) {
-			update_post_meta( $post_id, '_sbt_seed_slug', $article['slug'] );
-			update_post_meta( $post_id, '_sbt_seed_article', isset( $article['group'] ) ? $article['group'] : 'theme01_article' );
+			wp_update_post( array(
+				'ID'           => $post_id,
+				'post_title'   => $article['title'],
+				'post_name'    => $post_slug,
+				'post_excerpt' => $article['excerpt'],
+				'post_content' => $article['content'],
+			) );
+			update_post_meta( $post_id, '_sbt_seed_slug', $post_slug );
+			update_post_meta( $post_id, '_sbt_seed_base_slug', $article['slug'] );
+			update_post_meta( $post_id, '_sbt_language', $language );
+			update_post_meta( $post_id, '_sbt_seed_article', isset( $article['group'] ) ? str_replace( 'theme01_', sbt_active_subtheme_key() . '_', $article['group'] ) : sbt_active_subtheme_key() . '_article' );
 			update_post_meta( $post_id, '_sbt_article_hero', esc_url_raw( $article['hero'] ) );
 			if ( $category_id ) {
-				wp_set_post_terms( $post_id, array( $category_id ), 'category', true );
+				wp_set_post_terms( $post_id, array( $category_id ), 'category', false );
 			}
 			continue;
 		}
@@ -1560,19 +1643,22 @@ function sbt_create_seed_posts() {
 			'post_type'    => 'post',
 			'post_status'  => 'publish',
 			'post_title'   => $article['title'],
-			'post_name'    => $article['slug'],
+			'post_name'    => $post_slug,
 			'post_excerpt' => $article['excerpt'],
 			'post_content' => $article['content'],
 		) );
 
 		if ( $post_id && ! is_wp_error( $post_id ) ) {
-			update_post_meta( $post_id, '_sbt_seed_slug', $article['slug'] );
-			update_post_meta( $post_id, '_sbt_seed_article', isset( $article['group'] ) ? $article['group'] : 'theme01_article' );
+			update_post_meta( $post_id, '_sbt_seed_slug', $post_slug );
+			update_post_meta( $post_id, '_sbt_seed_base_slug', $article['slug'] );
+			update_post_meta( $post_id, '_sbt_language', $language );
+			update_post_meta( $post_id, '_sbt_seed_article', isset( $article['group'] ) ? str_replace( 'theme01_', sbt_active_subtheme_key() . '_', $article['group'] ) : sbt_active_subtheme_key() . '_article' );
 			update_post_meta( $post_id, '_sbt_article_hero', esc_url_raw( $article['hero'] ) );
 			if ( $category_id ) {
-				wp_set_post_terms( $post_id, array( $category_id ), 'category', true );
+				wp_set_post_terms( $post_id, array( $category_id ), 'category', false );
 			}
 		}
+	}
 	}
 }
 
@@ -1586,15 +1672,13 @@ add_action( 'admin_init', 'sbt_maybe_create_seed_posts' );
 function sbt_language_page_slug( $base_slug, $language ) {
 	$base_slug = sanitize_title( $base_slug );
 	$language = sanitize_key( $language );
-	if ( 'houses' === $base_slug ) {
-		$base_slug = sbt_unit_listing_slug();
-	}
+	$post_name = sbt_language_page_post_name( $base_slug, $language );
 
 	if ( 'home' === $base_slug ) {
-		return $language === sbt_default_language() ? 'home' : $language;
+		return $post_name;
 	}
 
-	return $language === sbt_default_language() ? $base_slug : $language . '-' . $base_slug;
+	return $language === sbt_default_language() ? $post_name : $language . '/' . $post_name;
 }
 
 function sbt_route_page_template( $template ) {
@@ -1703,25 +1787,37 @@ function sbt_apply_unit_structure( &$SITE, &$NAV, &$C, &$HOUSE_CARDS, &$TEXT ) {
 
 	$entire_label = sbt_entire_label( $subtheme );
 	$entire_url = sbt_entire_nav_url( $subtheme );
+	$listing_url = 'theme02' === $subtheme ? 'house.php' : 'houses.php';
+	$is_it = 'it' === sbt_current_content_language();
+	$accommodation_menu_label = $is_it ? 'Alloggi' : 'Accomodation';
+	$rooms_menu_label = $is_it ? 'Camere' : 'Rooms';
+	$whole_menu_label = $is_it ? ( 'theme02' === $subtheme ? 'Tutta la Masseria' : 'Tutta la Villa' ) : ( 'theme02' === $subtheme ? 'The whole Masseria' : 'The whole Villa' );
+	$price_menu_label = $is_it ? 'Prezzi e condizioni' : 'Price & Condition';
+	$book_menu_label = $is_it ? 'Prenota ora' : 'Book Now';
 	if ( sbt_is_entire_rental_mode( $subtheme ) ) {
-		$TEXT['houses'] = $entire_label;
+		$TEXT['houses'] = $whole_menu_label;
 		$HOUSE_CARDS = array();
 		foreach ( $NAV as &$item ) {
 			if ( isset( $item['key'] ) && in_array( $item['key'], array( 'houses', 'house', 'rooms', 'hospitality' ), true ) ) {
 				$item['key'] = 'theme02' === $subtheme ? 'rooms' : 'houses';
-				$item['label'] = $entire_label;
+				$item['label'] = $accommodation_menu_label;
 				$item['url'] = $entire_url;
 				$item['sub'] = array(
 					array(
 						'url'   => $entire_url,
-						'label' => $entire_label,
+						'label' => $whole_menu_label,
 						'desc'  => 'Exclusive rental',
 					),
 					array(
 						'url'    => 'price-and-condition.php',
-						'label'  => 'Price & Condition',
+						'label'  => $price_menu_label,
 						'desc'   => 'Rates, check-in & terms',
 						'divide' => true,
+					),
+					array(
+						'url'   => 'syncbooking:booking',
+						'label' => $book_menu_label,
+						'desc'  => 'Online booking',
 					),
 				);
 			}
@@ -1733,7 +1829,7 @@ function sbt_apply_unit_structure( &$SITE, &$NAV, &$C, &$HOUSE_CARDS, &$TEXT ) {
 	$unit_label = sbt_unit_label( array( 'SITE.unit_label' => $SITE['unit_label'] ?? sbt_structural_override_value( $subtheme, 'SITE.unit_label', 'theme02' === $subtheme ? 'Room' : 'House' ) ) );
 	$plural_label = sbt_unit_plural_label( $unit_label );
 	$detail_pages = sbt_custom_house_pages( $subtheme );
-	$TEXT['houses'] = $plural_label;
+	$TEXT['houses'] = $rooms_menu_label;
 
 	if ( isset( $C['houses'] ) && is_array( $C['houses'] ) ) {
 		$C['houses']['title'] = $plural_label . ' - ' . ( $SITE['name'] ?? 'SyncBooking' );
@@ -1782,27 +1878,29 @@ function sbt_apply_unit_structure( &$SITE, &$NAV, &$C, &$HOUSE_CARDS, &$TEXT ) {
 
 	foreach ( $NAV as &$item ) {
 		if ( isset( $item['key'] ) && in_array( $item['key'], array( 'houses', 'house', 'rooms', 'hospitality' ), true ) ) {
-			$listing_url = 'theme02' === $subtheme ? 'house.php' : 'houses.php';
-			$item['label'] = $plural_label;
+			$item['label'] = $accommodation_menu_label;
 			$item['url'] = $listing_url;
 			$item['sub'] = array();
 			$item['sub'][] = array(
+				'url'   => $listing_url,
+				'label' => $rooms_menu_label,
+				'desc'  => 'Rooms only',
+			);
+			$item['sub'][] = array(
 				'url'   => $entire_url,
-				'label' => $entire_label,
+				'label' => $whole_menu_label,
 				'desc'  => 'Exclusive rental',
 			);
-			foreach ( $detail_pages as $house_page ) {
-				$item['sub'][] = array(
-					'url'   => $house_page['slug'] . '.php',
-					'label' => $house_page['title'],
-					'desc'  => '',
-				);
-			}
 			$item['sub'][] = array(
 				'url'    => 'price-and-condition.php',
-				'label'  => 'Price & Condition',
+				'label'  => $price_menu_label,
 				'desc'   => 'Rates, check-in & terms',
 				'divide' => true,
+			);
+			$item['sub'][] = array(
+				'url'   => 'syncbooking:booking',
+				'label' => $book_menu_label,
+				'desc'  => 'Online booking',
 			);
 		}
 	}
@@ -1850,6 +1948,43 @@ function sbt_normalize_theme01_seed_article_card_urls( &$C ) {
 	}
 }
 
+function sbt_filter_disabled_nav_items( &$NAV ) {
+	if ( ! is_array( $NAV ) ) {
+		return;
+	}
+
+	$filtered = array();
+	foreach ( $NAV as $item ) {
+		if ( ! is_array( $item ) ) {
+			continue;
+		}
+
+		if ( ! empty( $item['sub'] ) && is_array( $item['sub'] ) ) {
+			$sub_items = array();
+			foreach ( $item['sub'] as $sub_item ) {
+				$sub_slug = isset( $sub_item['url'] ) ? sbt_page_slug_for_url_value( $sub_item['url'] ) : '';
+				if ( $sub_slug && sbt_is_theme_page_disabled( $sub_slug ) ) {
+					continue;
+				}
+				$sub_items[] = $sub_item;
+			}
+			$item['sub'] = $sub_items;
+		}
+
+		$item_slug = isset( $item['url'] ) ? sbt_page_slug_for_url_value( $item['url'] ) : '';
+		if ( $item_slug && sbt_is_theme_page_disabled( $item_slug ) ) {
+			if ( empty( $item['sub'] ) ) {
+				continue;
+			}
+			$item['url'] = $item['sub'][0]['url'];
+		}
+
+		$filtered[] = $item;
+	}
+
+	$NAV = $filtered;
+}
+
 function sbt_migrate_theme01_seed_article_card_overrides() {
 	if ( ! is_admin() || ! current_user_can( 'edit_theme_options' ) ) {
 		return;
@@ -1889,6 +2024,218 @@ function sbt_migrate_theme01_seed_article_card_overrides() {
 }
 add_action( 'admin_init', 'sbt_migrate_theme01_seed_article_card_overrides' );
 
+function sbt_apply_default_language_pack( &$SITE, &$NAV, &$C, &$TEXT ) {
+	if ( 'it' !== sbt_current_content_language() ) {
+		return;
+	}
+
+	$text_it = array(
+		'home' => 'Home',
+		'houses' => 'Camere',
+		'view_house' => 'Vedi camera',
+		'discover' => 'Scopri',
+		'discover_villa' => 'Scopri la Villa',
+		'discover_spa' => 'Scopri la SPA',
+		'explore_experiences' => 'Esplora le esperienze',
+		'show_all_photos' => 'Mostra tutte le foto',
+		'request_availability' => 'Richiedi disponibilita',
+		'price_condition' => 'Prezzi e condizioni',
+		'contact_us' => 'Contattaci',
+		'contacts' => 'Contatti',
+		'stay_in_touch' => 'Resta in contatto',
+		'privacy_policy' => 'Privacy Policy',
+		'all_rights_reserved' => 'Tutti i diritti riservati',
+		'address' => 'Indirizzo',
+		'phone' => 'Telefono',
+		'email' => 'Email',
+		'open_maps' => 'Apri in Google Maps ->',
+		'chat_whatsapp' => 'Scrivici su WhatsApp',
+		'form_name' => 'Nome',
+		'form_email' => 'Email',
+		'form_phone' => 'Telefono',
+		'form_message' => 'Messaggio',
+		'form_name_placeholder' => 'Il tuo nome',
+		'form_email_placeholder' => 'tu@email.com',
+		'form_phone_placeholder' => '+39 ...',
+		'form_message_placeholder' => 'Raccontaci date, ospiti e tipo di soggiorno...',
+		'form_send' => 'Invia messaggio',
+		'form_result' => 'Grazie, la richiesta e stata inviata. Ti contatteremo a breve.',
+	);
+	$TEXT = array_replace_recursive( $TEXT, $text_it );
+
+	foreach ( $NAV as &$item ) {
+		if ( empty( $item['key'] ) ) {
+			continue;
+		}
+
+		$labels = array(
+			'home' => 'Home',
+			'villa' => 'Villa',
+			'houses' => 'Alloggi',
+			'house' => 'Alloggi',
+			'rooms' => 'Alloggi',
+			'hospitality' => 'Alloggi',
+			'spa' => 'SPA & Wellness',
+			'experiences' => 'Esperienze',
+			'weddings' => 'Matrimoni',
+			'surroundings' => 'Dintorni',
+			'offers' => 'Offerte',
+			'contacts' => 'Contatti',
+		);
+		if ( isset( $labels[ $item['key'] ] ) ) {
+			$item['label'] = $labels[ $item['key'] ];
+		}
+	}
+	unset( $item );
+
+	$theme01 = array(
+		'home' => array(
+			'title' => 'Villa Rosa Resort - Una villa in Puglia',
+			'hero_over' => 'Villa Rosa Resort & SPA - Conversano',
+			'hero_h1' => 'La tua casa nel<br/>cuore della Puglia',
+			'hero_sub' => 'Un oasi di benessere in un parco secolare, a pochi passi dal Castello normanno-svevo.',
+			'scroll_label' => 'Scorri',
+			'welcome_over' => 'Benvenuti',
+			'welcome_h2' => 'Una villa eclettica anni Trenta,<br/>rinata come retreat',
+			'welcome_p1' => 'Villa Rosa e la tua oasi di benessere. Immersa in un grande parco con alberi secolari, a pochi passi dal Castello normanno-svevo di Conversano, accoglie residenze eleganti e una storica villa eclettica degli anni Trenta.',
+			'welcome_p2' => 'Ogni dettaglio e pensato per il comfort: privacy degli alloggi, cucina attrezzata, pergola esterna, piscina, palestra e una SPA elegante.',
+			'entire_over' => 'Uso esclusivo',
+			'entire_h2' => 'Prenota<br/>tutta la villa',
+			'entire_p' => 'Un unica prenotazione, l intera proprieta: alloggi, parco secolare, piscina e pergole riservati solo a te e ai tuoi ospiti.',
+			'entire_btn' => 'Scopri tutta la villa',
+			'houses_over' => 'Le camere',
+			'houses_h2' => 'Il tuo rifugio privato',
+			'houses_p' => 'La nuova idea di lusso in vacanza e avere piu liberta: spazi riservati, design raffinato e ogni comfort per vivere la Puglia con calma.',
+			'services_over' => 'Comfort & cura',
+			'services_h2' => 'Servizi',
+			'band_over' => 'Il modo pugliese di vivere',
+			'band_h2' => 'Giornate lente, tavole lunghe<br/>e profumo di mare',
+			'band_p' => 'Dai vicoli bianchi di Conversano ai trulli della Valle d Itria e alla costa turchese: la Puglia inizia dalla tua porta.',
+			'spa_teaser_h3' => 'SPA & Wellness',
+			'spa_teaser_p' => 'Risveglia mente e corpo. Il nostro centro wellness offre idromassaggio, bagno turco, sauna, docce emozionali, area relax, palestra e massaggi.',
+			'experience_h3' => 'Esperienze pugliesi',
+			'experience_p' => 'Costruiamo esperienze su misura: cooking class, degustazioni, tour privati e meraviglie del territorio.',
+			'cta_over' => 'Il tuo rifugio ti aspetta',
+			'cta_h2' => 'Scegli la tua camera<br/>a Villa Rosa',
+			'cta_btn' => 'Esplora gli alloggi',
+		),
+		'villa' => array(
+			'title' => 'Villa - Villa Rosa Resort',
+			'over' => 'Villa Rosa Resort & SPA',
+			'h1' => 'La Villa',
+			'intro_over' => 'Il lusso di sentirsi a casa',
+			'intro_h2' => 'In vacanza,<br/>come a casa',
+			'intro_p' => 'Privacy, riservatezza, serenita e comfort a cinque stelle. Nel cuore di Conversano, avere una casa a disposizione e la soluzione ideale per chi cerca un soggiorno indipendente ed esclusivo.',
+			'amenities_over' => 'Benessere, comfort e indipendenza',
+			'amenities_h2' => 'Ogni dettaglio pensato per te',
+			'amenities_p' => 'Una gamma di servizi per comfort e relax, progettata per garantire un esperienza unica.',
+		),
+		'houses' => array(
+			'title' => 'Camere - Villa Rosa Resort',
+			'over' => 'Villa Rosa Resort',
+			'h1' => 'Camere',
+			'intro_over' => 'Il tuo rifugio privato in Puglia',
+			'intro_h2' => 'Spazi riservati,<br/>tutti per te',
+			'intro_p' => 'Comfort, design raffinato e liberta: scegli l alloggio piu adatto al tuo soggiorno e vivi Villa Rosa con il ritmo che preferisci.',
+			'gallery_over' => 'Uno sguardo dentro',
+			'gallery_h2' => 'Camere e spazi',
+			'gallery_p' => 'Camere, living, cucine e bagni: un assaggio degli interni che rendono ogni alloggio una casa privata.',
+			'cta_over' => 'Tariffe e prenotazioni',
+			'cta_h2' => 'Prezzi e condizioni',
+			'cta_p' => 'Tariffe trasparenti, condizioni chiare e una calda accoglienza.',
+			'cta_btn' => 'Vedi prezzi e condizioni',
+		),
+		'entire' => array(
+			'title' => 'Tutta la Villa - Villa Rosa Resort',
+			'over' => 'Uso esclusivo',
+			'h1' => 'Tutta la Villa',
+			'intro_over' => 'Tutta la proprieta, solo per te',
+			'intro_h2' => 'Prenota<br/>Villa Rosa in esclusiva',
+			'intro_p' => 'Alloggi, parco, piscina, pergole e aree comuni riservati a un unico gruppo, per vivere la liberta di una casa privata con l anima di una villa storica.',
+			'cta_h2' => 'Richiedi disponibilita per tutta la villa',
+		),
+		'price' => array(
+			'title' => 'Prezzi e condizioni - Villa Rosa Resort',
+			'over' => 'Tariffe e termini',
+			'h1' => 'Prezzi e condizioni',
+			'intro_over' => 'Pianifica con chiarezza',
+			'intro_h2' => 'Tariffe, check-in<br/>e condizioni',
+			'intro_p' => 'Le tariffe variano in base a stagione, durata e tipologia di prenotazione. Contattaci per una proposta aggiornata.',
+		),
+		'spa' => array(
+			'title' => 'SPA & Wellness - Villa Rosa Resort',
+			'over' => 'Benessere',
+			'h1' => 'SPA & Wellness',
+			'intro_over' => 'Corpo e mente',
+			'intro_h2' => 'Un tempo lento<br/>per rigenerarsi',
+			'intro_p' => 'Bagno turco, sauna, idromassaggio, area relax, palestra e massaggi per una pausa di puro benessere.',
+		),
+		'experiences' => array(
+			'title' => 'Esperienze - Villa Rosa Resort',
+			'over' => 'Villa Rosa Resort & SPA',
+			'h1' => 'Esperienze',
+			'intro_over' => 'Su misura per te',
+			'intro_h2' => 'Vivi la Puglia,<br/>a modo tuo',
+			'intro_p' => 'Creiamo esperienze personalizzate per ogni ospite: sapori, tour, mare e momenti da ricordare.',
+		),
+		'surroundings' => array(
+			'title' => 'Dintorni - Villa Rosa Resort',
+			'over' => 'Conversano e oltre',
+			'h1' => 'Dintorni',
+			'intro_over' => 'Nel cuore della Puglia',
+			'intro_h2' => 'Luoghi da scoprire<br/>giorno dopo giorno',
+			'intro_p' => 'Conversano, Polignano, la Valle d Itria, Alberobello e Bari sono tutti a portata di mano.',
+		),
+		'offers' => array(
+			'title' => 'Offerte - Villa Rosa Resort',
+			'over' => 'Offerte',
+			'h1' => 'Offerte',
+			'intro_over' => 'Proposte speciali',
+			'intro_h2' => 'Soggiorni pensati<br/>per ogni stagione',
+			'intro_p' => 'Scopri promozioni, formule long stay e proposte wellness in periodi selezionati.',
+		),
+		'contacts' => array(
+			'title' => 'Contatti - Villa Rosa Resort',
+			'over' => 'Siamo qui per te',
+			'h1' => 'Contatti',
+			'intro_over' => 'Scrivici',
+			'intro_h2' => 'Pianifica il tuo soggiorno',
+			'intro_p' => 'Per disponibilita, preventivi o richieste speciali, il nostro team sara felice di aiutarti.',
+		),
+	);
+
+	$theme02 = array(
+		'home' => array(
+			'title' => 'Masseria Le Cerase - Masseria del XVII secolo in Puglia',
+			'hero_over' => 'Masseria Le Cerase - Conversano - Puglia',
+			'hero_h1' => 'Una masseria<br/>del XVII secolo, solo tua',
+			'hero_sub' => 'Una casa di campagna fortificata tra ulivi, ciliegi e vigneti: da vivere in esclusiva, fino a dieci ospiti.',
+			'welcome_over' => 'Benvenuti',
+			'welcome_h2' => 'Secoli di pietra,<br/>circondati dalla campagna',
+			'welcome_p1' => 'Masseria Le Cerase e una masseria fortificata del Seicento nella campagna di Conversano, nel cuore della Puglia.',
+			'welcome_p2' => 'Restaurata nel rispetto della sua storia, accoglie un solo gruppo alla volta: sale voltate, letti in ferro battuto, piscina tra gli ulivi e il silenzio della campagna.',
+			'whole_h2' => 'Oppure scegli<br/>tutta la masseria',
+			'whole_p' => 'Un unica prenotazione, l intera proprieta riservata al tuo gruppo.',
+			'whole_btn' => 'Scopri tutta la masseria',
+			'houses_over' => 'Le camere',
+			'houses_h2' => 'Dormire sotto le volte',
+			'houses_p' => 'Camere matrimoniali sotto antiche volte in pietra, con lino caldo, dettagli d epoca e quiete di campagna.',
+		),
+		'villa' => array( 'title' => 'Masseria - Masseria Le Cerase', 'h1' => 'La Masseria', 'intro_over' => 'L anima della proprieta', 'intro_h2' => 'Secoli di pietra,<br/>restaurati con cura', 'intro_p' => 'Una casa di campagna fortificata nella campagna di Conversano, circondata da ulivi, ciliegi e vigneti.' ),
+		'house' => array( 'title' => 'Camere - Masseria Le Cerase', 'h1' => 'Camere', 'intro_over' => 'Dormire sotto le volte', 'intro_h2' => 'Una camera quieta<br/>nella masseria', 'intro_p' => 'Camere matrimoniali sotto antiche volte in pietra, arredate con lino caldo e dettagli d epoca.' ),
+		'whole' => array( 'title' => 'Tutta la Masseria - Masseria Le Cerase', 'h1' => 'Tutta la Masseria', 'intro_over' => 'Tutta la proprieta, solo tua', 'intro_h2' => 'Affitta tutta<br/>Masseria Le Cerase', 'intro_p' => 'Camere, sale voltate, cucina, piscina e giardini riservati esclusivamente al tuo gruppo.' ),
+		'price' => array( 'title' => 'Prezzi e condizioni - Masseria Le Cerase', 'h1' => 'Prezzi e condizioni', 'intro_over' => 'Condizioni chiare', 'intro_h2' => 'Pianifica il soggiorno<br/>con chiarezza', 'intro_p' => 'Tariffe e condizioni variano per stagione, durata e tipologia di prenotazione.' ),
+		'spa' => array( 'title' => 'SPA & Wellness - Masseria Le Cerase', 'h1' => 'SPA & Wellness', 'intro_over' => 'Benessere lento', 'intro_h2' => 'Rituali quieti<br/>in campagna', 'intro_p' => 'Momenti wellness e massaggi possono essere organizzati intorno al tuo soggiorno.' ),
+		'experiences' => array( 'title' => 'Esperienze - Masseria Le Cerase', 'h1' => 'Esperienze', 'intro_over' => 'Vivi la Puglia a modo tuo', 'intro_h2' => 'Momenti costruiti<br/>intorno a te', 'intro_p' => 'Cooking class, degustazioni, tour privati e giornate al mare possono essere organizzati su misura.' ),
+		'surroundings' => array( 'title' => 'Dintorni - Masseria Le Cerase', 'h1' => 'Dintorni', 'intro_over' => 'Nel cuore della Puglia', 'intro_h2' => 'Una regione<br/>di cui innamorarsi', 'intro_p' => 'Conversano, Polignano, Alberobello, la Valle d Itria e Bari sono facilmente raggiungibili.' ),
+		'offers' => array( 'title' => 'Offerte - Masseria Le Cerase', 'h1' => 'Offerte', 'intro_over' => 'Proposte stagionali', 'intro_h2' => 'Soggiorni speciali<br/>in campagna', 'intro_p' => 'Le offerte possono essere adattate al periodo, alla durata e al tipo di prenotazione.' ),
+		'contacts' => array( 'title' => 'Contatti - Masseria Le Cerase', 'h1' => 'Contatti', 'intro_over' => 'Scrivici', 'intro_h2' => 'Pianifica soggiorno o evento', 'intro_p' => 'Per disponibilita, preventivi o richieste speciali, saremo felici di aiutarti.' ),
+	);
+
+	$pack = 'theme02' === sbt_active_subtheme_key() ? $theme02 : $theme01;
+	$C = array_replace_recursive( $C, $pack );
+}
+
 function sbt_bootstrap_content( &$IMG, &$SITE, &$NAV, &$C, &$HOUSE_CARDS = array(), &$SERVICES = array(), &$TEXT = array(), &$GALLERY = array(), &$WEDDING_GALLERY = array(), &$EXPERIENCES = array() ) {
 	$overrides = sbt_active_overrides();
 
@@ -1907,6 +2254,8 @@ function sbt_bootstrap_content( &$IMG, &$SITE, &$NAV, &$C, &$HOUSE_CARDS = array
 		}
 	}
 
+	sbt_apply_default_language_pack( $SITE, $NAV, $C, $TEXT );
+
 	sbt_apply_flat_overrides( $IMG, 'IMG', $overrides );
 	sbt_apply_flat_overrides( $SITE, 'SITE', $overrides );
 	sbt_apply_flat_overrides( $NAV, 'NAV', $overrides );
@@ -1920,6 +2269,7 @@ function sbt_bootstrap_content( &$IMG, &$SITE, &$NAV, &$C, &$HOUSE_CARDS = array
 	sbt_normalize_theme01_seed_article_card_urls( $C );
 
 	sbt_apply_unit_structure( $SITE, $NAV, $C, $HOUSE_CARDS, $TEXT );
+	sbt_filter_disabled_nav_items( $NAV );
 	sbt_rewrite_content_urls( $NAV );
 	sbt_rewrite_content_urls( $C );
 	sbt_rewrite_content_urls( $HOUSE_CARDS );
@@ -2899,6 +3249,7 @@ function sbt_sanitize_options( $raw ) {
 	$existing = sbt_get_options();
 	$options['overrides'] = isset( $existing['overrides'] ) && is_array( $existing['overrides'] ) ? $existing['overrides'] : array();
 	$options['custom_house_pages'] = isset( $existing['custom_house_pages'] ) && is_array( $existing['custom_house_pages'] ) ? $existing['custom_house_pages'] : array();
+	$options['disabled_theme_pages'] = isset( $existing['disabled_theme_pages'] ) && is_array( $existing['disabled_theme_pages'] ) ? $existing['disabled_theme_pages'] : array();
 	$options['admin_language'] = isset( $raw['admin_language'] ) && in_array( sanitize_key( wp_unslash( $raw['admin_language'] ) ), array( 'it', 'en' ), true ) ? sanitize_key( wp_unslash( $raw['admin_language'] ) ) : sbt_admin_language();
 	$options['edit_mode'] = isset( $raw['edit_mode'] ) && in_array( sanitize_key( wp_unslash( $raw['edit_mode'] ) ), array( 'standard', 'visual' ), true ) ? sanitize_key( wp_unslash( $raw['edit_mode'] ) ) : sbt_edit_mode();
 	$available_languages = sbt_available_languages();
@@ -2990,8 +3341,12 @@ function sbt_reset_subtheme_template( $subtheme ) {
 	if ( isset( $options['custom_house_pages'][ $subtheme ] ) ) {
 		$options['custom_house_pages'][ $subtheme ] = array();
 	}
+	if ( isset( $options['disabled_theme_pages'][ $subtheme ] ) ) {
+		$options['disabled_theme_pages'][ $subtheme ] = array();
+	}
 	update_option( SBT_OPTION, $options );
 	sbt_sync_custom_house_pages();
+	sbt_create_theme_pages();
 	return true;
 }
 
@@ -3541,8 +3896,9 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 
 		<div class="sbt-grid">
 			<div class="sbt-card">
-				<h3>Demo media</h3>
-				<p class="sbt-muted">The theme zip stays lightweight. After installation you can import the active subtheme demo images into WordPress uploads.</p>
+				<h3>Assets online</h3>
+				<p class="sbt-muted"><strong>Gli assets non sono inclusi nel tema/plugin.</strong> Il pacchetto contiene solo il tema: immagini, CSS, JavaScript, video e brochure vengono scaricati online dall'assets.zip del subtheme attivo e copiati negli uploads di WordPress.</p>
+				<p class="sbt-muted">Fonte assets: <code><?php echo esc_html( sbt_remote_assets_zip_url( sbt_active_subtheme_key() ) ); ?></code>. Non esiste fallback locale: se il download online fallisce, l'import mostra errore e deve essere riprovato quando il file online sia raggiungibile.</p>
 				<?php if ( ! empty( $media_status['updated_at'] ) ) : ?>
 					<p class="sbt-muted">
 						Last import: <?php echo esc_html( $media_status['updated_at'] ); ?>.
@@ -3551,10 +3907,10 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 						errors: <?php echo esc_html( $media_status['failed'] ?? 0 ); ?>.
 					</p>
 				<?php else : ?>
-					<p class="sbt-muted">Demo media have not been imported yet for this subtheme.</p>
+					<p class="sbt-muted">Gli assets non sono ancora stati importati per questo subtheme.</p>
 				<?php endif; ?>
 				<button type="submit" class="button button-primary" name="sbt_action" value="download_demo_media">
-					Import demo media
+					Scarica assets.zip online
 				</button>
 				<p class="sbt-muted" style="margin-top:12px;">For email debugging, we recommend optional plugins such as <a href="https://wordpress.org/plugins/wp-mail-logging/" target="_blank" rel="noopener">WP Mail Logging</a> and <a href="https://wordpress.org/plugins/post-smtp/" target="_blank" rel="noopener">Post SMTP</a>.</p>
 			</div>
@@ -3764,6 +4120,7 @@ function sbt_render_pages_tab() {
 	$pages = sbt_page_templates();
 	$languages = sbt_enabled_languages();
 	$unit_label = sbt_unit_label( sbt_active_overrides( sbt_current_content_language() ) );
+	$disabled_pages = sbt_disabled_theme_pages();
 	?>
 	<div class="sbt-panel">
 		<h2>Pages of subtheme</h2>
@@ -3780,12 +4137,15 @@ function sbt_render_pages_tab() {
 						<?php endif; ?>
 						<?php
 						$page_slug = sbt_language_page_slug( $slug, 'en' );
+						$is_disabled = in_array( $slug, $disabled_pages, true );
 						$post = sbt_theme_page_post( $slug, 'en' );
 						$edit_url = $post ? add_query_arg( 'edit_lang', 'en', get_edit_post_link( $post->ID, '' ) ) : '';
 						$missing_languages = array();
-						foreach ( $languages as $language ) {
-							if ( ! sbt_theme_page_post( $slug, $language ) ) {
-								$missing_languages[] = strtoupper( $language );
+						if ( ! $is_disabled ) {
+							foreach ( $languages as $language ) {
+								if ( ! sbt_theme_page_post( $slug, $language ) ) {
+									$missing_languages[] = strtoupper( $language );
+								}
 							}
 						}
 						?>
@@ -3793,12 +4153,17 @@ function sbt_render_pages_tab() {
 							<td><strong><?php echo esc_html( $page['title'] ); ?></strong></td>
 							<td><?php echo esc_html( implode( ' / ', array_map( 'strtoupper', $languages ) ) ); ?></td>
 							<td><code><?php echo esc_html( '/' . $page_slug . '/' ); ?></code></td>
-							<td><?php echo $missing_languages ? 'Mancano: ' . esc_html( implode( ', ', $missing_languages ) ) : 'Presente'; ?></td>
+							<td><?php echo $is_disabled ? 'Disattivata' : ( $missing_languages ? 'Mancano: ' . esc_html( implode( ', ', $missing_languages ) ) : 'Presente' ); ?></td>
 							<td class="sbt-actions">
-								<?php if ( $edit_url ) : ?>
+								<?php if ( $edit_url && ! $is_disabled ) : ?>
 									<a class="button button-primary" href="<?php echo esc_url( $edit_url ); ?>">Edit page fields</a>
 								<?php endif; ?>
-								<a class="button" href="<?php echo esc_url( sbt_theme_page_public_url( $slug, 'en' ) ); ?>" target="_blank">Anteprima</a>
+								<?php if ( ! $is_disabled ) : ?>
+									<a class="button" href="<?php echo esc_url( sbt_theme_page_public_url( $slug, 'en' ) ); ?>" target="_blank">Anteprima</a>
+								<?php endif; ?>
+								<button type="submit" class="button" name="<?php echo $is_disabled ? 'sbt_restore_theme_page_slug' : 'sbt_disable_theme_page_slug'; ?>" value="<?php echo esc_attr( $slug ); ?>">
+									<?php echo $is_disabled ? 'Ripristina' : 'Disattiva'; ?>
+								</button>
 							</td>
 						</tr>
 					<?php endforeach; ?>
@@ -3816,12 +4181,15 @@ function sbt_render_pages_tab() {
 					<?php endif; ?>
 					<?php
 					$page_slug = sbt_language_page_slug( $slug, 'en' );
+					$is_disabled = in_array( $slug, $disabled_pages, true );
 					$post = sbt_theme_page_post( $slug, 'en' );
 					$edit_url = $post ? add_query_arg( 'edit_lang', 'en', get_edit_post_link( $post->ID, '' ) ) : '';
 					$missing_languages = array();
-					foreach ( $languages as $language ) {
-						if ( ! sbt_theme_page_post( $slug, $language ) ) {
-							$missing_languages[] = strtoupper( $language );
+					if ( ! $is_disabled ) {
+						foreach ( $languages as $language ) {
+							if ( ! sbt_theme_page_post( $slug, $language ) ) {
+								$missing_languages[] = strtoupper( $language );
+							}
 						}
 					}
 					?>
@@ -3829,12 +4197,19 @@ function sbt_render_pages_tab() {
 						<td><strong><?php echo esc_html( $page['title'] ); ?></strong></td>
 						<td><?php echo esc_html( implode( ' / ', array_map( 'strtoupper', $languages ) ) ); ?></td>
 						<td><code><?php echo esc_html( '/' . $page_slug . '/' ); ?></code></td>
-						<td><?php echo $missing_languages ? 'Mancano: ' . esc_html( implode( ', ', $missing_languages ) ) : 'Presente'; ?></td>
+						<td><?php echo $is_disabled ? 'Disattivata' : ( $missing_languages ? 'Mancano: ' . esc_html( implode( ', ', $missing_languages ) ) : 'Presente' ); ?></td>
 						<td class="sbt-actions">
-							<?php if ( $edit_url ) : ?>
+							<?php if ( $edit_url && ! $is_disabled ) : ?>
 								<a class="button button-primary" href="<?php echo esc_url( $edit_url ); ?>">Edit page fields</a>
 							<?php endif; ?>
-							<a class="button" href="<?php echo esc_url( sbt_theme_page_public_url( $slug, 'en' ) ); ?>" target="_blank">Anteprima</a>
+							<?php if ( ! $is_disabled ) : ?>
+								<a class="button" href="<?php echo esc_url( sbt_theme_page_public_url( $slug, 'en' ) ); ?>" target="_blank">Anteprima</a>
+							<?php endif; ?>
+							<?php if ( 'home' !== $slug ) : ?>
+								<button type="submit" class="button" name="<?php echo $is_disabled ? 'sbt_restore_theme_page_slug' : 'sbt_disable_theme_page_slug'; ?>" value="<?php echo esc_attr( $slug ); ?>">
+									<?php echo $is_disabled ? 'Ripristina' : 'Disattiva'; ?>
+								</button>
+							<?php endif; ?>
 						</td>
 					</tr>
 				<?php endforeach; ?>
@@ -3854,6 +4229,18 @@ function sbt_render_admin_page() {
 		if ( isset( $_POST['sbt_delete_house_slug'] ) ) {
 			if ( sbt_delete_custom_house_page( sanitize_title( wp_unslash( $_POST['sbt_delete_house_slug'] ) ) ) ) {
 				echo '<div class="notice notice-success is-dismissible"><p>House cancellata.</p></div>';
+			}
+		} elseif ( isset( $_POST['sbt_disable_theme_page_slug'] ) ) {
+			if ( sbt_disable_theme_page( sanitize_title( wp_unslash( $_POST['sbt_disable_theme_page_slug'] ) ), $selected_subtheme ) ) {
+				echo '<div class="notice notice-success is-dismissible"><p>Pagina disattivata e spostata nel cestino per tutte le lingue.</p></div>';
+			} else {
+				echo '<div class="notice notice-error is-dismissible"><p>Impossibile disattivare questa pagina.</p></div>';
+			}
+		} elseif ( isset( $_POST['sbt_restore_theme_page_slug'] ) ) {
+			if ( sbt_restore_theme_page( sanitize_title( wp_unslash( $_POST['sbt_restore_theme_page_slug'] ) ), $selected_subtheme ) ) {
+				echo '<div class="notice notice-success is-dismissible"><p>Pagina ripristinata per le lingue attive.</p></div>';
+			} else {
+				echo '<div class="notice notice-error is-dismissible"><p>Impossibile ripristinare questa pagina.</p></div>';
 			}
 		} elseif ( 'reset_active_template' === $sbt_action ) {
 			if ( sbt_reset_subtheme_template( $selected_subtheme ) ) {

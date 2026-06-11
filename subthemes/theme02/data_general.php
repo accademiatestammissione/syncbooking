@@ -25,7 +25,7 @@ $SITE = [
   'lang_primary' => 'EN',
   'lang_secondary' => 'IT',
   'rental_mode' => 'units',
-  'entire_label' => 'Whole Masseria',
+  'entire_label' => 'Entire Masseria',
   'unit_label' => 'Room',
   'unit_count' => '3',
   'whatsapp_label' => 'WhatsApp',
@@ -37,8 +37,8 @@ $SITE = [
   'vat'       => 'IT08825490728',
   'cin'       => 'IT072019B400085362',
   'webdev'    => ['label' => 'web dev logovia', 'url' => 'https://www.logovia.it/'],
-  'source_version' => '2.1',
-  'source_build_date' => '2026-06-11',
+  'source_version' => '2.0.0',
+  'source_build_date' => '2026-06-08',
 ];
 
 /* ---- IMAGES (by friendly key) ---- */
@@ -74,6 +74,33 @@ $IMG['masseria_pool'] = $IMG['band'];
 $IMG['room_main'] = $IMG['contacts_hero'];
 $IMG['whole'] = $IMG['welcome'];
 
+if ( function_exists( 'sbt_asset_url' ) ) {
+  $IMG['favicon'] = sbt_asset_url( 'assets/images/logo.png' );
+  $IMG['logo'] = sbt_asset_url( 'assets/images/logo.png' );
+  $IMG['logo_foot'] = sbt_asset_url( 'assets/images/logo.png' );
+  $IMG['welcome'] = sbt_asset_url( 'assets/images/masseria-dusk.jpg' );
+  $IMG['teaser_hospitality'] = sbt_asset_url( 'assets/images/facade-vines.jpg' );
+  $IMG['teaser_wedding'] = sbt_asset_url( 'assets/images/facade-flowers.jpg' );
+  $IMG['teaser_events'] = sbt_asset_url( 'assets/images/masseria-night.jpg' );
+  $IMG['band'] = sbt_asset_url( 'assets/images/aerial-garden.jpg' );
+  $IMG['hosp_hero'] = sbt_asset_url( 'assets/images/great-hall.jpg' );
+  $IMG['events_hero'] = sbt_asset_url( 'assets/images/courtyard.jpg' );
+  $IMG['wedding_hero'] = sbt_asset_url( 'assets/images/facade-glow.jpg' );
+  $IMG['partys_hero'] = sbt_asset_url( 'assets/images/pool-pergola.jpg' );
+  $IMG['surr_hero'] = sbt_asset_url( 'assets/images/conversano-castle.jpg' );
+  $IMG['contacts_hero'] = sbt_asset_url( 'assets/images/facade-flowers.jpg' );
+  $IMG['exp_massage'] = sbt_asset_url( 'assets/images/relax-lounge.png' );
+  $IMG['exp_boat'] = sbt_asset_url( 'assets/images/aerial-pool.jpg' );
+  $IMG['exp_cooking'] = sbt_asset_url( 'assets/images/apulian-breakfast.jpg' );
+  $IMG['exp_dinner'] = sbt_asset_url( 'assets/images/apulian-table.jpg' );
+  $IMG['masseria_aerial'] = sbt_asset_url( 'assets/images/aerial-pool.jpg' );
+  $IMG['masseria_facade'] = sbt_asset_url( 'assets/images/facade-vines.jpg' );
+  $IMG['masseria_courtyard'] = sbt_asset_url( 'assets/images/courtyard.jpg' );
+  $IMG['masseria_pool'] = sbt_asset_url( 'assets/images/pool-pergola.jpg' );
+  $IMG['room_main'] = sbt_asset_url( 'assets/images/room-01.jpg' );
+  $IMG['whole'] = sbt_asset_url( 'assets/images/masseria-bluehour.jpg' );
+}
+
 /* Hospitality photo gallery (lightbox). */
 $GALLERY = [
   "$BASE/2025/06/28-1024x682.jpg",
@@ -100,13 +127,40 @@ $WEDDING_GALLERY = [
   "$BASE/2025/07/IMG_5148-1024x682.jpg",
 ];
 
+if ( function_exists( 'sbt_asset_url' ) ) {
+  $GALLERY = [
+    sbt_asset_url( 'assets/images/masseria-001.jpg' ),
+    sbt_asset_url( 'assets/images/masseria-002.jpg' ),
+    sbt_asset_url( 'assets/images/masseria-003.jpg' ),
+    sbt_asset_url( 'assets/images/masseria-004.jpg' ),
+    sbt_asset_url( 'assets/images/masseria-005.jpg' ),
+    sbt_asset_url( 'assets/images/masseria-006.jpg' ),
+    sbt_asset_url( 'assets/images/room-01.jpg' ),
+    sbt_asset_url( 'assets/images/room-02.jpg' ),
+    sbt_asset_url( 'assets/images/room-03.jpg' ),
+    sbt_asset_url( 'assets/images/room-04.jpg' ),
+    sbt_asset_url( 'assets/images/pool-pergola.jpg' ),
+    sbt_asset_url( 'assets/images/courtyard.jpg' ),
+  ];
+  $WEDDING_GALLERY = [
+    sbt_asset_url( 'assets/images/facade-glow.jpg' ),
+    sbt_asset_url( 'assets/images/facade-flowers.jpg' ),
+    sbt_asset_url( 'assets/images/courtyard.jpg' ),
+    sbt_asset_url( 'assets/images/pool-pergola.jpg' ),
+    sbt_asset_url( 'assets/images/aerial-garden.jpg' ),
+    sbt_asset_url( 'assets/images/masseria-night.jpg' ),
+  ];
+}
+
 /* ---- NAVIGATION ---- */
 $NAV = [
   ['key'=>'home',         'label'=>'Home',              'url'=>'index.php'],
-  ['key'=>'masseria',     'label'=>'Masseria',          'url'=>'villa.php'],
-  ['key'=>'rooms',        'label'=>'Rooms',             'url'=>'house.php', 'sub'=>[
-      ['label'=>'Whole Masseria', 'desc'=>'Exclusive rental', 'url'=>'whole-masseria.php'],
+  ['key'=>'villa',        'label'=>'Masseria',          'url'=>'villa.php'],
+  ['key'=>'house',        'label'=>'Accomodation',      'url'=>'house.php', 'sub'=>[
+      ['label'=>'Rooms', 'desc'=>'Rooms only', 'url'=>'house.php'],
+      ['label'=>'The whole Masseria', 'desc'=>'Exclusive rental', 'url'=>'whole-masseria.php'],
       ['label'=>'Price &amp; Condition','desc'=>'Rates, check-in &amp; terms', 'url'=>'price-and-condition.php', 'divide'=>true],
+      ['label'=>'Book Now', 'desc'=>'Online booking', 'url'=>'syncbooking:booking'],
   ]],
   ['key'=>'spa',          'label'=>'SPA &amp; Wellness', 'url'=>'spa-wellness.php'],
   ['key'=>'experiences',  'label'=>'Experiences',       'url'=>'experiences.php'],
@@ -160,6 +214,15 @@ $DESTINATIONS = [
   ['~35 min',       'Alberobello &amp; Itria Valley', "$BASE/2025/06/24-1024x682.jpg"],
   ['~40 min',       'Bari',                      "$BASE/2025/06/23-1024x682.jpg"],
 ];
+
+if ( function_exists( 'sbt_asset_url' ) ) {
+  $DESTINATIONS = [
+    ['A few minutes', 'Conversano', sbt_asset_url( 'assets/images/conversano-castle.jpg' )],
+    ['~25 min', 'Polignano a Mare', sbt_asset_url( 'assets/images/aerial-pool.jpg' )],
+    ['~35 min', 'Alberobello &amp; Itria Valley', sbt_asset_url( 'assets/images/aerial-garden.jpg' )],
+    ['~40 min', 'Bari', sbt_asset_url( 'assets/images/facade-flowers.jpg' )],
+  ];
+}
 
 /* ---- PARTYS & MEETING formats ---- icon, title, text ---- */
 $PARTY_FORMATS = [

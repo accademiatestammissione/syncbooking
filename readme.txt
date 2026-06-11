@@ -19,9 +19,22 @@ This theme can display embedded video and maps when the site owner configures th
 * Vimeo player: used by the Villa Rosa Resort homepage video background. The configured Vimeo video id is used in an iframe from https://player.vimeo.com/. Vimeo privacy policy: https://vimeo.com/privacy
 * YouTube player: used by the Masseria Le Cerase homepage video background when a YouTube id is configured. The configured YouTube video id is used in an iframe from https://www.youtube.com/. Google privacy policy: https://policies.google.com/privacy
 * Google Maps embed: used on contact pages when a map embed URL is configured. Google privacy policy: https://policies.google.com/privacy
-* Demo media import: when an administrator clicks "Import demo media" in General Settings, demo images are downloaded from https://villarosaresort.it/ or https://masserialecerase.com/ into the local WordPress uploads directory. No visitor data is sent by the theme for this import.
+* Demo media import: when an administrator clicks "Download assets.zip online" in General Settings, the active subtheme assets.zip is downloaded from https://syncbooking.com/clone-theme/theme-01/assets.zip or https://syncbooking.com/clone-theme/theme-02/assets.zip into the local WordPress uploads directory. Assets are not bundled in the theme/plugin and there is no local fallback. No visitor data is sent by the theme for this import.
 
 == Changelog ==
+
+= 2.1.2 =
+* Removed local demo asset fallback and bundled subtheme assets. The theme imports media only from the online assets.zip configured for the active subtheme.
+* Updated General Settings copy to state clearly that assets are downloaded online and are not included in the theme/plugin package.
+
+= 2.1.1 =
+* Added disable and restore actions for generated internal pages in the Pages tab.
+
+= 2.1.0 =
+* Added Theme 01 and Theme 02 support for online assets.zip packages.
+* Changed translated page generation to nested URLs such as /it/villa/.
+* Restored the original Accommodation dropdown labels and added Book Now.
+* Added EN/IT seed posts for Experiences, Surroundings and Offers single articles.
 
 = 2.0.1 =
 * Displayed the dashboard release as SyncBooking Theme V2.01 and aligned the package version with GitHub.
@@ -32,7 +45,7 @@ This theme can display embedded video and maps when the site owner configures th
 * Added optimized bundled demo images for the regenerated templates while keeping the package lightweight.
 = 1.0.33 =
 * Added the default frontend language option with EN as the initial base language.
-* Generated the Italian homepage at /it/ while preserving existing translated page slugs such as /it-villa/.
+* Generated the Italian homepage at /it/ while preserving translated page slugs from that release.
 * Connected the header language switcher to real translated page URLs.
 * Replaced demo contact and wedding quote forms with WordPress AJAX submissions and email delivery without storing inquiries in WordPress.
 * Rebuilt the Theme 02 Weddings page from the latest clean HTML package, including gallery, sidebar quote card, mobile bar and modal.
@@ -193,6 +206,6 @@ This theme can display embedded video and maps when the site owner configures th
 
 Bundled theme code: SyncBooking Theme, Copyright Accademia Test Ammissione, GPLv2 or later.
 
-Bundled demo images and media in subthemes/theme01/assets and subthemes/theme02/assets: Copyright Accademia Test Ammissione, distributed under GPLv2 or later.
+No demo images, media, CSS or JavaScript assets are bundled in subthemes/theme01/assets or subthemes/theme02/assets. Theme assets are downloaded online from the configured assets.zip source for the active subtheme.
 
 No third-party font files are bundled. Font selections use local/system font stacks.
