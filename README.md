@@ -15,8 +15,8 @@ When a new clean HTML package is provided for a subtheme, treat it as the absolu
 Current Theme 01 source package:
 
 - Path: `C:\SyncBookingTheme\syncbooking_source\sourcethemeHTML\theme01`
-- Source version: `1.0.0`
-- Build date: `2026-06-07`
+- Source version: `2.1`
+- Build date: `2026-06-11`
 
 ## Admin Editing
 

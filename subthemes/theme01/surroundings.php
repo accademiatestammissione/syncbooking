@@ -1,37 +1,40 @@
 <?php
 $PAGE = 'surroundings';
+$CONTENT_KEY = 'surroundings';
 require __DIR__ . '/inc/header.php';
-$p = $C['surroundings'];
-sbt_t1_page_hero( 'surroundings', $p, 'Surroundings' );
 ?>
 
-<section class="pad" data-screen-label="Surroundings intro">
-	<div class="wrap">
-		<div class="section-head reveal">
-			<div class="overline"><?php echo sbt_t1_text( 'C.surroundings.intro_over', $p['intro_over'] ); ?></div>
-			<h2><?php echo sbt_t1_text( 'C.surroundings.intro_h2', $p['intro_h2'] ); ?></h2>
-			<p><?php echo sbt_t1_text( 'C.surroundings.intro_p', $p['intro_p'], array( 'multiline' => true ) ); ?></p>
-		</div>
-		<div class="exp-grid">
-			<?php foreach ( $p['cards'] as $index => $card ) : ?>
-				<a class="exp reveal" href="<?php echo esc_url( sbt_t1_url( $card['url'] ) ); ?>">
-					<?php echo sbt_t1_img( 'C.surroundings.cards.' . $index . '.img', $card['img'], $card['h3'] ); ?>
-					<div class="ex-body"><div class="overline"><?php echo sbt_t1_text( 'C.surroundings.cards.' . $index . '.over', $card['over'] ); ?></div><h3><?php echo sbt_t1_text( 'C.surroundings.cards.' . $index . '.h3', $card['h3'] ); ?></h3><div class="ex-link"><?php echo sbt_t1_text( 'TEXT.discover', $TEXT['discover'] ); ?> <span></span></div></div>
-					<?php echo sbt_t1_control( 'C.surroundings.cards.' . $index . '.url', $card['url'], 'Link card', 'url' ); ?>
-				</a>
-			<?php endforeach; ?>
-		</div>
-	</div>
+<section class="sbtw-page-hero" data-screen-label="Surroundings banner">
+  <?php echo sbt_t1_img( 'C.surroundings.image_1', sbt_t1_asset( 'assets/images/conversano-town.jpg' ), '', array( 'class' => 'sbtw-bg' ) ); ?>
+  <div class="sbtw-wrap">
+    <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.surroundings.text_1', 'Conversano &amp; beyond', array( 'multiline' => false ) ); ?></div>
+    <h1><?php echo sbt_t1_text( 'C.surroundings.text_2', 'Surroundings', array( 'multiline' => false ) ); ?></h1>
+    <nav class="sbtw-crumb"><a href="<?php echo esc_url( sbt_t1_url( sbt_t1_value( 'C.surroundings.link_1', 'home.php' ) ) ); ?>"><?php echo sbt_t1_text( 'C.surroundings.text_3', 'Home', array( 'multiline' => false ) ); ?></a><span>/</span><?php echo sbt_t1_text( 'C.surroundings.text_4', 'Surroundings', array( 'multiline' => false ) ); ?></nav>
+  </div>
 </section>
 
-<section class="band" style="<?php echo esc_attr( sbt_t1_bg_style( 'C.surroundings.cta_bg', $p['cta_bg'] ) ); ?>" data-screen-label="Surroundings band">
-	<div class="inner reveal">
-		<?php echo sbt_t1_control( 'C.surroundings.cta_bg', $p['cta_bg'], 'Immagine sfondo', 'image' ); ?>
-		<div class="overline"><?php echo sbt_t1_text( 'C.surroundings.cta_over', $p['cta_over'] ); ?></div>
-		<h2><?php echo sbt_t1_text( 'C.surroundings.cta_h2', $p['cta_h2'] ); ?></h2>
-		<a class="btn btn--light" href="<?php echo esc_url( sbt_t1_url( $p['cta_url'] ) ); ?>" style="margin-top:8px;"><?php echo sbt_t1_text( 'C.surroundings.cta_btn', $p['cta_btn'] ); ?></a>
-		<?php echo sbt_t1_control( 'C.surroundings.cta_url', $p['cta_url'], 'Link bottone', 'url' ); ?>
-	</div>
+<section class="sbtw-pad" data-screen-label="Surroundings intro">
+  <div class="sbtw-wrap">
+    <div class="sbtw-section-head sbtw-reveal">
+      <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.surroundings.text_5', 'In the heart of Puglia', array( 'multiline' => false ) ); ?></div>
+      <h2><?php echo sbt_t1_text( 'C.surroundings.text_6', 'A region to fall in love with', array( 'multiline' => false ) ); ?></h2>
+      <p><?php echo sbt_t1_text( 'C.surroundings.text_7', 'Villa Rosa sits in the ancient heart of Conversano, one of Puglia\'s most charming villages, crowned by its Norman-Swabian Castle. From here, the wonders of the region are all within easy reach — whitewashed towns, the trulli of the Itria Valley, and the turquoise Adriatic coast.', array( 'multiline' => true ) ); ?></p>
+    </div>
+    <div class="sbtw-exp-grid">
+      <a class="sbtw-exp sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( sbt_t1_value( 'C.surroundings.link_2', 'single.php' ) ) ); ?>"><?php echo sbt_t1_img( 'C.surroundings.image_2', sbt_t1_asset( 'assets/images/conversano-town.jpg' ), '', array() ); ?><div class="sbtw-ex-body"><div class="sbtw-overline"><?php echo sbt_t1_text( 'C.surroundings.text_8', '2 min walk', array( 'multiline' => false ) ); ?></div><h3><?php echo sbt_t1_text( 'C.surroundings.text_9', 'Conversano', array( 'multiline' => false ) ); ?></h3><div class="sbtw-ex-link"><?php echo sbt_t1_text( 'C.surroundings.text_10', 'Discover', array( 'multiline' => false ) ); ?> <span></span></div></div></a>
+      <a class="sbtw-exp sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( sbt_t1_value( 'C.surroundings.link_3', 'single.php' ) ) ); ?>"><?php echo sbt_t1_img( 'C.surroundings.image_3', sbt_t1_asset( 'https://commons.wikimedia.org/wiki/Special:FilePath/Lama%20Monachile.jpg?width=1400' ), '', array() ); ?><div class="sbtw-ex-body"><div class="sbtw-overline"><?php echo sbt_t1_text( 'C.surroundings.text_11', '25 min', array( 'multiline' => false ) ); ?></div><h3><?php echo sbt_t1_text( 'C.surroundings.text_12', 'Polignano a Mare', array( 'multiline' => false ) ); ?></h3><div class="sbtw-ex-link"><?php echo sbt_t1_text( 'C.surroundings.text_13', 'Discover', array( 'multiline' => false ) ); ?> <span></span></div></div></a>
+      <a class="sbtw-exp sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( sbt_t1_value( 'C.surroundings.link_4', 'single.php' ) ) ); ?>"><?php echo sbt_t1_img( 'C.surroundings.image_4', sbt_t1_asset( 'https://commons.wikimedia.org/wiki/Special:FilePath/Alberobello%20trulli.JPG?width=1400' ), '', array() ); ?><div class="sbtw-ex-body"><div class="sbtw-overline"><?php echo sbt_t1_text( 'C.surroundings.text_14', '35 min', array( 'multiline' => false ) ); ?></div><h3><?php echo sbt_t1_text( 'C.surroundings.text_15', 'Alberobello &amp; Itria Valley', array( 'multiline' => false ) ); ?></h3><div class="sbtw-ex-link"><?php echo sbt_t1_text( 'C.surroundings.text_16', 'Discover', array( 'multiline' => false ) ); ?> <span></span></div></div></a>
+      <a class="sbtw-exp sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( sbt_t1_value( 'C.surroundings.link_5', 'single.php' ) ) ); ?>"><?php echo sbt_t1_img( 'C.surroundings.image_5', sbt_t1_asset( 'https://commons.wikimedia.org/wiki/Special:FilePath/Bari%20-%20Lungomare%20Imperatore%20Augusto%20-%20202109141234.jpg?width=1400' ), '', array() ); ?><div class="sbtw-ex-body"><div class="sbtw-overline"><?php echo sbt_t1_text( 'C.surroundings.text_17', '40 min', array( 'multiline' => false ) ); ?></div><h3><?php echo sbt_t1_text( 'C.surroundings.text_18', 'Bari', array( 'multiline' => false ) ); ?></h3><div class="sbtw-ex-link"><?php echo sbt_t1_text( 'C.surroundings.text_19', 'Discover', array( 'multiline' => false ) ); ?> <span></span></div></div></a>
+    </div>
+  </div>
+</section>
+
+<section class="sbtw-band" style="background-image:url('<?php echo esc_url( sbt_t1_asset( 'https://commons.wikimedia.org/wiki/Special:FilePath/Lama%20Monachile.jpg?width=1600' ) ); ?>');" data-screen-label="Surroundings band">
+  <div class="sbtw-inner sbtw-reveal">
+    <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.surroundings.text_20', 'Let us guide you', array( 'multiline' => false ) ); ?></div>
+    <h2><?php echo sbt_t1_text( 'C.surroundings.text_21', 'Discover Puglia with us', array( 'multiline' => false ) ); ?></h2>
+    <a class="sbtw-btn sbtw-btn--light" href="<?php echo esc_url( sbt_t1_url( sbt_t1_value( 'C.surroundings.link_6', 'experiences.php' ) ) ); ?>" style="margin-top:8px;"><?php echo sbt_t1_text( 'C.surroundings.text_22', 'See our experiences', array( 'multiline' => false ) ); ?></a>
+  </div>
 </section>
 
 <?php require __DIR__ . '/inc/footer.php'; ?>

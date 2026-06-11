@@ -1,44 +1,55 @@
 <?php
-$PAGE = 'experiences';
+$PAGE = 'article';
+$CONTENT_KEY = 'article';
 require __DIR__ . '/inc/header.php';
-$p = $C['article'];
-sbt_t1_page_hero( 'article', $p, 'Article', array( 'url' => 'experiences.php', 'label' => 'Experiences' ) );
 ?>
 
-<section class="pad" data-screen-label="Article body">
-	<div class="wrap">
-		<article class="article reveal">
-			<div class="overline"><?php echo sbt_t1_text( 'C.article.article_over', $p['article_over'] ); ?></div>
-			<h1 class="title"><?php echo sbt_t1_text( 'C.article.article_title', $p['article_title'] ); ?></h1>
-			<p class="meta"><?php echo sbt_t1_text( 'C.article.article_meta', $p['article_meta'] ); ?></p>
-			<div class="article-body">
-				<p><?php echo sbt_t1_text( 'C.article.body_p1', $p['body_p1'], array( 'multiline' => true ) ); ?></p>
-				<p><?php echo sbt_t1_text( 'C.article.body_p2', $p['body_p2'], array( 'multiline' => true ) ); ?></p>
-				<h2><?php echo sbt_t1_text( 'C.article.body_h2', $p['body_h2'] ); ?></h2>
-				<p><?php echo sbt_t1_text( 'C.article.body_p3', $p['body_p3'], array( 'multiline' => true ) ); ?></p>
-				<blockquote><?php echo sbt_t1_text( 'C.article.body_quote', $p['body_quote'], array( 'multiline' => true ) ); ?></blockquote>
-				<h3><?php echo sbt_t1_text( 'C.article.body_h3', $p['body_h3'] ); ?></h3>
-				<p><?php echo sbt_t1_text( 'C.article.body_p4', $p['body_p4'], array( 'multiline' => true ) ); ?></p>
-				<ul>
-					<?php foreach ( $p['body_items'] as $index => $item ) : ?>
-						<li><?php echo sbt_t1_text( 'C.article.body_items.' . $index, $item, array( 'multiline' => true ) ); ?></li>
-					<?php endforeach; ?>
-				</ul>
-				<p><?php echo sbt_t1_text( 'C.article.body_p5', $p['body_p5'], array( 'multiline' => true ) ); ?> <a href="<?php echo esc_url( sbt_t1_url( $p['body_link_url'] ) ); ?>"><?php echo sbt_t1_text( 'C.article.body_link_label', $p['body_link_label'] ); ?></a> to plan their experience.</p>
-				<?php echo sbt_t1_control( 'C.article.body_link_url', $p['body_link_url'], 'Link testo', 'url' ); ?>
-			</div>
-		</article>
-	</div>
+<section class="sbtw-page-hero" data-screen-label="Article banner">
+  <?php echo sbt_t1_img( 'C.article.image_1', sbt_t1_asset( 'uploads/ota/039.jpg' ), '', array( 'class' => 'sbtw-bg' ) ); ?>
+  <div class="sbtw-wrap">
+    <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.article.text_1', 'Villa Rosa Resort &amp; SPA', array( 'multiline' => false ) ); ?></div>
+    <h1><?php echo sbt_t1_text( 'C.article.text_2', 'Experiences', array( 'multiline' => false ) ); ?></h1>
+    <nav class="sbtw-crumb"><a href="<?php echo esc_url( sbt_t1_url( sbt_t1_value( 'C.article.link_1', 'home.php' ) ) ); ?>"><?php echo sbt_t1_text( 'C.article.text_3', 'Home', array( 'multiline' => false ) ); ?></a><span>/</span><a href="<?php echo esc_url( sbt_t1_url( sbt_t1_value( 'C.article.link_2', 'experiences.php' ) ) ); ?>"><?php echo sbt_t1_text( 'C.article.text_4', 'Experiences', array( 'multiline' => false ) ); ?></a><span>/</span><?php echo sbt_t1_text( 'C.article.text_5', 'Article', array( 'multiline' => false ) ); ?></nav>
+  </div>
 </section>
 
-<section class="band" style="<?php echo esc_attr( sbt_t1_bg_style( 'C.article.cta_bg', $p['cta_bg'] ) ); ?>" data-screen-label="Article CTA">
-	<div class="inner reveal">
-		<?php echo sbt_t1_control( 'C.article.cta_bg', $p['cta_bg'], 'Immagine sfondo', 'image' ); ?>
-		<div class="overline"><?php echo sbt_t1_text( 'C.article.cta_over', $p['cta_over'] ); ?></div>
-		<h2><?php echo sbt_t1_text( 'C.article.cta_h2', $p['cta_h2'] ); ?></h2>
-		<a class="btn btn--light" href="<?php echo esc_url( sbt_t1_url( $p['cta_url'] ) ); ?>" style="margin-top:8px;"><?php echo sbt_t1_text( 'C.article.cta_btn', $p['cta_btn'] ); ?></a>
-		<?php echo sbt_t1_control( 'C.article.cta_url', $p['cta_url'], 'Link bottone', 'url' ); ?>
-	</div>
+<section class="sbtw-pad" data-screen-label="Article body">
+  <div class="sbtw-wrap">
+    <article class="sbtw-article sbtw-reveal">
+      <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.article.text_6', 'Taste', array( 'multiline' => false ) ); ?></div>
+      <h1 class="sbtw-title"><?php echo sbt_t1_text( 'C.article.text_7', 'Cooking Classes in the heart of Puglia', array( 'multiline' => false ) ); ?></h1>
+      <p class="sbtw-meta"><?php echo sbt_t1_text( 'C.article.text_8', 'Experiences · 5 min read', array( 'multiline' => false ) ); ?></p>
+
+      <div class="sbtw-article-body">
+        <p><?php echo sbt_t1_text( 'C.article.text_9', 'Write your article here. This opening paragraph sets the scene — the drop-cap is applied automatically, so simply start typing and let the words lead your guest into the story. Replace this text with your own.', array( 'multiline' => true ) ); ?></p>
+
+        <p><?php echo sbt_t1_text( 'C.article.text_10', 'Continue with the body of your article. You can write as many paragraphs as you like; each one will flow in this comfortable, readable column. Talk about the experience, what guests will see, taste and feel, and why it matters.', array( 'multiline' => true ) ); ?></p>
+
+        <h2><?php echo sbt_t1_text( 'C.article.text_11', 'A section heading', array( 'multiline' => false ) ); ?></h2>
+        <p><?php echo sbt_t1_text( 'C.article.text_12', 'Use headings to break longer pieces into clear sections. This makes the article easy to scan and pleasant to read on any device.', array( 'multiline' => true ) ); ?></p>
+
+        <blockquote><?php echo sbt_t1_text( 'C.article.text_13', 'Add a short, evocative quote here to give the page a moment of pause.', array( 'multiline' => false ) ); ?></blockquote>
+
+        <h3><?php echo sbt_t1_text( 'C.article.text_14', 'A smaller subheading', array( 'multiline' => false ) ); ?></h3>
+        <p><?php echo sbt_t1_text( 'C.article.text_15', 'You can also use bulleted lists to highlight practical details:', array( 'multiline' => false ) ); ?></p>
+        <ul>
+          <li><?php echo sbt_t1_text( 'C.article.text_16', 'First point — for example, what is included', array( 'multiline' => false ) ); ?></li>
+          <li><?php echo sbt_t1_text( 'C.article.text_17', 'Second point — duration, group size or location', array( 'multiline' => false ) ); ?></li>
+          <li><?php echo sbt_t1_text( 'C.article.text_18', 'Third point — anything else worth noting', array( 'multiline' => false ) ); ?></li>
+        </ul>
+
+        <p><?php echo sbt_t1_text( 'C.article.text_19', 'Close with a final thought or an invitation. When you are ready, guests can', array( 'multiline' => false ) ); ?> <a href="<?php echo esc_url( sbt_t1_url( sbt_t1_value( 'C.article.link_3', 'contacts.php' ) ) ); ?>"><?php echo sbt_t1_text( 'C.article.text_20', 'get in touch', array( 'multiline' => false ) ); ?></a> <?php echo sbt_t1_text( 'C.article.text_21', 'to plan their experience.', array( 'multiline' => false ) ); ?></p>
+      </div>
+    </article>
+  </div>
+</section>
+
+<section class="sbtw-band" style="background-image:url('<?php echo esc_url( sbt_t1_asset( 'uploads/Esterni/078.jpg' ) ); ?>');" data-screen-label="Article CTA">
+  <div class="sbtw-inner sbtw-reveal">
+    <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.article.text_22', 'Design your days', array( 'multiline' => false ) ); ?></div>
+    <h2><?php echo sbt_t1_text( 'C.article.text_23', 'Plan your experiences', array( 'multiline' => false ) ); ?></h2>
+    <a class="sbtw-btn sbtw-btn--light" href="<?php echo esc_url( sbt_t1_url( sbt_t1_value( 'C.article.link_4', 'contacts.php' ) ) ); ?>" style="margin-top:8px;"><?php echo sbt_t1_text( 'C.article.text_24', 'Contact us', array( 'multiline' => false ) ); ?></a>
+  </div>
 </section>
 
 <?php require __DIR__ . '/inc/footer.php'; ?>

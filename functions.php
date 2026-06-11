@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * WordPress bridge for SyncBooking multi-subtheme package.
  *
@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '1.0.33' );
+define( 'SBT_VERSION', '2.0.1' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -86,24 +86,9 @@ function sbt_widgets_init() {
 }
 add_action( 'widgets_init', 'sbt_widgets_init' );
 
-function sbt_register_inquiry_post_type() {
-	register_post_type(
-		'sbt_inquiry',
-		array(
-			'labels'       => array(
-				'name'          => __( 'SyncBooking Inquiries', 'syncbooking-hospitality' ),
-				'singular_name' => __( 'SyncBooking Inquiry', 'syncbooking-hospitality' ),
-				'menu_name'     => __( 'SyncBooking Inquiries', 'syncbooking-hospitality' ),
-			),
-			'public'       => false,
-			'show_ui'      => true,
-			'show_in_menu' => true,
-			'supports'     => array( 'title', 'editor', 'custom-fields' ),
-			'capability_type' => 'post',
-		)
-	);
+function sbt_display_version() {
+	return 'V2.01';
 }
-add_action( 'init', 'sbt_register_inquiry_post_type' );
 
 function sbt_enqueue_comment_reply() {
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
@@ -121,6 +106,7 @@ function sbt_subthemes() {
 				'home'                => array( 'title' => 'Home', 'file' => 'index.php' ),
 				'villa'               => array( 'title' => 'Villa', 'file' => 'villa.php', 'content_key' => 'villa' ),
 				'houses'              => array( 'title' => 'Houses', 'file' => 'houses.php', 'content_key' => 'houses' ),
+				'entire-villa'        => array( 'title' => 'Entire Villa', 'file' => 'entire.php', 'content_key' => 'entire' ),
 				'price-and-condition' => array( 'title' => 'Price & Condition', 'file' => 'price-and-condition.php', 'content_key' => 'price' ),
 				'spa-wellness'        => array( 'title' => 'SPA & Wellness', 'file' => 'spa-wellness.php', 'content_key' => 'spa' ),
 				'experiences'         => array( 'title' => 'Experiences', 'file' => 'experiences.php', 'content_key' => 'experiences' ),
@@ -135,8 +121,8 @@ function sbt_subthemes() {
 			'dir'   => 'theme02',
 			'pages' => array(
 				'home'                => array( 'title' => 'Home', 'file' => 'index.php', 'content_key' => 'home' ),
-				'villa'               => array( 'title' => 'Masseria', 'file' => 'villa.php', 'content_key' => 'villa' ),
-				'house'               => array( 'title' => 'Rooms', 'file' => 'house.php', 'content_key' => 'house' ),
+				'masseria'            => array( 'title' => 'Masseria', 'file' => 'villa.php', 'content_key' => 'villa' ),
+				'rooms'               => array( 'title' => 'Rooms', 'file' => 'house.php', 'content_key' => 'house' ),
 				'whole-masseria'      => array( 'title' => 'Whole Masseria', 'file' => 'whole-masseria.php', 'content_key' => 'whole' ),
 				'price-and-condition' => array( 'title' => 'Price & Condition', 'file' => 'price-and-condition.php', 'content_key' => 'price' ),
 				'spa-wellness'        => array( 'title' => 'SPA & Wellness', 'file' => 'spa-wellness.php', 'content_key' => 'spa' ),
@@ -273,14 +259,14 @@ function sbt_edit_mode() {
 function sbt_t( $key ) {
 	$labels = array(
 		'it' => array(
-			'choose_subtheme' => 'Scegli il sottotema',
-			'theme_note'      => 'Ogni sottotema mantiene layout, header, footer, menu, pagine e contenuti modificabili separati.',
-			'save_theme'      => 'Salva impostazioni tema',
+			'choose_subtheme' => 'Choose subtheme',
+			'theme_note'      => 'Each subtheme keeps separate layout, header, footer, menu, pages and editable content.',
+			'save_theme'      => 'Save theme settings',
 			'admin_language'  => 'Lingua gestionale',
 			'default_language' => 'Lingua base sito',
-			'site_languages'  => 'Lingue pagine',
+			'site_languages'  => 'Page languages',
 			'reset_template'  => 'Reset template',
-			'reset_note'      => 'Riporta il sottotema selezionato ai contenuti originali e cancella le modifiche salvate per quel sottotema.',
+			'reset_note'      => 'Restore the selected subtheme to its original content and clear saved edits for that subtheme.',
 		),
 		'en' => array(
 			'choose_subtheme' => 'Choose subtheme',
@@ -318,25 +304,25 @@ function sbt_unit_label( $overrides = array() ) {
 
 function sbt_unit_label_options() {
 	return array(
-		'House' => 'Houses',
-		'Unit'  => 'Units',
-		'Apt'   => 'Apts',
-		'Room'  => 'Rooms',
-		'Villa' => 'Villas',
+		'Room'      => 'Rooms',
+		'House'     => 'Houses',
+		'Unit'      => 'Units',
+		'Apartment' => 'Apartments',
 	);
 }
 
 function sbt_entire_label_options() {
 	return array(
 		'Entire Villa'    => 'Entire Villa',
-		'Entire Masseria' => 'Entire Masseria',
+		'Whole Masseria' => 'Whole Masseria',
 		'Entire House'    => 'Entire House',
+		'Entire Property' => 'Entire Property',
 	);
 }
 
 function sbt_default_entire_label( $subtheme = '' ) {
 	$subtheme = '' === $subtheme ? sbt_active_subtheme_key() : $subtheme;
-	return 'theme02' === $subtheme ? 'Entire Masseria' : 'Entire Villa';
+	return 'theme02' === $subtheme ? 'Whole Masseria' : 'Entire Villa';
 }
 
 function sbt_rental_mode( $subtheme = '' ) {
@@ -417,7 +403,7 @@ function sbt_unit_slug_from_title( $title, $number, &$used_slugs = array() ) {
 		$slug = 'unit-' . absint( $number );
 	}
 
-	$protected = array( 'home', 'villa', 'houses', 'house', 'whole-masseria', 'price-and-condition', 'spa-wellness', 'experiences', 'weddings', 'article', 'surroundings', 'offers', 'contacts' );
+	$protected = array( 'home', 'villa', 'masseria', 'houses', 'house', 'rooms', 'entire-villa', 'whole-masseria', 'price-and-condition', 'spa-wellness', 'experiences', 'weddings', 'article', 'surroundings', 'offers', 'contacts' );
 	if ( in_array( $slug, $protected, true ) || in_array( $slug, $used_slugs, true ) ) {
 		$slug .= '-' . absint( $number );
 	}
@@ -496,6 +482,25 @@ function sbt_media_base_url() {
 	return sbt_media_remote_base_url( $key );
 }
 
+function sbt_demo_media_url( $relative, $subtheme_key = '' ) {
+	$key = $subtheme_key ? sanitize_key( $subtheme_key ) : sbt_active_subtheme_key();
+	$relative = rawurldecode( ltrim( (string) $relative, '/' ) );
+	$uploads = wp_get_upload_dir();
+	if ( empty( $uploads['error'] ) ) {
+		$local = trailingslashit( $uploads['basedir'] ) . 'syncbooking-theme/' . $key . '/' . $relative;
+		if ( file_exists( $local ) ) {
+			return trailingslashit( $uploads['baseurl'] ) . 'syncbooking-theme/' . $key . '/' . str_replace( '%2F', '/', rawurlencode( $relative ) );
+		}
+	}
+
+	$remote_relative = $relative;
+	if ( 'theme01' === $key && 0 === strpos( $remote_relative, 'uploads/' ) ) {
+		$remote_relative = substr( $remote_relative, 8 );
+	}
+
+	return trailingslashit( sbt_media_remote_base_url( $key ) ) . str_replace( '%2F', '/', rawurlencode( $remote_relative ) );
+}
+
 function sbt_theme_style_value( $key, $fallback = '' ) {
 	$overrides = sbt_active_overrides();
 	return isset( $overrides[ $key ] ) && '' !== $overrides[ $key ] ? $overrides[ $key ] : $fallback;
@@ -537,12 +542,8 @@ function sbt_theme_design_css() {
 }
 
 function sbt_enqueue_theme_fonts() {
-	if ( 'theme01' !== sbt_active_subtheme_key() ) {
-		return;
-	}
-
 	wp_enqueue_style(
-		'syncbooking-hospitality-theme01-fonts',
+		'syncbooking-hospitality-fonts',
 		'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap',
 		array(),
 		null
@@ -564,7 +565,7 @@ function sbt_page_templates() {
 	}
 
 	if ( sbt_is_entire_rental_mode( $subtheme_key ) ) {
-		unset( $pages['houses'], $pages['house'] );
+		unset( $pages['houses'], $pages['house'], $pages['rooms'] );
 		$entire_slug = sbt_entire_page_slug( $subtheme_key );
 		if ( ! isset( $pages[ $entire_slug ] ) ) {
 			$pages[ $entire_slug ] = array(
@@ -584,6 +585,9 @@ function sbt_page_templates() {
 	}
 	if ( isset( $pages['house'] ) ) {
 		$pages['house']['title'] = sbt_unit_plural_label();
+	}
+	if ( isset( $pages['rooms'] ) ) {
+		$pages['rooms']['title'] = sbt_unit_plural_label();
 	}
 	foreach ( sbt_custom_house_pages( $subtheme_key ) as $house_page ) {
 		$pages[ $house_page['slug'] ] = array(
@@ -727,48 +731,6 @@ function sbt_form_recipient_email() {
 	return is_email( $email ) ? $email : get_option( 'admin_email' );
 }
 
-function sbt_store_form_inquiry( $payload, $mail_sent ) {
-	$title = sprintf(
-		'%1$s - %2$s - %3$s',
-		'quote' === $payload['form_type'] ? __( 'Wedding quote', 'syncbooking-hospitality' ) : __( 'Contact request', 'syncbooking-hospitality' ),
-		$payload['name'],
-		current_time( 'Y-m-d H:i' )
-	);
-	$content = implode(
-		"\n",
-		array(
-			'Name: ' . $payload['name'],
-			'Email: ' . $payload['email'],
-			'Phone: ' . $payload['phone'],
-			'Form: ' . $payload['form_type'],
-			'Language: ' . strtoupper( $payload['language'] ),
-			'Source: ' . $payload['source_url'],
-			'Mail sent: ' . ( $mail_sent ? 'yes' : 'no' ),
-			'',
-			'Message:',
-			$payload['message'],
-		)
-	);
-
-	$post_id = wp_insert_post(
-		array(
-			'post_type'    => 'sbt_inquiry',
-			'post_status'  => 'private',
-			'post_title'   => wp_strip_all_tags( $title ),
-			'post_content' => $content,
-		)
-	);
-
-	if ( $post_id && ! is_wp_error( $post_id ) ) {
-		foreach ( $payload as $key => $value ) {
-			update_post_meta( $post_id, '_sbt_' . sanitize_key( $key ), $value );
-		}
-		update_post_meta( $post_id, '_sbt_mail_sent', $mail_sent ? '1' : '0' );
-	}
-
-	return $post_id;
-}
-
 function sbt_handle_form_submission() {
 	if ( ! check_ajax_referer( 'sbt_submit_form', 'nonce', false ) ) {
 		wp_send_json_error( array( 'message' => __( 'Security check failed.', 'syncbooking-hospitality' ) ), 403 );
@@ -825,13 +787,11 @@ function sbt_handle_form_submission() {
 	);
 	$headers = array( 'Reply-To: ' . $name . ' <' . $email . '>' );
 	$mail_sent = wp_mail( $recipient, $subject, $body, $headers );
-	$inquiry_id = sbt_store_form_inquiry( $payload, $mail_sent );
 
 	if ( ! $mail_sent ) {
 		wp_send_json_error(
 			array(
-				'message'   => __( 'The request was saved but the email could not be sent. Please check WordPress mail settings.', 'syncbooking-hospitality' ),
-				'inquiryId' => is_wp_error( $inquiry_id ) ? 0 : (int) $inquiry_id,
+				'message' => __( 'The email could not be sent. Please check WordPress mail settings or install a SMTP plugin.', 'syncbooking-hospitality' ),
 			),
 			500
 		);
@@ -839,8 +799,7 @@ function sbt_handle_form_submission() {
 
 	wp_send_json_success(
 		array(
-			'message'   => __( 'Thank you, your request has been sent. We will contact you shortly.', 'syncbooking-hospitality' ),
-			'inquiryId' => is_wp_error( $inquiry_id ) ? 0 : (int) $inquiry_id,
+			'message' => __( 'Thank you, your request has been sent. We will contact you shortly.', 'syncbooking-hospitality' ),
 		)
 	);
 }
@@ -963,7 +922,7 @@ function sbt_sanitize_editable_override( $path, $value ) {
 
 function sbt_link_target_options() {
 	$options = array(
-		'syncbooking:booking' => 'Pagina booking SyncBooking',
+		'syncbooking:booking' => 'SyncBooking booking page',
 	);
 	$posts = get_posts(
 		array(
@@ -979,7 +938,7 @@ function sbt_link_target_options() {
 	);
 
 	foreach ( $posts as $post ) {
-		$type_label = 'page' === $post->post_type ? 'Pagina' : 'Articolo';
+		$type_label = 'page' === $post->post_type ? 'Page' : 'Post';
 		$url = set_url_scheme( get_permalink( $post ), 'https' );
 		$options[ $url ] = $type_label . ' - ' . get_the_title( $post );
 	}
@@ -995,13 +954,13 @@ function sbt_render_link_target_control( $name, $current ) {
 	<span class="sbt-link-control">
 		<input type="hidden" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $current ); ?>" class="sbt-link-value">
 		<select class="sbt-link-select">
-			<option value="">Link diretto / esterno</option>
+			<option value="">Direct / external link</option>
 			<?php foreach ( $options as $url => $label ) : ?>
 				<option value="<?php echo esc_attr( $url ); ?>" <?php selected( $current, $url ); ?>><?php echo esc_html( $label ); ?> - <?php echo esc_html( $url ); ?></option>
 			<?php endforeach; ?>
 		</select>
 		<input type="url" value="<?php echo esc_attr( $has_current ? '' : $current ); ?>" class="sbt-link-direct" placeholder="https://example.com/page/">
-		<span class="sbt-link-hint">Scegli una pagina/articolo, la pagina booking SyncBooking, oppure inserisci un URL diretto https://...</span>
+		<span class="sbt-link-hint">Choose a page/post, the SyncBooking booking page, or enter a direct https:// URL.</span>
 	</span>
 	<?php
 }
@@ -1030,6 +989,71 @@ function sbt_copy_directory( $source, $target ) {
 			copy( $from, $to );
 		}
 	}
+}
+
+function sbt_copy_bundled_demo_media( $subtheme_key = '' ) {
+	$key = $subtheme_key ? sanitize_key( $subtheme_key ) : sbt_active_subtheme_key();
+	if ( ! in_array( $key, array( 'theme01', 'theme02' ), true ) ) {
+		return new WP_Error( 'sbt_unknown_subtheme', __( 'Unknown subtheme.', 'syncbooking-hospitality' ) );
+	}
+
+	$uploads = wp_get_upload_dir();
+	if ( ! empty( $uploads['error'] ) ) {
+		return new WP_Error( 'sbt_uploads_error', $uploads['error'] );
+	}
+
+	$theme_base = trailingslashit( get_template_directory() ) . 'subthemes/' . $key . '/';
+	$target_base = trailingslashit( $uploads['basedir'] ) . 'syncbooking-theme/' . $key . '/';
+	$folders = array( 'uploads', 'assets/images', 'assets/photos', 'assets/brochure' );
+	$copied = 0;
+	$skipped = 0;
+
+	foreach ( $folders as $folder ) {
+		$source = $theme_base . $folder;
+		if ( ! is_dir( $source ) ) {
+			continue;
+		}
+
+		$iterator = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $source, RecursiveDirectoryIterator::SKIP_DOTS ) );
+		foreach ( $iterator as $file ) {
+			if ( ! $file->isFile() ) {
+				continue;
+			}
+
+			$relative = str_replace( wp_normalize_path( $theme_base ), '', wp_normalize_path( $file->getPathname() ) );
+			$target = $target_base . $relative;
+			if ( file_exists( $target ) && filesize( $target ) > 0 ) {
+				$skipped++;
+				continue;
+			}
+
+			wp_mkdir_p( dirname( $target ) );
+			if ( @copy( $file->getPathname(), $target ) ) {
+				$copied++;
+			}
+		}
+	}
+
+	if ( $copied || $skipped ) {
+		sbt_register_upload_assets( $target_base, $key );
+
+		$imports = get_option( SBT_MEDIA_OPTION, array() );
+		$imports[ $key ] = array(
+			'downloaded' => $copied,
+			'skipped'    => $skipped,
+			'failed'     => 0,
+			'updated_at' => current_time( 'mysql' ),
+			'source'     => 'bundled',
+		);
+		update_option( SBT_MEDIA_OPTION, $imports );
+	}
+
+	return array(
+		'downloaded' => $copied,
+		'skipped'    => $skipped,
+		'failed'     => array(),
+		'source'     => 'bundled',
+	);
 }
 
 function sbt_register_upload_assets( $directory, $subtheme_key ) {
@@ -1142,10 +1166,15 @@ function sbt_media_import_status( $subtheme_key = '' ) {
 
 function sbt_download_demo_media( $subtheme_key = '' ) {
 	$key = $subtheme_key ? sanitize_key( $subtheme_key ) : sbt_active_subtheme_key();
+	$bundled = sbt_copy_bundled_demo_media( $key );
+	if ( ! is_wp_error( $bundled ) && ( ! empty( $bundled['downloaded'] ) || ! empty( $bundled['skipped'] ) ) ) {
+		return $bundled;
+	}
+
 	$manifest = sbt_remote_media_manifest();
 
 	if ( empty( $manifest[ $key ]['base'] ) || empty( $manifest[ $key ]['files'] ) ) {
-		return new WP_Error( 'sbt_no_media_manifest', 'Nessun pacchetto media configurato per questo sottotema.' );
+		return new WP_Error( 'sbt_no_media_manifest', __( 'No demo media package is configured for this subtheme.', 'syncbooking-hospitality' ) );
 	}
 
 	$uploads = wp_get_upload_dir();
@@ -1330,6 +1359,7 @@ function sbt_create_theme_pages() {
 add_action( 'after_switch_theme', 'sbt_create_theme_pages' );
 add_action( 'after_switch_theme', 'sbt_sync_custom_house_pages' );
 add_action( 'after_switch_theme', 'sbt_create_seed_posts' );
+add_action( 'after_switch_theme', 'sbt_install_upload_assets' );
 
 function sbt_maybe_sync_theme_pages() {
 	if ( ! is_admin() || ! current_user_can( 'edit_theme_options' ) ) {
@@ -1677,8 +1707,8 @@ function sbt_apply_unit_structure( &$SITE, &$NAV, &$C, &$HOUSE_CARDS, &$TEXT ) {
 		$TEXT['houses'] = $entire_label;
 		$HOUSE_CARDS = array();
 		foreach ( $NAV as &$item ) {
-			if ( isset( $item['key'] ) && in_array( $item['key'], array( 'houses', 'house', 'hospitality' ), true ) ) {
-				$item['key'] = 'theme02' === $subtheme ? 'house' : 'houses';
+			if ( isset( $item['key'] ) && in_array( $item['key'], array( 'houses', 'house', 'rooms', 'hospitality' ), true ) ) {
+				$item['key'] = 'theme02' === $subtheme ? 'rooms' : 'houses';
 				$item['label'] = $entire_label;
 				$item['url'] = $entire_url;
 				$item['sub'] = array(
@@ -1751,7 +1781,7 @@ function sbt_apply_unit_structure( &$SITE, &$NAV, &$C, &$HOUSE_CARDS, &$TEXT ) {
 	}
 
 	foreach ( $NAV as &$item ) {
-		if ( isset( $item['key'] ) && in_array( $item['key'], array( 'houses', 'house', 'hospitality' ), true ) ) {
+		if ( isset( $item['key'] ) && in_array( $item['key'], array( 'houses', 'house', 'rooms', 'hospitality' ), true ) ) {
 			$listing_url = 'theme02' === $subtheme ? 'house.php' : 'houses.php';
 			$item['label'] = $plural_label;
 			$item['url'] = $listing_url;
@@ -1948,10 +1978,10 @@ function sbt_vfe( $path, $value, $args = array() ) {
 	$args = wp_parse_args( $args, $defaults );
 	$tag = $args['multiline'] ? 'span' : 'span';
 
-	return '<' . $tag . ' class="sbt-vfe-field" data-sbt-vfe-path="' . esc_attr( $path ) . '" data-sbt-vfe-multiline="' . ( $args['multiline'] ? '1' : '0' ) . '" data-sbt-vfe-type="' . esc_attr( $args['type'] ) . '" data-sbt-vfe-value="' . esc_attr( $value ) . '" data-sbt-vfe-context="' . esc_attr( $args['context'] ) . '">' . $value . '<button type="button" class="sbt-vfe-edit" aria-label="Modifica campo">&#9998;</button></' . $tag . '>';
+	return '<' . $tag . ' class="sbt-vfe-field" data-sbt-vfe-path="' . esc_attr( $path ) . '" data-sbt-vfe-multiline="' . ( $args['multiline'] ? '1' : '0' ) . '" data-sbt-vfe-type="' . esc_attr( $args['type'] ) . '" data-sbt-vfe-value="' . esc_attr( $value ) . '" data-sbt-vfe-context="' . esc_attr( $args['context'] ) . '">' . $value . '<button type="button" class="sbt-vfe-edit" aria-label="Edit field">&#9998;</button></' . $tag . '>';
 }
 
-function sbt_vfe_control( $path, $value, $label = 'Modifica', $type = 'text' ) {
+function sbt_vfe_control( $path, $value, $label = 'Edit', $type = 'text' ) {
 	if ( ! sbt_visual_meta_editor_enabled() || ! sbt_visual_meta_editor_allowed_path( $path ) ) {
 		return '';
 	}
@@ -2038,7 +2068,7 @@ function sbt_visual_meta_editor_assets() {
 		var activeField = null;
 		var modal = document.createElement('div');
 		modal.className = 'sbt-vfe-modal';
-		modal.innerHTML = '<div class="sbt-vfe-dialog" role="dialog" aria-modal="true"><h3>Modifica contenuto</h3><div class="sbt-vfe-input"></div><div class="sbt-vfe-actions"><button type="button" class="sbt-vfe-cancel">Annulla</button><button type="button" class="sbt-vfe-save">Salva</button></div></div>';
+		modal.innerHTML = '<div class="sbt-vfe-dialog" role="dialog" aria-modal="true"><h3>Edit content</h3><div class="sbt-vfe-input"></div><div class="sbt-vfe-actions"><button type="button" class="sbt-vfe-cancel">Cancel</button><button type="button" class="sbt-vfe-save">Save</button></div></div>';
 		document.body.appendChild(modal);
 
 		function fieldHtml(field){
@@ -2072,30 +2102,30 @@ function sbt_visual_meta_editor_assets() {
 		}
 
 		function renderImageInput(wrap, value, galleryPath){
-			wrap.innerHTML = '<div class="sbt-vfe-preview"></div><input type="url"><div class="sbt-vfe-media-actions"><button type="button" class="sbt-vfe-pick-image">Scegli / carica immagine</button></div>';
+			wrap.innerHTML = '<div class="sbt-vfe-preview"></div><input type="url"><div class="sbt-vfe-media-actions"><button type="button" class="sbt-vfe-pick-image">Choose / upload image</button></div>';
 			wrap.querySelector('input').value = value;
 			updateImagePreview(wrap, value);
 		}
 
 		function renderUrlInput(wrap, value){
-			var options = '<option value="">Link diretto / esterno</option>';
+			var options = '<option value="">Direct / external link</option>';
 			Object.keys(config.linkTargets || {}).forEach(function(url){
 				options += '<option value="' + url.replace(/"/g, '&quot;') + '"' + (url === value ? ' selected' : '') + '>' + config.linkTargets[url] + ' - ' + url + '</option>';
 			});
 			var isKnown = !!(config.linkTargets && config.linkTargets[value]);
-			wrap.innerHTML = '<select class="sbt-vfe-url-select">' + options + '</select><input type="url" class="sbt-vfe-url-input" placeholder="https://example.com/page/"><p class="sbt-vfe-url-hint">Scegli una pagina/articolo oppure inserisci un URL diretto https://...</p>';
+			wrap.innerHTML = '<select class="sbt-vfe-url-select">' + options + '</select><input type="url" class="sbt-vfe-url-input" placeholder="https://example.com/page/"><p class="sbt-vfe-url-hint">Choose a page/post or enter a direct https:// URL.</p>';
 			wrap.querySelector('.sbt-vfe-url-input').value = isKnown ? '' : value;
 		}
 
 		function updateImagePreview(wrap, value){
 			var preview = wrap.querySelector('.sbt-vfe-preview');
 			if (!preview) return;
-			preview.innerHTML = value ? '<img alt="" src="' + value.replace(/"/g, '&quot;') + '">' : '<p>Nessuna immagine selezionata.</p>';
+			preview.innerHTML = value ? '<img alt="" src="' + value.replace(/"/g, '&quot;') + '">' : '<p>No image selected.</p>';
 		}
 
 		function openImageFrame(wrap){
 			if (!window.wp || !wp.media) return;
-			var frame = wp.media({ title: 'Seleziona immagine', multiple: false, library: { type: 'image' } });
+			var frame = wp.media({ title: 'Select image', multiple: false, library: { type: 'image' } });
 			frame.on('select', function(){
 				var item = frame.state().get('selection').first().toJSON();
 				var input = wrap.querySelector('input');
@@ -2114,8 +2144,8 @@ function sbt_visual_meta_editor_assets() {
 				var button = document.createElement('button');
 				button.type = 'button';
 				button.className = 'sbt-vfe-gallery-edit';
-				button.innerHTML = '&#9998; Galleria';
-				button.setAttribute('aria-label', 'Modifica tutta la galleria');
+				button.innerHTML = '&#9998; Gallery';
+				button.setAttribute('aria-label', 'Edit full gallery');
 				button.addEventListener('click', function(event){
 					event.preventDefault();
 					event.stopPropagation();
@@ -2152,8 +2182,8 @@ function sbt_visual_meta_editor_assets() {
 			if (!parentPath) return;
 			var galleryUrls = closestGalleryUrls(field);
 			var frame = wp.media({
-				title: 'Modifica tutta la galleria',
-				button: { text: 'Usa queste immagini' },
+				title: 'Edit full gallery',
+				button: { text: 'Use these images' },
 				multiple: true,
 				library: { type: 'image' }
 			});
@@ -2180,7 +2210,7 @@ function sbt_visual_meta_editor_assets() {
 				}
 			} else {
 				field.setAttribute('data-sbt-vfe-value', value);
-				field.innerHTML = value + '<button type="button" class="sbt-vfe-edit" aria-label="Modifica campo">&#9998;</button>';
+				field.innerHTML = value + '<button type="button" class="sbt-vfe-edit" aria-label="Edit field">&#9998;</button>';
 			}
 			modal.classList.remove('is-open');
 			activeField = null;
@@ -2201,7 +2231,7 @@ function sbt_visual_meta_editor_assets() {
 			fetch(config.ajaxUrl, { method:'POST', credentials:'same-origin', body:data })
 				.then(function(response){ return response.json(); })
 				.then(function(json){
-					if (!json || !json.success) throw new Error(json && json.data ? json.data : 'Errore salvataggio');
+					if (!json || !json.success) throw new Error(json && json.data ? json.data : 'Save error');
 					refreshVisualField(field, json.data.value, saveType, reloadAfterSave);
 				})
 				.catch(function(error){ alert(error.message); });
@@ -2475,14 +2505,14 @@ function sbt_admin_footer_scripts() {
 			$(document).on('click', '.sbt-media-pick', function(e){
 				e.preventDefault();
 				var $control = $(this).closest('.sbt-media-control');
-				var frame = wp.media({ title: 'Seleziona immagine', multiple: false, library: { type: 'image' } });
+				var frame = wp.media({ title: 'Select image', multiple: false, library: { type: 'image' } });
 				frame.on('select', function(){
 					var item = frame.state().get('selection').first().toJSON();
 					var url = item.url;
 					$control.find('.sbt-media-value').val(url);
 					$control.find('.sbt-media-preview').html($('<img alt="">').attr('src', url));
-					$control.find('.sbt-media-hint').text('Immagine selezionata.');
-					$control.find('.sbt-media-pick').text('Sostituisci immagine');
+					$control.find('.sbt-media-hint').text('Image selected.');
+					$control.find('.sbt-media-pick').text('Replace image');
 				});
 				frame.open();
 			});
@@ -2492,8 +2522,8 @@ function sbt_admin_footer_scripts() {
 				var $control = $(this).closest('.sbt-media-control');
 				$control.find('.sbt-media-value').val('');
 				$control.find('.sbt-media-preview').empty();
-				$control.find('.sbt-media-hint').text('Nessuna immagine selezionata.');
-				$control.find('.sbt-media-pick').text('Scegli immagine');
+				$control.find('.sbt-media-hint').text('No image selected.');
+				$control.find('.sbt-media-pick').text('Choose image');
 			});
 
 			$(document).on('click', '.sbt-gallery-pick', function(e){
@@ -2768,7 +2798,7 @@ function sbt_render_page_editor_metabox( $post ) {
 	$edit_language = sbt_current_content_language();
 	$pages = sbt_page_templates();
 	if ( ! isset( $pages[ $slug ] ) ) {
-		echo '<p>Questa pagina non appartiene al sottotema attivo. Seleziona un sottotema da <strong>Aspetto > SyncBooking Theme</strong> oppure usa uno slug pagina del tema.</p>';
+		echo '<p>This page does not belong to the active subtheme. Choose a subtheme from <strong>Appearance > SyncBooking Theme</strong> or use a theme page slug.</p>';
 		return;
 	}
 
@@ -2776,7 +2806,7 @@ function sbt_render_page_editor_metabox( $post ) {
 	$sections = sbt_page_editor_sections( $slug, $data );
 	$overrides = sbt_active_overrides( $edit_language );
 
-	echo '<p>Editor unico per la pagina <strong>' . esc_html( $pages[ $slug ]['title'] ) . '</strong> del sottotema <strong>' . esc_html( sbt_active_subtheme()['label'] ) . '</strong> - lingua <strong>' . esc_html( strtoupper( $edit_language ) ) . '</strong>.</p>';
+	echo '<p>Unified editor for page <strong>' . esc_html( $pages[ $slug ]['title'] ) . '</strong> of subtheme <strong>' . esc_html( sbt_active_subtheme()['label'] ) . '</strong> - language <strong>' . esc_html( strtoupper( $edit_language ) ) . '</strong>.</p>';
 	sbt_page_editor_language_tabs( $post->ID, $slug, $edit_language );
 	echo '<input type="hidden" name="sbt_page_slug" value="' . esc_attr( $slug ) . '">';
 	echo '<input type="hidden" name="sbt_edit_language" value="' . esc_attr( $edit_language ) . '">';
@@ -3270,7 +3300,7 @@ add_action( 'admin_notices', 'sbt_required_plugin_admin_notice' );
 
 function sbt_render_admin_shell_start( $active_tab ) {
 	$tabs = array(
-		'themes'   => 'Temi',
+		'themes'   => 'Themes',
 		'general'  => 'General Settings',
 		'header'   => 'Header & Menu',
 		'pages'    => 'Pages',
@@ -3321,10 +3351,11 @@ function sbt_render_admin_shell_start( $active_tab ) {
 		.sbt-mode-card p { margin:8px 0 0; }
 		.sbt-palette-grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); }
 		.sbt-color-field input[type=color] { height:42px; padding:2px; }
+		.sbt-version-badge { background:#1d2327; border-radius:999px; color:#fff; display:inline-flex; font-size:13px; font-weight:700; margin-left:8px; padding:5px 10px; vertical-align:middle; }
 	</style>
 	<div class="wrap sbt-wrap">
-		<h1>SyncBooking Theme</h1>
-		<p class="sbt-muted">Gestisci sottotema, header, menu e pagine da una dashboard unica.</p>
+		<h1>SyncBooking Theme <span class="sbt-version-badge"><?php echo esc_html( sbt_display_version() ); ?></span></h1>
+		<p class="sbt-muted">Manage subtheme, general settings, header, menu and pages from one dashboard.</p>
 		<nav class="sbt-tabs" aria-label="SyncBooking Theme">
 			<?php foreach ( $tabs as $key => $label ) : ?>
 				<a class="sbt-tab <?php echo $active_tab === $key ? 'is-active' : ''; ?>" href="<?php echo esc_url( sbt_admin_tab_url( $key ) ); ?>"><?php echo esc_html( $label ); ?></a>
@@ -3366,7 +3397,7 @@ function sbt_render_theme_tab( $active, $subthemes ) {
 						<option value="<?php echo esc_attr( $language ); ?>" <?php selected( sbt_default_language(), $language ); ?>><?php echo esc_html( strtoupper( $language ) . ' - ' . $label ); ?></option>
 					<?php endforeach; ?>
 				</select>
-				<span class="sbt-muted">La lingua base usa la homepage principale /; le altre lingue hanno una homepage dedicata.</span>
+				<span class="sbt-muted">La language base usa la homepage principale /; le altre lingue hanno una homepage dedicata.</span>
 			</div>
 			<div class="sbt-field">
 				<label><?php echo esc_html( sbt_t( 'site_languages' ) ); ?></label>
@@ -3384,7 +3415,7 @@ function sbt_render_theme_tab( $active, $subthemes ) {
 			</div>
 		</div>
 		<div class="sbt-theme-footer">
-			<span class="sbt-muted">Il sottotema selezionato determina layout, pagine e contenuti mostrati nelle altre tab.</span>
+			<span class="sbt-muted">The selected subtheme controls the layout, pages and content shown in the other tabs.</span>
 			<?php submit_button( sbt_t( 'save_theme' ), 'primary', 'submit', false ); ?>
 		</div>
 		<div class="sbt-reset-box">
@@ -3395,7 +3426,7 @@ function sbt_render_theme_tab( $active, $subthemes ) {
 				class="button button-link-delete"
 				name="sbt_action"
 				value="reset_active_template"
-				onclick="return confirm('Vuoi riportare il sottotema selezionato al template originale? Le modifiche salvate per questo sottotema saranno cancellate.');"
+				onclick="return confirm('Restore the selected subtheme to the original template? Saved edits for this subtheme will be deleted.');"
 			>
 				Reset template originale
 			</button>
@@ -3442,7 +3473,7 @@ function sbt_render_menu_row( $path, $item, $overrides, $page_options, $is_child
 				<input type="text" name="<?php echo esc_attr( SBT_OPTION . '[overrides][' . $label_path . ']' ); ?>" value="<?php echo esc_attr( $label ); ?>">
 			</div>
 			<div class="sbt-field">
-				<label>Pagina collegata</label>
+				<label>Linked page</label>
 				<?php sbt_render_link_target_control( SBT_OPTION . '[overrides][' . $url_path . ']', $absolute_url ); ?>
 			</div>
 			<?php if ( isset( $item['desc'] ) ) : ?>
@@ -3478,7 +3509,7 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 	);
 	$unit_label = sbt_unit_label( $unit_overrides );
 	$plural_label = sbt_unit_plural_label( $unit_label );
-	$listing_slug = 'theme02' === $subtheme ? 'house' : sbt_unit_listing_slug_for_label( $unit_label );
+	$listing_slug = 'theme02' === $subtheme ? 'rooms' : sbt_unit_listing_slug_for_label( $unit_label );
 	$unit_count = max( 1, min( 20, absint( $unit_overrides['SITE.unit_count'] ) ) );
 	$unit_pages = sbt_custom_house_pages( $subtheme );
 	$is_entire = 'entire' === $unit_overrides['SITE.rental_mode'];
@@ -3487,7 +3518,7 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 	?>
 	<div class="sbt-panel">
 		<h2>General Settings</h2>
-		<p class="sbt-muted">Impostazioni generali del tema, requisito plugin e struttura delle pagine vendibili.</p>
+		<p class="sbt-muted">General theme options, required plugin status and sellable accommodation structure.</p>
 
 		<div class="sbt-status <?php echo $plugin_status['active'] ? 'is-ok' : 'is-warning'; ?>">
 			<span class="sbt-status__dot" aria-hidden="true"></span>
@@ -3510,56 +3541,73 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 
 		<div class="sbt-grid">
 			<div class="sbt-card">
-				<h3>Media demo</h3>
-				<p class="sbt-muted">Lo zip del tema resta leggero. Dopo l'installazione puoi scaricare le immagini demo del sottotema attivo dentro la Media Library di WordPress.</p>
+				<h3>Demo media</h3>
+				<p class="sbt-muted">The theme zip stays lightweight. After installation you can import the active subtheme demo images into WordPress uploads.</p>
 				<?php if ( ! empty( $media_status['updated_at'] ) ) : ?>
 					<p class="sbt-muted">
-						Ultimo import: <?php echo esc_html( $media_status['updated_at'] ); ?>.
-						Nuovi: <?php echo esc_html( $media_status['downloaded'] ?? 0 ); ?>,
-						gia presenti: <?php echo esc_html( $media_status['skipped'] ?? 0 ); ?>,
-						errori: <?php echo esc_html( $media_status['failed'] ?? 0 ); ?>.
+						Last import: <?php echo esc_html( $media_status['updated_at'] ); ?>.
+						New: <?php echo esc_html( $media_status['downloaded'] ?? 0 ); ?>,
+						existing: <?php echo esc_html( $media_status['skipped'] ?? 0 ); ?>,
+						errors: <?php echo esc_html( $media_status['failed'] ?? 0 ); ?>.
 					</p>
 				<?php else : ?>
-					<p class="sbt-muted">Media demo non ancora scaricati per questo sottotema.</p>
+					<p class="sbt-muted">Demo media have not been imported yet for this subtheme.</p>
 				<?php endif; ?>
 				<button type="submit" class="button button-primary" name="sbt_action" value="download_demo_media">
-					Scarica media demo
+					Import demo media
 				</button>
+				<p class="sbt-muted" style="margin-top:12px;">For email debugging, we recommend optional plugins such as <a href="https://wordpress.org/plugins/wp-mail-logging/" target="_blank" rel="noopener">WP Mail Logging</a> and <a href="https://wordpress.org/plugins/post-smtp/" target="_blank" rel="noopener">Post SMTP</a>.</p>
 			</div>
 
 			<div class="sbt-card">
-				<h3>Modalita modifica</h3>
-				<p class="sbt-muted">Scegli come vuoi lavorare sui contenuti delle pagine. Header, menu, footer, font e palette restano gestiti dalla tab Header & Menu.</p>
+				<h3>Edit mode</h3>
+				<p class="sbt-muted">Choose how page content is edited. Header, menu, footer, fonts and palette stay inside Header & Menu.</p>
 				<div class="sbt-mode-grid">
 					<label class="sbt-mode-card">
 						<span class="sbt-mode-title">
 							<input type="radio" name="<?php echo esc_attr( SBT_OPTION ); ?>[edit_mode]" value="standard" <?php checked( $edit_mode, 'standard' ); ?>>
 							Edit
 						</span>
-						<p class="sbt-muted">Mostra il sito pulito. Modifichi testi, link, bottoni e immagini solo dai campi admin.</p>
+						<p class="sbt-muted">Clean frontend. Edit text, links, buttons and images from the admin fields.</p>
 					</label>
 					<label class="sbt-mode-card">
 						<span class="sbt-mode-title">
 							<input type="radio" name="<?php echo esc_attr( SBT_OPTION ); ?>[edit_mode]" value="visual" <?php checked( $edit_mode, 'visual' ); ?>>
 							Visual Edit
 						</span>
-						<p class="sbt-muted">Mostra le matite agli admin loggati per modificare inline contenuti, immagini e URL delle pagine.</p>
+						<p class="sbt-muted">Show pencil controls to logged-in admins for inline text, image and URL editing.</p>
 					</label>
 				</div>
 			</div>
 			<div class="sbt-card">
-				<h3>Struttura vendibile</h3>
-				<p class="sbt-muted">Scegli se vendi l'intera struttura o singole Houses/Rooms. Se scegli intera struttura non vengono create pagine Accommodation aggiuntive.</p>
+				<h3>Sellable structure</h3>
+				<p class="sbt-muted">Choose Entire or Rooms/Houses. If you choose Entire, unit count and extra accommodation pages are disabled.</p>
 				<?php sbt_render_admin_fields( 'SITE', array(
 					'rental_mode'  => $unit_overrides['SITE.rental_mode'],
 					'entire_label' => $unit_overrides['SITE.entire_label'],
 					'unit_label' => $unit_overrides['SITE.unit_label'],
 					'unit_count' => $unit_overrides['SITE.unit_count'],
 				), $unit_overrides ); ?>
+				<script>
+					document.addEventListener('DOMContentLoaded', function () {
+						var mode = document.querySelector('[name="<?php echo esc_js( SBT_OPTION ); ?>[overrides][SITE.rental_mode]"]');
+						var entire = document.querySelector('[name="<?php echo esc_js( SBT_OPTION ); ?>[overrides][SITE.entire_label]"]');
+						var unitLabel = document.querySelector('[name="<?php echo esc_js( SBT_OPTION ); ?>[overrides][SITE.unit_label]"]');
+						var unitCount = document.querySelector('[name="<?php echo esc_js( SBT_OPTION ); ?>[overrides][SITE.unit_count]"]');
+						function field(el) { return el ? el.closest('.sbt-editor-field') : null; }
+						function syncSaleMode() {
+							var isEntire = mode && mode.value === 'entire';
+							[field(entire)].forEach(function (row) { if (row) row.style.display = isEntire ? '' : 'none'; });
+							[field(unitLabel), field(unitCount)].forEach(function (row) { if (row) row.style.display = isEntire ? 'none' : ''; });
+						}
+						if (mode) mode.addEventListener('change', syncSaleMode);
+						syncSaleMode();
+					});
+				</script>
 			</div>
 			<div class="sbt-card">
-				<h3>Nomi pagine vendibili</h3>
-				<p class="sbt-muted"><?php echo $is_entire ? 'Modalita intera struttura attiva: questi nomi non vengono usati finche non torni a Houses/Rooms separate.' : 'Se selezioni 3, verranno create 3 pagine. Qui scegli il nome reale di ogni scheda.'; ?></p>
+				<h3>Sellable page names</h3>
+				<p class="sbt-muted"><?php echo $is_entire ? 'Entire mode is active: these names are hidden and not used until you switch back to Rooms/Houses.' : 'If you select 3, the theme creates 3 pages. Choose the real name and slug source for each page here.'; ?></p>
 				<div class="sbt-field-grid" data-sbt-unit-names>
 					<?php for ( $number = 1; $number <= 20; $number++ ) : ?>
 						<?php
@@ -3596,20 +3644,20 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 				</script>
 			</div>
 			<div class="sbt-card">
-				<h3>Pagine generate</h3>
+				<h3>Generated pages</h3>
 				<?php if ( $is_entire ) : ?>
-					<p class="sbt-muted">Con questa configurazione viene usata solo la pagina intera struttura:</p>
+					<p class="sbt-muted">With this setup only the Entire page is used:</p>
 					<p><code>/<?php echo esc_html( $entire_slug ); ?>/</code></p>
-					<p><strong>Tipo selezionato:</strong> <?php echo esc_html( sbt_entire_label( $subtheme ) ); ?></p>
+					<p><strong>Selected type:</strong> <?php echo esc_html( sbt_entire_label( $subtheme ) ); ?></p>
 				<?php else : ?>
-					<p class="sbt-muted">Con questa configurazione viene usata la pagina archivio:</p>
+					<p class="sbt-muted">With this setup the listing page is used:</p>
 					<p><code>/<?php echo esc_html( $listing_slug ); ?>/</code></p>
-					<p class="sbt-muted">Le schede dettaglio saranno create nel numero selezionato e useranno i nomi scelti nel riquadro "Nomi pagine vendibili".</p>
-					<p><strong>Tipo selezionato:</strong> <?php echo esc_html( $plural_label ); ?></p>
+					<p class="sbt-muted">Detail pages are created in the selected count and use the names chosen in "Sellable page names".</p>
+					<p><strong>Selected type:</strong> <?php echo esc_html( $plural_label ); ?></p>
 				<?php endif; ?>
 			</div>
 		</div>
-		<?php submit_button( 'Salva General Settings' ); ?>
+		<?php submit_button( 'Save General Settings' ); ?>
 	</div>
 	<?php
 }
@@ -3620,7 +3668,7 @@ function sbt_render_header_menu_tab( $data, $overrides, $edit_language = 'en' ) 
 	<div class="sbt-panel">
 		<?php sbt_render_section_language_tabs( 'header', $edit_language ); ?>
 		<h2>Elementi header</h2>
-		<p class="sbt-muted">Modifica identita, loghi, contatti rapidi e testi header del sottotema attivo.</p>
+		<p class="sbt-muted">Edit identity, logos, quick contacts and header text for the active subtheme.</p>
 		<div class="sbt-field-grid">
 			<?php
 			sbt_render_header_field( 'SITE.name', 'Nome struttura', $data['SITE']['name'] ?? '', $overrides );
@@ -3634,7 +3682,7 @@ function sbt_render_header_menu_tab( $data, $overrides, $edit_language = 'en' ) 
 			?>
 		</div>
 		<h2 style="margin-top:28px;">Font e palette tema</h2>
-		<p class="sbt-muted">Questi valori controllano i colori base e i font usati dal sottotema attivo.</p>
+		<p class="sbt-muted">These values control the base colors and fonts used by the active subtheme.</p>
 		<div class="sbt-field-grid">
 			<?php
 			sbt_render_header_field( 'SITE.font_pairing', 'Font tema', $data['SITE']['font_pairing'] ?? 'classic', $overrides, 'select', array(
@@ -3663,13 +3711,13 @@ function sbt_render_header_menu_tab( $data, $overrides, $edit_language = 'en' ) 
 		</div>
 		<h2 style="margin-top:28px;">Menu alto</h2>
 		<?php sbt_render_section_language_tabs( 'header', $edit_language ); ?>
-		<p class="sbt-muted">Ogni voce puo avere etichetta e link diversi per lingua.</p>
+		<p class="sbt-muted">Ogni voce puo avere etichetta e link diversi per language.</p>
 		<?php foreach ( $data['NAV'] as $index => $item ) : ?>
 			<?php sbt_render_menu_row( 'NAV.' . $index, $item, $overrides, $page_options ); ?>
 		<?php endforeach; ?>
 		<h2 style="margin-top:28px;">Footer e link</h2>
 		<?php sbt_render_section_language_tabs( 'header', $edit_language ); ?>
-		<p class="sbt-muted">Gestisci testi footer, link social, dati legali e link specifici per lingua.</p>
+		<p class="sbt-muted">Gestisci testi footer, link social, dati legali e link specifici per language.</p>
 		<div class="sbt-field-grid">
 			<?php
 			sbt_render_header_field( 'TEXT.contacts', 'Titolo contatti footer', $data['TEXT']['contacts'] ?? 'Contacts', $overrides );
@@ -3687,7 +3735,7 @@ function sbt_render_header_menu_tab( $data, $overrides, $edit_language = 'en' ) 
 			sbt_render_header_field( 'SITE.webdev.url', 'URL link webdev', $data['SITE']['webdev']['url'] ?? '', $overrides, 'url' );
 			?>
 		</div>
-		<?php submit_button( 'Salva header e menu' ); ?>
+		<?php submit_button( 'Save header and menu' ); ?>
 	</div>
 	<?php
 }
@@ -3718,13 +3766,13 @@ function sbt_render_pages_tab() {
 	$unit_label = sbt_unit_label( sbt_active_overrides( sbt_current_content_language() ) );
 	?>
 	<div class="sbt-panel">
-		<h2>Pages del sottotema</h2>
-		<p class="sbt-muted">Da qui vai direttamente alla modifica completa di Home e delle pagine interne. Ogni pagina apre l'editor unico con tab lingua.</p>
+		<h2>Pages of subtheme</h2>
+		<p class="sbt-muted">Da qui vai direttamente alla modifica completa di Home e delle pagine interne. Ogni pagina apre l'editor unico con tab language.</p>
 		<?php if ( in_array( sbt_active_subtheme_key(), array( 'theme01', 'theme02' ), true ) && ! sbt_is_entire_rental_mode() ) : ?>
 			<h2 style="margin-top:24px;">Schede <?php echo esc_html( $unit_label ); ?></h2>
-			<p class="sbt-muted">Queste schede vengono generate dal numero impostato in General Settings. Apri la scheda una volta sola: dentro l'editor trovi i tab lingua.</p>
+			<p class="sbt-muted">Queste schede vengono generate dal numero impostato in General Settings. Apri la scheda una volta sola: dentro l'editor trovi i tab language.</p>
 			<table class="sbt-table" style="margin-bottom:28px;">
-				<thead><tr><th><?php echo esc_html( $unit_label ); ?></th><th>Lingue</th><th>Slug base</th><th>Stato</th><th>Azioni</th></tr></thead>
+				<thead><tr><th><?php echo esc_html( $unit_label ); ?></th><th>Languages</th><th>Slug base</th><th>Status</th><th>Actions</th></tr></thead>
 				<tbody>
 					<?php foreach ( $pages as $slug => $page ) : ?>
 						<?php if ( empty( $page['custom_house'] ) ) : ?>
@@ -3748,7 +3796,7 @@ function sbt_render_pages_tab() {
 							<td><?php echo $missing_languages ? 'Mancano: ' . esc_html( implode( ', ', $missing_languages ) ) : 'Presente'; ?></td>
 							<td class="sbt-actions">
 								<?php if ( $edit_url ) : ?>
-									<a class="button button-primary" href="<?php echo esc_url( $edit_url ); ?>">Modifica campi pagina</a>
+									<a class="button button-primary" href="<?php echo esc_url( $edit_url ); ?>">Edit page fields</a>
 								<?php endif; ?>
 								<a class="button" href="<?php echo esc_url( sbt_theme_page_public_url( $slug, 'en' ) ); ?>" target="_blank">Anteprima</a>
 							</td>
@@ -3760,7 +3808,7 @@ function sbt_render_pages_tab() {
 
 		<h2>Pagine interne</h2>
 		<table class="sbt-table">
-			<thead><tr><th>Pagina</th><th>Lingue</th><th>Slug base</th><th>Stato</th><th>Azioni</th></tr></thead>
+			<thead><tr><th>Page</th><th>Languages</th><th>Base slug</th><th>Status</th><th>Actions</th></tr></thead>
 			<tbody>
 				<?php foreach ( $pages as $slug => $page ) : ?>
 					<?php if ( ! empty( $page['custom_house'] ) ) : ?>
@@ -3784,7 +3832,7 @@ function sbt_render_pages_tab() {
 						<td><?php echo $missing_languages ? 'Mancano: ' . esc_html( implode( ', ', $missing_languages ) ) : 'Presente'; ?></td>
 						<td class="sbt-actions">
 							<?php if ( $edit_url ) : ?>
-								<a class="button button-primary" href="<?php echo esc_url( $edit_url ); ?>">Modifica campi pagina</a>
+								<a class="button button-primary" href="<?php echo esc_url( $edit_url ); ?>">Edit page fields</a>
 							<?php endif; ?>
 							<a class="button" href="<?php echo esc_url( sbt_theme_page_public_url( $slug, 'en' ) ); ?>" target="_blank">Anteprima</a>
 						</td>
@@ -3809,7 +3857,7 @@ function sbt_render_admin_page() {
 			}
 		} elseif ( 'reset_active_template' === $sbt_action ) {
 			if ( sbt_reset_subtheme_template( $selected_subtheme ) ) {
-				echo '<div class="notice notice-success is-dismissible"><p>Template originale ripristinato per il sottotema selezionato.</p></div>';
+				echo '<div class="notice notice-success is-dismissible"><p>Original template restored for the selected subtheme.</p></div>';
 			}
 		} elseif ( 'download_demo_media' === $sbt_action ) {
 			$result = sbt_download_demo_media( $selected_subtheme );
@@ -3828,7 +3876,7 @@ function sbt_render_admin_page() {
 			update_option( SBT_OPTION, sbt_sanitize_options( $raw_options ) );
 			sbt_sync_custom_house_pages();
 			sbt_create_theme_pages();
-			echo '<div class="notice notice-success is-dismissible"><p>Impostazioni SyncBooking salvate.</p></div>';
+			echo '<div class="notice notice-success is-dismissible"><p>SyncBooking settings saved.</p></div>';
 		}
 	}
 
@@ -3882,16 +3930,16 @@ function sbt_humanize_key( $key ) {
 		'label'            => 'Etichetta',
 		'url'              => 'Link',
 		'menu'             => 'Menu',
-		'gallery'          => 'Galleria',
-		'wedding_gallery'  => 'Galleria wedding',
+		'gallery'          => 'Gallery',
+		'wedding_gallery'  => 'Gallery wedding',
 		'phone'            => 'Telefono',
 		'email'            => 'Email',
 		'address'          => 'Indirizzo',
 		'whatsapp_label'   => 'Testo WhatsApp',
-		'unit_label'       => 'Nome sezione unita',
-		'unit_count'       => 'Numero unita',
-		'rental_mode'      => 'Modalita vendita',
-		'entire_label'     => 'Tipo intera struttura',
+		'unit_label'       => 'Room / House type',
+		'unit_count'       => 'Number of rooms / houses',
+		'rental_mode'      => 'Sale mode',
+		'entire_label'     => 'Entire type',
 	);
 
 	$key = strtolower( (string) $key );
@@ -4063,8 +4111,8 @@ function sbt_render_single_admin_field( $path, $label, $value, $overrides, $fiel
 			</select>
 		<?php elseif ( 'SITE.rental_mode' === $path ) : ?>
 			<select name="<?php echo esc_attr( $name ); ?>" class="large-text">
-				<option value="units" <?php selected( $current, 'units' ); ?>>Houses / Rooms separate</option>
-				<option value="entire" <?php selected( $current, 'entire' ); ?>>Intera struttura</option>
+				<option value="units" <?php selected( $current, 'units' ); ?>>Rooms / Houses only</option>
+				<option value="entire" <?php selected( $current, 'entire' ); ?>>Entire property only</option>
 			</select>
 		<?php elseif ( 'SITE.entire_label' === $path ) : ?>
 			<select name="<?php echo esc_attr( $name ); ?>" class="large-text">
@@ -4090,7 +4138,7 @@ function sbt_render_single_admin_field( $path, $label, $value, $overrides, $fiel
 						</span>
 					<?php endforeach; ?>
 				</span>
-				<span class="sbt-gallery-empty" <?php echo $gallery_urls ? 'style="display:none;"' : ''; ?>>Nessuna immagine selezionata.</span>
+				<span class="sbt-gallery-empty" <?php echo $gallery_urls ? 'style="display:none;"' : ''; ?>>No image selected.</span>
 				<span class="sbt-gallery-actions">
 					<button type="button" class="button sbt-gallery-pick">Aggiungi immagini</button>
 				</span>
@@ -4103,9 +4151,9 @@ function sbt_render_single_admin_field( $path, $label, $value, $overrides, $fiel
 					<?php endif; ?>
 				</span>
 				<input type="hidden" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $current ); ?>" class="sbt-media-value">
-				<p class="sbt-media-hint"><?php echo $current ? 'Immagine selezionata.' : 'Nessuna immagine selezionata.'; ?></p>
+				<p class="sbt-media-hint"><?php echo $current ? 'Image selected.' : 'No image selected.'; ?></p>
 				<span class="sbt-media-actions">
-					<button type="button" class="button sbt-media-pick"><?php echo $current ? 'Sostituisci immagine' : 'Scegli immagine'; ?></button>
+					<button type="button" class="button sbt-media-pick"><?php echo $current ? 'Replace image' : 'Choose image'; ?></button>
 					<button type="button" class="button sbt-media-clear">Rimuovi</button>
 				</span>
 			</span>

@@ -35,3 +35,5 @@ Every shipped update must:
 - Rebuild the zip as `C:\SyncBookingTheme\syncbooking-hospitality-{version}.zip`.
 - Run static checks for PHP short tags, line endings, oversized bundled assets, and unwanted `uploads` content.
 - Commit and push the updated theme to GitHub.
+
+Versioning note: every release must update SBT_VERSION, style.css Version, readme.txt changelog, and the dashboard badge shown by sbt_display_version() (for example SyncBooking Theme V2.01).

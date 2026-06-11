@@ -15,6 +15,30 @@ if ( ! function_exists( 'sbt_t1_url' ) ) {
 	}
 }
 
+if ( ! function_exists( 'sbt_t1_value' ) ) {
+	function sbt_t1_value( $path, $value ) {
+		$overrides = function_exists( 'sbt_active_overrides' ) ? sbt_active_overrides( function_exists( 'sbt_current_content_language' ) ? sbt_current_content_language() : 'en' ) : array();
+		return is_array( $overrides ) && array_key_exists( $path, $overrides ) ? $overrides[ $path ] : $value;
+	}
+}
+
+	if ( ! function_exists( 'sbt_t1_asset' ) ) {
+		function sbt_t1_asset( $path ) {
+			$path = ltrim( (string) $path, '/' );
+			$file_path = rawurldecode( $path );
+			if ( preg_match( '/^(https?:|data:|mailto:|tel:|#)/i', $path ) ) {
+				return $path;
+			}
+		if ( function_exists( 'sbt_theme_file_path' ) && file_exists( sbt_theme_file_path( $file_path ) ) ) {
+			return function_exists( 'sbt_asset_url' ) ? sbt_asset_url( $file_path ) : $file_path;
+		}
+		if ( function_exists( 'sbt_demo_media_url' ) && preg_match( '#^(uploads|assets/images|assets/photos|assets/video|assets/brochure)/#', $path ) ) {
+			return sbt_demo_media_url( $path );
+		}
+		return function_exists( 'sbt_asset_url' ) ? sbt_asset_url( $path ) : $path;
+	}
+}
+
 if ( ! function_exists( 'sbt_t1_img' ) ) {
 	function sbt_t1_img( $path, $src, $alt = '', $attrs = array() ) {
 		$attrs = array_merge( array( 'alt' => $alt ), $attrs );
@@ -40,7 +64,7 @@ if ( ! function_exists( 'sbt_t1_bg_style' ) ) {
 }
 
 if ( ! function_exists( 'sbt_t1_control' ) ) {
-	function sbt_t1_control( $path, $value, $label = 'Modifica', $type = 'text' ) {
+	function sbt_t1_control( $path, $value, $label = 'Edit', $type = 'text' ) {
 		return function_exists( 'sbt_vfe_control' ) ? sbt_vfe_control( $path, $value, $label, $type ) : '';
 	}
 }

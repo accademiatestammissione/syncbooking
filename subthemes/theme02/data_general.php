@@ -25,7 +25,7 @@ $SITE = [
   'lang_primary' => 'EN',
   'lang_secondary' => 'IT',
   'rental_mode' => 'units',
-  'entire_label' => 'Entire Masseria',
+  'entire_label' => 'Whole Masseria',
   'unit_label' => 'Room',
   'unit_count' => '3',
   'whatsapp_label' => 'WhatsApp',
@@ -37,8 +37,8 @@ $SITE = [
   'vat'       => 'IT08825490728',
   'cin'       => 'IT072019B400085362',
   'webdev'    => ['label' => 'web dev logovia', 'url' => 'https://www.logovia.it/'],
-  'source_version' => '2.0.0',
-  'source_build_date' => '2026-06-08',
+  'source_version' => '2.1',
+  'source_build_date' => '2026-06-11',
 ];
 
 /* ---- IMAGES (by friendly key) ---- */
@@ -103,8 +103,8 @@ $WEDDING_GALLERY = [
 /* ---- NAVIGATION ---- */
 $NAV = [
   ['key'=>'home',         'label'=>'Home',              'url'=>'index.php'],
-  ['key'=>'villa',        'label'=>'Masseria',          'url'=>'villa.php'],
-  ['key'=>'house',        'label'=>'Rooms',             'url'=>'house.php', 'sub'=>[
+  ['key'=>'masseria',     'label'=>'Masseria',          'url'=>'villa.php'],
+  ['key'=>'rooms',        'label'=>'Rooms',             'url'=>'house.php', 'sub'=>[
       ['label'=>'Whole Masseria', 'desc'=>'Exclusive rental', 'url'=>'whole-masseria.php'],
       ['label'=>'Price &amp; Condition','desc'=>'Rates, check-in &amp; terms', 'url'=>'price-and-condition.php', 'divide'=>true],
   ]],

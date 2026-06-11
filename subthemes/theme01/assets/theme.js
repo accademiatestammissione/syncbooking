@@ -1,4 +1,4 @@
-/* SyncBooking Hospitality frontend interactions. */
+﻿/* SyncBooking Hospitality frontend interactions. */
 (function () {
   var hdr = document.getElementById('hdr');
   var totopBtn = document.getElementById('totop');
@@ -251,8 +251,12 @@
     });
   }
 
-  var contactForm = document.getElementById('contactForm');
-  if (contactForm) submitSyncBookingForm(contactForm, { type: 'contact' });
+  document.querySelectorAll('form[data-sbt-form]').forEach(function (form) {
+    if (form.id === 'quoteForm') return;
+    if (form.__sbtBound) return;
+    form.__sbtBound = true;
+    submitSyncBookingForm(form, { type: form.getAttribute('data-sbt-form') || 'contact' });
+  });
 
   var quoteModal = document.getElementById('quoteModal');
   var quoteForm = document.getElementById('quoteForm');
@@ -282,7 +286,10 @@
       if (event.key === 'Escape') closeQuote();
     });
   }
-  if (quoteForm) submitSyncBookingForm(quoteForm, { type: 'quote', ok: quoteOk, result: quoteForm.querySelector('.form-result, .sbtw-form-result') });
+  if (quoteForm && !quoteForm.__sbtBound && !quoteForm.__sbtQuoteBound) {
+    quoteForm.__sbtQuoteBound = true;
+    submitSyncBookingForm(quoteForm, { type: 'quote', ok: quoteOk, result: quoteForm.querySelector('.form-result, .sbtw-form-result') });
+  }
 
   document.querySelectorAll('.sbtw-w-rev[data-album]').forEach(function (card) {
     card.addEventListener('click', function () {

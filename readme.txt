@@ -19,15 +19,22 @@ This theme can display embedded video and maps when the site owner configures th
 * Vimeo player: used by the Villa Rosa Resort homepage video background. The configured Vimeo video id is used in an iframe from https://player.vimeo.com/. Vimeo privacy policy: https://vimeo.com/privacy
 * YouTube player: used by the Masseria Le Cerase homepage video background when a YouTube id is configured. The configured YouTube video id is used in an iframe from https://www.youtube.com/. Google privacy policy: https://policies.google.com/privacy
 * Google Maps embed: used on contact pages when a map embed URL is configured. Google privacy policy: https://policies.google.com/privacy
-* Demo media import: when an administrator clicks "Scarica media demo" in General Settings, demo images are downloaded from https://villarosaresort.it/ or https://masserialecerase.com/ into the local WordPress uploads directory. No visitor data is sent by the theme for this import.
+* Demo media import: when an administrator clicks "Import demo media" in General Settings, demo images are downloaded from https://villarosaresort.it/ or https://masserialecerase.com/ into the local WordPress uploads directory. No visitor data is sent by the theme for this import.
 
 == Changelog ==
 
+= 2.0.1 =
+* Displayed the dashboard release as SyncBooking Theme V2.01 and aligned the package version with GitHub.
+* Rebuilt Theme 01 and Theme 02 page templates from the latest HTML source version 2.1.
+* Updated the sellable structure settings to English-only Entire vs Rooms/Houses behavior.
+* Hid Rooms/Houses count and page-name controls when Entire mode is selected.
+* Removed internal inquiry storage; forms now send WordPress email only and recommend SMTP/logging plugins for diagnostics.
+* Added optimized bundled demo images for the regenerated templates while keeping the package lightweight.
 = 1.0.33 =
 * Added the default frontend language option with EN as the initial base language.
 * Generated the Italian homepage at /it/ while preserving existing translated page slugs such as /it-villa/.
 * Connected the header language switcher to real translated page URLs.
-* Replaced demo contact and wedding quote forms with WordPress AJAX submissions, email delivery and archived inquiries.
+* Replaced demo contact and wedding quote forms with WordPress AJAX submissions and email delivery without storing inquiries in WordPress.
 * Rebuilt the Theme 02 Weddings page from the latest clean HTML package, including gallery, sidebar quote card, mobile bar and modal.
 
 = 1.0.32 =

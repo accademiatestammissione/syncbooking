@@ -68,8 +68,8 @@ $SITE = array(
 	'cin' => 'IT072019B400085362',
 	'year' => '2026',
 	'webdev' => array( 'label' => 'web dev logovia', 'url' => 'https://www.logovia.it/' ),
-	'source_version' => '1.0.2',
-	'source_build_date' => '2026-06-07',
+	'source_version' => '2.1',
+	'source_build_date' => '2026-06-11',
 );
 
 $NAV = array(
