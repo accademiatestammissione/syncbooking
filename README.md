@@ -31,7 +31,7 @@ From WordPress, open `Appearance > SyncBooking Theme`.
 
 The WordPress.org theme zip must not bundle demo media or subtheme asset folders. Real demo media, CSS, JavaScript, video and brochure files are downloaded after installation through the SyncBooking admin panel.
 
-The importer has no local fallback: assets are downloaded online from the configured `assets.zip` for the selected subtheme.
+The importer has no local fallback: assets are downloaded online from the configured `assets.zip` for the selected subtheme. The admin importer runs in small AJAX batches, using HTTP byte ranges for download, limited zip-entry extraction per request, and batched Media Library registration.
 
 ## WordPress.org
 

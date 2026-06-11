@@ -19,9 +19,14 @@ This theme can display embedded video and maps when the site owner configures th
 * Vimeo player: used by the Villa Rosa Resort homepage video background. The configured Vimeo video id is used in an iframe from https://player.vimeo.com/. Vimeo privacy policy: https://vimeo.com/privacy
 * YouTube player: used by the Masseria Le Cerase homepage video background when a YouTube id is configured. The configured YouTube video id is used in an iframe from https://www.youtube.com/. Google privacy policy: https://policies.google.com/privacy
 * Google Maps embed: used on contact pages when a map embed URL is configured. Google privacy policy: https://policies.google.com/privacy
-* Demo media import: when an administrator clicks "Download assets.zip online" in General Settings, the active subtheme assets.zip is downloaded from https://syncbooking.com/clone-theme/theme-01/assets.zip or https://syncbooking.com/clone-theme/theme-02/assets.zip into the local WordPress uploads directory. Assets are not bundled in the theme/plugin and there is no local fallback. No visitor data is sent by the theme for this import.
+* Demo media import: when an administrator clicks "Download assets.zip online" in General Settings, the active subtheme assets.zip is downloaded from https://syncbooking.com/clone-theme/theme-01/assets.zip or https://syncbooking.com/clone-theme/theme-02/assets.zip into the local WordPress uploads directory. Assets are not bundled in the theme/plugin and there is no local fallback. The download, extraction and image registration are processed in small AJAX batches to avoid nginx/PHP timeout errors. No visitor data is sent by the theme for this import.
 
 == Changelog ==
+
+= 2.1.3 =
+* Changed the online assets importer to run progressively in small AJAX steps.
+* Downloads assets.zip with HTTP byte ranges, extracts a limited number of zip entries per request, and registers media-library images in small batches.
+* Removed automatic assets download on theme activation to avoid blocking activation or causing nginx/PHP timeouts.
 
 = 2.1.2 =
 * Removed local demo asset fallback and bundled subtheme assets. The theme imports media only from the online assets.zip configured for the active subtheme.

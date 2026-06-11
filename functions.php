@@ -9,11 +9,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.2' );
+define( 'SBT_VERSION', '2.1.3' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
 define( 'SBT_MEDIA_OPTION', 'syncbooking_theme_media_imports' );
+define( 'SBT_ASSETS_IMPORT_JOB_OPTION_PREFIX', 'syncbooking_theme_assets_import_job_' );
+define( 'SBT_ASSETS_IMPORT_DOWNLOAD_CHUNK', 1048576 );
+define( 'SBT_ASSETS_IMPORT_EXTRACT_BATCH', 12 );
+define( 'SBT_ASSETS_IMPORT_REGISTER_BATCH', 8 );
 
 function sbt_setup() {
 	add_theme_support( 'title-tag' );
@@ -87,7 +91,7 @@ function sbt_widgets_init() {
 add_action( 'widgets_init', 'sbt_widgets_init' );
 
 function sbt_display_version() {
-	return 'V2.12';
+	return 'V2.13';
 }
 
 function sbt_enqueue_comment_reply() {
@@ -1037,40 +1041,51 @@ function sbt_register_upload_assets( $directory, $subtheme_key ) {
 			continue;
 		}
 
-		$path = $file->getPathname();
-		$type = wp_check_filetype( $path );
-		if ( empty( $type['type'] ) || 0 !== strpos( $type['type'], 'image/' ) ) {
-			continue;
-		}
-
-		$relative = trim( $subtheme_key . '/' . str_replace( trailingslashit( $directory ), '', $path ), '/' );
-		$existing = get_posts( array(
-			'post_type'      => 'attachment',
-			'post_status'    => 'inherit',
-			'posts_per_page' => 1,
-			'meta_key'       => '_sbt_bundled_media_path',
-			'meta_value'     => wp_normalize_path( $relative ),
-			'fields'         => 'ids',
-		) );
-
-		if ( $existing ) {
-			continue;
-		}
-
-		$attachment_id = wp_insert_attachment( array(
-			'post_mime_type' => $type['type'],
-			'post_title'     => sanitize_file_name( pathinfo( $path, PATHINFO_FILENAME ) ),
-			'post_content'   => '',
-			'post_status'    => 'inherit',
-		), $path );
-
-		if ( is_wp_error( $attachment_id ) ) {
-			continue;
-		}
-
-		update_post_meta( $attachment_id, '_sbt_bundled_media_path', wp_normalize_path( $relative ) );
-		wp_update_attachment_metadata( $attachment_id, wp_generate_attachment_metadata( $attachment_id, $path ) );
+		sbt_register_upload_asset_file( $file->getPathname(), $directory, $subtheme_key );
 	}
+}
+
+function sbt_register_upload_asset_file( $path, $directory, $subtheme_key ) {
+	if ( ! function_exists( 'wp_insert_attachment' ) || ! is_file( $path ) ) {
+		return 'ignored';
+	}
+
+	$type = wp_check_filetype( $path );
+	if ( empty( $type['type'] ) || 0 !== strpos( $type['type'], 'image/' ) ) {
+		return 'ignored';
+	}
+
+	require_once ABSPATH . 'wp-admin/includes/image.php';
+
+	$relative = trim( $subtheme_key . '/' . str_replace( trailingslashit( $directory ), '', $path ), '/' );
+	$existing = get_posts( array(
+		'post_type'      => 'attachment',
+		'post_status'    => 'inherit',
+		'posts_per_page' => 1,
+		'meta_key'       => '_sbt_bundled_media_path',
+		'meta_value'     => wp_normalize_path( $relative ),
+		'fields'         => 'ids',
+	) );
+
+	if ( $existing ) {
+		return 'skipped';
+	}
+
+	$attachment_id = wp_insert_attachment( array(
+		'post_mime_type' => $type['type'],
+		'post_title'     => sanitize_file_name( pathinfo( $path, PATHINFO_FILENAME ) ),
+		'post_content'   => '',
+		'post_status'    => 'inherit',
+	), $path );
+
+	if ( is_wp_error( $attachment_id ) ) {
+		return 'failed';
+	}
+
+	update_post_meta( $attachment_id, '_sbt_bundled_media_path', wp_normalize_path( $relative ) );
+	wp_update_attachment_metadata( $attachment_id, wp_generate_attachment_metadata( $attachment_id, $path ) );
+
+	return 'registered';
 }
 
 function sbt_count_files_in_directory( $directory ) {
@@ -1090,63 +1105,385 @@ function sbt_count_files_in_directory( $directory ) {
 }
 
 function sbt_download_remote_assets_zip( $subtheme_key = '' ) {
-	$key = $subtheme_key ? sanitize_key( $subtheme_key ) : sbt_active_subtheme_key();
-	$url = sbt_remote_assets_zip_url( $key );
-	if ( ! $url ) {
-		return new WP_Error( 'sbt_no_assets_zip', __( 'No remote assets.zip is configured for this subtheme.', 'syncbooking-hospitality' ) );
+	return new WP_Error( 'sbt_progressive_import_required', __( 'Use the progressive assets importer from General Settings. Assets are downloaded and extracted in small steps to avoid server timeouts.', 'syncbooking-hospitality' ) );
+}
+
+function sbt_assets_import_job_option( $subtheme_key ) {
+	return SBT_ASSETS_IMPORT_JOB_OPTION_PREFIX . sanitize_key( $subtheme_key );
+}
+
+function sbt_assets_import_uploads_path_allowed( $path ) {
+	$uploads = wp_get_upload_dir();
+	if ( ! empty( $uploads['error'] ) ) {
+		return false;
+	}
+
+	$base = wp_normalize_path( trailingslashit( $uploads['basedir'] ) );
+	$path = wp_normalize_path( $path );
+
+	return 0 === strpos( $path, $base );
+}
+
+function sbt_assets_import_error_response( $message ) {
+	wp_send_json_error( array(
+		'message' => $message,
+	) );
+}
+
+function sbt_assets_import_progress( $job ) {
+	$stage = isset( $job['stage'] ) ? $job['stage'] : 'download';
+	if ( 'download' === $stage ) {
+		$total = ! empty( $job['total_bytes'] ) ? absint( $job['total_bytes'] ) : 0;
+		$done = ! empty( $job['bytes_downloaded'] ) ? absint( $job['bytes_downloaded'] ) : 0;
+		$download_percent = $total > 0 ? min( 1, $done / $total ) : 0;
+		return min( 50, (int) floor( $download_percent * 50 ) );
+	}
+
+	if ( 'extract' === $stage ) {
+		$total = ! empty( $job['total_entries'] ) ? absint( $job['total_entries'] ) : 1;
+		$done = ! empty( $job['extract_index'] ) ? absint( $job['extract_index'] ) : 0;
+		return 50 + min( 35, (int) floor( min( 1, $done / max( 1, $total ) ) * 35 ) );
+	}
+
+	if ( 'register' === $stage ) {
+		$total = ! empty( $job['register_total'] ) ? absint( $job['register_total'] ) : 1;
+		$done = ! empty( $job['register_index'] ) ? absint( $job['register_index'] ) : 0;
+		return 85 + min( 14, (int) floor( min( 1, $done / max( 1, $total ) ) * 14 ) );
+	}
+
+	return 'complete' === $stage ? 100 : 0;
+}
+
+function sbt_assets_import_response_data( $job, $message, $done = false ) {
+	return array(
+		'done'             => (bool) $done,
+		'job_id'           => $job['id'] ?? '',
+		'stage'            => $job['stage'] ?? '',
+		'message'          => $message,
+		'progress'         => $done ? 100 : sbt_assets_import_progress( $job ),
+		'bytes_downloaded' => absint( $job['bytes_downloaded'] ?? 0 ),
+		'total_bytes'      => absint( $job['total_bytes'] ?? 0 ),
+		'extract_index'    => absint( $job['extract_index'] ?? 0 ),
+		'total_entries'    => absint( $job['total_entries'] ?? 0 ),
+		'register_index'   => absint( $job['register_index'] ?? 0 ),
+		'register_total'   => absint( $job['register_total'] ?? 0 ),
+		'extracted'        => absint( $job['extracted'] ?? 0 ),
+		'registered'       => absint( $job['registered'] ?? 0 ),
+		'skipped'          => absint( $job['skipped'] ?? 0 ),
+		'failed'           => count( $job['failed'] ?? array() ),
+	);
+}
+
+function sbt_assets_import_collect_files( $directory ) {
+	$files = array();
+	if ( ! is_dir( $directory ) ) {
+		return $files;
+	}
+
+	$base = trailingslashit( $directory );
+	$iterator = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $directory, RecursiveDirectoryIterator::SKIP_DOTS ) );
+	foreach ( $iterator as $file ) {
+		if ( $file->isFile() ) {
+			$relative = str_replace( $base, '', $file->getPathname() );
+			$files[] = wp_normalize_path( $relative );
+		}
+	}
+
+	sort( $files );
+
+	return $files;
+}
+
+function sbt_assets_import_prepare_extract( &$job ) {
+	$zip = new ZipArchive();
+	if ( true !== $zip->open( $job['zip_path'] ) ) {
+		return new WP_Error( 'sbt_zip_open_failed', __( 'The downloaded assets.zip could not be opened.', 'syncbooking-hospitality' ) );
+	}
+
+	$job['stage'] = 'extract';
+	$job['extract_index'] = 0;
+	$job['total_entries'] = absint( $zip->numFiles );
+	$zip->close();
+
+	return true;
+}
+
+function sbt_assets_import_extract_zip_entry( ZipArchive $zip, $index, $target_base ) {
+	$name = (string) $zip->getNameIndex( $index );
+	$name = str_replace( '\\', '/', $name );
+	$name = ltrim( $name, '/' );
+
+	if ( '' === $name || false !== strpos( $name, '../' ) || '..' === basename( $name ) || preg_match( '/^[A-Za-z]:/', $name ) ) {
+		return 'failed';
+	}
+
+	if ( '/' === substr( $name, -1 ) ) {
+		wp_mkdir_p( trailingslashit( $target_base ) . $name );
+		return 'ignored';
+	}
+
+	$target = trailingslashit( $target_base ) . $name;
+	if ( ! sbt_assets_import_uploads_path_allowed( $target ) ) {
+		return 'failed';
+	}
+
+	wp_mkdir_p( dirname( $target ) );
+	$source = $zip->getStream( $name );
+	if ( ! $source ) {
+		return 'failed';
+	}
+
+	$destination = @fopen( $target, 'wb' );
+	if ( ! $destination ) {
+		fclose( $source );
+		return 'failed';
+	}
+
+	stream_copy_to_stream( $source, $destination );
+	fclose( $source );
+	fclose( $destination );
+
+	return 'extracted';
+}
+
+function sbt_assets_import_download_step( &$job ) {
+	$start = absint( $job['bytes_downloaded'] ?? 0 );
+	$chunk = max( 262144, absint( apply_filters( 'sbt_assets_import_download_chunk', SBT_ASSETS_IMPORT_DOWNLOAD_CHUNK ) ) );
+	$end = $start + $chunk - 1;
+	$response = wp_remote_get( $job['url'], array(
+		'timeout'     => 25,
+		'redirection' => 3,
+		'headers'     => array(
+			'Range' => 'bytes=' . $start . '-' . $end,
+		),
+	) );
+
+	if ( is_wp_error( $response ) ) {
+		return $response;
+	}
+
+	$code = absint( wp_remote_retrieve_response_code( $response ) );
+	if ( 206 !== $code ) {
+		return new WP_Error( 'sbt_range_not_supported', __( 'The online assets.zip server must support HTTP byte ranges for the progressive importer.', 'syncbooking-hospitality' ) );
+	}
+
+	$body = wp_remote_retrieve_body( $response );
+	if ( '' === $body ) {
+		return new WP_Error( 'sbt_empty_range', __( 'The online assets.zip returned an empty chunk.', 'syncbooking-hospitality' ) );
+	}
+
+	if ( false === file_put_contents( $job['zip_path'], $body, FILE_APPEND | LOCK_EX ) ) {
+		return new WP_Error( 'sbt_zip_write_failed', __( 'The assets.zip chunk could not be written to uploads.', 'syncbooking-hospitality' ) );
+	}
+
+	$content_range = wp_remote_retrieve_header( $response, 'content-range' );
+	if ( $content_range && preg_match( '/bytes\s+(\d+)-(\d+)\/(\d+)/i', $content_range, $matches ) ) {
+		$job['bytes_downloaded'] = absint( $matches[2] ) + 1;
+		$job['total_bytes'] = absint( $matches[3] );
+	} else {
+		$job['bytes_downloaded'] = $start + strlen( $body );
+	}
+
+	if ( ! empty( $job['total_bytes'] ) && absint( $job['bytes_downloaded'] ) >= absint( $job['total_bytes'] ) ) {
+		$prepared = sbt_assets_import_prepare_extract( $job );
+		if ( is_wp_error( $prepared ) ) {
+			return $prepared;
+		}
+	}
+
+	return true;
+}
+
+function sbt_assets_import_extract_step( &$job ) {
+	$zip = new ZipArchive();
+	if ( true !== $zip->open( $job['zip_path'] ) ) {
+		return new WP_Error( 'sbt_zip_open_failed', __( 'The downloaded assets.zip could not be opened.', 'syncbooking-hospitality' ) );
+	}
+
+	$batch = max( 1, absint( apply_filters( 'sbt_assets_import_extract_batch', SBT_ASSETS_IMPORT_EXTRACT_BATCH ) ) );
+	$index = absint( $job['extract_index'] ?? 0 );
+	$total = absint( $job['total_entries'] ?? $zip->numFiles );
+	$limit = min( $total, $index + $batch );
+
+	for ( ; $index < $limit; $index++ ) {
+		$result = sbt_assets_import_extract_zip_entry( $zip, $index, $job['target_base'] );
+		if ( 'extracted' === $result ) {
+			$job['extracted'] = absint( $job['extracted'] ?? 0 ) + 1;
+		} elseif ( 'failed' === $result ) {
+			$job['failed'][] = $zip->getNameIndex( $index );
+		}
+	}
+
+	$job['extract_index'] = $index;
+	$zip->close();
+
+	if ( $index >= $total ) {
+		$files = sbt_assets_import_collect_files( $job['target_base'] );
+		$job['stage'] = 'register';
+		$job['register_files'] = $files;
+		$job['register_total'] = count( $files );
+		$job['register_index'] = 0;
+	}
+
+	return true;
+}
+
+function sbt_assets_import_register_step( &$job ) {
+	$files = isset( $job['register_files'] ) && is_array( $job['register_files'] ) ? $job['register_files'] : array();
+	$total = count( $files );
+	$index = absint( $job['register_index'] ?? 0 );
+	$batch = max( 1, absint( apply_filters( 'sbt_assets_import_register_batch', SBT_ASSETS_IMPORT_REGISTER_BATCH ) ) );
+	$limit = min( $total, $index + $batch );
+
+	for ( ; $index < $limit; $index++ ) {
+		$path = trailingslashit( $job['target_base'] ) . $files[ $index ];
+		$result = sbt_register_upload_asset_file( $path, $job['target_base'], $job['subtheme'] );
+		if ( 'registered' === $result ) {
+			$job['registered'] = absint( $job['registered'] ?? 0 ) + 1;
+		} elseif ( 'skipped' === $result ) {
+			$job['skipped'] = absint( $job['skipped'] ?? 0 ) + 1;
+		} elseif ( 'failed' === $result ) {
+			$job['failed'][] = $files[ $index ];
+		}
+	}
+
+	$job['register_index'] = $index;
+
+	if ( $index >= $total ) {
+		$job['stage'] = 'complete';
+	}
+
+	return true;
+}
+
+function sbt_assets_import_finish( $job ) {
+	if ( ! empty( $job['zip_path'] ) && sbt_assets_import_uploads_path_allowed( $job['zip_path'] ) && file_exists( $job['zip_path'] ) ) {
+		@unlink( $job['zip_path'] );
+	}
+
+	$imports = get_option( SBT_MEDIA_OPTION, array() );
+	$imports[ $job['subtheme'] ] = array(
+		'downloaded'  => absint( $job['extracted'] ?? 0 ),
+		'registered'  => absint( $job['registered'] ?? 0 ),
+		'skipped'     => absint( $job['skipped'] ?? 0 ),
+		'failed'      => count( $job['failed'] ?? array() ),
+		'updated_at'  => current_time( 'mysql' ),
+		'source'      => $job['url'],
+		'method'      => 'progressive',
+		'total_bytes' => absint( $job['total_bytes'] ?? 0 ),
+	);
+	update_option( SBT_MEDIA_OPTION, $imports );
+	delete_option( sbt_assets_import_job_option( $job['subtheme'] ) );
+}
+
+function sbt_ajax_start_assets_import() {
+	check_ajax_referer( 'sbt_assets_import', 'nonce' );
+	if ( ! current_user_can( 'edit_theme_options' ) ) {
+		sbt_assets_import_error_response( __( 'You are not allowed to import assets.', 'syncbooking-hospitality' ) );
 	}
 
 	if ( ! class_exists( 'ZipArchive' ) ) {
-		return new WP_Error( 'sbt_zip_missing', __( 'The PHP ZipArchive extension is required to import assets.zip.', 'syncbooking-hospitality' ) );
+		sbt_assets_import_error_response( __( 'The PHP ZipArchive extension is required to import assets.zip.', 'syncbooking-hospitality' ) );
+	}
+
+	$key = isset( $_POST['subtheme'] ) ? sanitize_key( wp_unslash( $_POST['subtheme'] ) ) : sbt_active_subtheme_key();
+	$url = sbt_remote_assets_zip_url( $key );
+	if ( ! $url ) {
+		sbt_assets_import_error_response( __( 'No remote assets.zip is configured for this subtheme.', 'syncbooking-hospitality' ) );
 	}
 
 	$uploads = wp_get_upload_dir();
 	if ( ! empty( $uploads['error'] ) ) {
-		return new WP_Error( 'sbt_uploads_error', $uploads['error'] );
-	}
-
-	require_once ABSPATH . 'wp-admin/includes/file.php';
-
-	$temp = download_url( $url, 60 );
-	if ( is_wp_error( $temp ) ) {
-		return $temp;
+		sbt_assets_import_error_response( $uploads['error'] );
 	}
 
 	$target_base = trailingslashit( $uploads['basedir'] ) . 'syncbooking-theme/' . $key . '/';
+	$tmp_base = trailingslashit( $uploads['basedir'] ) . 'syncbooking-theme/tmp/';
 	wp_mkdir_p( $target_base );
+	wp_mkdir_p( $tmp_base );
 
-	$zip = new ZipArchive();
-	if ( true !== $zip->open( $temp ) ) {
-		@unlink( $temp );
-		return new WP_Error( 'sbt_zip_open_failed', __( 'The downloaded assets.zip could not be opened.', 'syncbooking-hospitality' ) );
+	$old_job = get_option( sbt_assets_import_job_option( $key ), array() );
+	if ( ! empty( $old_job['zip_path'] ) && sbt_assets_import_uploads_path_allowed( $old_job['zip_path'] ) && file_exists( $old_job['zip_path'] ) ) {
+		@unlink( $old_job['zip_path'] );
 	}
 
-	$before = sbt_count_files_in_directory( $target_base );
-	$zip->extractTo( $target_base );
-	$zip->close();
-	@unlink( $temp );
+	$job_id = wp_generate_password( 16, false, false );
+	$zip_path = $tmp_base . $key . '-' . $job_id . '.zip';
+	@unlink( $zip_path );
 
-	sbt_register_upload_assets( $target_base, $key );
-	$after = sbt_count_files_in_directory( $target_base );
-	$downloaded = max( 0, $after - $before );
+	$head = wp_remote_head( $url, array(
+		'timeout'     => 15,
+		'redirection' => 3,
+	) );
+	$total_bytes = is_wp_error( $head ) ? 0 : absint( wp_remote_retrieve_header( $head, 'content-length' ) );
 
-	$imports = get_option( SBT_MEDIA_OPTION, array() );
-	$imports[ $key ] = array(
-		'downloaded' => $downloaded,
-		'skipped'    => $before,
-		'failed'     => 0,
-		'updated_at' => current_time( 'mysql' ),
-		'source'     => $url,
+	$job = array(
+		'id'               => $job_id,
+		'subtheme'         => $key,
+		'url'              => $url,
+		'stage'            => 'download',
+		'zip_path'         => $zip_path,
+		'target_base'      => $target_base,
+		'bytes_downloaded' => 0,
+		'total_bytes'      => $total_bytes,
+		'extract_index'    => 0,
+		'total_entries'    => 0,
+		'register_index'   => 0,
+		'register_total'   => 0,
+		'extracted'        => 0,
+		'registered'       => 0,
+		'skipped'          => 0,
+		'failed'           => array(),
+		'started_at'       => current_time( 'mysql' ),
+		'updated_at'       => current_time( 'mysql' ),
 	);
-	update_option( SBT_MEDIA_OPTION, $imports );
+	update_option( sbt_assets_import_job_option( $key ), $job, false );
 
-	return array(
-		'downloaded' => $downloaded,
-		'skipped'    => $before,
-		'failed'     => array(),
-		'source'     => $url,
-	);
+	wp_send_json_success( sbt_assets_import_response_data( $job, __( 'Download assets.zip avviato a blocchi.', 'syncbooking-hospitality' ) ) );
 }
+add_action( 'wp_ajax_sbt_start_assets_import', 'sbt_ajax_start_assets_import' );
+
+function sbt_ajax_step_assets_import() {
+	check_ajax_referer( 'sbt_assets_import', 'nonce' );
+	if ( ! current_user_can( 'edit_theme_options' ) ) {
+		sbt_assets_import_error_response( __( 'You are not allowed to import assets.', 'syncbooking-hospitality' ) );
+	}
+
+	$key = isset( $_POST['subtheme'] ) ? sanitize_key( wp_unslash( $_POST['subtheme'] ) ) : sbt_active_subtheme_key();
+	$job = get_option( sbt_assets_import_job_option( $key ), array() );
+	$job_id = isset( $_POST['job_id'] ) ? sanitize_text_field( wp_unslash( $_POST['job_id'] ) ) : '';
+	if ( empty( $job ) || empty( $job['id'] ) || $job['id'] !== $job_id ) {
+		sbt_assets_import_error_response( __( 'Import job not found. Please start again.', 'syncbooking-hospitality' ) );
+	}
+
+	if ( 'download' === $job['stage'] ) {
+		$result = sbt_assets_import_download_step( $job );
+		$message = __( 'Download assets.zip in corso...', 'syncbooking-hospitality' );
+	} elseif ( 'extract' === $job['stage'] ) {
+		$result = sbt_assets_import_extract_step( $job );
+		$message = __( 'Estrazione assets in corso...', 'syncbooking-hospitality' );
+	} elseif ( 'register' === $job['stage'] ) {
+		$result = sbt_assets_import_register_step( $job );
+		$message = __( 'Registrazione immagini nella Media Library...', 'syncbooking-hospitality' );
+	} else {
+		$result = true;
+		$message = __( 'Import assets completato.', 'syncbooking-hospitality' );
+	}
+
+	if ( is_wp_error( $result ) ) {
+		sbt_assets_import_error_response( $result->get_error_message() );
+	}
+
+	$job['updated_at'] = current_time( 'mysql' );
+	if ( 'complete' === $job['stage'] ) {
+		sbt_assets_import_finish( $job );
+		wp_send_json_success( sbt_assets_import_response_data( $job, __( 'Import assets completato.', 'syncbooking-hospitality' ), true ) );
+	}
+
+	update_option( sbt_assets_import_job_option( $key ), $job, false );
+	wp_send_json_success( sbt_assets_import_response_data( $job, $message ) );
+}
+add_action( 'wp_ajax_sbt_step_assets_import', 'sbt_ajax_step_assets_import' );
 
 function sbt_media_import_status( $subtheme_key = '' ) {
 	$key = $subtheme_key ? sanitize_key( $subtheme_key ) : sbt_active_subtheme_key();
@@ -1332,7 +1669,6 @@ function sbt_create_theme_pages() {
 add_action( 'after_switch_theme', 'sbt_create_theme_pages' );
 add_action( 'after_switch_theme', 'sbt_sync_custom_house_pages' );
 add_action( 'after_switch_theme', 'sbt_create_seed_posts' );
-add_action( 'after_switch_theme', 'sbt_install_upload_assets' );
 
 function sbt_maybe_sync_theme_pages() {
 	if ( ! is_admin() || ! current_user_can( 'edit_theme_options' ) ) {
@@ -2788,6 +3124,9 @@ function sbt_admin_shared_styles() {
 		.sbt-gallery-actions, .sbt-media-actions { display:flex; flex-wrap:wrap; gap:8px; }
 		.sbt-link-control { display:grid; gap:8px; }
 		.sbt-link-hint { color:#646970; font-size:12px; }
+		.sbt-assets-progress { background:#f0f0f1; border-radius:999px; height:10px; margin:12px 0 6px; overflow:hidden; }
+		.sbt-assets-progress__bar { background:#2271b1; height:100%; transition:width .2s ease; width:0; }
+		.sbt-assets-import-message { min-height:20px; }
 		@media (max-width: 1180px) { .sbt-page-editor-layout { display:block; } }
 	</style>
 	<?php
@@ -2912,6 +3251,70 @@ function sbt_admin_footer_scripts() {
 				var $control = $(this).closest('.sbt-link-control');
 				$control.find('.sbt-link-select').val('');
 				$control.find('.sbt-link-value').val($(this).val());
+			});
+
+			$(document).on('click', '.sbt-assets-import-button', function(e){
+				e.preventDefault();
+				var $button = $(this);
+				var $wrap = $button.closest('.sbt-assets-import');
+				var $message = $wrap.find('.sbt-assets-import-message');
+				var $progress = $wrap.find('.sbt-assets-progress');
+				var $bar = $wrap.find('.sbt-assets-progress__bar');
+				var nonce = $wrap.data('nonce');
+				var subtheme = $wrap.data('subtheme');
+
+				function setStatus(data){
+					var progress = data && typeof data.progress !== 'undefined' ? parseInt(data.progress, 10) : 0;
+					$progress.show();
+					$bar.css('width', Math.max(0, Math.min(100, progress)) + '%');
+					if (data && data.message) {
+						$message.text(data.message);
+					}
+				}
+
+				function fail(xhr){
+					var response = xhr && xhr.responseJSON && xhr.responseJSON.data ? xhr.responseJSON.data : {};
+					$message.text(response.message || 'Import interrotto. Riprova quando il server online risponde correttamente.');
+					$button.prop('disabled', false);
+				}
+
+				function step(jobId){
+					$.post(ajaxurl, {
+						action: 'sbt_step_assets_import',
+						nonce: nonce,
+						subtheme: subtheme,
+						job_id: jobId
+					}).done(function(response){
+						if (!response || !response.success) {
+							fail({ responseJSON: response });
+							return;
+						}
+						setStatus(response.data);
+						if (response.data.done) {
+							$button.prop('disabled', false);
+							return;
+						}
+						window.setTimeout(function(){ step(jobId); }, 250);
+					}).fail(fail);
+				}
+
+				$button.prop('disabled', true);
+				$message.text('Avvio import assets online...');
+				$progress.show();
+				$bar.css('width', '0%');
+
+				$.post(ajaxurl, {
+					action: 'sbt_start_assets_import',
+					nonce: nonce,
+					subtheme: subtheme
+				}).done(function(response){
+					if (!response || !response.success) {
+						fail({ responseJSON: response });
+						return;
+					}
+					setStatus(response.data);
+					step(response.data.job_id);
+				}).fail(fail);
 			});
 		});
 	})(jQuery);
@@ -3898,20 +4301,25 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 			<div class="sbt-card">
 				<h3>Assets online</h3>
 				<p class="sbt-muted"><strong>Gli assets non sono inclusi nel tema/plugin.</strong> Il pacchetto contiene solo il tema: immagini, CSS, JavaScript, video e brochure vengono scaricati online dall'assets.zip del subtheme attivo e copiati negli uploads di WordPress.</p>
-				<p class="sbt-muted">Fonte assets: <code><?php echo esc_html( sbt_remote_assets_zip_url( sbt_active_subtheme_key() ) ); ?></code>. Non esiste fallback locale: se il download online fallisce, l'import mostra errore e deve essere riprovato quando il file online sia raggiungibile.</p>
+				<p class="sbt-muted">Fonte assets: <code><?php echo esc_html( sbt_remote_assets_zip_url( sbt_active_subtheme_key() ) ); ?></code>. Non esiste fallback locale: il download e l'estrazione avvengono a piccoli blocchi AJAX per evitare timeout nginx/PHP. Se il file online non risponde, l'import mostra errore e deve essere riprovato.</p>
 				<?php if ( ! empty( $media_status['updated_at'] ) ) : ?>
 					<p class="sbt-muted">
 						Last import: <?php echo esc_html( $media_status['updated_at'] ); ?>.
-						New: <?php echo esc_html( $media_status['downloaded'] ?? 0 ); ?>,
-						existing: <?php echo esc_html( $media_status['skipped'] ?? 0 ); ?>,
+						files extracted: <?php echo esc_html( $media_status['downloaded'] ?? 0 ); ?>,
+						images registered: <?php echo esc_html( $media_status['registered'] ?? 0 ); ?>,
+						already registered: <?php echo esc_html( $media_status['skipped'] ?? 0 ); ?>,
 						errors: <?php echo esc_html( $media_status['failed'] ?? 0 ); ?>.
 					</p>
 				<?php else : ?>
 					<p class="sbt-muted">Gli assets non sono ancora stati importati per questo subtheme.</p>
 				<?php endif; ?>
-				<button type="submit" class="button button-primary" name="sbt_action" value="download_demo_media">
-					Scarica assets.zip online
-				</button>
+				<div class="sbt-assets-import" data-nonce="<?php echo esc_attr( wp_create_nonce( 'sbt_assets_import' ) ); ?>" data-subtheme="<?php echo esc_attr( sbt_active_subtheme_key() ); ?>">
+					<button type="button" class="button button-primary sbt-assets-import-button">
+						Scarica assets.zip online a blocchi
+					</button>
+					<div class="sbt-assets-progress" style="display:none;" aria-hidden="true"><div class="sbt-assets-progress__bar"></div></div>
+					<p class="sbt-muted sbt-assets-import-message"></p>
+				</div>
 				<p class="sbt-muted" style="margin-top:12px;">For email debugging, we recommend optional plugins such as <a href="https://wordpress.org/plugins/wp-mail-logging/" target="_blank" rel="noopener">WP Mail Logging</a> and <a href="https://wordpress.org/plugins/post-smtp/" target="_blank" rel="noopener">Post SMTP</a>.</p>
 			</div>
 
@@ -4245,19 +4653,6 @@ function sbt_render_admin_page() {
 		} elseif ( 'reset_active_template' === $sbt_action ) {
 			if ( sbt_reset_subtheme_template( $selected_subtheme ) ) {
 				echo '<div class="notice notice-success is-dismissible"><p>Original template restored for the selected subtheme.</p></div>';
-			}
-		} elseif ( 'download_demo_media' === $sbt_action ) {
-			$result = sbt_download_demo_media( $selected_subtheme );
-			if ( is_wp_error( $result ) ) {
-				echo '<div class="notice notice-error is-dismissible"><p>' . esc_html( $result->get_error_message() ) . '</p></div>';
-			} else {
-				$message = sprintf(
-					'Media demo scaricati: %1$d nuovi, %2$d gia presenti, %3$d non riusciti.',
-					absint( $result['downloaded'] ),
-					absint( $result['skipped'] ),
-					count( $result['failed'] )
-				);
-				echo '<div class="notice notice-success is-dismissible"><p>' . esc_html( $message ) . '</p></div>';
 			}
 		} else {
 			update_option( SBT_OPTION, sbt_sanitize_options( $raw_options ) );

@@ -22,7 +22,7 @@ When a new Theme 01 or Theme 02 HTML package is loaded, refresh the WordPress su
 
 - Keep WordPress.org theme requirements valid: no PHP short echo tags, matching text domain `syncbooking-hospitality`, valid `style.css` headers, escaped output, translatable admin text where appropriate, and consistent line endings.
 - Keep the theme package below the WordPress.org upload size limit.
-- Do not bundle demo uploads or `subthemes/*/assets` directories in the theme zip; assets are downloaded online from the configured `assets.zip` after activation.
+- Do not bundle demo uploads or `subthemes/*/assets` directories in the theme zip; assets are downloaded online from the configured `assets.zip` through the progressive admin importer.
 - Preserve the admin editor system, Visual Edit pencil controls, Media Library image/gallery replacement, multilingual content, menu settings, and required SyncBooking plugin notice.
 - Header and footer remain centrally managed from the theme backend, but their frontend markup must still match the latest clean HTML source.
 
