@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.3' );
+define( 'SBT_VERSION', '2.1.4' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -91,7 +91,7 @@ function sbt_widgets_init() {
 add_action( 'widgets_init', 'sbt_widgets_init' );
 
 function sbt_display_version() {
-	return 'V2.13';
+	return 'V2.14';
 }
 
 function sbt_enqueue_comment_reply() {
@@ -469,11 +469,36 @@ function sbt_asset_url( $path ) {
 	if ( empty( $uploads['error'] ) ) {
 		$local = trailingslashit( $uploads['basedir'] ) . 'syncbooking-theme/' . $subtheme_key . '/' . $path;
 		if ( file_exists( $local ) ) {
-			return trailingslashit( $uploads['baseurl'] ) . 'syncbooking-theme/' . $subtheme_key . '/' . str_replace( '%2F', '/', rawurlencode( $path ) );
+			$served_path = sbt_compat_asset_path( $path, $local );
+			return trailingslashit( $uploads['baseurl'] ) . 'syncbooking-theme/' . $subtheme_key . '/' . str_replace( '%2F', '/', rawurlencode( $served_path ) );
 		}
 	}
 
 	return trailingslashit( sbt_remote_assets_base_url( $subtheme_key ) ) . str_replace( '%2F', '/', rawurlencode( $path ) );
+}
+
+function sbt_compat_asset_path( $asset_path, $local_path ) {
+	if ( 'assets/site.css' !== wp_normalize_path( $asset_path ) ) {
+		return $asset_path;
+	}
+
+	$compat_path = dirname( $local_path ) . '/site.wp-compat.css';
+	if ( file_exists( $compat_path ) && filemtime( $compat_path ) >= filemtime( $local_path ) ) {
+		return 'assets/site.wp-compat.css';
+	}
+
+	$css = file_get_contents( $local_path );
+	if ( false === $css ) {
+		return $asset_path;
+	}
+
+	$compat_css = str_replace( '.sbtw-', '.', $css );
+	$compat_css = "/* WordPress template compatibility layer generated from imported assets/site.css. */\n" . $compat_css;
+	if ( false === file_put_contents( $compat_path, $compat_css, LOCK_EX ) ) {
+		return $asset_path;
+	}
+
+	return 'assets/site.wp-compat.css';
 }
 
 function sbt_remote_assets_zip_url( $subtheme_key = '' ) {
