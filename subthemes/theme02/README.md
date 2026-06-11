@@ -22,9 +22,7 @@ syncbooking_theme/
 ├── inc/
 │   ├── header.php          ← <head> + top menu + mobile drawer (loads data_general.php)
 │   └── footer.php          ← footer + scroll-to-top + lightbox + <script>
-└── assets/
-    ├── site.css            ← all styles
-    └── theme.js            ← front-end interactions (menu, reveal, lightbox)
+└── assets/                 ← not bundled; downloaded online from assets.zip
 ```
 
 ## How to edit content

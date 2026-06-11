@@ -1,40 +1,41 @@
 <?php
 $PAGE = 'offers';
-$CONTENT_KEY = 'offers';
 require __DIR__ . '/inc/header.php';
+$p = $C['offers'];
+sbt_t1_page_hero( 'offers', $p, 'Offers' );
 ?>
 
-<section class="sbtw-page-hero" data-screen-label="Offers banner">
-  <?php echo sbt_t1_img( 'C.offers.image_1', sbt_t1_asset( 'uploads/Esterni/090.jpg' ), '', array( 'class' => 'sbtw-bg' ) ); ?>
-  <div class="sbtw-wrap">
-    <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.offers.text_1', 'Villa Rosa offers', array( 'multiline' => false ) ); ?></div>
-    <h1><?php echo sbt_t1_text( 'C.offers.text_2', 'Offers', array( 'multiline' => false ) ); ?></h1>
-    <nav class="sbtw-crumb"><a href="<?php echo esc_url( sbt_t1_url( sbt_t1_value( 'C.offers.link_1', 'home.php' ) ) ); ?>"><?php echo sbt_t1_text( 'C.offers.text_3', 'Home', array( 'multiline' => false ) ); ?></a><span>/</span><?php echo sbt_t1_text( 'C.offers.text_4', 'Offers', array( 'multiline' => false ) ); ?></nav>
-  </div>
+<section class="pad" data-screen-label="Offers intro">
+	<div class="wrap">
+		<div class="section-head reveal">
+			<div class="overline"><?php echo sbt_t1_text( 'C.offers.intro_over', $p['intro_over'] ); ?></div>
+			<h2><?php echo sbt_t1_text( 'C.offers.intro_h2', $p['intro_h2'] ); ?></h2>
+			<p><?php echo sbt_t1_text( 'C.offers.intro_p', $p['intro_p'], array( 'multiline' => true ) ); ?></p>
+		</div>
+		<div class="offer-grid">
+			<?php foreach ( $p['cards'] as $index => $card ) : ?>
+				<a class="offer-card reveal" href="<?php echo esc_url( sbt_t1_url( $card['url'] ) ); ?>">
+					<?php echo sbt_t1_img( 'C.offers.cards.' . $index . '.img', $card['img'], $card['h3'] ); ?>
+					<div class="oc-body">
+						<span class="badge"><?php echo sbt_t1_text( 'C.offers.cards.' . $index . '.badge', $card['badge'] ); ?></span>
+						<h3><?php echo sbt_t1_text( 'C.offers.cards.' . $index . '.h3', $card['h3'] ); ?></h3>
+						<p><?php echo sbt_t1_text( 'C.offers.cards.' . $index . '.p', $card['p'], array( 'multiline' => true ) ); ?></p>
+					</div>
+					<?php echo sbt_t1_control( 'C.offers.cards.' . $index . '.url', $card['url'], 'Link card', 'url' ); ?>
+				</a>
+			<?php endforeach; ?>
+		</div>
+	</div>
 </section>
 
-<section class="sbtw-pad" data-screen-label="Offers intro">
-  <div class="sbtw-wrap">
-    <div class="sbtw-section-head sbtw-reveal">
-      <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.offers.text_5', 'Best available conditions', array( 'multiline' => false ) ); ?></div>
-      <h2><?php echo sbt_t1_text( 'C.offers.text_6', 'Seasonal promotions', array( 'multiline' => false ) ); ?></h2>
-      <p><?php echo sbt_t1_text( 'C.offers.text_7', 'Reserve your stay in the heart of Puglia at the very best conditions. Discover our current offers — and contact us directly for exclusive, tailor-made rates.', array( 'multiline' => true ) ); ?></p>
-    </div>
-    <div class="sbtw-offer-grid">
-      <a class="sbtw-offer-card sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( sbt_t1_value( 'C.offers.link_2', 'single.php' ) ) ); ?>"><?php echo sbt_t1_img( 'C.offers.image_2', sbt_t1_asset( 'uploads/ota/094.jpg' ), '', array() ); ?><span class="sbtw-badge"><?php echo sbt_t1_text( 'C.offers.text_8', 'Early booking', array( 'multiline' => false ) ); ?></span><div class="sbtw-oc-body"><h3><?php echo sbt_t1_text( 'C.offers.text_9', 'Book Early, Save More', array( 'multiline' => false ) ); ?></h3><p><?php echo sbt_t1_text( 'C.offers.text_10', 'Reserve well in advance and enjoy a special rate on your favourite house.', array( 'multiline' => false ) ); ?></p></div></a>
-      <a class="sbtw-offer-card sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( sbt_t1_value( 'C.offers.link_3', 'single.php' ) ) ); ?>"><?php echo sbt_t1_img( 'C.offers.image_3', sbt_t1_asset( 'uploads/Esterni/081.jpg' ), '', array() ); ?><span class="sbtw-badge"><?php echo sbt_t1_text( 'C.offers.text_11', 'Long stay', array( 'multiline' => false ) ); ?></span><div class="sbtw-oc-body"><h3><?php echo sbt_t1_text( 'C.offers.text_12', '7 Nights = 6', array( 'multiline' => false ) ); ?></h3><p><?php echo sbt_t1_text( 'C.offers.text_13', 'Stay a week and pay for six nights — the perfect way to truly unwind in Puglia.', array( 'multiline' => false ) ); ?></p></div></a>
-      <a class="sbtw-offer-card sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( sbt_t1_value( 'C.offers.link_4', 'single.php' ) ) ); ?>"><?php echo sbt_t1_img( 'C.offers.image_4', sbt_t1_asset( 'assets/images/jacuzzi.jpg' ), '', array() ); ?><span class="sbtw-badge"><?php echo sbt_t1_text( 'C.offers.text_14', 'Wellness', array( 'multiline' => false ) ); ?></span><div class="sbtw-oc-body"><h3><?php echo sbt_t1_text( 'C.offers.text_15', 'SPA Escape', array( 'multiline' => false ) ); ?></h3><p><?php echo sbt_t1_text( 'C.offers.text_16', 'A romantic stay for two with a dedicated wellness experience in our SPA.', array( 'multiline' => false ) ); ?></p></div></a>
-      <a class="sbtw-offer-card sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( sbt_t1_value( 'C.offers.link_5', 'single.php' ) ) ); ?>"><?php echo sbt_t1_img( 'C.offers.image_5', sbt_t1_asset( 'https://commons.wikimedia.org/wiki/Special:FilePath/Alberobello%20trulli.JPG?width=1400' ), '', array() ); ?><span class="sbtw-badge"><?php echo sbt_t1_text( 'C.offers.text_17', 'Season', array( 'multiline' => false ) ); ?></span><div class="sbtw-oc-body"><h3><?php echo sbt_t1_text( 'C.offers.text_18', 'Spring &amp; Autumn', array( 'multiline' => false ) ); ?></h3><p><?php echo sbt_t1_text( 'C.offers.text_19', 'Discover Puglia in its gentlest seasons with our reduced shoulder-season rates.', array( 'multiline' => false ) ); ?></p></div></a>
-    </div>
-  </div>
-</section>
-
-<section class="sbtw-band" style="background-image:url('<?php echo esc_url( sbt_t1_asset( 'uploads/Esterni/078.jpg' ) ); ?>');" data-screen-label="Offers CTA">
-  <div class="sbtw-inner sbtw-reveal">
-    <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.offers.text_20', 'Tailored to you', array( 'multiline' => false ) ); ?></div>
-    <h2><?php echo sbt_t1_text( 'C.offers.text_21', 'Ask for your best rate', array( 'multiline' => false ) ); ?></h2>
-    <a class="sbtw-btn sbtw-btn--light" href="<?php echo esc_url( sbt_t1_url( sbt_t1_value( 'C.offers.link_6', 'contacts.php' ) ) ); ?>" style="margin-top:8px;"><?php echo sbt_t1_text( 'C.offers.text_22', 'Contact us', array( 'multiline' => false ) ); ?></a>
-  </div>
+<section class="band" style="<?php echo esc_attr( sbt_t1_bg_style( 'C.offers.cta_bg', $p['cta_bg'] ) ); ?>" data-screen-label="Offers CTA">
+	<div class="inner reveal">
+		<?php echo sbt_t1_control( 'C.offers.cta_bg', $p['cta_bg'], 'Immagine sfondo', 'image' ); ?>
+		<div class="overline"><?php echo sbt_t1_text( 'C.offers.cta_over', $p['cta_over'] ); ?></div>
+		<h2><?php echo sbt_t1_text( 'C.offers.cta_h2', $p['cta_h2'] ); ?></h2>
+		<a class="btn btn--light" href="<?php echo esc_url( sbt_t1_url( $p['cta_url'] ) ); ?>" style="margin-top:8px;"><?php echo sbt_t1_text( 'C.offers.cta_btn', $p['cta_btn'] ); ?></a>
+		<?php echo sbt_t1_control( 'C.offers.cta_url', $p['cta_url'], 'Link bottone', 'url' ); ?>
+	</div>
 </section>
 
 <?php require __DIR__ . '/inc/footer.php'; ?>
