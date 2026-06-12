@@ -46,5 +46,43 @@ if ( function_exists( 'add_query_arg' ) ) {
 
 <?php if ( function_exists( 'wp_footer' ) ) wp_footer(); ?>
 <script src="<?php echo esc_url( $THEME_JS_URL ); ?>"></script>
+<script>
+(function(){
+	function ready(fn){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fn);else fn();}
+	ready(function(){
+		var lb=document.getElementById('lightbox');
+		if(!lb)return;
+		var lbImg=lb.querySelector('img');
+		var lbCount=lb.querySelector('.sbtw-lx-count,.lx-count');
+		var images=[].slice.call(document.querySelectorAll('img[data-lightbox]'));
+		var index=0;
+		function setOpen(open){lb.classList.toggle('sbtw-open',open);lb.classList.toggle('open',open);}
+		function show(next){if(!images.length||!lbImg)return;index=(next+images.length)%images.length;lbImg.src=images[index].getAttribute('data-full')||images[index].src;if(lbCount)lbCount.textContent=(index+1)+' / '+images.length;}
+		function openAt(next){show(next);setOpen(true);}
+		images.forEach(function(img,i){img.addEventListener('click',function(){openAt(i);});});
+		document.querySelectorAll('.sbtw-m-allbtn,.m-allbtn,.sbtw-w-allbtn').forEach(function(button){
+			button.addEventListener('click',function(event){
+				event.preventDefault();
+				var scope=button.closest('.sbtw-mosaic,.mosaic,.sbtw-w-gallery')||document;
+				var first=scope.querySelector('img[data-lightbox]');
+				openAt(Math.max(0,images.indexOf(first)));
+			});
+		});
+		var close=lb.querySelector('.sbtw-lx-close,.lx-close');
+		var prev=lb.querySelector('.sbtw-lx-prev,.lx-prev');
+		var next=lb.querySelector('.sbtw-lx-next,.lx-next');
+		if(close)close.addEventListener('click',function(){setOpen(false);});
+		if(prev)prev.addEventListener('click',function(event){event.stopPropagation();show(index-1);});
+		if(next)next.addEventListener('click',function(event){event.stopPropagation();show(index+1);});
+		lb.addEventListener('click',function(event){if(event.target===lb||event.target.classList.contains('sbtw-lx-stage')||event.target.classList.contains('lx-stage'))setOpen(false);});
+		document.addEventListener('keydown',function(event){
+			if(!lb.classList.contains('sbtw-open')&&!lb.classList.contains('open'))return;
+			if(event.key==='Escape')setOpen(false);
+			if(event.key==='ArrowLeft')show(index-1);
+			if(event.key==='ArrowRight')show(index+1);
+		});
+	});
+})();
+</script>
 </body>
 </html>

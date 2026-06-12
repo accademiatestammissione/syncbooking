@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.14' );
+define( 'SBT_VERSION', '2.1.15' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -91,7 +91,7 @@ function sbt_widgets_init() {
 add_action( 'widgets_init', 'sbt_widgets_init' );
 
 function sbt_display_version() {
-	return 'V2.1.14';
+	return 'V2.1.15';
 }
 
 function sbt_enqueue_comment_reply() {
@@ -4268,6 +4268,9 @@ function sbt_render_admin_shell_start( $active_tab ) {
 			.sbt-tabs { gap:0; overflow-x:auto; padding-bottom:1px; }
 			.sbt-tab { flex:0 0 auto; padding:10px 12px; white-space:nowrap; }
 			.sbt-panel { padding:14px; }
+			.sbt-panel,
+			.sbt-card,
+			.sbt-reset-box { box-sizing:border-box; max-width:100%; overflow-wrap:anywhere; }
 			.sbt-grid,
 			.sbt-theme-grid,
 			.sbt-field-grid,
@@ -4292,12 +4295,12 @@ function sbt_render_admin_shell_start( $active_tab ) {
 			}
 			.sbt-submenu { margin-left:0; padding-left:10px; }
 			.sbt-actions { display:grid; gap:8px; grid-template-columns:1fr; }
-			.sbt-actions .button { align-items:center; display:flex; justify-content:center; text-align:center; width:100%; }
+			.sbt-actions .button { align-items:center; box-sizing:border-box; display:flex; justify-content:center; max-width:100%; min-width:0; text-align:center; white-space:normal; width:100%; }
 			.sbt-table,
 			.sbt-table tbody { box-sizing:border-box; display:block; width:100%; }
-			.sbt-table { border-collapse:separate; border-spacing:0 12px; table-layout:fixed; }
+			.sbt-table { border-collapse:separate; border-spacing:0 12px; max-width:100%; table-layout:fixed; }
 			.sbt-table thead { display:none; }
-			.sbt-table tr { background:#fff; border:1px solid #dcdcde; border-radius:8px; display:grid; gap:8px; padding:12px; width:auto; }
+			.sbt-table tr { background:#fff; border:1px solid #dcdcde; border-radius:8px; box-sizing:border-box; display:grid; gap:8px; margin-right:0; max-width:100%; padding:10px; width:100%; }
 			.sbt-table td { border-bottom:0; box-sizing:border-box; display:block; padding:0; width:auto; }
 			.sbt-table td:first-child { font-size:15px; }
 			.sbt-table td::before { color:#646970; content:attr(data-label); display:block; font-size:12px; font-weight:700; margin-bottom:3px; text-transform:uppercase; }
