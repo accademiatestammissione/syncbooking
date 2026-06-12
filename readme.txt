@@ -23,6 +23,9 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 2.1.20 =
+* Tightens the General Settings admin layout so Sellable structure and Unit titles fields fit inside cards on mobile.
+
 = 2.1.19 =
 * Keeps Header & Menu link defaults connected to generated theme pages instead of direct absolute URLs.
 * Restores Theme 01 homepage markup classes to match the original HTML/CSS.
