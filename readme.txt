@@ -23,6 +23,10 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 2.1.14 =
+* Renamed the unit-name setup to Unit titles and removed mixed-language examples from the admin copy.
+* Shows subtheme choices as Theme01, Theme02 and improves the mobile layout of the Pages tab.
+
 = 2.1.13 =
 * Improved the SyncBooking Theme admin pages on mobile so inputs, selects, action buttons and page tables fit small screens.
 
