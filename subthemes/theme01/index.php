@@ -56,6 +56,7 @@ $p = $C['home'];
 	</div>
 </section>
 
+<?php if ( function_exists( 'sbt_is_entire_rental_mode' ) && sbt_is_entire_rental_mode( 'theme01' ) ) : ?>
 <section class="sbtw-pad-s pad-s" id="entire-villa" style="background:var(--surface);" data-screen-label="Entire villa">
 	<div class="sbtw-wrap sbtw-two-col wrap two-col">
 		<?php sbt_t1_carousel( 'C.home.entire_gallery', $p['entire_gallery'] ?? $p['welcome_gallery'], $p['entire_h2'] ?? $SITE['name'], true, true ); ?>
@@ -70,6 +71,7 @@ $p = $C['home'];
 		</div>
 	</div>
 </section>
+<?php endif; ?>
 
 <?php if ( ! function_exists( 'sbt_is_entire_rental_mode' ) || ! sbt_is_entire_rental_mode( 'theme01' ) ) : ?>
 <section class="houses pad" id="houses" data-screen-label="Houses">

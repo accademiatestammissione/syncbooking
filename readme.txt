@@ -23,6 +23,9 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 2.1.18 =
+* Hides the Theme 01 homepage Entire Villa exclusive-use block when Units to sell mode is selected.
+
 = 2.1.17 =
 * Hides the Theme 02 homepage Whole Masseria exclusive-use block when Units to sell mode is selected.
 
