@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.9' );
+define( 'SBT_VERSION', '2.1.10' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -91,7 +91,7 @@ function sbt_widgets_init() {
 add_action( 'widgets_init', 'sbt_widgets_init' );
 
 function sbt_display_version() {
-	return 'V2.19';
+	return 'V2.1.10';
 }
 
 function sbt_enqueue_comment_reply() {
@@ -324,18 +324,16 @@ function sbt_unit_label_options() {
 
 function sbt_entire_label_options() {
 	return array(
-		'The whole Villa'  => 'The whole Villa',
-		'The whole Masseria' => 'The whole Masseria',
-		'Entire Villa'    => 'Entire Villa',
-		'Whole Masseria' => 'Whole Masseria',
-		'Entire House'    => 'Entire House',
 		'Entire Property' => 'Entire Property',
+		'Entire Villa'    => 'Entire Villa',
+		'Entire House'    => 'Entire House',
+		'Entire Masseria' => 'Entire Masseria',
 	);
 }
 
 function sbt_default_entire_label( $subtheme = '' ) {
 	$subtheme = '' === $subtheme ? sbt_active_subtheme_key() : $subtheme;
-	return 'theme02' === $subtheme ? 'The whole Masseria' : 'The whole Villa';
+	return 'theme02' === $subtheme ? 'Entire Masseria' : 'Entire Villa';
 }
 
 function sbt_rental_mode( $subtheme = '' ) {
@@ -1347,6 +1345,57 @@ function sbt_assets_import_finish( $job ) {
 	delete_option( sbt_assets_import_job_option( $job['subtheme'] ) );
 }
 
+function sbt_assets_import_completed( $subtheme_key = '' ) {
+	$key = $subtheme_key ? sanitize_key( $subtheme_key ) : sbt_active_subtheme_key();
+	$status = sbt_media_import_status( $key );
+	if ( empty( $status['updated_at'] ) || 0 !== absint( $status['failed'] ?? 0 ) || empty( $status['downloaded'] ) ) {
+		return false;
+	}
+
+	if ( ! empty( $status['source'] ) && $status['source'] !== sbt_remote_assets_zip_url( $key ) ) {
+		return false;
+	}
+
+	$uploads = wp_get_upload_dir();
+	if ( ! empty( $uploads['error'] ) ) {
+		return false;
+	}
+
+	$target_base = trailingslashit( $uploads['basedir'] ) . 'syncbooking-theme/' . $key . '/assets/';
+	return is_dir( $target_base ) && 0 < sbt_count_files_in_directory( $target_base );
+}
+
+function sbt_assets_import_resume_job( $subtheme_key ) {
+	$key = sanitize_key( $subtheme_key );
+	$job = get_option( sbt_assets_import_job_option( $key ), array() );
+	if ( empty( $job['id'] ) || empty( $job['stage'] ) || 'complete' === $job['stage'] ) {
+		return array();
+	}
+
+	if ( ! empty( $job['subtheme'] ) && $job['subtheme'] !== $key ) {
+		return array();
+	}
+
+	if ( in_array( $job['stage'], array( 'download', 'extract' ), true ) ) {
+		$zip_path = $job['zip_path'] ?? '';
+		if ( ! $zip_path || ! sbt_assets_import_uploads_path_allowed( $zip_path ) ) {
+			return array();
+		}
+		if ( 'download' === $job['stage'] && ! file_exists( $zip_path ) && 0 < absint( $job['bytes_downloaded'] ?? 0 ) ) {
+			return array();
+		}
+		if ( 'extract' === $job['stage'] && ! file_exists( $zip_path ) ) {
+			return array();
+		}
+	}
+
+	if ( in_array( $job['stage'], array( 'extract', 'register' ), true ) && empty( $job['target_base'] ) ) {
+		return array();
+	}
+
+	return $job;
+}
+
 function sbt_ajax_start_assets_import() {
 	check_ajax_referer( 'sbt_assets_import', 'nonce' );
 	if ( ! current_user_can( 'edit_theme_options' ) ) {
@@ -1363,6 +1412,16 @@ function sbt_ajax_start_assets_import() {
 		sbt_assets_import_error_response( __( 'No remote assets.zip is configured for this subtheme.', 'syncbooking-hospitality' ) );
 	}
 
+	if ( sbt_assets_import_completed( $key ) ) {
+		$job = array(
+			'id'       => '',
+			'subtheme' => $key,
+			'url'      => $url,
+			'stage'    => 'complete',
+		);
+		wp_send_json_success( sbt_assets_import_response_data( $job, __( 'Assets already imported. No new download needed.', 'syncbooking-hospitality' ), true ) );
+	}
+
 	$uploads = wp_get_upload_dir();
 	if ( ! empty( $uploads['error'] ) ) {
 		sbt_assets_import_error_response( $uploads['error'] );
@@ -1373,9 +1432,9 @@ function sbt_ajax_start_assets_import() {
 	wp_mkdir_p( $target_base );
 	wp_mkdir_p( $tmp_base );
 
-	$old_job = get_option( sbt_assets_import_job_option( $key ), array() );
-	if ( ! empty( $old_job['zip_path'] ) && sbt_assets_import_uploads_path_allowed( $old_job['zip_path'] ) && file_exists( $old_job['zip_path'] ) ) {
-		@unlink( $old_job['zip_path'] );
+	$old_job = sbt_assets_import_resume_job( $key );
+	if ( $old_job ) {
+		wp_send_json_success( sbt_assets_import_response_data( $old_job, __( 'Resuming assets import in the background.', 'syncbooking-hospitality' ) ) );
 	}
 
 	$job_id = wp_generate_password( 16, false, false );
@@ -2148,7 +2207,7 @@ function sbt_apply_unit_structure( &$SITE, &$NAV, &$C, &$HOUSE_CARDS, &$TEXT ) {
 	$entire_url = sbt_entire_nav_url( $subtheme );
 	$is_it = 'it' === sbt_current_content_language();
 	$accommodation_menu_label = $is_it ? 'Alloggi' : 'Accomodation';
-	$whole_menu_label = $is_it ? ( 'theme02' === $subtheme ? 'Tutta la Masseria' : 'Tutta la Villa' ) : ( 'theme02' === $subtheme ? 'The whole Masseria' : 'The whole Villa' );
+	$whole_menu_label = $is_it ? ( 'theme02' === $subtheme ? 'Tutta la Masseria' : 'Tutta la Villa' ) : $entire_label;
 	$price_menu_label = $is_it ? 'Prezzi e condizioni' : 'Price & Condition';
 	$book_menu_label = $is_it ? 'Prenota ora' : 'Book Now';
 	if ( sbt_is_entire_rental_mode( $subtheme ) ) {
@@ -3289,10 +3348,13 @@ function sbt_admin_footer_scripts() {
 				$control.find('.sbt-link-value').val($(this).val());
 			});
 
-			$(document).on('click', '.sbt-assets-import-button', function(e){
-				e.preventDefault();
+			function runAssetsImport($button, automatic){
 				var $button = $(this);
 				var $wrap = $button.closest('.sbt-assets-import');
+				if ($wrap.data('running') || $wrap.data('complete')) {
+					return;
+				}
+				$wrap.data('running', true);
 				var $message = $wrap.find('.sbt-assets-import-message');
 				var $progress = $wrap.find('.sbt-assets-progress');
 				var $bar = $wrap.find('.sbt-assets-progress__bar');
@@ -3310,8 +3372,9 @@ function sbt_admin_footer_scripts() {
 
 				function fail(xhr){
 					var response = xhr && xhr.responseJSON && xhr.responseJSON.data ? xhr.responseJSON.data : {};
-					$message.text(response.message || 'Import interrotto. Riprova quando il server online risponde correttamente.');
+					$message.text(response.message || 'Import interrupted. Try again when the online server responds correctly.');
 					$button.prop('disabled', false);
+					$wrap.data('running', false);
 				}
 
 				function step(jobId){
@@ -3327,7 +3390,9 @@ function sbt_admin_footer_scripts() {
 						}
 						setStatus(response.data);
 						if (response.data.done) {
-							$button.prop('disabled', false);
+							$wrap.data('complete', true);
+							$wrap.data('running', false);
+							$button.prop('disabled', true).text('Assets already imported');
 							return;
 						}
 						window.setTimeout(function(){ step(jobId); }, 250);
@@ -3335,7 +3400,7 @@ function sbt_admin_footer_scripts() {
 				}
 
 				$button.prop('disabled', true);
-				$message.text('Avvio import assets online...');
+				$message.text(automatic ? 'Starting background assets import...' : 'Starting online assets import...');
 				$progress.show();
 				$bar.css('width', '0%');
 
@@ -3349,9 +3414,30 @@ function sbt_admin_footer_scripts() {
 						return;
 					}
 					setStatus(response.data);
+					if (response.data.done) {
+						$wrap.data('complete', true);
+						$wrap.data('running', false);
+						$button.prop('disabled', true).text('Assets already imported');
+						return;
+					}
 					step(response.data.job_id);
 				}).fail(fail);
+			}
+
+			$(document).on('click', '.sbt-assets-import-button', function(e){
+				e.preventDefault();
+				runAssetsImport.call(this, $(this), false);
 			});
+
+			window.setTimeout(function(){
+				$('.sbt-assets-import[data-auto-import="1"]').each(function(){
+					var $wrap = $(this);
+					var $button = $wrap.find('.sbt-assets-import-button');
+					if ($button.length && !$wrap.data('complete')) {
+						runAssetsImport.call($button[0], $button, true);
+					}
+				});
+			}, 650);
 		});
 	})(jQuery);
 	</script>
@@ -4315,6 +4401,7 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 	$is_entire = 'entire' === $unit_overrides['SITE.rental_mode'];
 	$entire_slug = sbt_entire_page_slug( $subtheme );
 	$media_status = sbt_media_import_status();
+	$assets_import_complete = sbt_assets_import_completed( $subtheme );
 	?>
 	<div class="sbt-panel">
 		<h2>General Settings</h2>
@@ -4353,8 +4440,8 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 		<div class="sbt-grid">
 			<div class="sbt-card">
 				<h3>Assets online</h3>
-				<p class="sbt-muted">Assets are not bundled in the theme. They are downloaded online from the active subtheme assets.zip and copied to WordPress uploads.</p>
-				<p class="sbt-muted">Source: <code><?php echo esc_html( sbt_remote_assets_zip_url( sbt_active_subtheme_key() ) ); ?></code>. No local fallback.</p>
+				<p class="sbt-muted">Assets are downloaded from the online assets.zip into WordPress uploads. No local fallback.</p>
+				<p class="sbt-muted">Source: <code><?php echo esc_html( sbt_remote_assets_zip_url( sbt_active_subtheme_key() ) ); ?></code></p>
 				<?php if ( ! empty( $media_status['updated_at'] ) ) : ?>
 					<p class="sbt-muted">
 						Last import: <?php echo esc_html( $media_status['updated_at'] ); ?>.
@@ -4365,9 +4452,9 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 				<?php else : ?>
 					<p class="sbt-muted">Assets have not been imported for this subtheme yet.</p>
 				<?php endif; ?>
-				<div class="sbt-assets-import" data-nonce="<?php echo esc_attr( wp_create_nonce( 'sbt_assets_import' ) ); ?>" data-subtheme="<?php echo esc_attr( sbt_active_subtheme_key() ); ?>">
-					<button type="button" class="button button-primary sbt-assets-import-button">
-						Download assets.zip online
+				<div class="sbt-assets-import" data-nonce="<?php echo esc_attr( wp_create_nonce( 'sbt_assets_import' ) ); ?>" data-subtheme="<?php echo esc_attr( sbt_active_subtheme_key() ); ?>" data-auto-import="<?php echo $assets_import_complete ? '0' : '1'; ?>" data-complete="<?php echo $assets_import_complete ? '1' : '0'; ?>">
+					<button type="button" class="button button-primary sbt-assets-import-button" <?php disabled( $assets_import_complete ); ?>>
+						<?php echo esc_html( $assets_import_complete ? 'Assets already imported' : 'Download / resume assets' ); ?>
 					</button>
 					<div class="sbt-assets-progress" style="display:none;" aria-hidden="true"><div class="sbt-assets-progress__bar"></div></div>
 					<p class="sbt-muted sbt-assets-import-message"></p>
