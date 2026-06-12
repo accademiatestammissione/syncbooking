@@ -23,6 +23,11 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 2.1.10 =
+* Assets import now auto-starts or resumes in the background from General Settings when needed.
+* Completed zero-error assets imports are reused and do not download assets.zip again.
+* Simplified the Entire Structure dropdown to Entire Property, Entire Villa, Entire House and Entire Masseria.
+
 = 2.1.9 =
 * Uses original imported assets/site.css and assets/theme.js without generating compatibility CSS or appending theme JavaScript.
 * Removes the extra bottom spacing and mobile back-to-top button from both subthemes.
