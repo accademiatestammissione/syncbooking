@@ -23,6 +23,9 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 2.1.12 =
+* Restored the full Theme 02 homepage service grid to eight items under "The estate at your service".
+
 = 2.1.11 =
 * Moved the Theme 02 homepage Weddings & Events and Apulian Experience blocks after the masseria band and before the final stay CTA to match the source HTML order.
 
