@@ -17,11 +17,19 @@ SyncBooking Hospitality provides a WordPress theme package for hospitality websi
 This theme can display embedded video and maps when the site owner configures the related fields.
 
 * Vimeo player: used by the Villa Rosa Resort homepage video background. The configured Vimeo video id is used in an iframe from https://player.vimeo.com/. Vimeo privacy policy: https://vimeo.com/privacy
-* YouTube player: used by the Masseria Le Cerase homepage video background when a YouTube id is configured. The configured YouTube video id is used in an iframe from https://www.youtube.com/. Google privacy policy: https://policies.google.com/privacy
+* Theme 02 homepage video: loaded from the imported online assets package at assets/video/masseria.mp4.
 * Google Maps embed: used on contact pages when a map embed URL is configured. Google privacy policy: https://policies.google.com/privacy
 * Demo media import: when an administrator clicks "Download assets.zip online" in General Settings, the active subtheme assets.zip is downloaded from https://syncbooking.com/clone-theme/theme-01/assets.zip or https://syncbooking.com/clone-theme/theme-02/assets.zip into the local WordPress uploads directory. Assets are not bundled in the theme/plugin and there is no local fallback. The download, extraction and image registration are processed in small AJAX batches to avoid nginx/PHP timeout errors. No visitor data is sent by the theme for this import.
 
 == Changelog ==
+
+= 2.1.9 =
+* Uses original imported assets/site.css and assets/theme.js without generating compatibility CSS or appending theme JavaScript.
+* Removes the extra bottom spacing and mobile back-to-top button from both subthemes.
+* Updates Theme 02 home to use the source HTML video asset.
+* Makes the Accommodation menu/listing slug follow the selected unit type: Rooms, Houses, Units or Apartments.
+* Removes the generated Article page and legacy article template; posts use single.php.
+* Updates generated unit defaults to labels such as "House for 2 people" and "Room for 2 people".
 
 = 2.1.8 =
 * Added Theme 02 palette defaults and subtheme-aware design fallbacks so Masseria pages do not inherit Theme 01 colors.
