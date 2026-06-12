@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.21' );
+define( 'SBT_VERSION', '2.1.22' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -91,7 +91,7 @@ function sbt_widgets_init() {
 add_action( 'widgets_init', 'sbt_widgets_init' );
 
 function sbt_display_version() {
-	return 'V2.1.21';
+	return 'V2.1.22';
 }
 
 function sbt_enqueue_comment_reply() {
@@ -1844,10 +1844,77 @@ function sbt_create_theme_pages() {
 		}
 	}
 	sbt_sync_syncbooking_bar_pages();
+	sbt_apply_reading_page_defaults();
 }
 add_action( 'after_switch_theme', 'sbt_create_theme_pages' );
 add_action( 'after_switch_theme', 'sbt_sync_custom_house_pages' );
 add_action( 'after_switch_theme', 'sbt_create_seed_posts' );
+
+function sbt_page_option_is_valid( $page_id ) {
+	$page_id = absint( $page_id );
+	return $page_id && 'page' === get_post_type( $page_id ) && 'trash' !== get_post_status( $page_id );
+}
+
+function sbt_posts_index_page_id() {
+	$existing = get_posts( array(
+		'post_type'      => 'page',
+		'post_status'    => array( 'publish', 'draft', 'pending', 'private', 'future' ),
+		'name'           => 'article',
+		'posts_per_page' => 1,
+		'fields'         => 'ids',
+	) );
+
+	if ( $existing ) {
+		$page_id = absint( $existing[0] );
+		if ( 'publish' !== get_post_status( $page_id ) ) {
+			wp_update_post( array(
+				'ID'          => $page_id,
+				'post_status' => 'publish',
+			) );
+		}
+		return $page_id;
+	}
+
+	$page_id = wp_insert_post( array(
+		'post_type'    => 'page',
+		'post_status'  => 'publish',
+		'post_title'   => 'Article',
+		'post_name'    => 'article',
+		'post_content' => '',
+	) );
+
+	if ( $page_id && ! is_wp_error( $page_id ) ) {
+		update_post_meta( $page_id, '_sbt_system_page', 'posts_index' );
+		return absint( $page_id );
+	}
+
+	return 0;
+}
+
+function sbt_apply_reading_page_defaults() {
+	$home = sbt_theme_page_post( 'home', sbt_default_language() );
+	if ( ! $home || 'publish' !== get_post_status( $home->ID ) ) {
+		return;
+	}
+
+	$posts_page_id = sbt_posts_index_page_id();
+	if ( ! $posts_page_id ) {
+		return;
+	}
+
+	if ( 'page' !== get_option( 'show_on_front' ) ) {
+		update_option( 'show_on_front', 'page' );
+	}
+
+	if ( ! sbt_page_option_is_valid( get_option( 'page_on_front' ) ) ) {
+		update_option( 'page_on_front', absint( $home->ID ) );
+	}
+
+	if ( ! sbt_page_option_is_valid( get_option( 'page_for_posts' ) ) ) {
+		update_option( 'page_for_posts', $posts_page_id );
+	}
+}
+add_action( 'after_switch_theme', 'sbt_apply_reading_page_defaults', 20 );
 
 function sbt_sync_syncbooking_bar_pages() {
 	if ( ! function_exists( 'syncbooking_print_bar_form' ) ) {
@@ -1903,11 +1970,17 @@ function sbt_maybe_sync_theme_pages() {
 	}
 
 	if ( get_option( 'sbt_theme_pages_synced_version' ) === SBT_VERSION ) {
+		if ( get_option( 'sbt_reading_defaults_version' ) !== SBT_VERSION ) {
+			sbt_apply_reading_page_defaults();
+			update_option( 'sbt_reading_defaults_version', SBT_VERSION, false );
+		}
 		return;
 	}
 
 	sbt_create_theme_pages();
+	sbt_apply_reading_page_defaults();
 	update_option( 'sbt_theme_pages_synced_version', SBT_VERSION, false );
+	update_option( 'sbt_reading_defaults_version', SBT_VERSION, false );
 }
 add_action( 'admin_init', 'sbt_maybe_sync_theme_pages' );
 
