@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.4' );
+define( 'SBT_VERSION', '2.1.5' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -91,7 +91,7 @@ function sbt_widgets_init() {
 add_action( 'widgets_init', 'sbt_widgets_init' );
 
 function sbt_display_version() {
-	return 'V2.14';
+	return 'V2.15';
 }
 
 function sbt_enqueue_comment_reply() {
@@ -469,7 +469,7 @@ function sbt_asset_url( $path ) {
 	if ( empty( $uploads['error'] ) ) {
 		$local = trailingslashit( $uploads['basedir'] ) . 'syncbooking-theme/' . $subtheme_key . '/' . $path;
 		if ( file_exists( $local ) ) {
-			$served_path = sbt_compat_asset_path( $path, $local );
+			$served_path = sbt_compat_asset_path( $path, $local, $subtheme_key );
 			return trailingslashit( $uploads['baseurl'] ) . 'syncbooking-theme/' . $subtheme_key . '/' . str_replace( '%2F', '/', rawurlencode( $served_path ) );
 		}
 	}
@@ -477,7 +477,7 @@ function sbt_asset_url( $path ) {
 	return trailingslashit( sbt_remote_assets_base_url( $subtheme_key ) ) . str_replace( '%2F', '/', rawurlencode( $path ) );
 }
 
-function sbt_compat_asset_path( $asset_path, $local_path ) {
+function sbt_compat_asset_path( $asset_path, $local_path, $subtheme_key = '' ) {
 	if ( 'assets/site.css' !== wp_normalize_path( $asset_path ) ) {
 		return $asset_path;
 	}
@@ -492,8 +492,7 @@ function sbt_compat_asset_path( $asset_path, $local_path ) {
 		return $asset_path;
 	}
 
-	$compat_css = str_replace( '.sbtw-', '.', $css );
-	$compat_css = "/* WordPress template compatibility layer generated from imported assets/site.css. */\n" . $compat_css;
+	$compat_css = $css . "\n\n/* WordPress template compatibility layer generated from imported assets/site.css. */\n" . str_replace( '.sbtw-', '.', $css );
 	if ( false === file_put_contents( $compat_path, $compat_css, LOCK_EX ) ) {
 		return $asset_path;
 	}
@@ -3119,6 +3118,25 @@ function sbt_admin_menu() {
 }
 add_action( 'admin_menu', 'sbt_admin_menu' );
 
+function sbt_hide_wp_pages_menu() {
+	remove_menu_page( 'edit.php?post_type=page' );
+}
+add_action( 'admin_menu', 'sbt_hide_wp_pages_menu', 999 );
+
+function sbt_redirect_wp_pages_list_to_theme_pages() {
+	if ( ! is_admin() || ! current_user_can( 'edit_theme_options' ) ) {
+		return;
+	}
+
+	global $pagenow;
+	$post_type = isset( $_GET['post_type'] ) ? sanitize_key( wp_unslash( $_GET['post_type'] ) ) : '';
+	if ( 'edit.php' === $pagenow && 'page' === $post_type ) {
+		wp_safe_redirect( admin_url( 'themes.php?page=syncbooking-theme&tab=pages' ) );
+		exit;
+	}
+}
+add_action( 'admin_init', 'sbt_redirect_wp_pages_list_to_theme_pages' );
+
 function sbt_admin_shared_styles() {
 	?>
 	<style>
@@ -4322,6 +4340,14 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 			</div>
 		</div>
 
+		<div class="sbt-status is-ok">
+			<span class="sbt-status__dot" aria-hidden="true"></span>
+			<div>
+				<strong>Email debugging</strong>
+				<span>For email debugging, we recommend optional plugins such as <a href="https://wordpress.org/plugins/wp-mail-logging/" target="_blank" rel="noopener">WP Mail Logging</a> and <a href="https://wordpress.org/plugins/post-smtp/" target="_blank" rel="noopener">Post SMTP</a>.</span>
+			</div>
+		</div>
+
 		<div class="sbt-grid">
 			<div class="sbt-card">
 				<h3>Assets online</h3>
@@ -4345,7 +4371,6 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 					<div class="sbt-assets-progress" style="display:none;" aria-hidden="true"><div class="sbt-assets-progress__bar"></div></div>
 					<p class="sbt-muted sbt-assets-import-message"></p>
 				</div>
-				<p class="sbt-muted" style="margin-top:12px;">For email debugging, we recommend optional plugins such as <a href="https://wordpress.org/plugins/wp-mail-logging/" target="_blank" rel="noopener">WP Mail Logging</a> and <a href="https://wordpress.org/plugins/post-smtp/" target="_blank" rel="noopener">Post SMTP</a>.</p>
 			</div>
 
 			<div class="sbt-card">
@@ -4370,7 +4395,7 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 			</div>
 			<div class="sbt-card">
 				<h3>Sellable structure</h3>
-				<p class="sbt-muted">Choose Entire or Rooms/Houses. If you choose Entire, unit count and extra accommodation pages are disabled.</p>
+				<p class="sbt-muted">Choose Entire Structure or Units (Rooms, Houses). If you choose Entire Structure, unit count and extra accommodation pages are disabled.</p>
 				<?php sbt_render_admin_fields( 'SITE', array(
 					'rental_mode'  => $unit_overrides['SITE.rental_mode'],
 					'entire_label' => $unit_overrides['SITE.entire_label'],
@@ -4396,7 +4421,7 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 			</div>
 			<div class="sbt-card">
 				<h3>Sellable page names</h3>
-				<p class="sbt-muted"><?php echo $is_entire ? 'Entire mode is active: these names are hidden and not used until you switch back to Rooms/Houses.' : 'If you select 3, the theme creates 3 pages. Choose the real name and slug source for each page here.'; ?></p>
+				<p class="sbt-muted"><?php echo $is_entire ? 'Entire Structure mode is active: unit page names are hidden and not used until you switch back to Units.' : 'These are the unit types you sell. If you select 3 units, the theme creates 3 detail pages; name each unit with the real product type, for example Room for 2 People, Deluxe Room for 3 People, Stanza per 2, Stanza per 3, Stanza Deluxe or a house/apartment name.'; ?></p>
 				<div class="sbt-field-grid" data-sbt-unit-names>
 					<?php for ( $number = 1; $number <= 20; $number++ ) : ?>
 						<?php
@@ -4743,10 +4768,10 @@ function sbt_humanize_key( $key ) {
 		'email'            => 'Email',
 		'address'          => 'Indirizzo',
 		'whatsapp_label'   => 'Testo WhatsApp',
-		'unit_label'       => 'Room / House type',
-		'unit_count'       => 'Number of rooms / houses',
-		'rental_mode'      => 'Sale mode',
-		'entire_label'     => 'Entire type',
+		'unit_label'       => 'Unit type',
+		'unit_count'       => 'Number of units to sell',
+		'rental_mode'      => 'Sellable structure',
+		'entire_label'     => 'Entire Structure type',
 	);
 
 	$key = strtolower( (string) $key );
@@ -4918,8 +4943,8 @@ function sbt_render_single_admin_field( $path, $label, $value, $overrides, $fiel
 			</select>
 		<?php elseif ( 'SITE.rental_mode' === $path ) : ?>
 			<select name="<?php echo esc_attr( $name ); ?>" class="large-text">
-				<option value="units" <?php selected( $current, 'units' ); ?>>Rooms / Houses only</option>
-				<option value="entire" <?php selected( $current, 'entire' ); ?>>Entire property only</option>
+				<option value="units" <?php selected( $current, 'units' ); ?>>Units to sell (Rooms, Houses)</option>
+				<option value="entire" <?php selected( $current, 'entire' ); ?>>Entire Structure</option>
 			</select>
 		<?php elseif ( 'SITE.entire_label' === $path ) : ?>
 			<select name="<?php echo esc_attr( $name ); ?>" class="large-text">
