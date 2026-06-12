@@ -116,6 +116,33 @@ if ( empty( $HOUSE_CARDS ) ) {
 	</div>
 </section>
 
+<section class="sbtw-services sbtw-pad" id="services" data-screen-label="Services">
+	<div class="sbtw-wrap">
+		<div class="sbtw-section-head sbtw-reveal">
+			<div class="sbtw-overline"><?php echo sbt_t1_text( 'C.home.services_over', $p['services_over'] ?? 'Comfort & Care' ); ?></div>
+			<h2><?php echo sbt_t1_text( 'C.home.services_h2', $p['services_h2'] ?? 'The estate at your service' ); ?></h2>
+		</div>
+		<div class="sbtw-svc-grid">
+			<?php foreach ( $SERVICES as $index => $service ) : ?>
+				<div class="sbtw-svc sbtw-reveal">
+					<svg viewBox="0 0 24 24"><?php echo $ICON[ $service[0] ] ?? ''; ?></svg>
+					<h4><?php echo sbt_t1_text( 'SERVICES.' . $index . '.1', $service[1] ); ?></h4>
+					<p><?php echo sbt_t1_text( 'SERVICES.' . $index . '.2', $service[2], array( 'multiline' => true ) ); ?></p>
+				</div>
+			<?php endforeach; ?>
+		</div>
+	</div>
+</section>
+
+<section class="sbtw-band" style="<?php echo esc_attr( sbt_t1_bg_style( 'C.home.band_bg', $IMG['masseria_pool'] ) ); ?>" data-screen-label="Surroundings band">
+	<div class="sbtw-inner sbtw-reveal">
+		<?php echo sbt_t1_control( 'C.home.band_bg', $IMG['masseria_pool'], 'Background image', 'image' ); ?>
+		<div class="sbtw-overline"><?php echo sbt_t1_text( 'C.home.band_over', $p['band_over'] ); ?></div>
+		<h2><?php echo sbt_t1_text( 'C.home.band_h2', $p['band_h2'], array( 'multiline' => true ) ); ?></h2>
+		<p><?php echo sbt_t1_text( 'C.home.band_p', $p['band_p'], array( 'multiline' => true ) ); ?></p>
+	</div>
+</section>
+
 <section class="sbtw-pad-s" id="weddings-events" data-screen-label="Weddings and experiences">
 	<div class="sbtw-wrap sbtw-two-col">
 		<?php sbt_t1_carousel( 'C.home.weddings_gallery', ! empty( $WEDDING_GALLERY ) ? $WEDDING_GALLERY : ( $p['whole_gallery'] ?? array() ), $p['weddings_h2'] ?? 'Weddings & Events', true, true ); ?>
@@ -143,33 +170,6 @@ if ( empty( $HOUSE_CARDS ) ) {
 			</div>
 		</div>
 		<?php sbt_t1_carousel( 'C.home.experience_gallery', $p['gallery'] ?? array( $IMG['exp_cooking'] ), $p['experience_h2'] ?? 'Apulian Experience', true, true ); ?>
-	</div>
-</section>
-
-<section class="sbtw-services sbtw-pad" id="services" data-screen-label="Services">
-	<div class="sbtw-wrap">
-		<div class="sbtw-section-head sbtw-reveal">
-			<div class="sbtw-overline"><?php echo sbt_t1_text( 'C.home.services_over', $p['services_over'] ?? 'Comfort & Care' ); ?></div>
-			<h2><?php echo sbt_t1_text( 'C.home.services_h2', $p['services_h2'] ?? 'The estate at your service' ); ?></h2>
-		</div>
-		<div class="sbtw-svc-grid">
-			<?php foreach ( $SERVICES as $index => $service ) : ?>
-				<div class="sbtw-svc sbtw-reveal">
-					<svg viewBox="0 0 24 24"><?php echo $ICON[ $service[0] ] ?? ''; ?></svg>
-					<h4><?php echo sbt_t1_text( 'SERVICES.' . $index . '.1', $service[1] ); ?></h4>
-					<p><?php echo sbt_t1_text( 'SERVICES.' . $index . '.2', $service[2], array( 'multiline' => true ) ); ?></p>
-				</div>
-			<?php endforeach; ?>
-		</div>
-	</div>
-</section>
-
-<section class="sbtw-band" style="<?php echo esc_attr( sbt_t1_bg_style( 'C.home.band_bg', $IMG['masseria_pool'] ) ); ?>" data-screen-label="Surroundings band">
-	<div class="sbtw-inner sbtw-reveal">
-		<?php echo sbt_t1_control( 'C.home.band_bg', $IMG['masseria_pool'], 'Background image', 'image' ); ?>
-		<div class="sbtw-overline"><?php echo sbt_t1_text( 'C.home.band_over', $p['band_over'] ); ?></div>
-		<h2><?php echo sbt_t1_text( 'C.home.band_h2', $p['band_h2'], array( 'multiline' => true ) ); ?></h2>
-		<p><?php echo sbt_t1_text( 'C.home.band_p', $p['band_p'], array( 'multiline' => true ) ); ?></p>
 	</div>
 </section>
 
