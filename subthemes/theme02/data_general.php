@@ -112,6 +112,7 @@ if ( function_exists( 'sbt_asset_url' ) ) {
   $IMG['masseria_pool'] = sbt_asset_url( 'assets/images/pool-pergola.jpg' );
   $IMG['room_main'] = sbt_asset_url( 'assets/images/room-01.jpg' );
   $IMG['whole'] = sbt_asset_url( 'assets/images/masseria-bluehour.jpg' );
+  $IMG['hero_video'] = sbt_asset_url( 'assets/video/masseria.mp4' );
 }
 
 /* Hospitality photo gallery (lightbox). */

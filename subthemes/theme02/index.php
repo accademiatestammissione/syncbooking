@@ -28,7 +28,7 @@ if ( empty( $HOUSE_CARDS ) ) {
 
 <section class="sbtw-hero" id="top" data-screen-label="Hero">
 	<div class="sbtw-hero-video">
-		<img src="<?php echo esc_url( $IMG['whole'] ); ?>" alt="<?php echo esc_attr( $SITE['name'] ); ?>" />
+		<video src="<?php echo esc_url( $IMG['hero_video'] ?? 'assets/video/masseria.mp4' ); ?>" poster="<?php echo esc_url( $IMG['welcome'] ); ?>" autoplay muted loop playsinline></video>
 	</div>
 	<div class="sbtw-hero-overlay"></div>
 	<div class="sbtw-hero-inner">

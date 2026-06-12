@@ -42,7 +42,6 @@ if ( function_exists( 'add_query_arg' ) ) {
 	</div>
 </footer>
 
-<button class="sbtw-totop totop" id="totop" aria-label="Scroll to top"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
 <div class="sbtw-lightbox lightbox" id="lightbox"><button class="sbtw-lx-close lx-close" aria-label="Close">&times;</button><button class="sbtw-lx-nav sbtw-lx-prev lx-nav lx-prev" aria-label="Previous">&#8249;</button><div class="sbtw-lx-stage lx-stage"><img alt="" /><span class="sbtw-lx-count lx-count"></span></div><button class="sbtw-lx-nav sbtw-lx-next lx-nav lx-next" aria-label="Next">&#8250;</button></div>
 
 <?php if ( function_exists( 'wp_footer' ) ) wp_footer(); ?>

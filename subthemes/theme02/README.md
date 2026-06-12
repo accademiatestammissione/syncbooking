@@ -30,7 +30,7 @@ syncbooking_theme/
 Open **`data_general.php`**. It is organised top-to-bottom:
 
 - `$BASE` — base URL of the media library (change once to repoint all images).
-- `$SITE` — name, tagline, phone, email, address, social links, VAT/CIN, YouTube id, map.
+- `$SITE` — name, tagline, phone, email, address, social links, VAT/CIN and map.
 - `$IMG` — all images, by friendly key (e.g. `$IMG['welcome']`).
 - `$GALLERY` / `$WEDDING_GALLERY` — lightbox photo sets.
 - `$NAV` — the navigation menu (labels, links, dropdown items).

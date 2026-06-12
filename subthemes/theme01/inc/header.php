@@ -40,7 +40,6 @@ $WA_SVG = '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <?php if ( function_exists( 'wp_head' ) ) wp_head(); ?>
 <link rel="stylesheet" href="<?php echo esc_url( $SITE_CSS_URL ); ?>" />
-<?php if ( function_exists( 'sbt_theme_design_css' ) ) sbt_theme_design_css(); ?>
 </head>
 <body <?php if ( function_exists( 'body_class' ) ) body_class( 'sbtw' ); ?> data-page="<?php echo esc_attr( $PAGE ); ?>" data-template-version="<?php echo esc_attr( $SOURCE_VERSION ); ?>">
 <?php if ( function_exists( 'wp_body_open' ) ) wp_body_open(); ?>
