@@ -48,7 +48,7 @@ if ( empty( $HOUSE_CARDS ) ) {
 				<p class="sbtw-body-text"><?php echo sbt_t1_text( 'C.home.welcome_p1', $p['welcome_p1'], array( 'multiline' => true ) ); ?></p>
 				<p class="sbtw-body-text" style="margin-top:18px;"><?php echo sbt_t1_text( 'C.home.welcome_p2', $p['welcome_p2'], array( 'multiline' => true ) ); ?></p>
 				<a class="sbtw-btn sbtw-btn--ghost" href="<?php echo esc_url( sbt_t1_url( $p['welcome_url'] ?? 'villa.php' ) ); ?>" style="margin-top:30px;"><?php echo esc_html( 'Discover the Masseria' ); ?></a>
-				<?php echo sbt_t1_control( 'C.home.welcome_url', $p['welcome_url'] ?? 'villa.php', 'Link bottone', 'url' ); ?>
+				<?php echo sbt_t1_control( 'C.home.welcome_url', $p['welcome_url'] ?? 'villa.php', 'Button link', 'url' ); ?>
 			</div>
 			<?php sbt_t1_carousel( 'C.home.welcome_gallery', $p['welcome_gallery'], $SITE['name'], true, true ); ?>
 		</div>
@@ -110,9 +110,39 @@ if ( empty( $HOUSE_CARDS ) ) {
 			<p class="sbtw-body-text"><?php echo sbt_t1_text( 'C.home.whole_p', $p['whole_p'], array( 'multiline' => true ) ); ?></p>
 			<div class="sbtw-house-actions">
 				<a class="sbtw-btn" href="<?php echo esc_url( sbt_t1_url( $p['whole_url'] ?? 'whole-masseria.php' ) ); ?>"><?php echo sbt_t1_text( 'C.home.whole_btn', $p['whole_btn'] ); ?></a>
-				<?php echo sbt_t1_control( 'C.home.whole_url', $p['whole_url'] ?? 'whole-masseria.php', 'Link bottone', 'url' ); ?>
+				<?php echo sbt_t1_control( 'C.home.whole_url', $p['whole_url'] ?? 'whole-masseria.php', 'Button link', 'url' ); ?>
 			</div>
 		</div>
+	</div>
+</section>
+
+<section class="sbtw-pad-s" id="weddings-events" data-screen-label="Weddings and experiences">
+	<div class="sbtw-wrap sbtw-two-col">
+		<?php sbt_t1_carousel( 'C.home.weddings_gallery', ! empty( $WEDDING_GALLERY ) ? $WEDDING_GALLERY : ( $p['whole_gallery'] ?? array() ), $p['weddings_h2'] ?? 'Weddings & Events', true, true ); ?>
+		<div class="sbtw-reveal">
+			<div class="sbtw-overline"><?php echo sbt_t1_text( 'C.home.weddings_over', $p['weddings_over'] ?? 'Masseria Le Cerase' ); ?></div>
+			<h2 class="sbtw-lead"><?php echo sbt_t1_text( 'C.home.weddings_h2', $p['weddings_h2'] ?? 'Weddings & Events' ); ?></h2>
+			<p class="sbtw-body-text"><?php echo sbt_t1_text( 'C.home.weddings_p', $p['weddings_p'] ?? '', array( 'multiline' => true ) ); ?></p>
+			<div class="sbtw-house-actions">
+				<a class="sbtw-btn" href="<?php echo esc_url( sbt_t1_url( $p['weddings_url'] ?? 'weddings.php' ) ); ?>"><?php echo sbt_t1_text( 'C.home.weddings_btn', $p['weddings_btn'] ?? 'Discover Weddings' ); ?></a>
+				<?php echo sbt_t1_control( 'C.home.weddings_url', $p['weddings_url'] ?? 'weddings.php', 'Button link', 'url' ); ?>
+			</div>
+		</div>
+	</div>
+</section>
+
+<section class="sbtw-pad-s" id="apulian-experience" data-screen-label="Apulian experience">
+	<div class="sbtw-wrap sbtw-two-col">
+		<div class="sbtw-reveal">
+			<div class="sbtw-overline"><?php echo sbt_t1_text( 'C.home.experience_over', $p['experience_over'] ?? 'Masseria Le Cerase' ); ?></div>
+			<h2 class="sbtw-lead"><?php echo sbt_t1_text( 'C.home.experience_h2', $p['experience_h2'] ?? 'Apulian Experience' ); ?></h2>
+			<p class="sbtw-body-text"><?php echo sbt_t1_text( 'C.home.experience_p', $p['experience_p'] ?? '', array( 'multiline' => true ) ); ?></p>
+			<div class="sbtw-house-actions">
+				<a class="sbtw-btn" href="<?php echo esc_url( sbt_t1_url( $p['experience_url'] ?? 'experiences.php' ) ); ?>"><?php echo sbt_t1_text( 'C.home.experience_btn', $p['experience_btn'] ?? 'Explore experiences' ); ?></a>
+				<?php echo sbt_t1_control( 'C.home.experience_url', $p['experience_url'] ?? 'experiences.php', 'Button link', 'url' ); ?>
+			</div>
+		</div>
+		<?php sbt_t1_carousel( 'C.home.experience_gallery', $p['gallery'] ?? array( $IMG['exp_cooking'] ), $p['experience_h2'] ?? 'Apulian Experience', true, true ); ?>
 	</div>
 </section>
 
@@ -136,7 +166,7 @@ if ( empty( $HOUSE_CARDS ) ) {
 
 <section class="sbtw-band" style="<?php echo esc_attr( sbt_t1_bg_style( 'C.home.band_bg', $IMG['masseria_pool'] ) ); ?>" data-screen-label="Surroundings band">
 	<div class="sbtw-inner sbtw-reveal">
-		<?php echo sbt_t1_control( 'C.home.band_bg', $IMG['masseria_pool'], 'Immagine sfondo', 'image' ); ?>
+		<?php echo sbt_t1_control( 'C.home.band_bg', $IMG['masseria_pool'], 'Background image', 'image' ); ?>
 		<div class="sbtw-overline"><?php echo sbt_t1_text( 'C.home.band_over', $p['band_over'] ); ?></div>
 		<h2><?php echo sbt_t1_text( 'C.home.band_h2', $p['band_h2'], array( 'multiline' => true ) ); ?></h2>
 		<p><?php echo sbt_t1_text( 'C.home.band_p', $p['band_p'], array( 'multiline' => true ) ); ?></p>
@@ -149,7 +179,7 @@ if ( empty( $HOUSE_CARDS ) ) {
 		<h2><?php echo sbt_t1_text( 'C.home.cta_h2', $p['cta_h2'], array( 'multiline' => true ) ); ?></h2>
 		<p class="sbtw-body-text body-text" style="margin:0 auto 36px;color:rgba(255,255,255,.88);max-width:50ch;"><?php echo sbt_t1_text( 'C.home.cta_p', $p['cta_p'], array( 'multiline' => true ) ); ?></p>
 		<a class="sbtw-btn sbtw-btn--light btn btn--light" href="<?php echo esc_url( sbt_t1_url( $p['cta_url'] ?? 'syncbooking:booking' ) ); ?>"><?php echo sbt_t1_text( 'C.home.cta_btn', $p['cta_btn'] ?? 'Request availability' ); ?></a>
-		<?php echo sbt_t1_control( 'C.home.cta_url', $p['cta_url'] ?? 'syncbooking:booking', 'Link bottone', 'url' ); ?>
+		<?php echo sbt_t1_control( 'C.home.cta_url', $p['cta_url'] ?? 'syncbooking:booking', 'Button link', 'url' ); ?>
 	</div>
 </section>
 

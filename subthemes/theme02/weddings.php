@@ -154,12 +154,12 @@ $album = implode( '|', $gallery );
 
 <section class="sbtw-band" style="<?php echo esc_attr( sbt_t1_bg_style( 'C.weddings.cta_bg', $p['cta_bg'] ?? ( $gallery[0] ?? '' ) ) ); ?>" data-screen-label="Weddings CTA">
 	<div class="sbtw-inner sbtw-reveal">
-		<?php echo sbt_t1_control( 'C.weddings.cta_bg', $p['cta_bg'] ?? '', 'Immagine sfondo', 'image' ); ?>
+		<?php echo sbt_t1_control( 'C.weddings.cta_bg', $p['cta_bg'] ?? '', 'Background image', 'image' ); ?>
 		<div class="sbtw-overline"><?php echo sbt_t1_text( 'C.weddings.cta_over', $p['cta_over'] ?? '' ); ?></div>
 		<h2><?php echo sbt_t1_text( 'C.weddings.cta_h2', $p['cta_h2'] ?? '', array( 'multiline' => true ) ); ?></h2>
 		<p><?php echo sbt_t1_text( 'C.weddings.cta_p', $p['cta_p'] ?? '', array( 'multiline' => true ) ); ?></p>
 		<a class="sbtw-btn sbtw-btn--light" href="<?php echo esc_url( sbt_t1_url( $p['cta_url'] ?? 'contacts.php' ) ); ?>" style="margin-top:8px;"><?php echo sbt_t1_text( 'C.weddings.cta_btn', $p['cta_btn'] ?? '' ); ?></a>
-		<?php echo sbt_t1_control( 'C.weddings.cta_url', $p['cta_url'] ?? 'contacts.php', 'Link bottone', 'url' ); ?>
+		<?php echo sbt_t1_control( 'C.weddings.cta_url', $p['cta_url'] ?? 'contacts.php', 'Button link', 'url' ); ?>
 	</div>
 </section>
 
