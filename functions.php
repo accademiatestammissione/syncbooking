@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.13' );
+define( 'SBT_VERSION', '2.1.14' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -91,7 +91,7 @@ function sbt_widgets_init() {
 add_action( 'widgets_init', 'sbt_widgets_init' );
 
 function sbt_display_version() {
-	return 'V2.1.13';
+	return 'V2.1.14';
 }
 
 function sbt_enqueue_comment_reply() {
@@ -4294,20 +4294,13 @@ function sbt_render_admin_shell_start( $active_tab ) {
 			.sbt-actions { display:grid; gap:8px; grid-template-columns:1fr; }
 			.sbt-actions .button { align-items:center; display:flex; justify-content:center; text-align:center; width:100%; }
 			.sbt-table,
-			.sbt-table thead,
-			.sbt-table tbody,
-			.sbt-table tr,
-			.sbt-table th,
-			.sbt-table td { display:block; width:100%; }
-			.sbt-table thead { height:0; overflow:hidden; position:absolute; width:0; }
-			.sbt-table tr { border:1px solid #dcdcde; border-radius:8px; margin:0 0 12px; padding:10px 12px; }
-			.sbt-table td { border-bottom:0; box-sizing:border-box; padding:8px 0; }
-			.sbt-table td::before { color:#646970; content:""; display:block; font-size:12px; font-weight:700; margin-bottom:3px; text-transform:uppercase; }
-			.sbt-table td:nth-child(1)::before { content:"Page"; }
-			.sbt-table td:nth-child(2)::before { content:"Languages"; }
-			.sbt-table td:nth-child(3)::before { content:"Slug"; }
-			.sbt-table td:nth-child(4)::before { content:"Status"; }
-			.sbt-table td:nth-child(5)::before { content:"Actions"; }
+			.sbt-table tbody { box-sizing:border-box; display:block; width:100%; }
+			.sbt-table { border-collapse:separate; border-spacing:0 12px; table-layout:fixed; }
+			.sbt-table thead { display:none; }
+			.sbt-table tr { background:#fff; border:1px solid #dcdcde; border-radius:8px; display:grid; gap:8px; padding:12px; width:auto; }
+			.sbt-table td { border-bottom:0; box-sizing:border-box; display:block; padding:0; width:auto; }
+			.sbt-table td:first-child { font-size:15px; }
+			.sbt-table td::before { color:#646970; content:attr(data-label); display:block; font-size:12px; font-weight:700; margin-bottom:3px; text-transform:uppercase; }
 			.sbt-table code { white-space:normal; word-break:break-word; }
 		}
 	</style>
@@ -4334,8 +4327,8 @@ function sbt_render_theme_tab( $active, $subthemes ) {
 				<label class="sbt-card sbt-theme-card <?php echo $active === $key ? 'is-selected' : ''; ?>">
 					<input type="radio" name="<?php echo esc_attr( SBT_OPTION ); ?>[subtheme]" value="<?php echo esc_attr( $key ); ?>" <?php checked( $active, $key ); ?>>
 					<span class="sbt-theme-card__body">
-						<h3><?php echo esc_html( $subtheme['label'] ); ?></h3>
-						<span class="sbt-theme-card__meta"><?php echo esc_html( count( $subtheme['pages'] ) ); ?> pagine modello incluse</span>
+						<h3><?php echo esc_html( 'Theme' . preg_replace( '/\D+/', '', $key ) ); ?></h3>
+						<span class="sbt-theme-card__meta"><?php echo esc_html( count( $subtheme['pages'] ) ); ?> template pages included</span>
 					</span>
 				</label>
 			<?php endforeach; ?>
@@ -4386,7 +4379,7 @@ function sbt_render_theme_tab( $active, $subthemes ) {
 				value="reset_active_template"
 				onclick="return confirm('Restore the selected subtheme to the original template? Saved edits for this subtheme will be deleted.');"
 			>
-				Reset template originale
+				Reset original template
 			</button>
 		</div>
 	</div>
@@ -4580,8 +4573,8 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 				</script>
 			</div>
 			<div class="sbt-card">
-				<h3>Sellable page names</h3>
-				<p class="sbt-muted"><?php echo $is_entire ? 'Entire Structure mode is active: unit page names are hidden and not used until you switch back to Units.' : 'These are the unit types you sell. If you select 3 units, the theme creates 3 detail pages; name each unit with the real product type, for example Room for 2 People, Deluxe Room for 3 People, Stanza per 2, Stanza per 3, Stanza Deluxe or a house/apartment name.'; ?></p>
+				<h3>Unit titles</h3>
+				<p class="sbt-muted"><?php echo $is_entire ? 'Entire Structure mode is active: unit titles are hidden and not used until you switch back to Units.' : 'These are the sellable unit types shown on the website. If you select 3 units, the theme creates 3 detail pages; use real product names such as Room for 2 People, Deluxe Room for 3 People, Family Room for 4 People, House for 4 People or Apartment Deluxe.'; ?></p>
 				<div class="sbt-field-grid" data-sbt-unit-names>
 					<?php for ( $number = 1; $number <= 20; $number++ ) : ?>
 						<?php
@@ -4591,8 +4584,8 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 						?>
 						<div class="sbt-editor-field" data-sbt-unit-name-row="<?php echo esc_attr( (string) $number ); ?>" <?php echo $number > $unit_count ? 'style="display:none;"' : ''; ?>>
 							<label>
-								<?php echo esc_html( $unit_label . ' ' . $number ); ?>
-								<span class="sbt-field-path"><?php echo esc_html( 'name_' . $number ); ?></span>
+								<?php echo esc_html( 'Unit title ' . $number ); ?>
+								<span class="sbt-field-path"><?php echo esc_html( 'title_' . $number ); ?></span>
 							</label>
 							<input type="text" class="large-text" name="<?php echo esc_attr( SBT_OPTION . '[unit_names][' . $number . ']' ); ?>" value="<?php echo esc_attr( $current_title ); ?>" placeholder="<?php echo esc_attr( $default_title ); ?>">
 						</div>
@@ -4727,11 +4720,11 @@ function sbt_render_pages_tab() {
 					}
 					?>
 					<tr>
-						<td><strong><?php echo esc_html( $page['title'] ); ?></strong></td>
-						<td><?php echo $language_label; ?></td>
-						<td><code><?php echo esc_html( '/' . $page_slug . '/' ); ?></code></td>
-						<td><?php echo $missing_languages ? 'Missing: ' . esc_html( implode( ', ', $missing_languages ) ) : 'Present'; ?></td>
-						<td class="sbt-actions">
+						<td data-label="Page"><strong><?php echo esc_html( $page['title'] ); ?></strong></td>
+						<td data-label="Languages"><?php echo $language_label; ?></td>
+						<td data-label="Slug"><code><?php echo esc_html( '/' . $page_slug . '/' ); ?></code></td>
+						<td data-label="Status"><?php echo $missing_languages ? 'Missing: ' . esc_html( implode( ', ', $missing_languages ) ) : 'Present'; ?></td>
+						<td class="sbt-actions" data-label="Actions">
 							<?php if ( $edit_url ) : ?>
 								<a class="button button-primary" href="<?php echo esc_url( $edit_url ); ?>">Edit page fields</a>
 							<?php endif; ?>
@@ -4767,11 +4760,11 @@ function sbt_render_pages_tab() {
 						}
 						?>
 						<tr>
-							<td><strong><?php echo esc_html( $page['title'] ); ?></strong></td>
-							<td><?php echo $language_label; ?></td>
-							<td><code><?php echo esc_html( '/' . $page_slug . '/' ); ?></code></td>
-							<td><?php echo $is_disabled ? 'Disabled' : ( $missing_languages ? 'Missing: ' . esc_html( implode( ', ', $missing_languages ) ) : 'Present' ); ?></td>
-							<td class="sbt-actions">
+							<td data-label="<?php echo esc_attr( $unit_label ); ?>"><strong><?php echo esc_html( $page['title'] ); ?></strong></td>
+							<td data-label="Languages"><?php echo $language_label; ?></td>
+							<td data-label="Slug"><code><?php echo esc_html( '/' . $page_slug . '/' ); ?></code></td>
+							<td data-label="Status"><?php echo $is_disabled ? 'Disabled' : ( $missing_languages ? 'Missing: ' . esc_html( implode( ', ', $missing_languages ) ) : 'Present' ); ?></td>
+							<td class="sbt-actions" data-label="Actions">
 								<?php if ( $edit_url && ! $is_disabled ) : ?>
 									<a class="button button-primary" href="<?php echo esc_url( $edit_url ); ?>">Edit page fields</a>
 								<?php endif; ?>
@@ -4809,11 +4802,11 @@ function sbt_render_pages_tab() {
 					}
 					?>
 					<tr>
-						<td><strong><?php echo esc_html( $page['title'] ); ?></strong></td>
-						<td><?php echo $language_label; ?></td>
-						<td><code><?php echo esc_html( '/' . $page_slug . '/' ); ?></code></td>
-						<td><?php echo $is_disabled ? 'Disabled' : ( $missing_languages ? 'Missing: ' . esc_html( implode( ', ', $missing_languages ) ) : 'Present' ); ?></td>
-						<td class="sbt-actions">
+						<td data-label="Page"><strong><?php echo esc_html( $page['title'] ); ?></strong></td>
+						<td data-label="Languages"><?php echo $language_label; ?></td>
+						<td data-label="Slug"><code><?php echo esc_html( '/' . $page_slug . '/' ); ?></code></td>
+						<td data-label="Status"><?php echo $is_disabled ? 'Disabled' : ( $missing_languages ? 'Missing: ' . esc_html( implode( ', ', $missing_languages ) ) : 'Present' ); ?></td>
+						<td class="sbt-actions" data-label="Actions">
 							<?php if ( $edit_url && ! $is_disabled ) : ?>
 								<a class="button button-primary" href="<?php echo esc_url( $edit_url ); ?>">Edit page fields</a>
 							<?php endif; ?>
