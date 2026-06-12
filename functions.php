@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.15' );
+define( 'SBT_VERSION', '2.1.16' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -91,7 +91,7 @@ function sbt_widgets_init() {
 add_action( 'widgets_init', 'sbt_widgets_init' );
 
 function sbt_display_version() {
-	return 'V2.1.15';
+	return 'V2.1.16';
 }
 
 function sbt_enqueue_comment_reply() {
@@ -3201,7 +3201,7 @@ function sbt_admin_shared_styles() {
 		.sbt-editor-block details { background:#f6f7f7; border:1px solid #dcdcde; border-radius:8px; margin:10px 0; padding:10px 12px; }
 		.sbt-editor-block summary { cursor:pointer; }
 		.sbt-section-title { align-items:baseline; display:flex; flex-wrap:wrap; gap:8px; justify-content:space-between; }
-		.sbt-section-title code, .sbt-field-path { color:#646970; font-size:12px; font-weight:400; }
+		.sbt-section-title code { color:#646970; font-size:12px; font-weight:400; }
 		.sbt-section-tabs { display:flex; gap:6px; justify-content:flex-end; margin:0 0 -6px; position:relative; z-index:1; }
 		.sbt-section-tabs .button { min-height:28px; padding:2px 10px; }
 		.sbt-editor-field { margin:12px 0; }
@@ -4588,7 +4588,6 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 						<div class="sbt-editor-field" data-sbt-unit-name-row="<?php echo esc_attr( (string) $number ); ?>" <?php echo $number > $unit_count ? 'style="display:none;"' : ''; ?>>
 							<label>
 								<?php echo esc_html( 'Unit title ' . $number ); ?>
-								<span class="sbt-field-path"><?php echo esc_html( 'title_' . $number ); ?></span>
 							</label>
 							<input type="text" class="large-text" name="<?php echo esc_attr( SBT_OPTION . '[unit_names][' . $number . ']' ); ?>" value="<?php echo esc_attr( $current_title ); ?>" placeholder="<?php echo esc_attr( $default_title ); ?>">
 						</div>
@@ -5084,7 +5083,6 @@ function sbt_render_single_admin_field( $path, $label, $value, $overrides, $fiel
 	<div class="sbt-editor-field">
 		<label>
 			<?php echo esc_html( $friendly_label ); ?>
-			<span class="sbt-field-path"><?php echo esc_html( $field_alias ); ?></span>
 		</label>
 		<?php if ( 'SITE.unit_label' === $path ) : ?>
 			<select name="<?php echo esc_attr( $name ); ?>" class="large-text">
@@ -5123,7 +5121,7 @@ function sbt_render_single_admin_field( $path, $label, $value, $overrides, $fiel
 				</span>
 				<span class="sbt-gallery-empty" <?php echo $gallery_urls ? 'style="display:none;"' : ''; ?>>No image selected.</span>
 				<span class="sbt-gallery-actions">
-					<button type="button" class="button sbt-gallery-pick">Aggiungi immagini</button>
+					<button type="button" class="button sbt-gallery-pick">Add images</button>
 				</span>
 			</span>
 		<?php elseif ( $is_image ) : ?>
@@ -5137,7 +5135,7 @@ function sbt_render_single_admin_field( $path, $label, $value, $overrides, $fiel
 				<p class="sbt-media-hint"><?php echo $current ? 'Image selected.' : 'No image selected.'; ?></p>
 				<span class="sbt-media-actions">
 					<button type="button" class="button sbt-media-pick"><?php echo $current ? 'Replace image' : 'Choose image'; ?></button>
-					<button type="button" class="button sbt-media-clear">Rimuovi</button>
+					<button type="button" class="button sbt-media-clear">Remove</button>
 				</span>
 			</span>
 		<?php elseif ( $is_long ) : ?>
