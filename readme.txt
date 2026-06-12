@@ -23,6 +23,9 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 2.1.13 =
+* Improved the SyncBooking Theme admin pages on mobile so inputs, selects, action buttons and page tables fit small screens.
+
 = 2.1.12 =
 * Restored the full Theme 02 homepage service grid to eight items under "The estate at your service".
 

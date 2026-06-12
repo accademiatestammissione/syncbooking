@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.12' );
+define( 'SBT_VERSION', '2.1.13' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -91,7 +91,7 @@ function sbt_widgets_init() {
 add_action( 'widgets_init', 'sbt_widgets_init' );
 
 function sbt_display_version() {
-	return 'V2.1.12';
+	return 'V2.1.13';
 }
 
 function sbt_enqueue_comment_reply() {
@@ -3223,6 +3223,31 @@ function sbt_admin_shared_styles() {
 		.sbt-assets-progress__bar { background:#2271b1; height:100%; transition:width .2s ease; width:0; }
 		.sbt-assets-import-message { min-height:20px; }
 		@media (max-width: 1180px) { .sbt-page-editor-layout { display:block; } }
+		@media (max-width: 782px) {
+			.sbt-preview-section { padding:12px; }
+			.sbt-editor-block { padding:12px; }
+			.sbt-editor-block details { padding:9px; }
+			.sbt-section-title { display:block; }
+			.sbt-section-tabs { justify-content:flex-start; margin:8px 0 0; overflow-x:auto; padding-bottom:2px; }
+			.sbt-editor-field input:not([type=checkbox]):not([type=radio]),
+			.sbt-editor-field textarea,
+			.sbt-editor-field select,
+			.sbt-link-select,
+			.sbt-link-direct {
+				box-sizing:border-box;
+				font-size:16px;
+				max-width:100%;
+				min-height:44px;
+				width:100%;
+			}
+			.sbt-link-control,
+			.sbt-media-control,
+			.sbt-gallery-actions,
+			.sbt-media-actions { min-width:0; }
+			.sbt-gallery-actions .button,
+			.sbt-media-actions .button { display:flex; justify-content:center; width:100%; }
+			.sbt-media-preview img { max-width:100%; width:100%; }
+		}
 	</style>
 	<?php
 }
@@ -4238,6 +4263,53 @@ function sbt_render_admin_shell_start( $active_tab ) {
 		.sbt-mode-card p { margin:8px 0 0; }
 		.sbt-color-field input[type=color] { height:42px; padding:2px; }
 		.sbt-version-badge { background:#1d2327; border-radius:999px; color:#fff; display:inline-flex; font-size:13px; font-weight:700; margin-left:8px; padding:5px 10px; vertical-align:middle; }
+		@media (max-width: 782px) {
+			.sbt-wrap { margin-right:10px; }
+			.sbt-tabs { gap:0; overflow-x:auto; padding-bottom:1px; }
+			.sbt-tab { flex:0 0 auto; padding:10px 12px; white-space:nowrap; }
+			.sbt-panel { padding:14px; }
+			.sbt-grid,
+			.sbt-theme-grid,
+			.sbt-field-grid,
+			.sbt-mode-grid { grid-template-columns:minmax(0,1fr); }
+			.sbt-card,
+			.sbt-theme-card__body,
+			.sbt-field,
+			.sbt-menu-item,
+			.sbt-submenu { min-width:0; }
+			.sbt-status { padding:12px; }
+			.sbt-field input:not([type=checkbox]):not([type=radio]),
+			.sbt-field textarea,
+			.sbt-field select,
+			.sbt-editor-field input:not([type=checkbox]):not([type=radio]),
+			.sbt-editor-field textarea,
+			.sbt-editor-field select {
+				box-sizing:border-box;
+				font-size:16px;
+				max-width:100%;
+				min-height:44px;
+				width:100%;
+			}
+			.sbt-submenu { margin-left:0; padding-left:10px; }
+			.sbt-actions { display:grid; gap:8px; grid-template-columns:1fr; }
+			.sbt-actions .button { align-items:center; display:flex; justify-content:center; text-align:center; width:100%; }
+			.sbt-table,
+			.sbt-table thead,
+			.sbt-table tbody,
+			.sbt-table tr,
+			.sbt-table th,
+			.sbt-table td { display:block; width:100%; }
+			.sbt-table thead { height:0; overflow:hidden; position:absolute; width:0; }
+			.sbt-table tr { border:1px solid #dcdcde; border-radius:8px; margin:0 0 12px; padding:10px 12px; }
+			.sbt-table td { border-bottom:0; box-sizing:border-box; padding:8px 0; }
+			.sbt-table td::before { color:#646970; content:""; display:block; font-size:12px; font-weight:700; margin-bottom:3px; text-transform:uppercase; }
+			.sbt-table td:nth-child(1)::before { content:"Page"; }
+			.sbt-table td:nth-child(2)::before { content:"Languages"; }
+			.sbt-table td:nth-child(3)::before { content:"Slug"; }
+			.sbt-table td:nth-child(4)::before { content:"Status"; }
+			.sbt-table td:nth-child(5)::before { content:"Actions"; }
+			.sbt-table code { white-space:normal; word-break:break-word; }
+		}
 	</style>
 	<div class="wrap sbt-wrap">
 		<h1>SyncBooking Theme <span class="sbt-version-badge"><?php echo esc_html( sbt_display_version() ); ?></span></h1>
