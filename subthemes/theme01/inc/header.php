@@ -46,41 +46,41 @@ $WA_SVG = '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4
 <?php if ( function_exists( 'wp_body_open' ) ) wp_body_open(); ?>
 
 <header id="hdr">
-	<a class="logo" href="<?php echo esc_url( sbt_t1_url( 'index.php' ) ); ?>"><img src="<?php echo esc_url( $IMG['logo'] ); ?>" alt="<?php echo esc_attr( $SITE['name'] ); ?>" /></a>
-	<nav class="main">
+	<a class="sbtw-logo logo" href="<?php echo esc_url( sbt_t1_url( 'index.php' ) ); ?>"><img src="<?php echo esc_url( $IMG['logo'] ); ?>" alt="<?php echo esc_attr( $SITE['name'] ); ?>" /></a>
+	<nav class="sbtw-main main">
 		<?php foreach ( $NAV as $item ) : ?>
 			<?php if ( ! empty( $item['sub'] ) ) : ?>
-				<div class="has-sub">
-					<a class="top<?php echo $PAGE === $item['key'] ? ' current' : ''; ?>" href="<?php echo esc_url( sbt_t1_url( $item['url'] ) ); ?>"><?php echo esc_html( $item['label'] ); ?> <i class="chev"></i></a>
-					<div class="sub">
+				<div class="sbtw-has-sub has-sub">
+					<a class="sbtw-top top<?php echo $PAGE === $item['key'] ? ' sbtw-current current' : ''; ?>" href="<?php echo esc_url( sbt_t1_url( $item['url'] ) ); ?>"><?php echo esc_html( $item['label'] ); ?> <i class="sbtw-chev chev"></i></a>
+					<div class="sbtw-sub sub">
 						<?php foreach ( $item['sub'] as $sub_item ) : ?>
-							<?php if ( ! empty( $sub_item['divide'] ) ) : ?><div class="divider"></div><?php endif; ?>
-							<a href="<?php echo esc_url( sbt_t1_url( $sub_item['url'] ) ); ?>"><span class="t"><?php echo esc_html( $sub_item['label'] ); ?></span></a>
+							<?php if ( ! empty( $sub_item['divide'] ) ) : ?><div class="sbtw-divider divider"></div><?php endif; ?>
+							<a href="<?php echo esc_url( sbt_t1_url( $sub_item['url'] ) ); ?>"><span class="sbtw-t t"><?php echo esc_html( $sub_item['label'] ); ?></span></a>
 						<?php endforeach; ?>
 					</div>
 				</div>
 			<?php else : ?>
-				<a href="<?php echo esc_url( sbt_t1_url( $item['url'] ) ); ?>"<?php echo $PAGE === $item['key'] ? ' class="current"' : ''; ?>><?php echo esc_html( $item['label'] ); ?></a>
+				<a href="<?php echo esc_url( sbt_t1_url( $item['url'] ) ); ?>"<?php echo $PAGE === $item['key'] ? ' class="sbtw-current current"' : ''; ?>><?php echo esc_html( $item['label'] ); ?></a>
 			<?php endif; ?>
 		<?php endforeach; ?>
 	</nav>
-	<div class="actions-desktop">
-		<div class="lang-toggle">
+	<div class="sbtw-actions-desktop actions-desktop">
+		<div class="sbtw-lang-toggle lang-toggle">
 			<?php foreach ( $HEADER_LANGUAGES as $index => $language_item ) : ?>
-				<?php if ( $index ) : ?><span class="sep">/</span><?php endif; ?>
-				<a href="<?php echo esc_url( $language_item['url'] ); ?>"<?php echo ! empty( $language_item['active'] ) ? ' class="active"' : ''; ?>><?php echo esc_html( $language_item['code'] ); ?></a>
+				<?php if ( $index ) : ?><span class="sbtw-sep sep">/</span><?php endif; ?>
+				<a href="<?php echo esc_url( $language_item['url'] ); ?>"<?php echo ! empty( $language_item['active'] ) ? ' class="sbtw-active active"' : ''; ?>><?php echo esc_html( $language_item['code'] ); ?></a>
 			<?php endforeach; ?>
 		</div>
 	</div>
-	<button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+	<button class="sbtw-burger burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
 </header>
 
-<div class="drawer" id="drawer">
-	<button class="close" id="closeDrawer" aria-label="Close">&times;</button>
+<div class="sbtw-drawer drawer" id="drawer">
+	<button class="sbtw-close close" id="closeDrawer" aria-label="Close">&times;</button>
 	<?php foreach ( $NAV as $item ) : ?>
 		<a href="<?php echo esc_url( sbt_t1_url( $item['url'] ) ); ?>"><?php echo esc_html( $item['label'] ); ?></a>
 		<?php if ( ! empty( $item['sub'] ) ) : ?>
-			<div class="sub-m">
+			<div class="sbtw-sub-m sub-m">
 				<?php foreach ( $item['sub'] as $sub_item ) : ?>
 					<a href="<?php echo esc_url( sbt_t1_url( $sub_item['url'] ) ); ?>"><?php echo esc_html( $sub_item['label'] ); ?></a>
 				<?php endforeach; ?>

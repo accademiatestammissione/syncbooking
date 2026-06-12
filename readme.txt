@@ -23,6 +23,13 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 2.1.7 =
+* Removed disable/restore actions from generated unit detail pages.
+* Simplified the General Settings generated-pages and online-assets copy.
+* Uses SyncBooking as the default web developer footer link.
+* Removes the Whole Villa/Masseria submenu item when Units mode is selected.
+* Aligns Theme 01 and Theme 02 header/footer markup with imported asset classes and restores the Theme 02 homepage wedding/experience band.
+
 = 2.1.6 =
 * Added a frontend runtime bridge for imported HTML behavior, including carousels, reveal states, drawer, header scroll and back-to-top controls.
 * Regenerates compatibility CSS with original and unprefixed selectors when older generated CSS is detected.

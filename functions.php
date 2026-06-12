@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * WordPress bridge for SyncBooking multi-subtheme package.
  *
@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.6' );
+define( 'SBT_VERSION', '2.1.7' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -91,7 +91,7 @@ function sbt_widgets_init() {
 add_action( 'widgets_init', 'sbt_widgets_init' );
 
 function sbt_display_version() {
-	return 'V2.16';
+	return 'V2.17';
 }
 
 function sbt_enqueue_comment_reply() {
@@ -469,12 +469,22 @@ function sbt_asset_url( $path ) {
 	if ( empty( $uploads['error'] ) ) {
 		$local = trailingslashit( $uploads['basedir'] ) . 'syncbooking-theme/' . $subtheme_key . '/' . $path;
 		if ( file_exists( $local ) ) {
-			$served_path = sbt_compat_asset_path( $path, $local, $subtheme_key );
+			$served_path = sbt_prepare_local_asset_path( $path, $local, $subtheme_key );
 			return trailingslashit( $uploads['baseurl'] ) . 'syncbooking-theme/' . $subtheme_key . '/' . str_replace( '%2F', '/', rawurlencode( $served_path ) );
 		}
 	}
 
 	return trailingslashit( sbt_remote_assets_base_url( $subtheme_key ) ) . str_replace( '%2F', '/', rawurlencode( $path ) );
+}
+
+function sbt_prepare_local_asset_path( $asset_path, $local_path, $subtheme_key = '' ) {
+	$normalized_asset_path = wp_normalize_path( $asset_path );
+	if ( 'assets/theme.js' === $normalized_asset_path ) {
+		sbt_prepare_theme_js_asset( $local_path );
+		return $asset_path;
+	}
+
+	return sbt_compat_asset_path( $asset_path, $local_path, $subtheme_key );
 }
 
 function sbt_compat_asset_path( $asset_path, $local_path, $subtheme_key = '' ) {
@@ -502,6 +512,111 @@ function sbt_compat_asset_path( $asset_path, $local_path, $subtheme_key = '' ) {
 	}
 
 	return 'assets/site.wp-compat.css';
+}
+
+function sbt_theme_asset_bridge_js() {
+	return <<<'JS'
+
+/* SyncBooking asset bridge v2: prefixed classes and carousels. */
+(function () {
+  function ready(fn) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn);
+    else fn();
+  }
+  function pair(el, name, on) {
+    if (!el) return;
+    el.classList.toggle(name, on);
+    el.classList.toggle('sbtw-' + name, on);
+  }
+  function initChrome() {
+    var header = document.getElementById('hdr');
+    var toTop = document.getElementById('totop');
+    function onScroll() {
+      pair(header, 'scrolled', window.scrollY > 60);
+      pair(toTop, 'show', window.scrollY > 600);
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    var drawer = document.getElementById('drawer');
+    var burger = document.getElementById('burger');
+    var close = document.getElementById('closeDrawer');
+    if (burger && drawer) burger.addEventListener('click', function () { pair(drawer, 'open', true); });
+    if (close && drawer) close.addEventListener('click', function () { pair(drawer, 'open', false); });
+    if (drawer) drawer.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () { pair(drawer, 'open', false); });
+    });
+  }
+  function initReveal() {
+    var nodes = Array.prototype.slice.call(document.querySelectorAll('.reveal, .sbtw-reveal'));
+    if (!nodes.length) return;
+    if (!('IntersectionObserver' in window)) {
+      nodes.forEach(function (el) { pair(el, 'in', true); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          pair(entry.target, 'in', true);
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    nodes.forEach(function (el, i) {
+      if (!el.style.transitionDelay) el.style.transitionDelay = (i % 3) * 90 + 'ms';
+      io.observe(el);
+    });
+  }
+  function initCarousels() {
+    document.querySelectorAll('[data-carousel]').forEach(function (carousel) {
+      if (carousel.dataset.sbtCarouselReady === '1') return;
+      carousel.dataset.sbtCarouselReady = '1';
+      var track = carousel.querySelector('.mc-track, .sbtw-mc-track');
+      if (!track) return;
+      var images = Array.prototype.slice.call(track.querySelectorAll('img'));
+      if (!images.length) return;
+      var dots = carousel.querySelector('.mc-dots, .sbtw-mc-dots');
+      var prev = carousel.querySelector('.mc-prev, .sbtw-mc-prev');
+      var next = carousel.querySelector('.mc-next, .sbtw-mc-next');
+      var index = 0;
+      var dotButtons = [];
+      function show(nextIndex) {
+        index = (nextIndex + images.length) % images.length;
+        images.forEach(function (img, i) { pair(img, 'active', i === index); });
+        dotButtons.forEach(function (dot, i) { pair(dot, 'active', i === index); });
+      }
+      if (dots) {
+        dots.innerHTML = '';
+        dotButtons = images.map(function (_, i) {
+          var dot = document.createElement('button');
+          dot.type = 'button';
+          dot.setAttribute('aria-label', 'Show image ' + (i + 1));
+          dot.addEventListener('click', function () { show(i); });
+          dots.appendChild(dot);
+          return dot;
+        });
+      }
+      if (prev) prev.addEventListener('click', function () { show(index - 1); });
+      if (next) next.addEventListener('click', function () { show(index + 1); });
+      show(0);
+    });
+  }
+  ready(function () { initChrome(); initReveal(); initCarousels(); });
+})();
+JS;
+}
+
+function sbt_prepare_theme_js_asset( $local_path ) {
+	if ( ! file_exists( $local_path ) || ! is_writable( $local_path ) ) {
+		return;
+	}
+
+	$marker = 'SyncBooking asset bridge v2';
+	$js = file_get_contents( $local_path );
+	if ( false === $js || false !== strpos( $js, $marker ) ) {
+		return;
+	}
+
+	@file_put_contents( $local_path, rtrim( $js ) . "\n" . sbt_theme_asset_bridge_js() . "\n", LOCK_EX );
 }
 
 function sbt_remote_assets_zip_url( $subtheme_key = '' ) {
@@ -790,97 +905,6 @@ function sbt_print_form_runtime_config() {
 	<?php
 }
 add_action( 'wp_footer', 'sbt_print_form_runtime_config', 5 );
-
-function sbt_print_theme_runtime_bridge() {
-	if ( is_admin() ) {
-		return;
-	}
-	?>
-	<script>
-	(function(){
-		function ready(fn){ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn); else fn(); }
-		function setPairedClass(el, name, on){
-			if (!el) return;
-			el.classList.toggle(name, on);
-			el.classList.toggle('sbtw-' + name, on);
-		}
-		function initCarousels(){
-			document.querySelectorAll('[data-carousel]').forEach(function(carousel){
-				if (carousel.dataset.sbtCarouselReady === '1') return;
-				carousel.dataset.sbtCarouselReady = '1';
-				var track = carousel.querySelector('.mc-track, .sbtw-mc-track');
-				if (!track) return;
-				var images = Array.prototype.slice.call(track.querySelectorAll('img'));
-				if (!images.length) return;
-				var dots = carousel.querySelector('.mc-dots, .sbtw-mc-dots');
-				var prev = carousel.querySelector('.mc-prev, .sbtw-mc-prev');
-				var next = carousel.querySelector('.mc-next, .sbtw-mc-next');
-				var index = 0;
-				var dotButtons = [];
-				function show(nextIndex){
-					index = (nextIndex + images.length) % images.length;
-					images.forEach(function(img, i){ setPairedClass(img, 'active', i === index); });
-					dotButtons.forEach(function(dot, i){ setPairedClass(dot, 'active', i === index); });
-				}
-				if (dots) {
-					dots.innerHTML = '';
-					dotButtons = images.map(function(_, i){
-						var dot = document.createElement('button');
-						dot.type = 'button';
-						dot.setAttribute('aria-label', 'Show image ' + (i + 1));
-						dot.addEventListener('click', function(){ show(i); });
-						dots.appendChild(dot);
-						return dot;
-					});
-				}
-				if (prev) prev.addEventListener('click', function(){ show(index - 1); });
-				if (next) next.addEventListener('click', function(){ show(index + 1); });
-				show(0);
-			});
-		}
-		function initReveal(){
-			var nodes = Array.prototype.slice.call(document.querySelectorAll('.reveal, .sbtw-reveal'));
-			if (!nodes.length) return;
-			if (!('IntersectionObserver' in window)) {
-				nodes.forEach(function(el){ setPairedClass(el, 'in', true); });
-				return;
-			}
-			var io = new IntersectionObserver(function(entries){
-				entries.forEach(function(entry){
-					if (entry.isIntersecting) {
-						setPairedClass(entry.target, 'in', true);
-						io.unobserve(entry.target);
-					}
-				});
-			}, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
-			nodes.forEach(function(el, i){
-				if (!el.style.transitionDelay) el.style.transitionDelay = (i % 3) * 90 + 'ms';
-				io.observe(el);
-			});
-		}
-		function initChrome(){
-			var header = document.getElementById('hdr');
-			var toTop = document.getElementById('totop');
-			function onScroll(){
-				setPairedClass(header, 'scrolled', window.scrollY > 60);
-				setPairedClass(toTop, 'show', window.scrollY > 600);
-			}
-			window.addEventListener('scroll', onScroll, { passive: true });
-			onScroll();
-			var drawer = document.getElementById('drawer');
-			var burger = document.getElementById('burger');
-			var close = document.getElementById('closeDrawer');
-			if (burger && drawer) burger.addEventListener('click', function(){ setPairedClass(drawer, 'open', true); });
-			if (close && drawer) close.addEventListener('click', function(){ setPairedClass(drawer, 'open', false); });
-			if (drawer) drawer.querySelectorAll('a').forEach(function(a){ a.addEventListener('click', function(){ setPairedClass(drawer, 'open', false); }); });
-			if (toTop) toTop.addEventListener('click', function(){ window.scrollTo({ top: 0, behavior: 'smooth' }); });
-		}
-		ready(function(){ initCarousels(); initReveal(); initChrome(); });
-	})();
-	</script>
-	<?php
-}
-add_action( 'wp_footer', 'sbt_print_theme_runtime_bridge', 90 );
 
 function sbt_form_recipient_email() {
 	$data = function_exists( 'sbt_load_active_data' ) ? sbt_load_active_data() : array();
@@ -1558,7 +1582,7 @@ function sbt_ajax_start_assets_import() {
 	);
 	update_option( sbt_assets_import_job_option( $key ), $job, false );
 
-	wp_send_json_success( sbt_assets_import_response_data( $job, __( 'Download assets.zip avviato a blocchi.', 'syncbooking-hospitality' ) ) );
+	wp_send_json_success( sbt_assets_import_response_data( $job, __( 'assets.zip download started.', 'syncbooking-hospitality' ) ) );
 }
 add_action( 'wp_ajax_sbt_start_assets_import', 'sbt_ajax_start_assets_import' );
 
@@ -1577,16 +1601,16 @@ function sbt_ajax_step_assets_import() {
 
 	if ( 'download' === $job['stage'] ) {
 		$result = sbt_assets_import_download_step( $job );
-		$message = __( 'Download assets.zip in corso...', 'syncbooking-hospitality' );
+		$message = __( 'Downloading assets.zip...', 'syncbooking-hospitality' );
 	} elseif ( 'extract' === $job['stage'] ) {
 		$result = sbt_assets_import_extract_step( $job );
-		$message = __( 'Estrazione assets in corso...', 'syncbooking-hospitality' );
+		$message = __( 'Extracting assets...', 'syncbooking-hospitality' );
 	} elseif ( 'register' === $job['stage'] ) {
 		$result = sbt_assets_import_register_step( $job );
-		$message = __( 'Registrazione immagini nella Media Library...', 'syncbooking-hospitality' );
+		$message = __( 'Registering images in the Media Library...', 'syncbooking-hospitality' );
 	} else {
 		$result = true;
-		$message = __( 'Import assets completato.', 'syncbooking-hospitality' );
+		$message = __( 'Assets import completed.', 'syncbooking-hospitality' );
 	}
 
 	if ( is_wp_error( $result ) ) {
@@ -1596,7 +1620,7 @@ function sbt_ajax_step_assets_import() {
 	$job['updated_at'] = current_time( 'mysql' );
 	if ( 'complete' === $job['stage'] ) {
 		sbt_assets_import_finish( $job );
-		wp_send_json_success( sbt_assets_import_response_data( $job, __( 'Import assets completato.', 'syncbooking-hospitality' ), true ) );
+		wp_send_json_success( sbt_assets_import_response_data( $job, __( 'Assets import completed.', 'syncbooking-hospitality' ), true ) );
 	}
 
 	update_option( sbt_assets_import_job_option( $key ), $job, false );
@@ -1822,6 +1846,9 @@ function sbt_disable_theme_page( $slug, $subtheme = '' ) {
 
 	$pages = sbt_page_templates();
 	if ( ! isset( $pages[ $slug ] ) ) {
+		return false;
+	}
+	if ( ! empty( $pages[ $slug ]['custom_house'] ) ) {
 		return false;
 	}
 
@@ -2340,11 +2367,6 @@ function sbt_apply_unit_structure( &$SITE, &$NAV, &$C, &$HOUSE_CARDS, &$TEXT ) {
 				'url'   => $listing_url,
 				'label' => $rooms_menu_label,
 				'desc'  => 'Rooms only',
-			);
-			$item['sub'][] = array(
-				'url'   => $entire_url,
-				'label' => $whole_menu_label,
-				'desc'  => 'Exclusive rental',
 			);
 			$item['sub'][] = array(
 				'url'    => 'price-and-condition.php',
@@ -4051,6 +4073,12 @@ function sbt_sync_custom_house_pages() {
 	unset( $house_page );
 
 	$options['custom_house_pages'][ $subtheme ] = $current;
+	if ( ! empty( $options['disabled_theme_pages'][ $subtheme ] ) && is_array( $options['disabled_theme_pages'][ $subtheme ] ) ) {
+		$unit_slugs = array_filter( array_map( function( $page ) {
+			return isset( $page['slug'] ) ? sanitize_title( $page['slug'] ) : '';
+		}, $current ) );
+		$options['disabled_theme_pages'][ $subtheme ] = array_values( array_diff( $options['disabled_theme_pages'][ $subtheme ], $unit_slugs ) );
+	}
 	update_option( SBT_OPTION, $options );
 	sbt_create_theme_pages();
 }
@@ -4188,8 +4216,8 @@ function sbt_required_plugin_admin_notice() {
 	}
 
 	$message = $status['installed']
-		? 'Il tema SyncBooking richiede il plugin SyncBooking: il plugin risulta installato ma non attivo.'
-		: 'Il tema SyncBooking richiede il plugin SyncBooking: installalo e attivalo per usare tutte le funzioni di prenotazione.';
+		? 'The SyncBooking theme requires the SyncBooking plugin: the plugin is installed but not active.'
+		: 'The SyncBooking theme requires the SyncBooking plugin: install and activate it to use all booking features.';
 	echo '<div class="notice notice-warning"><p>' . esc_html( $message ) . '</p></div>';
 }
 add_action( 'admin_notices', 'sbt_required_plugin_admin_notice' );
@@ -4419,17 +4447,17 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 		<div class="sbt-status <?php echo $plugin_status['active'] ? 'is-ok' : 'is-warning'; ?>">
 			<span class="sbt-status__dot" aria-hidden="true"></span>
 			<div>
-				<strong>Plugin richiesto: SyncBooking</strong>
+				<strong>Required plugin: SyncBooking</strong>
 				<?php if ( $plugin_status['active'] ) : ?>
-					<span><?php echo esc_html( $plugin_status['name'] ); ?> risulta attivo.</span>
+					<span><?php echo esc_html( $plugin_status['name'] ); ?> is active.</span>
 				<?php elseif ( $plugin_status['installed'] ) : ?>
-					<span><?php echo esc_html( $plugin_status['name'] ); ?> risulta installato ma non attivo. Attivalo da Plugin per completare la configurazione.</span>
+					<span><?php echo esc_html( $plugin_status['name'] ); ?> is installed but not active. Activate it from Plugins to complete setup.</span>
 				<?php else : ?>
-					<span>Il plugin SyncBooking ufficiale di WordPress.org (<code>syncbooking</code>) non risulta installato. Il tema lo richiede per le funzioni di booking.</span>
+					<span>The official SyncBooking plugin from WordPress.org (<code>syncbooking</code>) is not installed. The theme requires it for booking features.</span>
 				<?php endif; ?>
 				<p style="margin:10px 0 0;">
 					<a class="button <?php echo $plugin_status['active'] ? '' : 'button-primary'; ?>" href="<?php echo esc_url( $plugin_status['action_url'] ); ?>">
-						<?php echo esc_html( $plugin_status['active'] ? 'Vai ai plugin' : ( $plugin_status['installed'] ? 'Attiva SyncBooking' : 'Installa SyncBooking' ) ); ?>
+						<?php echo esc_html( $plugin_status['active'] ? 'Go to plugins' : ( $plugin_status['installed'] ? 'Activate SyncBooking' : 'Install SyncBooking' ) ); ?>
 					</a>
 				</p>
 			</div>
@@ -4440,28 +4468,30 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 			<div>
 				<strong>Email debugging</strong>
 				<span>For email debugging, we recommend optional plugins such as <a href="https://wordpress.org/plugins/wp-mail-logging/" target="_blank" rel="noopener">WP Mail Logging</a> and <a href="https://wordpress.org/plugins/post-smtp/" target="_blank" rel="noopener">Post SMTP</a>.</span>
+				<p style="margin:10px 0 0;">
+					<a class="button" href="<?php echo esc_url( admin_url( 'plugins.php' ) ); ?>">Go to plugins</a>
+				</p>
 			</div>
 		</div>
 
 		<div class="sbt-grid">
 			<div class="sbt-card">
 				<h3>Assets online</h3>
-				<p class="sbt-muted"><strong>Gli assets non sono inclusi nel tema/plugin.</strong> Il pacchetto contiene solo il tema: immagini, CSS, JavaScript, video e brochure vengono scaricati online dall'assets.zip del subtheme attivo e copiati negli uploads di WordPress.</p>
-				<p class="sbt-muted">Fonte assets: <code><?php echo esc_html( sbt_remote_assets_zip_url( sbt_active_subtheme_key() ) ); ?></code>. Non esiste fallback locale: il download e l'estrazione avvengono a piccoli blocchi AJAX per evitare timeout nginx/PHP. Se il file online non risponde, l'import mostra errore e deve essere riprovato.</p>
+				<p class="sbt-muted">Assets are not bundled in the theme. They are downloaded online from the active subtheme assets.zip and copied to WordPress uploads.</p>
+				<p class="sbt-muted">Source: <code><?php echo esc_html( sbt_remote_assets_zip_url( sbt_active_subtheme_key() ) ); ?></code>. No local fallback.</p>
 				<?php if ( ! empty( $media_status['updated_at'] ) ) : ?>
 					<p class="sbt-muted">
 						Last import: <?php echo esc_html( $media_status['updated_at'] ); ?>.
-						files extracted: <?php echo esc_html( $media_status['downloaded'] ?? 0 ); ?>,
-						images registered: <?php echo esc_html( $media_status['registered'] ?? 0 ); ?>,
-						already registered: <?php echo esc_html( $media_status['skipped'] ?? 0 ); ?>,
+						Extracted: <?php echo esc_html( $media_status['downloaded'] ?? 0 ); ?>,
+						registered: <?php echo esc_html( $media_status['registered'] ?? 0 ); ?>,
 						errors: <?php echo esc_html( $media_status['failed'] ?? 0 ); ?>.
 					</p>
 				<?php else : ?>
-					<p class="sbt-muted">Gli assets non sono ancora stati importati per questo subtheme.</p>
+					<p class="sbt-muted">Assets have not been imported for this subtheme yet.</p>
 				<?php endif; ?>
 				<div class="sbt-assets-import" data-nonce="<?php echo esc_attr( wp_create_nonce( 'sbt_assets_import' ) ); ?>" data-subtheme="<?php echo esc_attr( sbt_active_subtheme_key() ); ?>">
 					<button type="button" class="button button-primary sbt-assets-import-button">
-						Scarica assets.zip online a blocchi
+						Download assets.zip online
 					</button>
 					<div class="sbt-assets-progress" style="display:none;" aria-hidden="true"><div class="sbt-assets-progress__bar"></div></div>
 					<p class="sbt-muted sbt-assets-import-message"></p>
@@ -4551,19 +4581,6 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 						syncRows();
 					});
 				</script>
-			</div>
-			<div class="sbt-card">
-				<h3>Generated pages</h3>
-				<?php if ( $is_entire ) : ?>
-					<p class="sbt-muted">With this setup only the Entire page is used:</p>
-					<p><code>/<?php echo esc_html( $entire_slug ); ?>/</code></p>
-					<p><strong>Selected type:</strong> <?php echo esc_html( sbt_entire_label( $subtheme ) ); ?></p>
-				<?php else : ?>
-					<p class="sbt-muted">With this setup the listing page is used:</p>
-					<p><code>/<?php echo esc_html( $listing_slug ); ?>/</code></p>
-					<p class="sbt-muted">Detail pages are created in the selected count and use the names chosen in "Sellable page names".</p>
-					<p><strong>Selected type:</strong> <?php echo esc_html( $plural_label ); ?></p>
-				<?php endif; ?>
 			</div>
 		</div>
 		<?php submit_button( 'Save General Settings' ); ?>
@@ -4754,9 +4771,6 @@ function sbt_render_pages_tab() {
 								<?php if ( ! $is_disabled ) : ?>
 									<a class="button" href="<?php echo esc_url( sbt_theme_page_public_url( $slug, 'en' ) ); ?>" target="_blank">Preview</a>
 								<?php endif; ?>
-								<button type="submit" class="button" name="<?php echo $is_disabled ? 'sbt_restore_theme_page_slug' : 'sbt_disable_theme_page_slug'; ?>" value="<?php echo esc_attr( $slug ); ?>">
-									<?php echo $is_disabled ? 'Restore' : 'Disable'; ?>
-								</button>
 							</td>
 						</tr>
 					<?php endforeach; ?>

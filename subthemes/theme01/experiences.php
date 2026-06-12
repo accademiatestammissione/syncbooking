@@ -37,7 +37,7 @@ sbt_t1_page_hero( 'experiences', $p, 'Experiences' );
 
 <section class="band" style="<?php echo esc_attr( sbt_t1_bg_style( 'C.experiences.band_bg', $p['band_bg'] ) ); ?>" data-screen-label="Experiences band">
 	<div class="inner reveal">
-		<?php echo sbt_t1_control( 'C.experiences.band_bg', $p['band_bg'], 'Immagine sfondo', 'image' ); ?>
+		<?php echo sbt_t1_control( 'C.experiences.band_bg', $p['band_bg'], 'Background image', 'image' ); ?>
 		<div class="overline"><?php echo sbt_t1_text( 'C.experiences.band_over', $p['band_over'] ); ?></div>
 		<h2><?php echo sbt_t1_text( 'C.experiences.band_h2', $p['band_h2'], array( 'multiline' => true ) ); ?></h2>
 		<p><?php echo sbt_t1_text( 'C.experiences.band_p', $p['band_p'], array( 'multiline' => true ) ); ?></p>
@@ -50,7 +50,7 @@ sbt_t1_page_hero( 'experiences', $p, 'Experiences' );
 			<div class="overline"><?php echo sbt_t1_text( 'C.experiences.cta_over', $p['cta_over'] ); ?></div>
 			<h2 class="lead" style="margin-bottom:24px;"><?php echo sbt_t1_text( 'C.experiences.cta_h2', $p['cta_h2'] ); ?></h2>
 			<a class="btn" href="<?php echo esc_url( sbt_t1_url( $p['cta_url'] ) ); ?>"><?php echo sbt_t1_text( 'C.experiences.cta_btn', $p['cta_btn'] ); ?></a>
-			<?php echo sbt_t1_control( 'C.experiences.cta_url', $p['cta_url'], 'Link bottone', 'url' ); ?>
+			<?php echo sbt_t1_control( 'C.experiences.cta_url', $p['cta_url'], 'Button link', 'url' ); ?>
 		</div>
 	</div>
 </section>

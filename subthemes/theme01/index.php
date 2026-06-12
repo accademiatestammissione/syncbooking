@@ -28,7 +28,7 @@ $p = $C['home'];
 				<p class="body-text"><?php echo sbt_t1_text( 'C.home.welcome_p1', $p['welcome_p1'], array( 'multiline' => true ) ); ?></p>
 				<p class="body-text" style="margin-top:18px;"><?php echo sbt_t1_text( 'C.home.welcome_p2', $p['welcome_p2'], array( 'multiline' => true ) ); ?></p>
 				<a class="btn btn--ghost" href="<?php echo esc_url( sbt_t1_url( $p['welcome_url'] ) ); ?>" style="margin-top:30px;"><?php echo sbt_t1_text( 'TEXT.discover_villa', $TEXT['discover_villa'] ); ?></a>
-				<?php echo sbt_t1_control( 'C.home.welcome_url', $p['welcome_url'], 'Link bottone', 'url' ); ?>
+				<?php echo sbt_t1_control( 'C.home.welcome_url', $p['welcome_url'], 'Button link', 'url' ); ?>
 			</div>
 			<div class="media reveal media-carousel" data-carousel>
 				<div class="mc-track">
@@ -65,7 +65,7 @@ $p = $C['home'];
 			<p class="sbtw-body-text body-text"><?php echo sbt_t1_text( 'C.home.entire_p', $p['entire_p'] ?? '', array( 'multiline' => true ) ); ?></p>
 			<div class="sbtw-house-actions house-actions">
 				<a class="sbtw-btn btn" href="<?php echo esc_url( sbt_t1_url( $p['entire_url'] ?? sbt_entire_nav_url( 'theme01' ) ) ); ?>"><?php echo sbt_t1_text( 'C.home.entire_btn', $p['entire_btn'] ?? sbt_entire_label( 'theme01' ) ); ?></a>
-				<?php echo sbt_t1_control( 'C.home.entire_url', $p['entire_url'] ?? sbt_entire_nav_url( 'theme01' ), 'Link bottone', 'url' ); ?>
+				<?php echo sbt_t1_control( 'C.home.entire_url', $p['entire_url'] ?? sbt_entire_nav_url( 'theme01' ), 'Button link', 'url' ); ?>
 			</div>
 		</div>
 	</div>
@@ -127,7 +127,7 @@ $p = $C['home'];
 
 <section class="band" id="band" style="<?php echo esc_attr( sbt_t1_bg_style( 'C.home.band_bg', $p['band_bg'] ) ); ?>" data-screen-label="Surroundings band">
 	<div class="inner reveal">
-		<?php echo sbt_t1_control( 'C.home.band_bg', $p['band_bg'], 'Immagine sfondo', 'image' ); ?>
+		<?php echo sbt_t1_control( 'C.home.band_bg', $p['band_bg'], 'Background image', 'image' ); ?>
 		<div class="overline"><?php echo sbt_t1_text( 'C.home.band_over', $p['band_over'] ); ?></div>
 		<h2><?php echo sbt_t1_text( 'C.home.band_h2', $p['band_h2'], array( 'multiline' => true ) ); ?></h2>
 		<p><?php echo sbt_t1_text( 'C.home.band_p', $p['band_p'], array( 'multiline' => true ) ); ?></p>
@@ -143,7 +143,7 @@ $p = $C['home'];
 				<h3><?php echo sbt_t1_text( 'C.home.spa_teaser_h3', $p['spa_teaser_h3'] ); ?></h3>
 				<p class="body-text"><?php echo sbt_t1_text( 'C.home.spa_teaser_p', $p['spa_teaser_p'], array( 'multiline' => true ) ); ?></p>
 				<a class="btn btn--ghost" href="<?php echo esc_url( sbt_t1_url( $p['spa_teaser_url'] ) ); ?>" style="margin-top:28px;"><?php echo sbt_t1_text( 'TEXT.discover_spa', $TEXT['discover_spa'] ); ?></a>
-				<?php echo sbt_t1_control( 'C.home.spa_teaser_url', $p['spa_teaser_url'], 'Link bottone', 'url' ); ?>
+				<?php echo sbt_t1_control( 'C.home.spa_teaser_url', $p['spa_teaser_url'], 'Button link', 'url' ); ?>
 			</div>
 		</div>
 		<div class="two-col" id="experience">
@@ -152,7 +152,7 @@ $p = $C['home'];
 				<h3><?php echo sbt_t1_text( 'C.home.experience_teaser_h3', $p['experience_teaser_h3'] ); ?></h3>
 				<p class="body-text"><?php echo sbt_t1_text( 'C.home.experience_teaser_p', $p['experience_teaser_p'], array( 'multiline' => true ) ); ?></p>
 				<a class="btn btn--ghost" href="<?php echo esc_url( sbt_t1_url( $p['experience_teaser_url'] ) ); ?>" style="margin-top:28px;"><?php echo sbt_t1_text( 'TEXT.explore_experiences', $TEXT['explore_experiences'] ); ?></a>
-				<?php echo sbt_t1_control( 'C.home.experience_teaser_url', $p['experience_teaser_url'], 'Link bottone', 'url' ); ?>
+				<?php echo sbt_t1_control( 'C.home.experience_teaser_url', $p['experience_teaser_url'], 'Button link', 'url' ); ?>
 			</div>
 			<?php sbt_t1_carousel( 'C.home.experience_gallery', $p['experience_gallery'], 'Apulian Experience', true, true ); ?>
 		</div>
@@ -165,7 +165,7 @@ $p = $C['home'];
 		<h2><?php echo sbt_t1_text( 'C.home.offers_h2', $p['offers_h2'] ); ?></h2>
 		<p class="body-text" style="margin:0 auto 36px;color:rgba(255,255,255,.88);max-width:50ch;"><?php echo sbt_t1_text( 'C.home.offers_p', $p['offers_p'], array( 'multiline' => true ) ); ?></p>
 		<a class="btn btn--light" href="<?php echo esc_url( sbt_t1_url( $p['offers_url'] ) ); ?>"><?php echo sbt_t1_text( 'C.home.offers_btn', $p['offers_btn'] ); ?></a>
-		<?php echo sbt_t1_control( 'C.home.offers_url', $p['offers_url'], 'Link bottone', 'url' ); ?>
+		<?php echo sbt_t1_control( 'C.home.offers_url', $p['offers_url'], 'Button link', 'url' ); ?>
 	</div>
 </section>
 
@@ -176,11 +176,11 @@ $home_cta_btn = ( function_exists( 'sbt_is_entire_rental_mode' ) && sbt_is_entir
 ?>
 <section class="cta-band" id="house-cta" style="<?php echo esc_attr( sbt_t1_bg_style( 'C.home.house_cta_bg', $p['house_cta_bg'] ) ); ?>" data-screen-label="Houses CTA">
 	<div class="inner reveal">
-		<?php echo sbt_t1_control( 'C.home.house_cta_bg', $p['house_cta_bg'], 'Immagine sfondo', 'image' ); ?>
+		<?php echo sbt_t1_control( 'C.home.house_cta_bg', $p['house_cta_bg'], 'Background image', 'image' ); ?>
 		<div class="overline"><?php echo sbt_t1_text( 'C.home.house_cta_over', $p['house_cta_over'] ); ?></div>
 		<h2><?php echo sbt_t1_text( 'C.home.house_cta_h2', $home_cta_h2, array( 'multiline' => true ) ); ?></h2>
 		<a class="btn btn--light" href="<?php echo esc_url( sbt_t1_url( $home_cta_url ) ); ?>"><?php echo sbt_t1_text( 'C.home.house_cta_btn', $home_cta_btn ); ?></a>
-		<?php echo sbt_t1_control( 'C.home.house_cta_url', $home_cta_url, 'Link bottone', 'url' ); ?>
+		<?php echo sbt_t1_control( 'C.home.house_cta_url', $home_cta_url, 'Button link', 'url' ); ?>
 	</div>
 </section>
 

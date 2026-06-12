@@ -52,10 +52,10 @@ sbt_t1_page_hero(
 
 <section class="sbtw-band band" style="<?php echo esc_attr( sbt_t1_bg_style( 'C.' . $CONTENT_KEY . '.cta_bg', $p['cta_bg'] ) ); ?>" data-screen-label="<?php echo esc_attr( $p['h1'] . ' CTA' ); ?>">
 	<div class="sbtw-inner sbtw-reveal inner reveal">
-		<?php echo sbt_t1_control( 'C.' . $CONTENT_KEY . '.cta_bg', $p['cta_bg'], 'Immagine sfondo', 'image' ); ?>
+		<?php echo sbt_t1_control( 'C.' . $CONTENT_KEY . '.cta_bg', $p['cta_bg'], 'Background image', 'image' ); ?>
 		<div class="sbtw-overline overline"><?php echo sbt_t1_text( 'C.' . $CONTENT_KEY . '.cta_over', $p['cta_over'] ); ?></div>
 		<h2><?php echo sbt_t1_text( 'C.' . $CONTENT_KEY . '.cta_h2', $p['cta_h2'] ); ?></h2>
 		<a class="sbtw-btn sbtw-btn--light btn btn--light" href="<?php echo esc_url( sbt_t1_url( $p['cta_url'] ) ); ?>" style="margin-top:8px;"><?php echo sbt_t1_text( 'C.' . $CONTENT_KEY . '.cta_btn', $p['cta_btn'] ); ?></a>
-		<?php echo sbt_t1_control( 'C.' . $CONTENT_KEY . '.cta_url', $p['cta_url'], 'Link bottone', 'url' ); ?>
+		<?php echo sbt_t1_control( 'C.' . $CONTENT_KEY . '.cta_url', $p['cta_url'], 'Button link', 'url' ); ?>
 	</div>
 </section>
