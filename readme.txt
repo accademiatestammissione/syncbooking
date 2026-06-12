@@ -19,9 +19,14 @@ This theme can display embedded video and maps when the site owner configures th
 * Vimeo player: used by the Villa Rosa Resort homepage video background. The configured Vimeo video id is used in an iframe from https://player.vimeo.com/. Vimeo privacy policy: https://vimeo.com/privacy
 * Theme 02 homepage video: loaded from the imported online assets package at assets/video/masseria.mp4.
 * Google Maps embed: used on contact pages when a map embed URL is configured. Google privacy policy: https://policies.google.com/privacy
-* Demo media import: when an administrator clicks "Download assets.zip online" in General Settings, the active subtheme assets.zip is downloaded from https://syncbooking.com/clone-theme/theme-01/assets.zip or https://syncbooking.com/clone-theme/theme-02/assets.zip into the local WordPress uploads directory. Assets are not bundled in the theme/plugin and there is no local fallback. The download, extraction and image registration are processed in small AJAX batches to avoid nginx/PHP timeout errors. No visitor data is sent by the theme for this import.
+* Demo media import: when an administrator clicks "Download assets.zip online" in General Settings, the active subtheme assets.zip is downloaded from https://syncbooking.com/clone-theme/theme-01/assets.zip or https://syncbooking.com/clone-theme/theme-02/assets.zip into the local WordPress uploads directory. CSS, JavaScript, media and demo files are not bundled in the theme/plugin, there is no local fallback, and the theme does not modify imported asset files. The download, extraction and image registration are processed in small AJAX batches to avoid nginx/PHP timeout errors. No visitor data is sent by the theme for this import.
 
 == Changelog ==
+
+= 2.1.19 =
+* Keeps Header & Menu link defaults connected to generated theme pages instead of direct absolute URLs.
+* Restores Theme 01 homepage markup classes to match the original HTML/CSS.
+* Clarifies that subtheme CSS, JavaScript and media assets are only imported from online assets.zip and are not modified by the theme.
 
 = 2.1.18 =
 * Hides the Theme 01 homepage Entire Villa exclusive-use block when Units to sell mode is selected.
@@ -281,6 +286,6 @@ This theme can display embedded video and maps when the site owner configures th
 
 Bundled theme code: SyncBooking Theme, Copyright Accademia Test Ammissione, GPLv2 or later.
 
-No demo images, media, CSS or JavaScript assets are bundled in subthemes/theme01/assets or subthemes/theme02/assets. Theme assets are downloaded online from the configured assets.zip source for the active subtheme.
+No demo images, media, CSS or JavaScript assets are bundled in subthemes/theme01/assets or subthemes/theme02/assets. Theme assets are downloaded online from the configured assets.zip source for the active subtheme. The theme code must not edit or rewrite those imported asset files.
 
 No third-party font files are bundled. Font selections use local/system font stacks.
