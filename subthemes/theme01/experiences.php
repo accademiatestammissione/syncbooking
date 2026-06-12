@@ -1,58 +1,67 @@
 <?php
 $PAGE = 'experiences';
+$PAGE_TITLE = 'Experiences – Villa Rosa Resort';
 require __DIR__ . '/inc/header.php';
-$p = $C['experiences'];
-sbt_t1_page_hero( 'experiences', $p, 'Experiences' );
 ?>
-
-<section class="pad" data-screen-label="Experiences intro">
-	<div class="wrap">
-		<div class="section-head reveal">
-			<div class="overline"><?php echo sbt_t1_text( 'C.experiences.intro_over', $p['intro_over'] ); ?></div>
-			<h2><?php echo sbt_t1_text( 'C.experiences.intro_h2', $p['intro_h2'] ); ?></h2>
-			<p><?php echo sbt_t1_text( 'C.experiences.intro_p', $p['intro_p'], array( 'multiline' => true ) ); ?></p>
-		</div>
-		<div class="exp-grid">
-			<?php foreach ( $p['cards'] as $index => $card ) : ?>
-				<a class="exp reveal" href="<?php echo esc_url( sbt_t1_url( $card['url'] ) ); ?>">
-					<?php echo sbt_t1_img( 'C.experiences.cards.' . $index . '.img', $card['img'], $card['h3'] ); ?>
-					<div class="ex-body"><div class="overline"><?php echo sbt_t1_text( 'C.experiences.cards.' . $index . '.over', $card['over'] ); ?></div><h3><?php echo sbt_t1_text( 'C.experiences.cards.' . $index . '.h3', $card['h3'] ); ?></h3><div class="ex-link"><?php echo sbt_t1_text( 'TEXT.discover', $TEXT['discover'] ); ?> <span></span></div></div>
-					<?php echo sbt_t1_control( 'C.experiences.cards.' . $index . '.url', $card['url'], 'Link card', 'url' ); ?>
-				</a>
-			<?php endforeach; ?>
-		</div>
-	</div>
+<section class="sbtw-page-hero" data-screen-label="Experiences banner">
+  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/apulian-breakfast.jpg' ) ); ?>" alt="Experiences" />
+  <div class="sbtw-wrap">
+    <div class="sbtw-overline">Villa Rosa Resort &amp; SPA</div>
+    <h1>Experiences</h1>
+    <nav class="sbtw-crumb"><a href="<?php echo esc_url( sbt_t1_url( 'index.php' ) ); ?>">Home</a><span>/</span>Experiences</nav>
+  </div>
 </section>
 
-<section class="pad" style="background:var(--surface);" data-screen-label="Experiences wellness">
-	<div class="wrap">
-		<div class="section-head reveal" style="margin-bottom:44px;">
-			<div class="overline"><?php echo sbt_t1_text( 'C.experiences.wellness_over', $p['wellness_over'] ); ?></div>
-			<h2><?php echo sbt_t1_text( 'C.experiences.wellness_h2', $p['wellness_h2'] ); ?></h2>
-			<p><?php echo sbt_t1_text( 'C.experiences.wellness_p', $p['wellness_p'], array( 'multiline' => true ) ); ?></p>
-		</div>
-		<?php sbt_t1_mosaic( 'C.experiences.wellness_gallery', $p['wellness_gallery'], 'Villa Rosa SPA', $TEXT['show_all_photos'] ); ?>
-	</div>
+<section class="sbtw-pad" data-screen-label="Experiences intro">
+  <div class="sbtw-wrap">
+    <div class="sbtw-section-head sbtw-reveal">
+      <div class="sbtw-overline">Tailor-made for you</div>
+      <h2>Live Puglia, your way</h2>
+      <p>We craft bespoke experiences for every guest, shaped around your tastes and curiosities. From the flavours of the Apulian table to the wonders just beyond our gates, let us design moments you will remember long after you leave.</p>
+    </div>
+    <div class="sbtw-exp-grid">
+      <a class="sbtw-exp sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( 'post:cooking-classes' ) ); ?>"><img src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-039.jpg' ) ); ?>" alt="Cooking Classes" /><div class="sbtw-ex-body"><div class="sbtw-overline">Taste</div><h3>Cooking Classes</h3><div class="sbtw-ex-link">Discover <span></span></div></div></a>
+      <a class="sbtw-exp sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( 'post:wine-tastings' ) ); ?>"><img src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-005.jpg' ) ); ?>" alt="Wine Tastings" /><div class="sbtw-ex-body"><div class="sbtw-overline">Cellar</div><h3>Wine Tastings</h3><div class="sbtw-ex-link">Discover <span></span></div></div></a>
+      <a class="sbtw-exp sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( 'post:private-tours' ) ); ?>"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Alberobello%20trulli.JPG?width=1400" alt="Private Tours" /><div class="sbtw-ex-body"><div class="sbtw-overline">Discover</div><h3>Private Tours</h3><div class="sbtw-ex-link">Discover <span></span></div></div></a>
+      <a class="sbtw-exp sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( 'post:coast-beaches' ) ); ?>"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Lama%20Monachile.jpg?width=1400" alt="Coast & Beaches" /><div class="sbtw-ex-body"><div class="sbtw-overline">Sea</div><h3>Coast &amp; Beaches</h3><div class="sbtw-ex-link">Discover <span></span></div></div></a>
+    </div>
+  </div>
 </section>
 
-<section class="band" style="<?php echo esc_attr( sbt_t1_bg_style( 'C.experiences.band_bg', $p['band_bg'] ) ); ?>" data-screen-label="Experiences band">
-	<div class="inner reveal">
-		<?php echo sbt_t1_control( 'C.experiences.band_bg', $p['band_bg'], 'Background image', 'image' ); ?>
-		<div class="overline"><?php echo sbt_t1_text( 'C.experiences.band_over', $p['band_over'] ); ?></div>
-		<h2><?php echo sbt_t1_text( 'C.experiences.band_h2', $p['band_h2'], array( 'multiline' => true ) ); ?></h2>
-		<p><?php echo sbt_t1_text( 'C.experiences.band_p', $p['band_p'], array( 'multiline' => true ) ); ?></p>
-	</div>
+<section class="sbtw-pad" style="background:var(--surface);" data-screen-label="Experiences wellness">
+  <div class="sbtw-wrap">
+    <div class="sbtw-section-head sbtw-reveal" style="margin-bottom:44px;">
+      <div class="sbtw-overline">Body &amp; soul</div>
+      <h2>Wellness &amp; SPA</h2>
+      <p>Tucked beneath ancient vaults, our wellness centre is a world apart: sauna, Turkish bath, emotional showers, a hydromassage pool and a candle-lit relaxation lounge — plus a fully equipped gym for those who like to keep moving.</p>
+    </div>
+    <div class="sbtw-mosaic">
+      <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/jacuzzi.png' ) ); ?>" alt="Villa Rosa SPA — hydromassage pool" /></div>
+      <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/sauna.png' ) ); ?>" alt="Villa Rosa SPA — sauna" /></div>
+      <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/turkish-bath.png' ) ); ?>" alt="Villa Rosa SPA — Turkish bath" /></div>
+      <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/relax-lounge.png' ) ); ?>" alt="Villa Rosa SPA — relaxation lounge" /></div>
+      <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/gym.png' ) ); ?>" alt="Villa Rosa SPA — gym" /></div>
+      <button class="sbtw-m-allbtn" type="button"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Show all photos</button>
+    </div>
+  </div>
 </section>
 
-<section class="pad" data-screen-label="Experiences CTA">
-	<div class="wrap" style="text-align:center;">
-		<div class="reveal" style="max-width:620px;margin:0 auto;">
-			<div class="overline"><?php echo sbt_t1_text( 'C.experiences.cta_over', $p['cta_over'] ); ?></div>
-			<h2 class="lead" style="margin-bottom:24px;"><?php echo sbt_t1_text( 'C.experiences.cta_h2', $p['cta_h2'] ); ?></h2>
-			<a class="btn" href="<?php echo esc_url( sbt_t1_url( $p['cta_url'] ) ); ?>"><?php echo sbt_t1_text( 'C.experiences.cta_btn', $p['cta_btn'] ); ?></a>
-			<?php echo sbt_t1_control( 'C.experiences.cta_url', $p['cta_url'], 'Button link', 'url' ); ?>
-		</div>
-	</div>
+<section class="sbtw-band" style="background-image:url('<?php echo esc_url( sbt_asset_url( 'assets/images/wellness-corridor.jpg' ) ); ?>');" data-screen-label="Experiences band">
+  <div class="sbtw-inner sbtw-reveal">
+    <div class="sbtw-overline">Unhurried &amp; authentic</div>
+    <h2>The art of living,<br/>Apulian style</h2>
+    <p>Long lunches under the pergola, sun-warmed stone, and the generous welcome of the South — this is the rhythm of a stay at Villa Rosa.</p>
+  </div>
+</section>
+
+<section class="sbtw-pad" data-screen-label="Experiences CTA">
+  <div class="sbtw-wrap" style="text-align:center;">
+    <div class="sbtw-reveal" style="max-width:620px;margin:0 auto;">
+      <div class="sbtw-overline">Design your days</div>
+      <h2 class="sbtw-lead" style="margin-bottom:24px;">Plan your experiences</h2>
+      <a class="sbtw-btn" href="<?php echo esc_url( sbt_t1_url( 'contacts.php' ) ); ?>">Contact us</a>
+    </div>
+  </div>
 </section>
 
 <?php require __DIR__ . '/inc/footer.php'; ?>

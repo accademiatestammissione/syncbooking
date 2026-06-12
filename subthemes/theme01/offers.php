@@ -1,41 +1,39 @@
 <?php
 $PAGE = 'offers';
+$PAGE_TITLE = 'Offers – Villa Rosa Resort';
 require __DIR__ . '/inc/header.php';
-$p = $C['offers'];
-sbt_t1_page_hero( 'offers', $p, 'Offers' );
 ?>
-
-<section class="pad" data-screen-label="Offers intro">
-	<div class="wrap">
-		<div class="section-head reveal">
-			<div class="overline"><?php echo sbt_t1_text( 'C.offers.intro_over', $p['intro_over'] ); ?></div>
-			<h2><?php echo sbt_t1_text( 'C.offers.intro_h2', $p['intro_h2'] ); ?></h2>
-			<p><?php echo sbt_t1_text( 'C.offers.intro_p', $p['intro_p'], array( 'multiline' => true ) ); ?></p>
-		</div>
-		<div class="offer-grid">
-			<?php foreach ( $p['cards'] as $index => $card ) : ?>
-				<a class="offer-card reveal" href="<?php echo esc_url( sbt_t1_url( $card['url'] ) ); ?>">
-					<?php echo sbt_t1_img( 'C.offers.cards.' . $index . '.img', $card['img'], $card['h3'] ); ?>
-					<div class="oc-body">
-						<span class="badge"><?php echo sbt_t1_text( 'C.offers.cards.' . $index . '.badge', $card['badge'] ); ?></span>
-						<h3><?php echo sbt_t1_text( 'C.offers.cards.' . $index . '.h3', $card['h3'] ); ?></h3>
-						<p><?php echo sbt_t1_text( 'C.offers.cards.' . $index . '.p', $card['p'], array( 'multiline' => true ) ); ?></p>
-					</div>
-					<?php echo sbt_t1_control( 'C.offers.cards.' . $index . '.url', $card['url'], 'Link card', 'url' ); ?>
-				</a>
-			<?php endforeach; ?>
-		</div>
-	</div>
+<section class="sbtw-page-hero" data-screen-label="Offers banner">
+  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-090.jpg' ) ); ?>" alt="Offers" />
+  <div class="sbtw-wrap">
+    <div class="sbtw-overline">Villa Rosa offers</div>
+    <h1>Offers</h1>
+    <nav class="sbtw-crumb"><a href="<?php echo esc_url( sbt_t1_url( 'index.php' ) ); ?>">Home</a><span>/</span>Offers</nav>
+  </div>
 </section>
 
-<section class="band" style="<?php echo esc_attr( sbt_t1_bg_style( 'C.offers.cta_bg', $p['cta_bg'] ) ); ?>" data-screen-label="Offers CTA">
-	<div class="inner reveal">
-		<?php echo sbt_t1_control( 'C.offers.cta_bg', $p['cta_bg'], 'Background image', 'image' ); ?>
-		<div class="overline"><?php echo sbt_t1_text( 'C.offers.cta_over', $p['cta_over'] ); ?></div>
-		<h2><?php echo sbt_t1_text( 'C.offers.cta_h2', $p['cta_h2'] ); ?></h2>
-		<a class="btn btn--light" href="<?php echo esc_url( sbt_t1_url( $p['cta_url'] ) ); ?>" style="margin-top:8px;"><?php echo sbt_t1_text( 'C.offers.cta_btn', $p['cta_btn'] ); ?></a>
-		<?php echo sbt_t1_control( 'C.offers.cta_url', $p['cta_url'], 'Button link', 'url' ); ?>
-	</div>
+<section class="sbtw-pad" data-screen-label="Offers intro">
+  <div class="sbtw-wrap">
+    <div class="sbtw-section-head sbtw-reveal">
+      <div class="sbtw-overline">Best available conditions</div>
+      <h2>Seasonal promotions</h2>
+      <p>Reserve your stay in the heart of Puglia at the very best conditions. Discover our current offers — and contact us directly for exclusive, tailor-made rates.</p>
+    </div>
+    <div class="sbtw-offer-grid">
+      <a class="sbtw-offer-card sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( 'post:book-early-save-more' ) ); ?>"><img src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-094.jpg' ) ); ?>" alt="Book Early, Save More" /><span class="sbtw-badge">Early booking</span><div class="sbtw-oc-body"><h3>Book Early, Save More</h3><p>Reserve well in advance and enjoy a special rate on your favourite house.</p></div></a>
+      <a class="sbtw-offer-card sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( 'post:seven-nights-six' ) ); ?>"><img src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-081.jpg' ) ); ?>" alt="7 Nights = 6" /><span class="sbtw-badge">Long stay</span><div class="sbtw-oc-body"><h3>7 Nights = 6</h3><p>Stay a week and pay for six nights — the perfect way to truly unwind in Puglia.</p></div></a>
+      <a class="sbtw-offer-card sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( 'post:spa-escape' ) ); ?>"><img src="<?php echo esc_url( sbt_asset_url( 'assets/images/jacuzzi.png' ) ); ?>" alt="SPA Escape" /><span class="sbtw-badge">Wellness</span><div class="sbtw-oc-body"><h3>SPA Escape</h3><p>A romantic stay for two with a dedicated wellness experience in our SPA.</p></div></a>
+      <a class="sbtw-offer-card sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( 'post:spring-autumn' ) ); ?>"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Alberobello%20trulli.JPG?width=1400" alt="Spring & Autumn" /><span class="sbtw-badge">Season</span><div class="sbtw-oc-body"><h3>Spring &amp; Autumn</h3><p>Discover Puglia in its gentlest seasons with our reduced shoulder-season rates.</p></div></a>
+    </div>
+  </div>
+</section>
+
+<section class="sbtw-band" style="background-image:url('<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-078.jpg' ) ); ?>');" data-screen-label="Offers CTA">
+  <div class="sbtw-inner sbtw-reveal">
+    <div class="sbtw-overline">Tailored to you</div>
+    <h2>Ask for your best rate</h2>
+    <a class="sbtw-btn sbtw-btn--light" href="<?php echo esc_url( sbt_t1_url( 'contacts.php' ) ); ?>" style="margin-top:8px;">Contact us</a>
+  </div>
 </section>
 
 <?php require __DIR__ . '/inc/footer.php'; ?>

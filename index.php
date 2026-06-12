@@ -3,11 +3,11 @@ if ( is_home() && ! is_front_page() ) {
 	$PAGE = '';
 	require sbt_subtheme_path( 'inc/header.php' );
 	?>
-	<section class="pad">
-		<div class="wrap">
+	<section class="sbtw-pad">
+		<div class="sbtw-wrap">
 			<?php if ( have_posts() ) : ?>
 				<?php while ( have_posts() ) : the_post(); ?>
-					<article id="post-<?php the_ID(); ?>" <?php post_class( 'body-text' ); ?>>
+					<article id="post-<?php the_ID(); ?>" <?php post_class( 'sbtw-article sbtw-reveal' ); ?>>
 						<?php if ( has_post_thumbnail() ) : ?>
 							<?php the_post_thumbnail( 'large' ); ?>
 						<?php endif; ?>
@@ -19,7 +19,7 @@ if ( is_home() && ! is_front_page() ) {
 				<?php the_posts_pagination(); ?>
 			<?php endif; ?>
 			<?php if ( is_active_sidebar( 'sidebar-1' ) ) : ?>
-				<aside class="sidebar widget-area">
+				<aside class="sbtw-sidebar widget-area">
 					<?php dynamic_sidebar( 'sidebar-1' ); ?>
 				</aside>
 			<?php endif; ?>
