@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.7' );
+define( 'SBT_VERSION', '2.1.8' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -91,7 +91,7 @@ function sbt_widgets_init() {
 add_action( 'widgets_init', 'sbt_widgets_init' );
 
 function sbt_display_version() {
-	return 'V2.17';
+	return 'V2.18';
 }
 
 function sbt_enqueue_comment_reply() {
@@ -667,7 +667,63 @@ function sbt_demo_media_url( $relative, $subtheme_key = '' ) {
 
 function sbt_theme_style_value( $key, $fallback = '' ) {
 	$overrides = sbt_active_overrides();
-	return isset( $overrides[ $key ] ) && '' !== $overrides[ $key ] ? $overrides[ $key ] : $fallback;
+	if ( isset( $overrides[ $key ] ) && '' !== $overrides[ $key ] ) {
+		$value = $overrides[ $key ];
+		if ( 'theme02' === sbt_active_subtheme_key() ) {
+			$legacy_palette = array(
+				'SITE.color_bg' => array( '#f6f2ea', '#f4efe5' ),
+				'SITE.color_surface' => array( '#fbf8f2', '#faf6ee' ),
+				'SITE.color_line' => array( '#e6dfd2', '#e3dbcf' ),
+				'SITE.color_primary' => array( '#8a463f', '#a98c5b' ),
+				'SITE.color_primary_deep' => array( '#6f3631', '#8a7349' ),
+				'SITE.color_primary_soft' => array( '#a8645a', '#bca06f' ),
+				'SITE.color_accent' => array( '#b47e6e', '#a98c5b' ),
+				'SITE.color_header' => array( '#8a463f', '#a98c5b' ),
+				'SITE.color_header_deep' => array( '#73362f', '#8a7349' ),
+			);
+			if ( isset( $legacy_palette[ $key ] ) && strtolower( $value ) === strtolower( $legacy_palette[ $key ][0] ) ) {
+				return $legacy_palette[ $key ][1];
+			}
+		}
+		return $value;
+	}
+
+	return $fallback;
+}
+
+function sbt_subtheme_palette_defaults( $subtheme = '' ) {
+	$subtheme = $subtheme ? sanitize_key( $subtheme ) : sbt_active_subtheme_key();
+	if ( 'theme02' === $subtheme ) {
+		return array(
+			'bg' => '#f4efe5',
+			'surface' => '#faf6ee',
+			'ink' => '#2b2723',
+			'muted' => '#7d7468',
+			'line' => '#e3dbcf',
+			'green' => '#a98c5b',
+			'green-deep' => '#8a7349',
+			'green-soft' => '#bca06f',
+			'rose' => '#a98c5b',
+			'gold' => '#a98c5b',
+			'header-red' => '#a98c5b',
+			'header-red-deep' => '#8a7349',
+		);
+	}
+
+	return array(
+		'bg' => '#f6f2ea',
+		'surface' => '#fbf8f2',
+		'ink' => '#2b2723',
+		'muted' => '#7d7468',
+		'line' => '#e6dfd2',
+		'green' => '#8a463f',
+		'green-deep' => '#6f3631',
+		'green-soft' => '#a8645a',
+		'rose' => '#b47e6e',
+		'gold' => '#a98c5b',
+		'header-red' => '#8a463f',
+		'header-red-deep' => '#73362f',
+	);
 }
 
 function sbt_theme_design_css() {
@@ -679,19 +735,20 @@ function sbt_theme_design_css() {
 	);
 	$font_key = sbt_theme_style_value( 'SITE.font_pairing', 'classic' );
 	$font_pair = $fonts[ $font_key ] ?? $fonts['classic'];
+	$palette = sbt_subtheme_palette_defaults();
 	$color_map = array(
-		'bg' => array( 'SITE.color_bg', '#f6f2ea' ),
-		'surface' => array( 'SITE.color_surface', '#fbf8f2' ),
-		'ink' => array( 'SITE.color_ink', '#2b2723' ),
-		'muted' => array( 'SITE.color_muted', '#7d7468' ),
-		'line' => array( 'SITE.color_line', '#e6dfd2' ),
-		'green' => array( 'SITE.color_primary', '#8a463f' ),
-		'green-deep' => array( 'SITE.color_primary_deep', '#6f3631' ),
-		'green-soft' => array( 'SITE.color_primary_soft', '#a8645a' ),
-		'rose' => array( 'SITE.color_accent', '#b47e6e' ),
-		'gold' => array( 'SITE.color_gold', '#a98c5b' ),
-		'header-red' => array( 'SITE.color_header', '#8a463f' ),
-		'header-red-deep' => array( 'SITE.color_header_deep', '#73362f' ),
+		'bg' => array( 'SITE.color_bg', $palette['bg'] ),
+		'surface' => array( 'SITE.color_surface', $palette['surface'] ),
+		'ink' => array( 'SITE.color_ink', $palette['ink'] ),
+		'muted' => array( 'SITE.color_muted', $palette['muted'] ),
+		'line' => array( 'SITE.color_line', $palette['line'] ),
+		'green' => array( 'SITE.color_primary', $palette['green'] ),
+		'green-deep' => array( 'SITE.color_primary_deep', $palette['green-deep'] ),
+		'green-soft' => array( 'SITE.color_primary_soft', $palette['green-soft'] ),
+		'rose' => array( 'SITE.color_accent', $palette['rose'] ),
+		'gold' => array( 'SITE.color_gold', $palette['gold'] ),
+		'header-red' => array( 'SITE.color_header', $palette['header-red'] ),
+		'header-red-deep' => array( 'SITE.color_header_deep', $palette['header-red-deep'] ),
 	);
 	$lines = array(
 		'--serif:' . $font_pair[0],
@@ -705,6 +762,49 @@ function sbt_theme_design_css() {
 	echo '<style id="sbt-theme-design-vars">:root{' . implode( ';', $lines ) . ';}</style>' . "\n";
 }
 
+function sbt_migrate_theme02_palette_overrides() {
+	if ( ! is_admin() || get_option( 'sbt_theme02_palette_migrated_218' ) ) {
+		return;
+	}
+
+	$options = sbt_get_options();
+	if ( empty( $options['overrides']['theme02'] ) || ! is_array( $options['overrides']['theme02'] ) ) {
+		update_option( 'sbt_theme02_palette_migrated_218', 1, false );
+		return;
+	}
+
+	$old = sbt_subtheme_palette_defaults( 'theme01' );
+	$new = sbt_subtheme_palette_defaults( 'theme02' );
+	$paths = array(
+		'SITE.color_bg' => array( $old['bg'], $new['bg'] ),
+		'SITE.color_surface' => array( $old['surface'], $new['surface'] ),
+		'SITE.color_ink' => array( $old['ink'], $new['ink'] ),
+		'SITE.color_muted' => array( $old['muted'], $new['muted'] ),
+		'SITE.color_line' => array( $old['line'], $new['line'] ),
+		'SITE.color_primary' => array( $old['green'], $new['green'] ),
+		'SITE.color_primary_deep' => array( $old['green-deep'], $new['green-deep'] ),
+		'SITE.color_primary_soft' => array( $old['green-soft'], $new['green-soft'] ),
+		'SITE.color_accent' => array( $old['rose'], $new['rose'] ),
+		'SITE.color_gold' => array( $old['gold'], $new['gold'] ),
+		'SITE.color_header' => array( $old['header-red'], $new['header-red'] ),
+		'SITE.color_header_deep' => array( $old['header-red-deep'], $new['header-red-deep'] ),
+	);
+
+	$changed = false;
+	foreach ( $paths as $path => $pair ) {
+		if ( isset( $options['overrides']['theme02'][ $path ] ) && strtolower( $options['overrides']['theme02'][ $path ] ) === strtolower( $pair[0] ) ) {
+			$options['overrides']['theme02'][ $path ] = $pair[1];
+			$changed = true;
+		}
+	}
+
+	if ( $changed ) {
+		update_option( SBT_OPTION, $options );
+	}
+	update_option( 'sbt_theme02_palette_migrated_218', 1, false );
+}
+add_action( 'admin_init', 'sbt_migrate_theme02_palette_overrides' );
+
 function sbt_enqueue_theme_fonts() {
 	wp_enqueue_style(
 		'syncbooking-hospitality-fonts',
@@ -714,6 +814,35 @@ function sbt_enqueue_theme_fonts() {
 	);
 }
 add_action( 'wp_enqueue_scripts', 'sbt_enqueue_theme_fonts' );
+
+function sbt_syncbooking_bar_is_expected() {
+	if ( ! function_exists( 'syncbooking_print_bar_form' ) || 1 !== (int) get_option( 'syncbooking_api_key_valid', 0 ) ) {
+		return false;
+	}
+
+	$current_id = get_queried_object_id();
+	$items = get_option( 'syncbooking_custom_bar_pages', array() );
+	$items = is_array( $items ) ? array_map( 'absint', $items ) : array();
+
+	return is_singular( array( 'page', 'post' ) ) && in_array( absint( $current_id ), $items, true );
+}
+
+function sbt_syncbooking_bar_spacing_css() {
+	if ( ! sbt_syncbooking_bar_is_expected() ) {
+		return;
+	}
+	?>
+	<style id="sbt-syncbooking-bar-spacing">
+		body.sbtw { padding-bottom: 132px; }
+		body.sbtw .sbtw-totop { bottom: 190px; }
+		@media (max-width: 767px) {
+			body.sbtw { padding-bottom: 104px; }
+			body.sbtw .sbtw-totop { bottom: 128px; }
+		}
+	</style>
+	<?php
+}
+add_action( 'wp_head', 'sbt_syncbooking_bar_spacing_css', 40 );
 
 function sbt_page_templates() {
 	$subtheme_key = sbt_active_subtheme_key();
@@ -1808,10 +1937,38 @@ function sbt_create_theme_pages() {
 			}
 		}
 	}
+	sbt_sync_syncbooking_bar_pages();
 }
 add_action( 'after_switch_theme', 'sbt_create_theme_pages' );
 add_action( 'after_switch_theme', 'sbt_sync_custom_house_pages' );
 add_action( 'after_switch_theme', 'sbt_create_seed_posts' );
+
+function sbt_sync_syncbooking_bar_pages() {
+	if ( ! function_exists( 'syncbooking_print_bar_form' ) ) {
+		return;
+	}
+
+	$page_ids = array();
+	foreach ( sbt_page_templates() as $slug => $page ) {
+		if ( sbt_is_theme_page_disabled( $slug ) ) {
+			continue;
+		}
+		foreach ( sbt_enabled_languages() as $language ) {
+			$post = sbt_theme_page_post( $slug, $language );
+			if ( $post && 'publish' === get_post_status( $post->ID ) ) {
+				$page_ids[] = absint( $post->ID );
+			}
+		}
+	}
+
+	if ( ! $page_ids ) {
+		return;
+	}
+
+	$current = get_option( 'syncbooking_custom_bar_pages', array() );
+	$current = is_array( $current ) ? array_map( 'absint', $current ) : array();
+	update_option( 'syncbooking_custom_bar_pages', array_values( array_unique( array_filter( array_merge( $current, $page_ids ) ) ) ) );
+}
 
 function sbt_maybe_sync_theme_pages() {
 	if ( ! is_admin() || ! current_user_can( 'edit_theme_options' ) ) {

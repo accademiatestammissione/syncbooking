@@ -23,6 +23,11 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 2.1.8 =
+* Added Theme 02 palette defaults and subtheme-aware design fallbacks so Masseria pages do not inherit Theme 01 colors.
+* Syncs active generated theme pages into the SyncBooking bottom-bar page list using integer page IDs.
+* Adds extra bottom spacing when the SyncBooking fixed bar is present.
+
 = 2.1.7 =
 * Removed disable/restore actions from generated unit detail pages.
 * Simplified the General Settings generated-pages and online-assets copy.
