@@ -1,53 +1,54 @@
 <?php
 $PAGE = 'contacts';
+$PAGE_TITLE = 'Contacts – Masseria Montefieno';
 require __DIR__ . '/inc/header.php';
-$p = $C['contacts'];
-sbt_t1_page_hero( 'contacts', $p, 'Contacts' );
 ?>
+<section class="sbtw-page-hero" data-screen-label="Contacts banner">
+  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-04.jpg' ) ); ?>" alt="Contacts" />
+  <div class="sbtw-wrap">
+    <div class="sbtw-overline">We are here for you</div>
+    <h1>Contacts</h1>
+    <nav class="sbtw-crumb"><a href="<?php echo esc_url( sbt_t1_url( 'index.php' ) ); ?>">Home</a><span>/</span>Contacts</nav>
+  </div>
+</section>
 
-<section class="sbtw-pad pad" data-screen-label="Contacts content">
-	<div class="sbtw-wrap wrap">
-		<div class="sbtw-section-head sbtw-reveal section-head reveal" style="margin-bottom:56px;">
-			<div class="sbtw-overline overline"><?php echo sbt_t1_text( 'C.contacts.intro_over', $p['intro_over'] ); ?></div>
-			<h2><?php echo sbt_t1_text( 'C.contacts.intro_h2', $p['intro_h2'] ); ?></h2>
-			<p><?php echo sbt_t1_text( 'C.contacts.intro_p', $p['intro_p'], array( 'multiline' => true ) ); ?></p>
-		</div>
-		<div class="sbtw-contact-grid contact-grid">
-			<div class="sbtw-contact-info sbtw-reveal contact-info reveal">
-				<div class="sbtw-ci-block ci-block">
-					<div class="sbtw-overline overline"><?php echo sbt_t1_text( 'TEXT.address', $TEXT['address'] ); ?></div>
-					<p class="sbtw-big big"><?php echo function_exists( 'sbt_site_address_html' ) ? sbt_site_address_html( $SITE ) : wp_kses_post( $SITE['address'] ?? '' ); ?></p>
-					<p style="margin-top:8px;"><a href="<?php echo esc_url( $SITE['map'] ); ?>"><?php echo sbt_t1_text( 'TEXT.open_maps', $TEXT['open_maps'] ); ?></a></p>
-				</div>
-				<div class="sbtw-ci-block ci-block">
-					<div class="sbtw-overline overline"><?php echo sbt_t1_text( 'TEXT.phone', $TEXT['phone'] ); ?></div>
-					<p class="sbtw-big big"><a href="tel:<?php echo esc_attr( $SITE['phone1_t'] ); ?>"><?php echo esc_html( $SITE['phone1'] ); ?></a></p>
-					<a class="sbtw-wa sbtw-wa--red wa wa--red" href="<?php echo esc_url( $SITE['wa'] ); ?>" style="margin-top:18px;"><?php echo $WA_SVG; ?><?php echo sbt_t1_text( 'TEXT.chat_whatsapp', $TEXT['chat_whatsapp'] ); ?></a>
-					<?php echo sbt_t1_control( 'SITE.wa', $SITE['wa'], 'Link WhatsApp', 'url' ); ?>
-				</div>
-				<div class="sbtw-ci-block ci-block">
-					<div class="sbtw-overline overline"><?php echo sbt_t1_text( 'TEXT.email', $TEXT['email'] ); ?></div>
-					<p class="sbtw-big big"><a href="mailto:<?php echo esc_attr( $SITE['email'] ); ?>"><?php echo esc_html( $SITE['email'] ); ?></a></p>
-				</div>
-			</div>
-			<form class="sbtw-contact-form sbtw-reveal contact-form reveal" id="contactForm" data-sbt-form="contact" method="post">
-				<div class="sbtw-field field"><label><?php echo sbt_t1_text( 'TEXT.form_name', $TEXT['form_name'] ); ?></label><input type="text" name="name" required autocomplete="name" placeholder="<?php echo esc_attr( $TEXT['form_name_placeholder'] ); ?>" /></div>
-				<div class="sbtw-field field"><label><?php echo sbt_t1_text( 'TEXT.form_email', $TEXT['form_email'] ); ?></label><input type="email" name="email" required autocomplete="email" placeholder="<?php echo esc_attr( $TEXT['form_email_placeholder'] ); ?>" /></div>
-				<div class="sbtw-field field"><label><?php echo sbt_t1_text( 'TEXT.form_phone', $TEXT['form_phone'] ); ?></label><input type="tel" name="phone" autocomplete="tel" placeholder="<?php echo esc_attr( $TEXT['form_phone_placeholder'] ); ?>" /></div>
-				<div class="sbtw-field field"><label><?php echo sbt_t1_text( 'TEXT.form_message', $TEXT['form_message'] ); ?></label><textarea name="message" required placeholder="<?php echo esc_attr( $TEXT['form_message_placeholder'] ); ?>"></textarea></div>
-				<div class="sbtw-field field" style="position:absolute;left:-9999px;" aria-hidden="true"><label>Website</label><input type="text" name="website" tabindex="-1" autocomplete="off" /></div>
-				<button class="sbtw-btn btn" type="submit" style="align-self:flex-start;"><?php echo sbt_t1_text( 'TEXT.form_send', $TEXT['form_send'] ); ?></button>
-				<p class="form-result" aria-live="polite" style="display:none;color:var(--green);font-size:14px;"><?php echo sbt_t1_text( 'TEXT.form_result', $TEXT['form_result'], array( 'multiline' => true ) ); ?></p>
-			</form>
-		</div>
-	</div>
+<section class="sbtw-pad" data-screen-label="Contacts content">
+  <div class="sbtw-wrap">
+    <div class="sbtw-section-head sbtw-reveal" style="margin-bottom:56px;">
+      <div class="sbtw-overline">Get in touch</div>
+      <h2>Plan your stay with us</h2>
+      <p>For availability, tailored quotes or any request, we will be delighted to help. Reach us by phone, email or WhatsApp — or send a message using the form and we will reply as soon as possible.</p>
+    </div>
+    <div class="sbtw-contact-grid">
+      <div class="sbtw-contact-info sbtw-reveal">
+        <div class="sbtw-ci-block">
+          <div class="sbtw-overline">Address</div>
+          <p class="sbtw-big">Masseria Montefieno<br/>Conversano (Bari)<br/>Puglia, Italy</p>
+          <p style="margin-top:8px;"><a href="https://www.google.com/maps?q=Masseria+Montefieno+Conversano">Open in Google Maps →</a></p>
+        </div>
+        <div class="sbtw-ci-block">
+          <div class="sbtw-overline">Phone</div>
+          <p class="sbtw-big"><a href="tel:+393382507545">+39 338 250 7545</a></p>
+          <a class="sbtw-wa sbtw-wa--red" href="https://wa.me/393382507545" style="margin-top:18px;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#fff;"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2Zm5.6 14.2c-.2.6-1.2 1.2-1.7 1.2-.4 0-1 .1-3.1-.8-2.6-1.1-4.3-3.8-4.4-4-.1-.2-1-1.4-1-2.6 0-1.2.6-1.8.9-2 .2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.2.1.4.1.5-.1l.7-.9c.2-.2.4-.2.6-.1l1.9.9c.2.1.4.2.4.3.1.2.1.6 0 1Z"/></svg>Chat on WhatsApp</a>
+        </div>
+        <div class="sbtw-ci-block">
+          <div class="sbtw-overline">Email</div>
+          <p class="sbtw-big"><a href="mailto:masserialecerase@gmail.com">masserialecerase@gmail.com</a></p>
+        </div>
+      </div>
+      <form class="sbtw-contact-form sbtw-reveal" onsubmit="return false;">
+        <div class="sbtw-field"><label>Name</label><input type="text" placeholder="Your name" /></div>
+        <div class="sbtw-field"><label>Email</label><input type="email" placeholder="you@email.com" /></div>
+        <div class="sbtw-field"><label>Phone</label><input type="tel" placeholder="+39 ..." /></div>
+        <div class="sbtw-field"><label>Message</label><textarea placeholder="Tell us about your stay, dates and number of guests…"></textarea></div>
+        <button class="sbtw-btn" type="submit" style="align-self:flex-start;">Send message</button>
+      </form>
+    </div>
+  </div>
 </section>
 
 <section style="padding-bottom:0;" data-screen-label="Contacts map">
-	<?php if ( ! empty( $SITE['map_embed'] ) ) : ?>
-		<iframe class="sbtw-map-embed map-embed" src="<?php echo esc_url( $SITE['map_embed'] ); ?>" title="Map" loading="lazy"></iframe>
-		<?php echo sbt_t1_control( 'SITE.map_embed', $SITE['map_embed'], 'Map embed URL', 'url' ); ?>
-	<?php endif; ?>
+  <iframe class="sbtw-map-embed" src="https://www.google.com/maps?q=Masseria%20Montefieno%20Conversano&output=embed" title="Map" loading="lazy"></iframe>
 </section>
 
 <?php require __DIR__ . '/inc/footer.php'; ?>

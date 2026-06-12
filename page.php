@@ -1,5 +1,9 @@
 <?php
-$slug = function_exists( 'get_post_field' ) ? get_post_field( 'post_name', get_queried_object_id() ) : '';
+$post_id = get_queried_object_id();
+$slug = function_exists( 'sbt_page_base_slug_for_post' ) ? sbt_page_base_slug_for_post( $post_id ) : '';
+if ( '' === $slug && function_exists( 'get_post_field' ) ) {
+	$slug = get_post_field( 'post_name', $post_id );
+}
 $map = function_exists( 'sbt_page_templates' ) ? sbt_page_templates() : array();
 
 if ( isset( $map[ $slug ] ) ) {
@@ -12,21 +16,21 @@ require sbt_subtheme_path( 'inc/header.php' );
 ?>
 
 <?php while ( have_posts() ) : the_post(); ?>
-	<section class="page-hero" data-screen-label="WordPress page">
+	<section class="sbtw-page-hero" data-screen-label="WordPress page">
 		<?php if ( has_post_thumbnail() ) : ?>
-			<?php the_post_thumbnail( 'full', array( 'class' => 'bg' ) ); ?>
+			<?php the_post_thumbnail( 'full', array( 'class' => 'sbtw-bg' ) ); ?>
 		<?php endif; ?>
-		<div class="wrap">
-			<div class="overline"><?php echo esc_html( $SITE['name'] ?? get_bloginfo( 'name' ) ); ?></div>
+		<div class="sbtw-wrap">
+			<div class="sbtw-overline"><?php echo esc_html( $SITE['name'] ?? get_bloginfo( 'name' ) ); ?></div>
 			<h1><?php the_title(); ?></h1>
-			<nav class="crumb"><a href="<?php echo esc_url( home_url( '/' ) ); ?>">Home</a><span>/</span><?php the_title(); ?></nav>
+			<nav class="sbtw-crumb"><a href="<?php echo esc_url( home_url( '/' ) ); ?>">Home</a><span>/</span><?php the_title(); ?></nav>
 		</div>
 	</section>
 
-	<section class="pad">
-		<div class="wrap">
-			<div id="post-<?php the_ID(); ?>" <?php post_class( 'article body-text' ); ?>>
-				<div class="article-body">
+	<section class="sbtw-pad">
+		<div class="sbtw-wrap">
+			<div id="post-<?php the_ID(); ?>" <?php post_class( 'sbtw-article' ); ?>>
+				<div class="sbtw-article-body">
 					<?php
 					the_content();
 					wp_link_pages(
@@ -45,7 +49,7 @@ require sbt_subtheme_path( 'inc/header.php' );
 			}
 			if ( is_active_sidebar( 'sidebar-1' ) ) :
 				?>
-				<aside class="sidebar widget-area">
+				<aside class="sbtw-sidebar widget-area">
 					<?php dynamic_sidebar( 'sidebar-1' ); ?>
 				</aside>
 			<?php endif; ?>
