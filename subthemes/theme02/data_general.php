@@ -16,6 +16,9 @@ $SITE = [
   'name'      => 'Masseria Le Cerase',
   'tagline'   => 'A 17th-century Masseria in Puglia',
   'address'   => 'Via Martuccello n. 8<br>70014 Conversano (Bari)<br>Puglia, Italy',
+  'address_line_1' => 'Via Martuccello n. 8',
+  'address_line_2' => '70014 Conversano (Bari)',
+  'address_line_3' => 'Puglia, Italy',
   'phone1'    => '+39 338 250 7545',
   'phone1_t'  => '+393382507545',
   'email'     => 'masserialecerase@gmail.com',
@@ -50,8 +53,8 @@ $SITE = [
   'vat'       => 'IT08825490728',
   'cin'       => 'IT072019B400085362',
   'webdev'    => ['label' => 'SyncBooking', 'url' => 'https://syncbooking.com'],
-  'source_version' => '2.0.0',
-  'source_build_date' => '2026-06-08',
+  'source_version' => '2.1',
+  'source_build_date' => '2026-06-11',
 ];
 
 /* ---- IMAGES (by friendly key) ---- */
@@ -432,9 +435,9 @@ $C['house'] = [
 ];
 
 $C['whole'] = array_merge($C['house'], [
-  'title' => 'Whole Masseria - Masseria Le Cerase',
+  'title' => 'The Whole Masseria - Masseria Le Cerase',
   'over' => 'Exclusive use',
-  'h1' => 'Whole Masseria',
+  'h1' => 'The Whole Masseria',
   'banner' => $IMG['whole'],
   'intro_over' => 'The whole estate, only yours',
   'intro_h2' => 'Rent the entire<br>Masseria Le Cerase',

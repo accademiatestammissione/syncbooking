@@ -41,6 +41,9 @@ $SITE = array(
 	'phone2_t' => '+393206090558',
 	'email' => 'villarosasuites@gmail.com',
 	'address' => 'Viale P. Orlando, 1<br/>70014 Conversano (Bari)<br/>Puglia, Italy',
+	'address_line_1' => 'Viale P. Orlando, 1',
+	'address_line_2' => '70014 Conversano (Bari)',
+	'address_line_3' => 'Puglia, Italy',
 	'map' => 'https://maps.app.goo.gl/PjihQ243sU2ZcT4m9',
 	'map_embed' => 'https://www.google.com/maps?q=Villa%20Rosa%20Resort%20Conversano&output=embed',
 	'facebook' => 'https://www.facebook.com/villarosaresort/',
@@ -68,8 +71,8 @@ $SITE = array(
 	'cin' => 'IT072019B400085362',
 	'year' => '2026',
 	'webdev' => array( 'label' => 'SyncBooking', 'url' => 'https://syncbooking.com' ),
-	'source_version' => '1.0.2',
-	'source_build_date' => '2026-06-07',
+	'source_version' => '2.1',
+	'source_build_date' => '2026-06-11',
 );
 
 $NAV = array(
@@ -236,9 +239,9 @@ $SERVICES = array(
 );
 
 $C['entire'] = array(
-	'title' => 'Entire Villa - Villa Rosa Resort',
+	'title' => 'The Whole Villa - Villa Rosa Resort',
 	'over' => 'Exclusive rental',
-	'h1' => 'Entire Villa',
+	'h1' => 'The Whole Villa',
 	'banner' => $IMG['villa'],
 	'intro_over' => 'The whole property, just for you',
 	'intro_h2' => 'Rent Villa Rosa<br/>as one private retreat',
