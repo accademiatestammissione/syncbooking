@@ -23,6 +23,10 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 2.1.15 =
+* Fixed frontend gallery/lightbox controls so "Show all photos" and lightbox navigation use the asset CSS classes in both subthemes.
+* Tightened the mobile Pages tab card layout to prevent slight horizontal overflow.
+
 = 2.1.14 =
 * Renamed the unit-name setup to Unit titles and removed mixed-language examples from the admin copy.
 * Shows subtheme choices as Theme01, Theme02 and improves the mobile layout of the Pages tab.
