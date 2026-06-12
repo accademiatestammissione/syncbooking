@@ -23,6 +23,13 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 2.1.6 =
+* Added a frontend runtime bridge for imported HTML behavior, including carousels, reveal states, drawer, header scroll and back-to-top controls.
+* Regenerates compatibility CSS with original and unprefixed selectors when older generated CSS is detected.
+* Added protected Core pages for Home and Contacts in the Pages tab.
+* Converted remaining theme-admin labels and notices to English.
+* Protects Contacts from page disable actions.
+
 = 2.1.5 =
 * Improved General Settings copy for sellable structures and unit page names.
 * Moved email debugging recommendations into a dedicated admin status box.

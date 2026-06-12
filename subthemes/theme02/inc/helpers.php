@@ -40,7 +40,7 @@ if ( ! function_exists( 'sbt_t1_bg_style' ) ) {
 }
 
 if ( ! function_exists( 'sbt_t1_control' ) ) {
-	function sbt_t1_control( $path, $value, $label = 'Modifica', $type = 'text' ) {
+	function sbt_t1_control( $path, $value, $label = 'Edit', $type = 'text' ) {
 		return function_exists( 'sbt_vfe_control' ) ? sbt_vfe_control( $path, $value, $label, $type ) : '';
 	}
 }
