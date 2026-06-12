@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.17' );
+define( 'SBT_VERSION', '2.1.19' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -91,7 +91,7 @@ function sbt_widgets_init() {
 add_action( 'widgets_init', 'sbt_widgets_init' );
 
 function sbt_display_version() {
-	return 'V2.1.17';
+	return 'V2.1.19';
 }
 
 function sbt_enqueue_comment_reply() {
@@ -926,7 +926,90 @@ function sbt_editable_url_value( $url ) {
 	return set_url_scheme( home_url( '/' . ltrim( $url, '/' ) ), 'https' );
 }
 
+function sbt_url_parts_for_editing( $url ) {
+	$url = trim( (string) $url );
+	$hash_position = strpos( $url, '#' );
+	if ( false === $hash_position ) {
+		return array( $url, '' );
+	}
+
+	return array( substr( $url, 0, $hash_position ), substr( $url, $hash_position ) );
+}
+
+function sbt_theme_page_link_options() {
+	$options = array();
+	foreach ( sbt_page_templates() as $slug => $page ) {
+		$ref = $slug . '.php';
+		$options[ $ref ] = 'Theme page - ' . ( $page['title'] ?? ucwords( str_replace( '-', ' ', $slug ) ) );
+	}
+
+	return $options;
+}
+
+function sbt_canonical_theme_page_link_ref( $url ) {
+	list( $base, $hash ) = sbt_url_parts_for_editing( $url );
+	$map = sbt_page_map();
+
+	if ( isset( $map[ $base ] ) ) {
+		return sanitize_text_field( $map[ $base ] . '.php' . $hash );
+	}
+
+	if ( ! preg_match( '#^https?://#i', $base ) ) {
+		return '';
+	}
+
+	$current = untrailingslashit( set_url_scheme( $base, 'https' ) );
+	foreach ( sbt_page_templates() as $slug => $page ) {
+		foreach ( sbt_enabled_languages() as $language ) {
+			$page_url = untrailingslashit( set_url_scheme( sbt_theme_page_public_url( $slug, $language ), 'https' ) );
+			if ( $current === $page_url ) {
+				return sanitize_text_field( $slug . '.php' . $hash );
+			}
+		}
+	}
+
+	return '';
+}
+
+function sbt_link_target_control_value( $url ) {
+	$url = trim( (string) $url );
+	if ( '' === $url ) {
+		return '';
+	}
+
+	list( $base, $hash ) = sbt_url_parts_for_editing( $url );
+	if ( 'syncbooking:booking' === $base ) {
+		return sanitize_text_field( 'syncbooking:booking' . $hash );
+	}
+
+	if ( 0 === strpos( $base, 'post:' ) ) {
+		return sanitize_text_field( $base . $hash );
+	}
+
+	$page_ref = sbt_canonical_theme_page_link_ref( $url );
+	if ( $page_ref ) {
+		return $page_ref;
+	}
+
+	return sbt_editable_url_value( $url );
+}
+
 function sbt_sanitize_editable_url( $url ) {
+	$url = trim( (string) $url );
+	if ( '' === $url ) {
+		return '';
+	}
+
+	list( $base ) = sbt_url_parts_for_editing( $url );
+	$page_ref = sbt_canonical_theme_page_link_ref( $url );
+	if ( $page_ref ) {
+		return $page_ref;
+	}
+
+	if ( 'syncbooking:booking' === $base || 0 === strpos( $base, 'post:' ) ) {
+		return sanitize_text_field( $url );
+	}
+
 	$url = sbt_editable_url_value( $url );
 	return 0 === strpos( (string) $url, 'syncbooking:' ) ? sanitize_text_field( $url ) : esc_url_raw( $url );
 }
@@ -956,6 +1039,7 @@ function sbt_link_target_options() {
 	$options = array(
 		'syncbooking:booking' => 'SyncBooking booking page',
 	);
+	$options = array_merge( $options, sbt_theme_page_link_options() );
 	$posts = get_posts(
 		array(
 			'post_type'      => array( 'page', 'post' ),
@@ -979,7 +1063,7 @@ function sbt_link_target_options() {
 }
 
 function sbt_render_link_target_control( $name, $current ) {
-	$current = sbt_editable_url_value( $current );
+	$current = sbt_link_target_control_value( $current );
 	$options = sbt_link_target_options();
 	$has_current = isset( $options[ $current ] );
 	?>
@@ -4508,7 +4592,7 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 		<div class="sbt-grid">
 			<div class="sbt-card">
 				<h3>Assets online</h3>
-				<p class="sbt-muted">Assets are downloaded from the online assets.zip into WordPress uploads. No local fallback.</p>
+				<p class="sbt-muted">CSS, JavaScript, media and demo files are not bundled in the theme/plugin. They are downloaded only from the online assets.zip into WordPress uploads, with no local fallback, and the theme does not modify imported asset files.</p>
 				<p class="sbt-muted">Source: <code><?php echo esc_html( sbt_remote_assets_zip_url( sbt_active_subtheme_key() ) ); ?></code></p>
 				<?php if ( ! empty( $media_status['updated_at'] ) ) : ?>
 					<p class="sbt-muted">
