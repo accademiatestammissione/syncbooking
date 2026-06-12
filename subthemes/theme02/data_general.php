@@ -190,20 +190,24 @@ $ICON = [
   'tree'      => '<path d="M12 21v-7"/><circle cx="12" cy="9" r="6"/>',
   'wifi'      => '<path d="M5 12.5a10 10 0 0 1 14 0"/><path d="M8 15.5a6 6 0 0 1 8 0"/><circle cx="12" cy="19" r="1"/>',
   'kitchen'   => '<path d="M7 3v8M5 3v4a2 2 0 0 0 4 0V3M7 11v10"/><path d="M16 3c-1.5 1-2 3-2 5s.5 3 2 3 2-1 2-3-.5-4-2-5Zm0 8v10"/>',
+  'hall'      => '<path d="M5 9h14l-1.5 6a2 2 0 0 1-2 1.5H8.5a2 2 0 0 1-2-1.5Z"/><path d="M9 9V7a3 3 0 0 1 6 0v2M10 19v2M14 19v2"/>',
   'bbq'       => '<path d="M5 9h14l-1.5 6a2 2 0 0 1-2 1.5H8.5a2 2 0 0 1-2-1.5Z"/><path d="M9 9V7a3 3 0 0 1 6 0v2M10 19v2M14 19v2"/>',
   'car'       => '<path d="M4 15l1.5-5A2 2 0 0 1 7.4 8.6h9.2A2 2 0 0 1 18.5 10L20 15"/><path d="M3 15h18v3H3z"/><circle cx="7" cy="18" r="1.4"/><circle cx="17" cy="18" r="1.4"/>',
+  'fitness'   => '<path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/>',
   'party'     => '<path d="M12 3v18M5 8l7-5 7 5M5 8v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8"/>',
   'meeting'   => '<path d="M3 7h18v12H3zM3 7l9 6 9-6"/>',
 ];
 
 /* ---- SERVICES (Hospitality) ---- icon key, title, text ---- */
 $SERVICES = [
-  ['pool',    'Pool',             'Enjoy our pool surrounded by green countryside, perfect for relaxing and sunbathing.'],
-  ['tree',    'Countryside',      'Immerse yourself in the surrounding countryside of olive groves, cherry orchards and vineyards.'],
-  ['wifi',    'Wi-Fi',            'To be, if you want, always reachable across the whole property.'],
-  ['kitchen', 'Equipped Kitchen', 'The Masseria has an equipped kitchen, to prepare meals in complete autonomy.'],
-  ['bbq',     'BBQ',              'Enjoy our BBQ area — experience outdoor grilling in style.'],
-  ['car',     'Car Rental',       'A car rental service, to independently enjoy every corner of Puglia.'],
+  ['pool',    'Private Pool',    'A pool framed by a pergola and olive trees, reserved entirely for your party.'],
+  ['tree',    'Olive Groves',    'Acres of organic olive trees, cherry orchards and vineyards to wander freely.'],
+  ['hall',    'Vaulted Halls',   'Grand stone halls under historic vaults, for long dinners and gatherings.'],
+  ['wifi',    'Wi-Fi',           'Connectivity across the whole estate, for whenever you need it.'],
+  ['kitchen', 'Country Kitchen', 'A fully equipped kitchen under the vaults, for meals made with local produce.'],
+  ['bbq',     'Outdoor Dining',  'Long tables in the courtyard and garden, for slow days under the sun.'],
+  ['car',     'On request',      'Private chef, transfers and car rental arranged to make every part of Puglia yours.'],
+  ['fitness', 'Fitness Room',    'A private gym within the masseria, to stay active even on holiday.'],
 ];
 
 /* ---- APULIAN EXPERIENCE tiles ---- over, title, img key ---- */
