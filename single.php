@@ -19,9 +19,7 @@ while ( have_posts() ) :
 	<section class="pad" data-screen-label="Article body">
 		<div class="wrap">
 			<article id="post-<?php the_ID(); ?>" <?php post_class( 'article reveal' ); ?>>
-				<div class="overline"><?php echo esc_html( wp_strip_all_tags( get_the_category_list( ', ' ) ) ?: __( 'Article', 'syncbooking-hospitality' ) ); ?></div>
 				<h1 class="title"><?php the_title(); ?></h1>
-				<p class="meta"><?php echo esc_html( get_the_date() ); ?></p>
 				<div class="article-body">
 					<?php
 					the_content();
@@ -31,16 +29,9 @@ while ( have_posts() ) :
 							'after'  => '</nav>',
 						)
 					);
-					the_tags( '<p class="post-tags">', ', ', '</p>' );
 					?>
 				</div>
 			</article>
-			<?php
-			the_post_navigation();
-			if ( comments_open() || get_comments_number() ) {
-				comments_template();
-			}
-			?>
 		</div>
 	</section>
 

@@ -23,6 +23,14 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 2.1.5 =
+* Improved General Settings copy for sellable structures and unit page names.
+* Moved email debugging recommendations into a dedicated admin status box.
+* Hid the standard WordPress Pages sidebar menu while keeping theme-generated pages managed from SyncBooking Theme.
+* Made the Accommodation dropdown label link to the active sellable page, Entire Structure or Units.
+* Simplified seeded single article output by removing category/date meta and frontend comments.
+* Generates compatibility CSS as original imported CSS plus an unprefixed layer, so mixed prefixed/unprefixed templates render correctly in both Theme 01 and Theme 02.
+
 = 2.1.4 =
 * Added a generated WordPress compatibility CSS layer for imported prefixed assets/site.css files so the current PHP templates and online CSS match correctly.
 

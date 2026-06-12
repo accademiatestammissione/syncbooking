@@ -51,7 +51,7 @@ $WA_SVG = '<svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4
 		<?php foreach ( $NAV as $item ) : ?>
 			<?php if ( ! empty( $item['sub'] ) ) : ?>
 				<div class="has-sub">
-					<span class="top<?php echo $PAGE === $item['key'] ? ' current' : ''; ?>"><?php echo esc_html( $item['label'] ); ?> <i class="chev"></i></span>
+					<a class="top<?php echo $PAGE === $item['key'] ? ' current' : ''; ?>" href="<?php echo esc_url( sbt_t1_url( $item['url'] ) ); ?>"><?php echo esc_html( $item['label'] ); ?> <i class="chev"></i></a>
 					<div class="sub">
 						<?php foreach ( $item['sub'] as $sub_item ) : ?>
 							<?php if ( ! empty( $sub_item['divide'] ) ) : ?><div class="divider"></div><?php endif; ?>
