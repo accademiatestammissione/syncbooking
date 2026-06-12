@@ -23,6 +23,9 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 2.1.22 =
+* Sets the WordPress Reading defaults on initial setup: Home as the static homepage and Article as the posts page.
+
 = 2.1.21 =
 * Adds Theme03 / Masseria Montefieno with online assets.zip support.
 * Uses WordPress media picker controls for header and footer logos.
