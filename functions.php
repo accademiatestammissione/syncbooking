@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.19' );
+define( 'SBT_VERSION', '2.1.20' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -91,7 +91,7 @@ function sbt_widgets_init() {
 add_action( 'widgets_init', 'sbt_widgets_init' );
 
 function sbt_display_version() {
-	return 'V2.1.19';
+	return 'V2.1.20';
 }
 
 function sbt_enqueue_comment_reply() {
@@ -4304,13 +4304,15 @@ function sbt_render_admin_shell_start( $active_tab ) {
 	?>
 	<style>
 		.sbt-wrap { max-width: 1320px; }
+		.sbt-wrap,
+		.sbt-wrap * { box-sizing:border-box; }
 		.sbt-tabs { display:flex; gap:8px; margin:22px 0 18px; border-bottom:1px solid #dcdcde; }
 		.sbt-tab { border:1px solid transparent; border-bottom:0; color:#1d2327; display:inline-flex; font-weight:600; padding:12px 16px; text-decoration:none; }
 		.sbt-tab.is-active { background:#fff; border-color:#dcdcde; border-radius:6px 6px 0 0; margin-bottom:-1px; }
 		.sbt-panel { background:#fff; border:1px solid #dcdcde; border-radius:8px; padding:22px; }
 		.sbt-grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); }
 		.sbt-theme-grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); margin:18px 0; }
-		.sbt-card { border:1px solid #dcdcde; border-radius:8px; padding:18px; position:relative; }
+		.sbt-card { border:1px solid #dcdcde; border-radius:8px; max-width:100%; min-width:0; padding:18px; position:relative; }
 		.sbt-theme-card { align-items:flex-start; cursor:pointer; display:grid; gap:12px; grid-template-columns:auto 1fr; min-height:118px; }
 		.sbt-theme-card input { margin-top:4px; }
 		.sbt-theme-card__body { min-width:0; }
@@ -4318,6 +4320,10 @@ function sbt_render_admin_shell_start( $active_tab ) {
 		.sbt-theme-card__meta { color:#646970; display:block; font-size:13px; }
 		.sbt-card.is-selected { border-color:#2271b1; box-shadow:0 0 0 1px #2271b1; }
 		.sbt-card h3 { margin:0 0 8px; }
+		.sbt-card h3,
+		.sbt-card label,
+		.sbt-card p,
+		.sbt-card .sbt-muted { overflow-wrap:anywhere; }
 		.sbt-muted { color:#646970; }
 		.sbt-status { align-items:flex-start; border-radius:8px; display:flex; gap:12px; margin:16px 0; padding:14px 16px; }
 		.sbt-status strong { display:block; margin-bottom:3px; }
@@ -4331,9 +4337,20 @@ function sbt_render_admin_shell_start( $active_tab ) {
 		.sbt-reset-box h3 { margin:0 0 6px; }
 		.sbt-reset-box .button-link-delete { background:#fff; border:1px solid #d63638; border-radius:4px; color:#b32d2e; cursor:pointer; display:inline-flex; font-weight:600; min-height:32px; padding:5px 12px; text-decoration:none; }
 		.sbt-reset-box .button-link-delete:hover { background:#d63638; color:#fff; }
-		.sbt-field-grid { display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); }
+		.sbt-grid > *,
+		.sbt-field-grid > *,
+		.sbt-editor-block,
+		.sbt-editor-field { max-width:100%; min-width:0; }
+		.sbt-field-grid { display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); max-width:100%; min-width:0; }
 		.sbt-field label { display:block; font-weight:600; margin-bottom:6px; }
-		.sbt-field input, .sbt-field select, .sbt-field textarea { width:100%; }
+		.sbt-field input,
+		.sbt-field select,
+		.sbt-field textarea,
+		.sbt-editor-field input:not([type=checkbox]):not([type=radio]),
+		.sbt-editor-field select,
+		.sbt-editor-field textarea,
+		.sbt-card .large-text { max-width:100%; min-width:0; width:100%; }
+		.sbt-card select { text-overflow:ellipsis; }
 		.sbt-table { border-collapse:collapse; width:100%; }
 		.sbt-table th, .sbt-table td { border-bottom:1px solid #dcdcde; padding:12px; text-align:left; vertical-align:top; }
 		.sbt-menu-item { background:#f6f7f7; border:1px solid #dcdcde; border-radius:8px; margin:0 0 12px; padding:14px; }
@@ -4358,10 +4375,13 @@ function sbt_render_admin_shell_start( $active_tab ) {
 			.sbt-grid,
 			.sbt-theme-grid,
 			.sbt-field-grid,
-			.sbt-mode-grid { grid-template-columns:minmax(0,1fr); }
+			.sbt-mode-grid { max-width:100%; min-width:0; width:100%; grid-template-columns:minmax(0,1fr); }
 			.sbt-card,
 			.sbt-theme-card__body,
 			.sbt-field,
+			.sbt-field-grid > *,
+			.sbt-editor-block,
+			.sbt-editor-field,
 			.sbt-menu-item,
 			.sbt-submenu { min-width:0; }
 			.sbt-status { padding:12px; }
