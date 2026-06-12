@@ -23,6 +23,9 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 2.1.11 =
+* Moved the Theme 02 homepage Weddings & Events and Apulian Experience blocks after the masseria band and before the final stay CTA to match the source HTML order.
+
 = 2.1.10 =
 * Assets import now auto-starts or resumes in the background from General Settings when needed.
 * Completed zero-error assets imports are reused and do not download assets.zip again.
