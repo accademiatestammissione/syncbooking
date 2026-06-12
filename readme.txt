@@ -23,6 +23,9 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 2.1.17 =
+* Hides the Theme 02 homepage Whole Masseria exclusive-use block when Units to sell mode is selected.
+
 = 2.1.16 =
 * Removed technical field aliases such as title_1 and text_1 from the admin editor labels.
 * Translated remaining media editor buttons in the admin fields to English.

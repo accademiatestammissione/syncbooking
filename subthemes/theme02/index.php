@@ -101,6 +101,7 @@ if ( empty( $HOUSE_CARDS ) ) {
 </section>
 <?php endif; ?>
 
+<?php if ( function_exists( 'sbt_is_entire_rental_mode' ) && sbt_is_entire_rental_mode( 'theme02' ) ) : ?>
 <section class="sbtw-pad-s" id="whole-masseria" style="background:var(--surface);" data-screen-label="Whole masseria">
 	<div class="sbtw-wrap sbtw-two-col">
 		<?php sbt_t1_carousel( 'C.home.whole_gallery', $p['whole_gallery'], $p['whole_h2'], true, true ); ?>
@@ -115,6 +116,7 @@ if ( empty( $HOUSE_CARDS ) ) {
 		</div>
 	</div>
 </section>
+<?php endif; ?>
 
 <section class="sbtw-services sbtw-pad" id="services" data-screen-label="Services">
 	<div class="sbtw-wrap">
