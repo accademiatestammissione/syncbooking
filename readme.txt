@@ -19,9 +19,15 @@ This theme can display embedded video and maps when the site owner configures th
 * Vimeo player: used by the Villa Rosa Resort homepage video background. The configured Vimeo video id is used in an iframe from https://player.vimeo.com/. Vimeo privacy policy: https://vimeo.com/privacy
 * Theme 02 homepage video: loaded from the imported online assets package at assets/video/masseria.mp4.
 * Google Maps embed: used on contact pages when a map embed URL is configured. Google privacy policy: https://policies.google.com/privacy
-* Demo media import: when an administrator clicks "Download assets.zip online" in General Settings, the active subtheme assets.zip is downloaded from https://syncbooking.com/clone-theme/theme-01/assets.zip or https://syncbooking.com/clone-theme/theme-02/assets.zip into the local WordPress uploads directory. CSS, JavaScript, media and demo files are not bundled in the theme/plugin, there is no local fallback, and the theme does not modify imported asset files. The download, extraction and image registration are processed in small AJAX batches to avoid nginx/PHP timeout errors. No visitor data is sent by the theme for this import.
+* Demo media import: when an administrator clicks "Download assets.zip online" in General Settings, the active subtheme assets.zip is downloaded from https://syncbooking.com/clone-theme/theme-01/assets.zip, https://syncbooking.com/clone-theme/theme-02/assets.zip or https://syncbooking.com/clone-theme/theme-03/assets.zip into the local WordPress uploads directory. CSS, JavaScript, media and demo files are not bundled in the theme/plugin, there is no local fallback, and the theme does not modify imported asset files. The download, extraction and image registration are processed in small AJAX batches to avoid nginx/PHP timeout errors. No visitor data is sent by the theme for this import.
 
 == Changelog ==
+
+= 2.1.21 =
+* Adds Theme03 / Masseria Montefieno with online assets.zip support.
+* Uses WordPress media picker controls for header and footer logos.
+* Splits the footer address into three editable backend fields.
+* Tightens desktop admin grids so Unit titles stay inside their cards.
 
 = 2.1.20 =
 * Tightens the General Settings admin layout so Sellable structure and Unit titles fields fit inside cards on mobile.
@@ -64,7 +70,7 @@ This theme can display embedded video and maps when the site owner configures th
 * Simplified the Entire Structure dropdown to Entire Property, Entire Villa, Entire House and Entire Masseria.
 
 = 2.1.9 =
-* Uses original imported assets/site.css and assets/theme.js without generating compatibility CSS or appending theme JavaScript.
+* Uses original imported assets/site.css and assets/site.js without generating compatibility CSS or appending theme JavaScript.
 * Removes the extra bottom spacing and mobile back-to-top button from both subthemes.
 * Updates Theme 02 home to use the source HTML video asset.
 * Makes the Accommodation menu/listing slug follow the selected unit type: Rooms, Houses, Units or Apartments.
@@ -289,6 +295,6 @@ This theme can display embedded video and maps when the site owner configures th
 
 Bundled theme code: SyncBooking Theme, Copyright Accademia Test Ammissione, GPLv2 or later.
 
-No demo images, media, CSS or JavaScript assets are bundled in subthemes/theme01/assets or subthemes/theme02/assets. Theme assets are downloaded online from the configured assets.zip source for the active subtheme. The theme code must not edit or rewrite those imported asset files.
+No demo images, media, CSS or JavaScript assets are bundled in subthemes/theme01/assets, subthemes/theme02/assets or subthemes/theme03/assets. Theme assets are downloaded online from the configured assets.zip source for the active subtheme. The theme code must not edit or rewrite those imported asset files.
 
 No third-party font files are bundled. Font selections use local/system font stacks.

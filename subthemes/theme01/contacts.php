@@ -16,7 +16,7 @@ sbt_t1_page_hero( 'contacts', $p, 'Contacts' );
 			<div class="contact-info reveal">
 				<div class="ci-block">
 					<div class="overline"><?php echo sbt_t1_text( 'TEXT.address', $TEXT['address'] ); ?></div>
-					<p class="big"><?php echo $SITE['address']; ?></p>
+					<p class="big"><?php echo function_exists( 'sbt_site_address_html' ) ? sbt_site_address_html( $SITE ) : wp_kses_post( $SITE['address'] ?? '' ); ?></p>
 					<p style="margin-top:8px;"><a href="<?php echo esc_url( $SITE['map'] ); ?>"><?php echo sbt_t1_text( 'TEXT.open_maps', $TEXT['open_maps'] ); ?></a></p>
 				</div>
 				<div class="ci-block">

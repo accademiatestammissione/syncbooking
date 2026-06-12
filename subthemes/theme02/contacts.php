@@ -20,7 +20,7 @@
       <div class="contact-info reveal">
         <div class="ci-block">
           <div class="overline">Address</div>
-          <p class="big"><?php echo $SITE['address'] ?></p>
+          <p class="big"><?php echo function_exists( 'sbt_site_address_html' ) ? sbt_site_address_html( $SITE ) : wp_kses_post( $SITE['address'] ?? '' ); ?></p>
           <p style="margin-top:8px;"><a href="<?php echo $SITE['map'] ?>">Open in Google Maps &rarr;</a></p>
         </div>
         <div class="ci-block">

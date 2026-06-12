@@ -1,5 +1,5 @@
 <?php
-$THEME_JS_URL = function_exists( 'sbt_asset_url' ) ? sbt_asset_url( 'assets/theme.js' ) : 'assets/theme.js';
+$THEME_JS_URL = function_exists( 'sbt_asset_url' ) ? sbt_asset_url( 'assets/site.js' ) : 'assets/site.js';
 $THEME_JS_VERSION = defined( 'SBT_VERSION' ) ? SBT_VERSION : ( $SOURCE_VERSION ?? '1.0.0' );
 if ( function_exists( 'add_query_arg' ) ) {
 	$THEME_JS_URL = add_query_arg( 'ver', $THEME_JS_VERSION, $THEME_JS_URL );
@@ -16,7 +16,7 @@ if ( function_exists( 'add_query_arg' ) ) {
 			</div>
 			<div class="sbtw-reveal reveal">
 				<h4><?php echo esc_html( $SITE['name'] ); ?></h4>
-				<p><a href="<?php echo esc_url( $SITE['map'] ); ?>"><?php echo $SITE['address']; ?></a></p>
+				<p><a href="<?php echo esc_url( $SITE['map'] ); ?>"><?php echo function_exists( 'sbt_site_address_html' ) ? sbt_site_address_html( $SITE ) : wp_kses_post( $SITE['address'] ?? '' ); ?></a></p>
 			</div>
 			<div class="sbtw-reveal reveal">
 				<h4><?php echo esc_html( $TEXT['contacts'] ?? 'Contacts' ); ?></h4>
