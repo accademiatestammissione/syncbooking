@@ -23,6 +23,9 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 2.1.25 =
+* Organizes each subtheme into pages, single and readme folders.
+
 = 2.1.24 =
 * Organizes each subtheme into header, footer and functions folders.
 

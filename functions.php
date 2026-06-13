@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.24' );
+define( 'SBT_VERSION', '2.1.25' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -91,7 +91,7 @@ function sbt_widgets_init() {
 add_action( 'widgets_init', 'sbt_widgets_init' );
 
 function sbt_display_version() {
-	return 'V2.1.24';
+	return 'V2.1.25';
 }
 
 function sbt_enqueue_comment_reply() {
@@ -107,48 +107,48 @@ function sbt_subthemes() {
 			'label' => 'Villa Rosa Resort',
 			'dir'   => 'theme01',
 			'pages' => array(
-				'home'                => array( 'title' => 'Home', 'file' => 'index.php' ),
-				'villa'               => array( 'title' => 'Villa', 'file' => 'villa.php', 'content_key' => 'villa' ),
-				'houses'              => array( 'title' => 'Houses', 'file' => 'houses.php', 'content_key' => 'houses' ),
-				'whole-villa'         => array( 'title' => 'The Whole Villa', 'file' => 'entire.php', 'content_key' => 'entire' ),
-				'price-and-condition' => array( 'title' => 'Price & Condition', 'file' => 'price-and-condition.php', 'content_key' => 'price' ),
-				'spa-wellness'        => array( 'title' => 'SPA & Wellness', 'file' => 'spa-wellness.php', 'content_key' => 'spa' ),
-				'experiences'         => array( 'title' => 'Experiences', 'file' => 'experiences.php', 'content_key' => 'experiences' ),
-				'surroundings'        => array( 'title' => 'Surroundings', 'file' => 'surroundings.php', 'content_key' => 'surroundings' ),
-				'offers'              => array( 'title' => 'Offers', 'file' => 'offers.php', 'content_key' => 'offers' ),
-				'contacts'            => array( 'title' => 'Contacts', 'file' => 'contacts.php', 'content_key' => 'contacts' ),
+				'home'                => array( 'title' => 'Home', 'file' => 'pages/index.php' ),
+				'villa'               => array( 'title' => 'Villa', 'file' => 'pages/villa.php', 'content_key' => 'villa' ),
+				'houses'              => array( 'title' => 'Houses', 'file' => 'pages/houses.php', 'content_key' => 'houses' ),
+				'whole-villa'         => array( 'title' => 'The Whole Villa', 'file' => 'pages/entire.php', 'content_key' => 'entire' ),
+				'price-and-condition' => array( 'title' => 'Price & Condition', 'file' => 'pages/price-and-condition.php', 'content_key' => 'price' ),
+				'spa-wellness'        => array( 'title' => 'SPA & Wellness', 'file' => 'pages/spa-wellness.php', 'content_key' => 'spa' ),
+				'experiences'         => array( 'title' => 'Experiences', 'file' => 'pages/experiences.php', 'content_key' => 'experiences' ),
+				'surroundings'        => array( 'title' => 'Surroundings', 'file' => 'pages/surroundings.php', 'content_key' => 'surroundings' ),
+				'offers'              => array( 'title' => 'Offers', 'file' => 'pages/offers.php', 'content_key' => 'offers' ),
+				'contacts'            => array( 'title' => 'Contacts', 'file' => 'pages/contacts.php', 'content_key' => 'contacts' ),
 			),
 		),
 		'theme02' => array(
 			'label' => 'Masseria Le Cerase',
 			'dir'   => 'theme02',
 			'pages' => array(
-				'home'                => array( 'title' => 'Home', 'file' => 'index.php', 'content_key' => 'home' ),
-				'masseria'            => array( 'title' => 'The Masseria', 'file' => 'villa.php', 'content_key' => 'villa' ),
-				'rooms'               => array( 'title' => 'Rooms', 'file' => 'house.php', 'content_key' => 'house' ),
-				'whole-masseria'      => array( 'title' => 'The Whole Masseria', 'file' => 'whole-masseria.php', 'content_key' => 'whole' ),
-				'price-and-condition' => array( 'title' => 'Price & Condition', 'file' => 'price-and-condition.php', 'content_key' => 'price' ),
-				'spa-wellness'        => array( 'title' => 'SPA & Wellness', 'file' => 'spa-wellness.php', 'content_key' => 'spa' ),
-				'experiences'         => array( 'title' => 'Experiences', 'file' => 'experiences.php', 'content_key' => 'experiences' ),
-				'weddings'            => array( 'title' => 'Weddings', 'file' => 'weddings.php', 'content_key' => 'weddings' ),
-				'surroundings'        => array( 'title' => 'Surroundings', 'file' => 'surroundings.php', 'content_key' => 'surroundings' ),
-				'offers'              => array( 'title' => 'Offers', 'file' => 'offers.php', 'content_key' => 'offers' ),
-				'contacts'            => array( 'title' => 'Contacts', 'file' => 'contacts.php', 'content_key' => 'contacts' ),
+				'home'                => array( 'title' => 'Home', 'file' => 'pages/index.php', 'content_key' => 'home' ),
+				'masseria'            => array( 'title' => 'The Masseria', 'file' => 'pages/villa.php', 'content_key' => 'villa' ),
+				'rooms'               => array( 'title' => 'Rooms', 'file' => 'pages/house.php', 'content_key' => 'house' ),
+				'whole-masseria'      => array( 'title' => 'The Whole Masseria', 'file' => 'pages/whole-masseria.php', 'content_key' => 'whole' ),
+				'price-and-condition' => array( 'title' => 'Price & Condition', 'file' => 'pages/price-and-condition.php', 'content_key' => 'price' ),
+				'spa-wellness'        => array( 'title' => 'SPA & Wellness', 'file' => 'pages/spa-wellness.php', 'content_key' => 'spa' ),
+				'experiences'         => array( 'title' => 'Experiences', 'file' => 'pages/experiences.php', 'content_key' => 'experiences' ),
+				'weddings'            => array( 'title' => 'Weddings', 'file' => 'pages/weddings.php', 'content_key' => 'weddings' ),
+				'surroundings'        => array( 'title' => 'Surroundings', 'file' => 'pages/surroundings.php', 'content_key' => 'surroundings' ),
+				'offers'              => array( 'title' => 'Offers', 'file' => 'pages/offers.php', 'content_key' => 'offers' ),
+				'contacts'            => array( 'title' => 'Contacts', 'file' => 'pages/contacts.php', 'content_key' => 'contacts' ),
 			),
 		),
 		'theme03' => array(
 			'label' => 'Masseria Montefieno',
 			'dir'   => 'theme03',
 			'pages' => array(
-				'home'                => array( 'title' => 'Home', 'file' => 'index.php', 'content_key' => 'home' ),
-				'masseria'            => array( 'title' => 'The Masseria', 'file' => 'villa.php', 'content_key' => 'villa' ),
-				'rooms'               => array( 'title' => 'Bedrooms', 'file' => 'house.php', 'content_key' => 'house' ),
-				'whole-masseria'      => array( 'title' => 'The Whole Masseria', 'file' => 'whole-masseria.php', 'content_key' => 'whole' ),
-				'pool'                => array( 'title' => 'The Pool', 'file' => 'pool.php', 'content_key' => 'pool' ),
-				'farm'                => array( 'title' => 'The Farm', 'file' => 'farm.php', 'content_key' => 'farm' ),
-				'price-and-condition' => array( 'title' => 'Price & Condition', 'file' => 'price-and-condition.php', 'content_key' => 'price' ),
-				'surroundings'        => array( 'title' => 'Surroundings', 'file' => 'surroundings.php', 'content_key' => 'surroundings' ),
-				'contacts'            => array( 'title' => 'Contacts', 'file' => 'contacts.php', 'content_key' => 'contacts' ),
+				'home'                => array( 'title' => 'Home', 'file' => 'pages/index.php', 'content_key' => 'home' ),
+				'masseria'            => array( 'title' => 'The Masseria', 'file' => 'pages/villa.php', 'content_key' => 'villa' ),
+				'rooms'               => array( 'title' => 'Bedrooms', 'file' => 'pages/house.php', 'content_key' => 'house' ),
+				'whole-masseria'      => array( 'title' => 'The Whole Masseria', 'file' => 'pages/whole-masseria.php', 'content_key' => 'whole' ),
+				'pool'                => array( 'title' => 'The Pool', 'file' => 'pages/pool.php', 'content_key' => 'pool' ),
+				'farm'                => array( 'title' => 'The Farm', 'file' => 'pages/farm.php', 'content_key' => 'farm' ),
+				'price-and-condition' => array( 'title' => 'Price & Condition', 'file' => 'pages/price-and-condition.php', 'content_key' => 'price' ),
+				'surroundings'        => array( 'title' => 'Surroundings', 'file' => 'pages/surroundings.php', 'content_key' => 'surroundings' ),
+				'contacts'            => array( 'title' => 'Contacts', 'file' => 'pages/contacts.php', 'content_key' => 'contacts' ),
 			),
 		),
 	);
@@ -380,7 +380,7 @@ function sbt_entire_page_slug( $subtheme = '' ) {
 
 function sbt_entire_page_file( $subtheme = '' ) {
 	$subtheme = '' === $subtheme ? sbt_active_subtheme_key() : $subtheme;
-	return in_array( $subtheme, array( 'theme02', 'theme03' ), true ) ? 'whole-masseria.php' : 'entire.php';
+	return in_array( $subtheme, array( 'theme02', 'theme03' ), true ) ? 'pages/whole-masseria.php' : 'pages/entire.php';
 }
 
 function sbt_entire_nav_url( $subtheme = '' ) {
@@ -593,19 +593,19 @@ function sbt_page_templates() {
 	$listing_slug = sbt_unit_listing_slug( $subtheme_key );
 	$pages[ $listing_slug ] = array(
 		'title'       => sbt_unit_plural_label( $unit_label ),
-		'file'        => in_array( $subtheme_key, array( 'theme02', 'theme03' ), true ) ? 'house.php' : 'houses.php',
+		'file'        => in_array( $subtheme_key, array( 'theme02', 'theme03' ), true ) ? 'pages/house.php' : 'pages/houses.php',
 		'content_key' => in_array( $subtheme_key, array( 'theme02', 'theme03' ), true ) ? 'house' : 'houses',
 	);
 	foreach ( sbt_custom_house_pages( $subtheme_key ) as $house_page ) {
 		$pages[ $house_page['slug'] ] = array(
 			'title'         => $house_page['title'],
 			'file'          => $house_page['slug'] . '.php',
-			'template_file' => 'house-custom.php',
+			'template_file' => 'single/house-custom.php',
 			'content_key'   => $house_page['content_key'],
 			'custom_house'  => true,
 		);
 		if ( in_array( $subtheme_key, array( 'theme02', 'theme03' ), true ) ) {
-			$pages[ $house_page['slug'] ]['template_file'] = 'room-custom.php';
+			$pages[ $house_page['slug'] ]['template_file'] = 'single/room-custom.php';
 		}
 	}
 
@@ -680,7 +680,12 @@ function sbt_page_map() {
 	$map = array();
 	foreach ( sbt_page_templates() as $slug => $page ) {
 		$map[ $page['file'] ] = $slug;
+		$map[ basename( $page['file'] ) ] = $slug;
 		$map[ $slug . '.php' ] = $slug;
+		if ( ! empty( $page['template_file'] ) ) {
+			$map[ $page['template_file'] ] = $slug;
+			$map[ basename( $page['template_file'] ) ] = $slug;
+		}
 	}
 	return $map;
 }

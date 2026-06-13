@@ -30,4 +30,4 @@ if ( is_home() && ! is_front_page() ) {
 	return;
 }
 
-require sbt_subtheme_path( 'index.php' );
+require sbt_subtheme_path( 'pages/index.php' );
