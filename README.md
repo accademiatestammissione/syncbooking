@@ -12,11 +12,20 @@ When a new clean HTML package is provided for a subtheme, treat it as the absolu
 - Preserve the WordPress bridge features: options panel, multilingual content, visual editor, gallery modal, media downloader, page generation and WordPress.org compliance.
 - If the HTML package includes a version comment or version meta tags, expose the same source version/build date in the generated PHP pages.
 
-Current Theme 01 source package:
+Current subtheme source packages:
 
-- Path: `C:\SyncBookingTheme\syncbooking_source\sourcethemeHTML\theme01`
-- Source version: `2.1`
-- Build date: `2026-06-11`
+- Theme01 path: `C:\SyncBookingTheme\syncbooking_source\sourcethemeHTML\theme01`
+- Theme02 path: `C:\SyncBookingTheme\syncbooking_source\sourcethemeHTML\theme02`
+- Theme03 path: `C:\SyncBookingTheme\syncbooking_source\sourcethemeHTML\theme03`
+
+Each `subthemes/themeXX` folder keeps the same internal structure:
+
+- `header/` for the subtheme header and menu.
+- `footer/` for the subtheme footer and scripts loader.
+- `functions/` for subtheme helper functions.
+- `pages/` for page templates.
+- `single/` for generated unit/detail templates.
+- `readme/` for subtheme notes.
 
 ## Admin Editing
 
