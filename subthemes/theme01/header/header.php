@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../data_general.php';
-require_once __DIR__ . '/helpers.php';
+require_once __DIR__ . '/../functions/helpers.php';
 
 if ( ! isset( $PAGE ) ) {
 	$PAGE = '';

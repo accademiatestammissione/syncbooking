@@ -1,7 +1,7 @@
 <?php
 $PAGE = 'house';
 $PAGE_TITLE = 'Bedrooms – Masseria Montefieno';
-require __DIR__ . '/inc/header.php';
+require __DIR__ . '/header/header.php';
 ?>
 <section class="sbtw-page-hero" data-screen-label="Bedrooms banner">
   <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-10.jpg' ) ); ?>" alt="The bedrooms of Masseria Montefieno" />
@@ -133,4 +133,4 @@ require __DIR__ . '/inc/header.php';
   </div>
 </section>
 
-<?php require __DIR__ . '/inc/footer.php'; ?>
+<?php require __DIR__ . '/footer/footer.php'; ?>

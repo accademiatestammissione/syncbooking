@@ -1,7 +1,7 @@
 <?php
 $PAGE = 'contacts';
 $PAGE_TITLE = 'Contacts – Masseria Montefieno';
-require __DIR__ . '/inc/header.php';
+require __DIR__ . '/header/header.php';
 ?>
 <section class="sbtw-page-hero" data-screen-label="Contacts banner">
   <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-04.jpg' ) ); ?>" alt="Contacts" />
@@ -51,4 +51,4 @@ require __DIR__ . '/inc/header.php';
   <iframe class="sbtw-map-embed" src="https://www.google.com/maps?q=Masseria%20Montefieno%20Conversano&output=embed" title="Map" loading="lazy"></iframe>
 </section>
 
-<?php require __DIR__ . '/inc/footer.php'; ?>
+<?php require __DIR__ . '/footer/footer.php'; ?>

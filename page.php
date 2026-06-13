@@ -12,7 +12,7 @@ if ( isset( $map[ $slug ] ) ) {
 }
 
 $PAGE = '';
-require sbt_subtheme_path( 'inc/header.php' );
+require sbt_subtheme_path( 'header/header.php' );
 ?>
 
 <?php while ( have_posts() ) : the_post(); ?>
@@ -57,4 +57,4 @@ require sbt_subtheme_path( 'inc/header.php' );
 	</section>
 <?php endwhile; ?>
 
-<?php require sbt_subtheme_path( 'inc/footer.php' ); ?>
+<?php require sbt_subtheme_path( 'footer/footer.php' ); ?>

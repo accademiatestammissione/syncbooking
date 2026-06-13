@@ -1,7 +1,7 @@
 <?php
 $PAGE = 'home';
 $PAGE_TITLE = 'Villa Rosa Resort – An Apulia Villa';
-require __DIR__ . '/inc/header.php';
+require __DIR__ . '/header/header.php';
 ?>
 <!-- ============ HERO ============ -->
 <section class="sbtw-hero" id="top" data-screen-label="Hero">
@@ -282,4 +282,4 @@ require __DIR__ . '/inc/header.php';
   </div>
 </section>
 
-<?php require __DIR__ . '/inc/footer.php'; ?>
+<?php require __DIR__ . '/footer/footer.php'; ?>
