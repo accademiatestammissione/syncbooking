@@ -23,6 +23,9 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 2.1.24 =
+* Organizes each subtheme into header, footer and functions folders.
+
 = 2.1.23 =
 * Regenerates internal Theme01, Theme02 and Theme03 page templates from the uploaded HTML sources.
 * Resolves theme pages by their managed base slug before falling back to the WordPress post slug.

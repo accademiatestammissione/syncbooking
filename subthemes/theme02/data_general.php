@@ -5,7 +5,7 @@
    ------------------------------------------------------------
    Every text, link and image lives here. The page templates
    only read from these variables, so the whole site is
-   editable in one place. Loaded by inc/header.php on every page.
+   editable in one place. Loaded by header/header.php on every page.
    ============================================================ */
 
 /* Base URL of the media library — change once to repoint all images. */

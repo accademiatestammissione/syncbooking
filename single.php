@@ -1,6 +1,6 @@
 <?php
 $PAGE = 'experiences';
-require sbt_subtheme_path( 'inc/header.php' );
+require sbt_subtheme_path( 'header/header.php' );
 
 while ( have_posts() ) :
 	the_post();
@@ -44,4 +44,4 @@ while ( have_posts() ) :
 	</section>
 <?php endwhile; ?>
 
-<?php require sbt_subtheme_path( 'inc/footer.php' ); ?>
+<?php require sbt_subtheme_path( 'footer/footer.php' ); ?>

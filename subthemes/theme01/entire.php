@@ -1,7 +1,7 @@
 <?php
 $PAGE = 'whole-villa';
 $PAGE_TITLE = 'The Whole Villa – Villa Rosa Resort';
-require __DIR__ . '/inc/header.php';
+require __DIR__ . '/header/header.php';
 ?>
 <!-- ============ BANNER ============ -->
 <section class="sbtw-page-hero" data-screen-label="Whole Villa banner">
@@ -79,4 +79,4 @@ require __DIR__ . '/inc/header.php';
   </div>
 </section>
 
-<?php require __DIR__ . '/inc/footer.php'; ?>
+<?php require __DIR__ . '/footer/footer.php'; ?>

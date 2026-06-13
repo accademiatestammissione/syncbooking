@@ -1,7 +1,7 @@
 <?php
 $PAGE = 'whole-masseria';
 $PAGE_TITLE = 'The Whole Masseria – Masseria Le Cerase';
-require __DIR__ . '/inc/header.php';
+require __DIR__ . '/header/header.php';
 ?>
 <section class="sbtw-page-hero" data-screen-label="Whole masseria banner">
   <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/aerial-pool.jpg' ) ); ?>" alt="The whole estate of Masseria Le Cerase" />
@@ -86,4 +86,4 @@ require __DIR__ . '/inc/header.php';
   </div>
 </section>
 
-<?php require __DIR__ . '/inc/footer.php'; ?>
+<?php require __DIR__ . '/footer/footer.php'; ?>

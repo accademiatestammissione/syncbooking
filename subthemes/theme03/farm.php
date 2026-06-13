@@ -1,7 +1,7 @@
 <?php
 $PAGE = 'farm';
 $PAGE_TITLE = 'The Farm – Masseria Montefieno';
-require __DIR__ . '/inc/header.php';
+require __DIR__ . '/header/header.php';
 ?>
 <section class="sbtw-page-hero" data-screen-label="Farm banner">
   <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-27.jpg' ) ); ?>" alt="The olive grove of Masseria Montefieno" />
@@ -67,4 +67,4 @@ require __DIR__ . '/inc/header.php';
   </div>
 </section>
 
-<?php require __DIR__ . '/inc/footer.php'; ?>
+<?php require __DIR__ . '/footer/footer.php'; ?>

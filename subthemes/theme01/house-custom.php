@@ -1,7 +1,7 @@
 <?php
 $PAGE = 'house';
 $PAGE_TITLE = 'Houses for 2 – Villa Rosa Resort';
-require __DIR__ . '/inc/header.php';
+require __DIR__ . '/header/header.php';
 ?>
 <section class="sbtw-page-hero" data-screen-label="House for 2 banner">
   <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-085.jpg' ) ); ?>" alt="House for 2" />
@@ -82,4 +82,4 @@ require __DIR__ . '/inc/header.php';
   </div>
 </section>
 
-<?php require __DIR__ . '/inc/footer.php'; ?>
+<?php require __DIR__ . '/footer/footer.php'; ?>

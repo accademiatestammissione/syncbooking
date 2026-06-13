@@ -1,7 +1,7 @@
 <?php
 $PAGE = 'weddings';
 $PAGE_TITLE = 'Weddings – Masseria Le Cerase';
-require __DIR__ . '/inc/header.php';
+require __DIR__ . '/header/header.php';
 ?>
 <!-- ============ GALLERY ============ -->
 <section style="padding-top:92px;background:var(--surface);" data-screen-label="Weddings gallery">
@@ -283,4 +283,4 @@ require __DIR__ . '/inc/header.php';
 })();
 </script>
 
-<?php require __DIR__ . '/inc/footer.php'; ?>
+<?php require __DIR__ . '/footer/footer.php'; ?>

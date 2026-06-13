@@ -1,7 +1,7 @@
 <?php
 $PAGE = 'surroundings';
 $PAGE_TITLE = 'Surroundings – Masseria Montefieno';
-require __DIR__ . '/inc/header.php';
+require __DIR__ . '/header/header.php';
 ?>
 <section class="sbtw-page-hero" data-screen-label="Surroundings banner">
   <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-25.jpg' ) ); ?>" alt="The countryside around Masseria Montefieno" />
@@ -36,4 +36,4 @@ require __DIR__ . '/inc/header.php';
   </div>
 </section>
 
-<?php require __DIR__ . '/inc/footer.php'; ?>
+<?php require __DIR__ . '/footer/footer.php'; ?>

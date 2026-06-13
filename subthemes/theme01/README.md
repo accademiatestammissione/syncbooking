@@ -24,7 +24,8 @@ Every PHP page rendered by this subtheme must expose the source metadata through
 
 - Do not copy the original `.html` files into this folder.
 - Do not copy the source `uploads` folder into the WordPress theme.
-- Keep shared header/footer in `inc/header.php` and `inc/footer.php`.
+- Keep shared header/footer in `header/header.php` and `footer/footer.php`.
+- Keep shared subtheme helpers and partials in `functions/`.
 - Keep all editable default content in `data_general.php`.
 - Keep WordPress-specific visual edit controls and gallery modal support intact.
 - Keep large demo media handled through the media downloader/importer.

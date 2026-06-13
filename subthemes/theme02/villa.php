@@ -1,7 +1,7 @@
 <?php
 $PAGE = 'villa';
 $PAGE_TITLE = 'The Masseria – Masseria Le Cerase';
-require __DIR__ . '/inc/header.php';
+require __DIR__ . '/header/header.php';
 ?>
 <!-- ============ BANNER ============ -->
 <section class="sbtw-page-hero" data-screen-label="Villa banner">
@@ -94,4 +94,4 @@ require __DIR__ . '/inc/header.php';
   </div>
 </section>
 
-<?php require __DIR__ . '/inc/footer.php'; ?>
+<?php require __DIR__ . '/footer/footer.php'; ?>

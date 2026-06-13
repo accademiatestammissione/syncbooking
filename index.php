@@ -1,7 +1,7 @@
 <?php
 if ( is_home() && ! is_front_page() ) {
 	$PAGE = '';
-	require sbt_subtheme_path( 'inc/header.php' );
+	require sbt_subtheme_path( 'header/header.php' );
 	?>
 	<section class="sbtw-pad">
 		<div class="sbtw-wrap">
@@ -26,7 +26,7 @@ if ( is_home() && ! is_front_page() ) {
 		</div>
 	</section>
 	<?php
-	require sbt_subtheme_path( 'inc/footer.php' );
+	require sbt_subtheme_path( 'footer/footer.php' );
 	return;
 }
 
