@@ -1,4 +1,4 @@
-# SyncBooking Hospitality
+﻿# SyncBooking Hospitality
 
 WordPress theme with selectable hospitality subthemes, editable content, visual frontend edit controls and downloadable demo media.
 
@@ -49,7 +49,7 @@ Before packaging:
 - No PHP short echo tags.
 - No bundled `uploads` directory.
 - No bundled `subthemes/*/assets` directories.
-- Text domain must match the theme slug: `syncbooking-hospitality`.
+- Text domain must match the theme slug: `syncbooking_theme`.
 - Theme version in `style.css`, `readme.txt` and `SBT_VERSION` must move forward.
 - The zip must stay below the WordPress.org upload limit.
 - Online assets must be GPL-compatible or owner-approved before being published in `assets.zip`.

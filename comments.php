@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * Comments template.
  *
@@ -21,7 +21,7 @@ if ( post_password_required() ) {
 						'%1$s comments',
 						get_comments_number(),
 						'comments title',
-						'syncbooking-hospitality'
+						'syncbooking_theme'
 					)
 				),
 				esc_html( number_format_i18n( get_comments_number() ) )
@@ -47,7 +47,7 @@ if ( post_password_required() ) {
 	<?php
 	if ( ! comments_open() && get_comments_number() ) :
 		?>
-		<p class="no-comments"><?php esc_html_e( 'Comments are closed.', 'syncbooking-hospitality' ); ?></p>
+		<p class="no-comments"><?php esc_html_e( 'Comments are closed.', 'syncbooking_theme' ); ?></p>
 		<?php
 	endif;
 

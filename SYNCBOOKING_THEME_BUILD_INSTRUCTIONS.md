@@ -1,4 +1,4 @@
-# SyncBooking Hospitality Build Instructions
+﻿# SyncBooking Hospitality Build Instructions
 
 These instructions are part of the theme maintenance workflow and must be followed whenever a new clean HTML package is provided.
 
@@ -20,7 +20,7 @@ When a new Theme 01 or Theme 02 HTML package is loaded, refresh the WordPress su
 
 ## WordPress Conversion Rules
 
-- Keep WordPress.org theme requirements valid: no PHP short echo tags, matching text domain `syncbooking-hospitality`, valid `style.css` headers, escaped output, translatable admin text where appropriate, and consistent line endings.
+- Keep WordPress.org theme requirements valid: no PHP short echo tags, matching text domain `syncbooking_theme`, valid `style.css` headers, escaped output, translatable admin text where appropriate, and consistent line endings.
 - Keep the theme package below the WordPress.org upload size limit.
 - Do not bundle demo uploads or `subthemes/*/assets` directories in the theme zip; assets are downloaded online from the configured `assets.zip` through the progressive admin importer.
 - Preserve the admin editor system, Visual Edit pencil controls, Media Library image/gallery replacement, multilingual content, menu settings, and required SyncBooking plugin notice.
@@ -32,7 +32,7 @@ Every shipped update must:
 
 - Increase the theme version by one patch number.
 - Update `style.css`, `functions.php`, and `readme.txt`.
-- Rebuild the zip as `C:\SyncBookingTheme\syncbooking-hospitality-{version}.zip`.
+- Rebuild the zip as `C:\SyncBookingTheme\syncbooking_theme-{version}.zip`.
 - Keep build output under `C:\SyncBookingTheme\syncbooking_source\build`, not in a root-level `C:\SyncBookingTheme\build` folder.
 - At the end of the release, delete old build folders, old zip files, and previous-version package artifacts. Keep only the latest installable zip and the latest build output.
 - Run static checks for PHP short tags, line endings, bundled `subthemes/*/assets` directories, and unwanted `uploads` content.

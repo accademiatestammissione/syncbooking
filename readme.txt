@@ -23,6 +23,9 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 2.1.28 =
+* Renames the installable WordPress theme folder to syncbooking_theme and updates the package build root.
+
 = 2.1.27 =
 * Regenerates internal subtheme page templates from the uploaded HTML sources while preserving WordPress asset and URL helpers.
 
