@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 $PAGE = 'experiences';
 require sbt_subtheme_path( 'header/header.php' );
 
@@ -37,9 +37,9 @@ while ( have_posts() ) :
 
 	<section class="sbtw-band" style="<?php echo esc_attr( sbt_t1_bg_style( 'post.' . get_the_ID() . '.cta_bg', $IMG['a5'] ?? $hero ) ); ?>" data-screen-label="Article CTA">
 		<div class="sbtw-inner sbtw-reveal">
-			<div class="sbtw-overline"><?php esc_html_e( 'Design your days', 'syncbooking-hospitality' ); ?></div>
-			<h2><?php esc_html_e( 'Plan your experiences', 'syncbooking-hospitality' ); ?></h2>
-			<a class="sbtw-btn sbtw-btn--light" href="<?php echo esc_url( sbt_t1_url( 'contacts.php' ) ); ?>" style="margin-top:8px;"><?php esc_html_e( 'Contact us', 'syncbooking-hospitality' ); ?></a>
+			<div class="sbtw-overline"><?php esc_html_e( 'Design your days', 'syncbooking_theme' ); ?></div>
+			<h2><?php esc_html_e( 'Plan your experiences', 'syncbooking_theme' ); ?></h2>
+			<a class="sbtw-btn sbtw-btn--light" href="<?php echo esc_url( sbt_t1_url( 'contacts.php' ) ); ?>" style="margin-top:8px;"><?php esc_html_e( 'Contact us', 'syncbooking_theme' ); ?></a>
 		</div>
 	</section>
 <?php endwhile; ?>

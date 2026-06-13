@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * WordPress bridge for SyncBooking multi-subtheme package.
  *
@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.27' );
+define( 'SBT_VERSION', '2.1.28' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -44,10 +44,10 @@ function sbt_setup() {
 	);
 	register_nav_menus(
 		array(
-			'primary' => __( 'Primary Menu', 'syncbooking-hospitality' ),
+			'primary' => __( 'Primary Menu', 'syncbooking_theme' ),
 		)
 	);
-	load_theme_textdomain( 'syncbooking-hospitality', get_template_directory() . '/languages' );
+	load_theme_textdomain( 'syncbooking_theme', get_template_directory() . '/languages' );
 }
 add_action( 'after_setup_theme', 'sbt_setup' );
 
@@ -57,18 +57,18 @@ function sbt_register_block_assets() {
 			'core/button',
 			array(
 				'name'  => 'syncbooking-outline',
-				'label' => __( 'SyncBooking Outline', 'syncbooking-hospitality' ),
+				'label' => __( 'SyncBooking Outline', 'syncbooking_theme' ),
 			)
 		);
 	}
 
 	if ( function_exists( 'register_block_pattern' ) ) {
 		register_block_pattern(
-			'syncbooking-hospitality/intro',
+			'syncbooking_theme/intro',
 			array(
-				'title'      => __( 'Hospitality Intro', 'syncbooking-hospitality' ),
+				'title'      => __( 'Hospitality Intro', 'syncbooking_theme' ),
 				'categories' => array( 'text' ),
-				'content'    => '<!-- wp:paragraph --><p>' . esc_html__( 'Welcome to your hospitality experience.', 'syncbooking-hospitality' ) . '</p><!-- /wp:paragraph -->',
+				'content'    => '<!-- wp:paragraph --><p>' . esc_html__( 'Welcome to your hospitality experience.', 'syncbooking_theme' ) . '</p><!-- /wp:paragraph -->',
 			)
 		);
 	}
@@ -78,9 +78,9 @@ add_action( 'init', 'sbt_register_block_assets' );
 function sbt_widgets_init() {
 	register_sidebar(
 		array(
-			'name'          => __( 'Sidebar', 'syncbooking-hospitality' ),
+			'name'          => __( 'Sidebar', 'syncbooking_theme' ),
 			'id'            => 'sidebar-1',
-			'description'   => __( 'Fallback widget area for standard WordPress pages and posts.', 'syncbooking-hospitality' ),
+			'description'   => __( 'Fallback widget area for standard WordPress pages and posts.', 'syncbooking_theme' ),
 			'before_widget' => '<section id="%1$s" class="widget %2$s">',
 			'after_widget'  => '</section>',
 			'before_title'  => '<h2 class="widget-title">',
@@ -91,7 +91,7 @@ function sbt_widgets_init() {
 add_action( 'widgets_init', 'sbt_widgets_init' );
 
 function sbt_display_version() {
-	return 'V2.1.27';
+	return 'V2.1.28';
 }
 
 function sbt_enqueue_comment_reply() {
@@ -551,7 +551,7 @@ function sbt_demo_media_url( $relative, $subtheme_key = '' ) {
 
 function sbt_enqueue_theme_fonts() {
 	wp_enqueue_style(
-		'syncbooking-hospitality-fonts',
+		'syncbooking_theme-fonts',
 		'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap',
 		array(),
 		null
@@ -735,9 +735,9 @@ function sbt_form_runtime_config() {
 		'action'  => 'sbt_submit_form',
 		'nonce'   => wp_create_nonce( 'sbt_submit_form' ),
 		'i18n'    => array(
-			'sending' => __( 'Sending...', 'syncbooking-hospitality' ),
-			'success' => __( 'Thank you, your request has been sent. We will contact you shortly.', 'syncbooking-hospitality' ),
-			'error'   => __( 'We could not send the request. Please try again or contact us directly.', 'syncbooking-hospitality' ),
+			'sending' => __( 'Sending...', 'syncbooking_theme' ),
+			'success' => __( 'Thank you, your request has been sent. We will contact you shortly.', 'syncbooking_theme' ),
+			'error'   => __( 'We could not send the request. Please try again or contact us directly.', 'syncbooking_theme' ),
 		),
 	);
 }
@@ -792,12 +792,12 @@ function sbt_site_address_line_value( $site, $line ) {
 
 function sbt_handle_form_submission() {
 	if ( ! check_ajax_referer( 'sbt_submit_form', 'nonce', false ) ) {
-		wp_send_json_error( array( 'message' => __( 'Security check failed.', 'syncbooking-hospitality' ) ), 403 );
+		wp_send_json_error( array( 'message' => __( 'Security check failed.', 'syncbooking_theme' ) ), 403 );
 	}
 
 	$honeypot = isset( $_POST['website'] ) ? trim( (string) wp_unslash( $_POST['website'] ) ) : '';
 	if ( '' !== $honeypot ) {
-		wp_send_json_success( array( 'message' => __( 'Thank you, your request has been sent. We will contact you shortly.', 'syncbooking-hospitality' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Thank you, your request has been sent. We will contact you shortly.', 'syncbooking_theme' ) ) );
 	}
 
 	$form_type = isset( $_POST['form_type'] ) ? sanitize_key( wp_unslash( $_POST['form_type'] ) ) : 'contact';
@@ -811,7 +811,7 @@ function sbt_handle_form_submission() {
 	}
 
 	if ( '' === $name || ! is_email( $email ) ) {
-		wp_send_json_error( array( 'message' => __( 'Please enter a valid name and email address.', 'syncbooking-hospitality' ) ), 400 );
+		wp_send_json_error( array( 'message' => __( 'Please enter a valid name and email address.', 'syncbooking_theme' ) ), 400 );
 	}
 
 	$payload = array(
@@ -826,8 +826,8 @@ function sbt_handle_form_submission() {
 	$recipient = sbt_form_recipient_email();
 	$subject = sprintf(
 		/* translators: 1: form type, 2: sender name */
-		__( 'New %1$s from %2$s', 'syncbooking-hospitality' ),
-		'quote' === $form_type ? __( 'wedding quote request', 'syncbooking-hospitality' ) : __( 'contact request', 'syncbooking-hospitality' ),
+		__( 'New %1$s from %2$s', 'syncbooking_theme' ),
+		'quote' === $form_type ? __( 'wedding quote request', 'syncbooking_theme' ) : __( 'contact request', 'syncbooking_theme' ),
 		$name
 	);
 	$body = implode(
@@ -850,7 +850,7 @@ function sbt_handle_form_submission() {
 	if ( ! $mail_sent ) {
 		wp_send_json_error(
 			array(
-				'message' => __( 'The email could not be sent. Please check WordPress mail settings or install a SMTP plugin.', 'syncbooking-hospitality' ),
+				'message' => __( 'The email could not be sent. Please check WordPress mail settings or install a SMTP plugin.', 'syncbooking_theme' ),
 			),
 			500
 		);
@@ -858,7 +858,7 @@ function sbt_handle_form_submission() {
 
 	wp_send_json_success(
 		array(
-			'message' => __( 'Thank you, your request has been sent. We will contact you shortly.', 'syncbooking-hospitality' ),
+			'message' => __( 'Thank you, your request has been sent. We will contact you shortly.', 'syncbooking_theme' ),
 		)
 	);
 }
@@ -1227,7 +1227,7 @@ function sbt_count_files_in_directory( $directory ) {
 }
 
 function sbt_download_remote_assets_zip( $subtheme_key = '' ) {
-	return new WP_Error( 'sbt_progressive_import_required', __( 'Use the progressive assets importer from General Settings. Assets are downloaded and extracted in small steps to avoid server timeouts.', 'syncbooking-hospitality' ) );
+	return new WP_Error( 'sbt_progressive_import_required', __( 'Use the progressive assets importer from General Settings. Assets are downloaded and extracted in small steps to avoid server timeouts.', 'syncbooking_theme' ) );
 }
 
 function sbt_assets_import_job_option( $subtheme_key ) {
@@ -1319,7 +1319,7 @@ function sbt_assets_import_collect_files( $directory ) {
 function sbt_assets_import_prepare_extract( &$job ) {
 	$zip = new ZipArchive();
 	if ( true !== $zip->open( $job['zip_path'] ) ) {
-		return new WP_Error( 'sbt_zip_open_failed', __( 'The downloaded assets.zip could not be opened.', 'syncbooking-hospitality' ) );
+		return new WP_Error( 'sbt_zip_open_failed', __( 'The downloaded assets.zip could not be opened.', 'syncbooking_theme' ) );
 	}
 
 	$job['stage'] = 'extract';
@@ -1386,16 +1386,16 @@ function sbt_assets_import_download_step( &$job ) {
 
 	$code = absint( wp_remote_retrieve_response_code( $response ) );
 	if ( 206 !== $code ) {
-		return new WP_Error( 'sbt_range_not_supported', __( 'The online assets.zip server must support HTTP byte ranges for the progressive importer.', 'syncbooking-hospitality' ) );
+		return new WP_Error( 'sbt_range_not_supported', __( 'The online assets.zip server must support HTTP byte ranges for the progressive importer.', 'syncbooking_theme' ) );
 	}
 
 	$body = wp_remote_retrieve_body( $response );
 	if ( '' === $body ) {
-		return new WP_Error( 'sbt_empty_range', __( 'The online assets.zip returned an empty chunk.', 'syncbooking-hospitality' ) );
+		return new WP_Error( 'sbt_empty_range', __( 'The online assets.zip returned an empty chunk.', 'syncbooking_theme' ) );
 	}
 
 	if ( false === file_put_contents( $job['zip_path'], $body, FILE_APPEND | LOCK_EX ) ) {
-		return new WP_Error( 'sbt_zip_write_failed', __( 'The assets.zip chunk could not be written to uploads.', 'syncbooking-hospitality' ) );
+		return new WP_Error( 'sbt_zip_write_failed', __( 'The assets.zip chunk could not be written to uploads.', 'syncbooking_theme' ) );
 	}
 
 	$content_range = wp_remote_retrieve_header( $response, 'content-range' );
@@ -1419,7 +1419,7 @@ function sbt_assets_import_download_step( &$job ) {
 function sbt_assets_import_extract_step( &$job ) {
 	$zip = new ZipArchive();
 	if ( true !== $zip->open( $job['zip_path'] ) ) {
-		return new WP_Error( 'sbt_zip_open_failed', __( 'The downloaded assets.zip could not be opened.', 'syncbooking-hospitality' ) );
+		return new WP_Error( 'sbt_zip_open_failed', __( 'The downloaded assets.zip could not be opened.', 'syncbooking_theme' ) );
 	}
 
 	$batch = max( 1, absint( apply_filters( 'sbt_assets_import_extract_batch', SBT_ASSETS_IMPORT_EXTRACT_BATCH ) ) );
@@ -1552,17 +1552,17 @@ function sbt_assets_import_resume_job( $subtheme_key ) {
 function sbt_ajax_start_assets_import() {
 	check_ajax_referer( 'sbt_assets_import', 'nonce' );
 	if ( ! current_user_can( 'edit_theme_options' ) ) {
-		sbt_assets_import_error_response( __( 'You are not allowed to import assets.', 'syncbooking-hospitality' ) );
+		sbt_assets_import_error_response( __( 'You are not allowed to import assets.', 'syncbooking_theme' ) );
 	}
 
 	if ( ! class_exists( 'ZipArchive' ) ) {
-		sbt_assets_import_error_response( __( 'The PHP ZipArchive extension is required to import assets.zip.', 'syncbooking-hospitality' ) );
+		sbt_assets_import_error_response( __( 'The PHP ZipArchive extension is required to import assets.zip.', 'syncbooking_theme' ) );
 	}
 
 	$key = isset( $_POST['subtheme'] ) ? sanitize_key( wp_unslash( $_POST['subtheme'] ) ) : sbt_active_subtheme_key();
 	$url = sbt_remote_assets_zip_url( $key );
 	if ( ! $url ) {
-		sbt_assets_import_error_response( __( 'No remote assets.zip is configured for this subtheme.', 'syncbooking-hospitality' ) );
+		sbt_assets_import_error_response( __( 'No remote assets.zip is configured for this subtheme.', 'syncbooking_theme' ) );
 	}
 
 	if ( sbt_assets_import_completed( $key ) ) {
@@ -1572,7 +1572,7 @@ function sbt_ajax_start_assets_import() {
 			'url'      => $url,
 			'stage'    => 'complete',
 		);
-		wp_send_json_success( sbt_assets_import_response_data( $job, __( 'Assets already imported. No new download needed.', 'syncbooking-hospitality' ), true ) );
+		wp_send_json_success( sbt_assets_import_response_data( $job, __( 'Assets already imported. No new download needed.', 'syncbooking_theme' ), true ) );
 	}
 
 	$uploads = wp_get_upload_dir();
@@ -1587,7 +1587,7 @@ function sbt_ajax_start_assets_import() {
 
 	$old_job = sbt_assets_import_resume_job( $key );
 	if ( $old_job ) {
-		wp_send_json_success( sbt_assets_import_response_data( $old_job, __( 'Resuming assets import in the background.', 'syncbooking-hospitality' ) ) );
+		wp_send_json_success( sbt_assets_import_response_data( $old_job, __( 'Resuming assets import in the background.', 'syncbooking_theme' ) ) );
 	}
 
 	$job_id = wp_generate_password( 16, false, false );
@@ -1622,35 +1622,35 @@ function sbt_ajax_start_assets_import() {
 	);
 	update_option( sbt_assets_import_job_option( $key ), $job, false );
 
-	wp_send_json_success( sbt_assets_import_response_data( $job, __( 'assets.zip download started.', 'syncbooking-hospitality' ) ) );
+	wp_send_json_success( sbt_assets_import_response_data( $job, __( 'assets.zip download started.', 'syncbooking_theme' ) ) );
 }
 add_action( 'wp_ajax_sbt_start_assets_import', 'sbt_ajax_start_assets_import' );
 
 function sbt_ajax_step_assets_import() {
 	check_ajax_referer( 'sbt_assets_import', 'nonce' );
 	if ( ! current_user_can( 'edit_theme_options' ) ) {
-		sbt_assets_import_error_response( __( 'You are not allowed to import assets.', 'syncbooking-hospitality' ) );
+		sbt_assets_import_error_response( __( 'You are not allowed to import assets.', 'syncbooking_theme' ) );
 	}
 
 	$key = isset( $_POST['subtheme'] ) ? sanitize_key( wp_unslash( $_POST['subtheme'] ) ) : sbt_active_subtheme_key();
 	$job = get_option( sbt_assets_import_job_option( $key ), array() );
 	$job_id = isset( $_POST['job_id'] ) ? sanitize_text_field( wp_unslash( $_POST['job_id'] ) ) : '';
 	if ( empty( $job ) || empty( $job['id'] ) || $job['id'] !== $job_id ) {
-		sbt_assets_import_error_response( __( 'Import job not found. Please start again.', 'syncbooking-hospitality' ) );
+		sbt_assets_import_error_response( __( 'Import job not found. Please start again.', 'syncbooking_theme' ) );
 	}
 
 	if ( 'download' === $job['stage'] ) {
 		$result = sbt_assets_import_download_step( $job );
-		$message = __( 'Downloading assets.zip...', 'syncbooking-hospitality' );
+		$message = __( 'Downloading assets.zip...', 'syncbooking_theme' );
 	} elseif ( 'extract' === $job['stage'] ) {
 		$result = sbt_assets_import_extract_step( $job );
-		$message = __( 'Extracting assets...', 'syncbooking-hospitality' );
+		$message = __( 'Extracting assets...', 'syncbooking_theme' );
 	} elseif ( 'register' === $job['stage'] ) {
 		$result = sbt_assets_import_register_step( $job );
-		$message = __( 'Registering images in the Media Library...', 'syncbooking-hospitality' );
+		$message = __( 'Registering images in the Media Library...', 'syncbooking_theme' );
 	} else {
 		$result = true;
-		$message = __( 'Assets import completed.', 'syncbooking-hospitality' );
+		$message = __( 'Assets import completed.', 'syncbooking_theme' );
 	}
 
 	if ( is_wp_error( $result ) ) {
@@ -1660,7 +1660,7 @@ function sbt_ajax_step_assets_import() {
 	$job['updated_at'] = current_time( 'mysql' );
 	if ( 'complete' === $job['stage'] ) {
 		sbt_assets_import_finish( $job );
-		wp_send_json_success( sbt_assets_import_response_data( $job, __( 'Assets import completed.', 'syncbooking-hospitality' ), true ) );
+		wp_send_json_success( sbt_assets_import_response_data( $job, __( 'Assets import completed.', 'syncbooking_theme' ), true ) );
 	}
 
 	update_option( sbt_assets_import_job_option( $key ), $job, false );
