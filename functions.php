@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.28' );
+define( 'SBT_VERSION', '2.1.29' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
@@ -91,7 +91,7 @@ function sbt_widgets_init() {
 add_action( 'widgets_init', 'sbt_widgets_init' );
 
 function sbt_display_version() {
-	return 'V2.1.28';
+	return 'V2.1.29';
 }
 
 function sbt_enqueue_comment_reply() {
@@ -892,6 +892,73 @@ function sbt_url( $url ) {
 
 	return $url;
 }
+
+function sbt_uploaded_html_alias_map() {
+	return array(
+		'home.html'                => sbt_url( 'index.php' ),
+		'index.html'               => sbt_url( 'index.php' ),
+		'villa.html'               => sbt_url( 'villa.php' ),
+		'masseria.html'            => sbt_url( 'villa.php' ),
+		'houses.html'              => sbt_url( 'houses.php' ),
+		'rooms.html'               => sbt_url( 'house.php' ),
+		'whole-villa.html'         => sbt_url( 'entire.php' ),
+		'whole-masseria.html'      => sbt_url( 'whole-masseria.php' ),
+		'price-and-condition.html' => sbt_url( 'price-and-condition.php' ),
+		'spa-wellness.html'        => sbt_url( 'spa-wellness.php' ),
+		'experiences.html'         => sbt_url( 'experiences.php' ),
+		'weddings.html'            => sbt_url( 'weddings.php' ),
+		'surroundings.html'        => sbt_url( 'surroundings.php' ),
+		'offers.html'              => sbt_url( 'offers.php' ),
+		'contacts.html'            => sbt_url( 'contacts.php' ),
+		'pool.html'                => sbt_url( 'pool.php' ),
+		'farm.html'                => sbt_url( 'farm.php' ),
+	);
+}
+
+function sbt_uploaded_asset_query_vars( $vars ) {
+	$vars[] = 'sbt_uploaded_asset';
+	$vars[] = 'sbt_uploaded_html_alias';
+	return $vars;
+}
+add_filter( 'query_vars', 'sbt_uploaded_asset_query_vars' );
+
+function sbt_uploaded_asset_rewrite_rules() {
+	add_rewrite_rule( '^assets/(.+)$', 'index.php?sbt_uploaded_asset=$matches[1]', 'top' );
+	add_rewrite_rule( '^([A-Za-z0-9-]+)\.html$', 'index.php?sbt_uploaded_html_alias=$matches[1].html', 'top' );
+}
+add_action( 'init', 'sbt_uploaded_asset_rewrite_rules' );
+
+function sbt_maybe_flush_uploaded_asset_rewrite_rules() {
+	if ( get_option( 'sbt_uploaded_asset_rewrite_version' ) === SBT_VERSION ) {
+		return;
+	}
+
+	sbt_uploaded_asset_rewrite_rules();
+	flush_rewrite_rules( false );
+	update_option( 'sbt_uploaded_asset_rewrite_version', SBT_VERSION, false );
+}
+add_action( 'after_switch_theme', 'sbt_maybe_flush_uploaded_asset_rewrite_rules' );
+add_action( 'admin_init', 'sbt_maybe_flush_uploaded_asset_rewrite_rules' );
+
+function sbt_handle_uploaded_asset_compat_redirects() {
+	$asset = get_query_var( 'sbt_uploaded_asset' );
+	if ( $asset ) {
+		$asset = ltrim( str_replace( '\\', '/', sanitize_text_field( wp_unslash( $asset ) ) ), '/' );
+		wp_redirect( sbt_asset_url( 'assets/' . $asset ), 302 );
+		exit;
+	}
+
+	$alias = get_query_var( 'sbt_uploaded_html_alias' );
+	if ( $alias ) {
+		$alias = sanitize_file_name( wp_unslash( $alias ) );
+		$map = sbt_uploaded_html_alias_map();
+		if ( isset( $map[ $alias ] ) ) {
+			wp_safe_redirect( $map[ $alias ], 302 );
+			exit;
+		}
+	}
+}
+add_action( 'template_redirect', 'sbt_handle_uploaded_asset_compat_redirects' );
 
 function sbt_seed_post_id( $seed_slug, $language = '' ) {
 	$seed_slug = sanitize_title( $seed_slug );
