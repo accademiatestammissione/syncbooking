@@ -86,7 +86,7 @@ require __DIR__ . '/../header/header.php';
 </section>
 
 <!-- ============ BAND CTA ============ -->
-<section class="sbtw-band" style="background-image:url('<?php echo esc_url( sbt_asset_url( 'assets/images/mf-22.jpg' ) ); ?>');" data-screen-label="Masseria CTA">
+<section class="sbtw-band" style="background-image:url('<?php echo esc_url( sbt_asset_url( 'assets/images/mf-06.jpg' ) ); ?>');" data-screen-label="Masseria CTA">
   <div class="sbtw-inner sbtw-reveal">
     <div class="sbtw-overline">Your private retreat awaits</div>
     <h2>Stay at Masseria Montefieno</h2>

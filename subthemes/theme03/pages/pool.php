@@ -43,7 +43,7 @@ require __DIR__ . '/../header/header.php';
     <div class="sbtw-gallery">
       <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-20.jpg' ) ); ?>" alt="The pool through the branches" />
       <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-11.jpg' ) ); ?>" alt="Loungers in the olive garden" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-22.jpg' ) ); ?>" alt="The pool by night" />
+      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-18.jpg' ) ); ?>" alt="The pool and the pergola" />
     </div>
   </div>
 </section>

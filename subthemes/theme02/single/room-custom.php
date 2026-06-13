@@ -1,5 +1,5 @@
 <?php
-$PAGE = 'room';
+$PAGE = 'houses';
 $PAGE_TITLE = 'Camera degli Ulivi – Masseria Le Cerase';
 require __DIR__ . '/../header/header.php';
 ?>
