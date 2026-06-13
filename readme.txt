@@ -23,6 +23,9 @@ This theme can display embedded video and maps when the site owner configures th
 
 == Changelog ==
 
+= 2.1.27 =
+* Regenerates internal subtheme page templates from the uploaded HTML sources while preserving WordPress asset and URL helpers.
+
 = 2.1.26 =
 * Lets the original uploaded subtheme site.js own header, footer, drawer and lightbox rendering while PHP only loads site.css and site.js from assets.
 

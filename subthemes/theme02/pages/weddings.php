@@ -213,7 +213,6 @@ require __DIR__ . '/../header/header.php';
     <a class="sbtw-btn sbtw-btn--light" href="<?php echo esc_url( sbt_t1_url( 'contacts.php' ) ); ?>" style="margin-top:8px;">Request information</a>
   </div>
 </section>
-
 <!-- ============ MOBILE CONTACT BAR ============ -->
 <div class="sbtw-w-mbar" data-screen-label="Mobile contact bar">
   <div class="sbtw-w-mbar-txt"><b>Dreaming of a wedding in the Masseria?</b></div>
@@ -267,9 +266,10 @@ require __DIR__ . '/../header/header.php';
   if(form)form.addEventListener('submit',function(e){e.preventDefault();form.hidden=true;ok.hidden=false;});
 })();
 (function(){
+  var albumBase = '<?php echo esc_url( sbt_asset_url( 'assets/images/' ) ); ?>';
   [].slice.call(document.querySelectorAll('.sbtw-w-rev[data-album]')).forEach(function(card){
     card.addEventListener('click', function(){
-      var srcs = card.getAttribute('data-album').split('|').map(function(n){ return 'assets/images/' + n + '.jpg'; });
+      var srcs = card.getAttribute('data-album').split('|').map(function(n){ return albumBase + n + '.jpg'; });
       if(window.sbtwOpenAlbum) window.sbtwOpenAlbum(srcs, 0);
     });
   });

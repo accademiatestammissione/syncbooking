@@ -1,5 +1,5 @@
 <?php
-$PAGE = 'house';
+$PAGE = 'houses';
 $PAGE_TITLE = 'Houses for 2 – Villa Rosa Resort';
 require __DIR__ . '/../header/header.php';
 ?>

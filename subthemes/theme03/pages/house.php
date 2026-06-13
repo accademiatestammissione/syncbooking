@@ -1,5 +1,5 @@
 <?php
-$PAGE = 'house';
+$PAGE = 'houses';
 $PAGE_TITLE = 'Bedrooms – Masseria Montefieno';
 require __DIR__ . '/../header/header.php';
 ?>

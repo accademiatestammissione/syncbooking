@@ -20,15 +20,15 @@ require __DIR__ . '/../header/header.php';
       <p>The masseria sits in the middle of the most representative towns of the area — Polignano a Mare, Conversano and Castellana Grotte — and a 15-minute drive from the beautiful trulli of Alberobello, the beaches of Monopoli and the Itria Valley. Explore Apulia's masterpieces of art, architecture and gastronomy, and unparalleled fine living.</p>
     </div>
     <div class="sbtw-exp-grid">
-      <div class="sbtw-exp sbtw-reveal"><img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-26.jpg' ) ); ?>" alt="Conversano" /><div class="sbtw-ex-body"><div class="sbtw-overline">10 min</div><h3>Conversano</h3></div></div>
+      <div class="sbtw-exp sbtw-reveal"><img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-27.jpg' ) ); ?>" alt="Conversano" /><div class="sbtw-ex-body"><div class="sbtw-overline">10 min</div><h3>Conversano</h3></div></div>
       <div class="sbtw-exp sbtw-reveal"><img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-25.jpg' ) ); ?>" alt="Polignano a Mare" /><div class="sbtw-ex-body"><div class="sbtw-overline">15 min</div><h3>Polignano a Mare</h3></div></div>
       <div class="sbtw-exp sbtw-reveal"><img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-13.jpg' ) ); ?>" alt="Castellana Grotte" /><div class="sbtw-ex-body"><div class="sbtw-overline">10 min</div><h3>Castellana Grotte</h3></div></div>
-      <div class="sbtw-exp sbtw-reveal"><img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-21.jpg' ) ); ?>" alt="Alberobello and the Itria Valley" /><div class="sbtw-ex-body"><div class="sbtw-overline">15 min</div><h3>Alberobello &amp; Itria Valley</h3></div></div>
+      <div class="sbtw-exp sbtw-reveal"><img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-17.jpg' ) ); ?>" alt="Alberobello and the Itria Valley" /><div class="sbtw-ex-body"><div class="sbtw-overline">15 min</div><h3>Alberobello &amp; Itria Valley</h3></div></div>
     </div>
   </div>
 </section>
 
-<section class="sbtw-band" style="background-image:url('<?php echo esc_url( sbt_asset_url( 'assets/images/mf-26.jpg' ) ); ?>');" data-screen-label="Surroundings band">
+<section class="sbtw-band" style="background-image:url('<?php echo esc_url( sbt_asset_url( 'assets/images/mf-19.jpg' ) ); ?>');" data-screen-label="Surroundings band">
   <div class="sbtw-inner sbtw-reveal">
     <div class="sbtw-overline">Let us guide you</div>
     <h2>Discover Puglia from Montefieno</h2>
