@@ -33,6 +33,8 @@ Every shipped update must:
 - Increase the theme version by one patch number.
 - Update `style.css`, `functions.php`, and `readme.txt`.
 - Rebuild the zip as `C:\SyncBookingTheme\syncbooking-hospitality-{version}.zip`.
+- Keep build output under `C:\SyncBookingTheme\syncbooking_source\build`, not in a root-level `C:\SyncBookingTheme\build` folder.
+- At the end of the release, delete old build folders, old zip files, and previous-version package artifacts. Keep only the latest installable zip and the latest build output.
 - Run static checks for PHP short tags, line endings, bundled `subthemes/*/assets` directories, and unwanted `uploads` content.
 - Commit and push the updated theme to GitHub.
 
