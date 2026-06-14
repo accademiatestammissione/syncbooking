@@ -62,17 +62,31 @@ if ( ! function_exists( 'sbt_render_site_header' ) ) {
 				<?php endforeach; ?>
 			</nav>
 			<div class="sbtw-actions-desktop">
+				<?php
+				$lang_items  = function_exists( 'sbt_header_language_items' ) ? sbt_header_language_items() : array();
+				$lang_names  = function_exists( 'sbt_available_languages' ) ? sbt_available_languages() : array();
+				$lang_inline = array_slice( $lang_items, 0, 2 );
+				$lang_more   = array_slice( $lang_items, 2 );
+				?>
+				<?php if ( $lang_items ) : ?>
 				<div class="sbtw-lang-toggle">
-					<a href="#" class="sbtw-active"><?php echo esc_html( $lang_primary ); ?></a><span class="sbtw-sep">/</span><a href="#"><?php echo esc_html( $lang_secondary ); ?></a><span class="sbtw-sep">/</span>
-					<div class="sbtw-lang-more">
-						<span class="sbtw-lang-more-btn" aria-label="Other languages"><i class="sbtw-chev"></i></span>
-						<div class="sbtw-lang-menu">
-							<a href="#">DE <span>Deutsch</span></a>
-							<a href="#">FR <span>Français</span></a>
-							<a href="#">ES <span>Español</span></a>
+					<?php foreach ( $lang_inline as $li => $litem ) : ?>
+						<?php if ( $li > 0 ) : ?><span class="sbtw-sep">/</span><?php endif; ?>
+						<a href="<?php echo esc_url( $litem['url'] ?? '#' ); ?>" class="<?php echo ! empty( $litem['active'] ) ? 'sbtw-active' : ''; ?>"><?php echo esc_html( $litem['code'] ?? '' ); ?></a>
+					<?php endforeach; ?>
+					<?php if ( $lang_more ) : ?>
+						<span class="sbtw-sep">/</span>
+						<div class="sbtw-lang-more">
+							<span class="sbtw-lang-more-btn" aria-label="Other languages"><i class="sbtw-chev"></i></span>
+							<div class="sbtw-lang-menu">
+								<?php foreach ( $lang_more as $litem ) : ?>
+									<a href="<?php echo esc_url( $litem['url'] ?? '#' ); ?>"><?php echo esc_html( $litem['code'] ?? '' ); ?> <span><?php echo esc_html( $lang_names[ $litem['language'] ] ?? '' ); ?></span></a>
+								<?php endforeach; ?>
+							</div>
 						</div>
-					</div>
+					<?php endif; ?>
 				</div>
+				<?php endif; ?>
 			</div>
 			<button class="sbtw-burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
 		</header>
@@ -101,16 +115,17 @@ if ( ! function_exists( 'sbt_render_site_drawer' ) ) {
 					<a href="<?php echo esc_url( $item['url'] ?? '#' ); ?>"><?php echo esc_html( $item['label'] ?? '' ); ?></a>
 				<?php endif; ?>
 			<?php endforeach; ?>
+			<?php $lang_items = function_exists( 'sbt_header_language_items' ) ? sbt_header_language_items() : array(); ?>
+			<?php if ( $lang_items ) : ?>
 			<div class="sbtw-lang-m">
 				<span class="sbtw-lang-m-label">Language</span>
 				<div class="sbtw-lang-m-row">
-					<a href="#" class="sbtw-active"><?php echo esc_html( $lang_primary ); ?></a>
-					<a href="#"><?php echo esc_html( $lang_secondary ); ?></a>
-					<a href="#">DE</a>
-					<a href="#">FR</a>
-					<a href="#">ES</a>
+					<?php foreach ( $lang_items as $litem ) : ?>
+						<a href="<?php echo esc_url( $litem['url'] ?? '#' ); ?>" class="<?php echo ! empty( $litem['active'] ) ? 'sbtw-active' : ''; ?>"><?php echo esc_html( $litem['code'] ?? '' ); ?></a>
+					<?php endforeach; ?>
 				</div>
 			</div>
+			<?php endif; ?>
 		</div>
 		<?php
 	}
