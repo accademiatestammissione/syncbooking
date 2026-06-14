@@ -9,7 +9,7 @@ require __DIR__ . '/../header/header.php';
     <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-05.jpg' ) ); ?>" alt="Masseria Montefieno among the olive trees" />
     <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-12.jpg' ) ); ?>" alt="The pool framed by olive trees" />
     <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-16.jpg' ) ); ?>" alt="Dining under the pergola" />
-    <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-22.jpg' ) ); ?>" alt="The masseria by night" />
+    <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-19.jpg' ) ); ?>" alt="The masseria at golden hour" />
   </div>
   <div class="sbtw-hero-overlay"></div>
   <div class="sbtw-hero-inner">
@@ -37,7 +37,7 @@ require __DIR__ . '/../header/header.php';
           <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-04.jpg' ) ); ?>" alt="Masseria Montefieno — the veranda" />
           <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-08.jpg' ) ); ?>" alt="Masseria Montefieno — the pergola" />
           <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-02.jpg' ) ); ?>" alt="Masseria Montefieno — garden details" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-22.jpg' ) ); ?>" alt="Masseria Montefieno — by night" />
+          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-17.jpg' ) ); ?>" alt="Masseria Montefieno — the estate" />
         </div>
         <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
         <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>
@@ -77,12 +77,12 @@ require __DIR__ . '/../header/header.php';
     </div>
     <div class="sbtw-house-grid">
       <div class="sbtw-house sbtw-reveal">
-        <div class="sbtw-ph"><span class="sbtw-tag">Sleep</span>
+        <div class="sbtw-ph"><span class="sbtw-tag">Main house</span>
           <div class="sbtw-media-carousel" data-carousel>
             <div class="sbtw-mc-track">
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-10.jpg' ) ); ?>" alt="Vaulted stone bedroom" />
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-24.jpg' ) ); ?>" alt="Bedroom by lamplight" />
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-14.jpg' ) ); ?>" alt="Bathroom" />
+              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-10.jpg' ) ); ?>" alt="Room One — vaulted stone bedroom" />
+              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-24.jpg' ) ); ?>" alt="Room One by lamplight" />
+              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-14.jpg' ) ); ?>" alt="Room One — bathroom" />
             </div>
             <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
             <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>
@@ -90,19 +90,17 @@ require __DIR__ . '/../header/header.php';
           </div>
         </div>
         <div class="sbtw-body">
-          <h3>Bedrooms</h3>
+          <h3>Room 1</h3>
           <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( 'house.php' ) ); ?>">Discover</a>
         </div>
       </div>
-      <?php if ( ! function_exists( 'sbt_is_entire_rental_mode' ) || sbt_is_entire_rental_mode( 'theme03' ) ) : ?>
-
       <div class="sbtw-house sbtw-reveal">
-        <div class="sbtw-ph"><span class="sbtw-tag">Exclusive use</span>
+        <div class="sbtw-ph"><span class="sbtw-tag">Main house</span>
           <div class="sbtw-media-carousel" data-carousel>
             <div class="sbtw-mc-track">
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-05.jpg' ) ); ?>" alt="The main house" />
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-09.jpg' ) ); ?>" alt="The second house" />
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-17.jpg' ) ); ?>" alt="The estate among the olives" />
+              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-24.jpg' ) ); ?>" alt="Room Two in warm light" />
+              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-07.jpg' ) ); ?>" alt="Room Two — stone archway" />
+              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-10.jpg' ) ); ?>" alt="Room Two — the bed" />
             </div>
             <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
             <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>
@@ -110,18 +108,17 @@ require __DIR__ . '/../header/header.php';
           </div>
         </div>
         <div class="sbtw-body">
-          <h3>Whole Masseria</h3>
-          <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( 'whole-masseria.php' ) ); ?>">Discover</a>
+          <h3>Room 2</h3>
+          <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( 'house.php' ) ); ?>">Discover</a>
         </div>
       </div>
-      <?php endif; ?>
       <div class="sbtw-house sbtw-reveal">
-        <div class="sbtw-ph"><span class="sbtw-tag">Outdoors</span>
+        <div class="sbtw-ph"><span class="sbtw-tag">Main house</span>
           <div class="sbtw-media-carousel" data-carousel>
             <div class="sbtw-mc-track">
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-12.jpg' ) ); ?>" alt="The pool among the olive trees" />
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-18.jpg' ) ); ?>" alt="Loungers by the pool" />
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-20.jpg' ) ); ?>" alt="The pool through the branches" />
+              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-00.jpg' ) ); ?>" alt="Room Three — stone detail" />
+              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-10.jpg' ) ); ?>" alt="Room Three — the bed" />
+              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-14.jpg' ) ); ?>" alt="Room Three — bathroom" />
             </div>
             <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
             <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>
@@ -129,13 +126,41 @@ require __DIR__ . '/../header/header.php';
           </div>
         </div>
         <div class="sbtw-body">
-          <h3>Pool</h3>
-          <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( 'pool.php' ) ); ?>">Discover</a>
+          <h3>Room 3</h3>
+          <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( 'house.php' ) ); ?>">Discover</a>
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<?php if ( ! function_exists( 'sbt_is_entire_rental_mode' ) || sbt_is_entire_rental_mode( 'theme03' ) ) : ?>
+<!-- ============ BOOK ENTIRE MASSERIA ============ -->
+<section class="sbtw-feature sbtw-pad" data-screen-label="Book entire Masseria">
+  <div class="sbtw-wrap">
+    <div class="sbtw-two-col" id="book-whole">
+      <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
+        <div class="sbtw-mc-track">
+          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-17.jpg' ) ); ?>" alt="The whole estate among the olives" />
+          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-05.jpg' ) ); ?>" alt="The main house" />
+          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-09.jpg' ) ); ?>" alt="The second house" />
+          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-12.jpg' ) ); ?>" alt="The pool" />
+        </div>
+        <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
+        <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>
+        <div class="sbtw-mc-dots"></div>
+        <div class="sbtw-frame"></div>
+      </div>
+      <div class="sbtw-reveal">
+        <div class="sbtw-label">Exclusive use</div>
+        <h3>Book the entire Masseria</h3>
+        <p class="sbtw-body-text">Reserve all the bedrooms, both houses, the pool and seven hectares of olive groves — the whole of Montefieno, for you and yours alone.</p>
+        <a class="sbtw-btn sbtw-btn--ghost" href="<?php echo esc_url( sbt_t1_url( 'whole-masseria.php' ) ); ?>" style="margin-top:28px;">Book entire Masseria</a>
+      </div>
+    </div>
+  </div>
+</section>
+<?php endif; ?>
 
 <!-- ============ SERVICES ============ -->
 <section class="sbtw-services sbtw-pad" id="services" data-screen-label="Services">
@@ -205,7 +230,7 @@ require __DIR__ . '/../header/header.php';
       <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
         <div class="sbtw-mc-track">
           <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-27.jpg' ) ); ?>" alt="The olive grove" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-21.jpg' ) ); ?>" alt="The vineyard" />
+          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-25.jpg' ) ); ?>" alt="The countryside" />
           <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-11.jpg' ) ); ?>" alt="The garden among the olives" />
           <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-13.jpg' ) ); ?>" alt="The dry-stone walls" />
         </div>
@@ -231,8 +256,8 @@ require __DIR__ . '/../header/header.php';
       <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
         <div class="sbtw-mc-track">
           <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-25.jpg' ) ); ?>" alt="The countryside at dusk" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-26.jpg' ) ); ?>" alt="The view from the terrace" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-21.jpg' ) ); ?>" alt="Vineyards and white towns" />
+          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-17.jpg' ) ); ?>" alt="The estate among the olives" />
+          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-27.jpg' ) ); ?>" alt="The olive grove" />
         </div>
         <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
         <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>
@@ -244,7 +269,7 @@ require __DIR__ . '/../header/header.php';
 </section>
 
 <!-- ============ STAY CTA BAND ============ -->
-<section class="sbtw-cta-band" id="house-cta" style="background-image:url('<?php echo esc_url( sbt_asset_url( 'assets/images/mf-22.jpg' ) ); ?>');" data-screen-label="Stay CTA">
+<section class="sbtw-cta-band" id="house-cta" style="background-image:url('<?php echo esc_url( sbt_asset_url( 'assets/images/mf-13.jpg' ) ); ?>');" data-screen-label="Stay CTA">
   <div class="sbtw-inner sbtw-reveal">
     <div class="sbtw-overline">Silence and stillness await</div>
     <h2>Your stay at<br/>Masseria Montefieno</h2>

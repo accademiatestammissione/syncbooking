@@ -10,8 +10,8 @@ Use this source package as the visual reference for Theme 01:
 
 Current source metadata:
 
-- Source version: `1.0.0`
-- Build date: `2026-06-07`
+- Source version: `4.0`
+- Build date: `2026-06-14`
 
 Every PHP page rendered by this subtheme must expose the source metadata through:
 
