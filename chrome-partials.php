@@ -42,8 +42,12 @@ if ( ! function_exists( 'sbt_render_site_header' ) ) {
 		$lang_primary   = $SITE['lang_primary'] ?? 'EN';
 		$lang_secondary = $SITE['lang_secondary'] ?? 'IT';
 		?>
+		<?php
+		$logo_class = 'sbtw-logo' . ( ! empty( $SITE['logo_class'] ) ? ' ' . $SITE['logo_class'] : '' );
+		$logo_inner = ! empty( $SITE['logo_html'] ) ? $SITE['logo_html'] : '<img src="' . esc_url( $logo ) . '" alt="' . esc_attr( $name ) . '" />';
+		?>
 		<header id="hdr">
-			<a class="sbtw-logo" href="<?php echo esc_url( $home_url ); ?>"><img src="<?php echo esc_url( $logo ); ?>" alt="<?php echo esc_attr( $name ); ?>" /></a>
+			<a class="<?php echo esc_attr( $logo_class ); ?>" href="<?php echo esc_url( $home_url ); ?>"><?php echo $logo_inner; ?></a>
 			<nav class="sbtw-main">
 				<?php foreach ( (array) $NAV as $item ) : ?>
 					<?php if ( ! empty( $item['sub'] ) && is_array( $item['sub'] ) ) : ?>
@@ -163,8 +167,12 @@ if ( ! function_exists( 'sbt_render_site_footer' ) ) {
 		<footer data-screen-label="Footer">
 			<div class="sbtw-wrap">
 				<div class="sbtw-foot-grid">
+					<?php
+					$foot_logo_class = 'sbtw-logo' . ( ! empty( $SITE['logo_foot_class'] ) ? ' ' . $SITE['logo_foot_class'] : '' );
+					$foot_logo_inner = ! empty( $SITE['logo_foot_html'] ) ? $SITE['logo_foot_html'] : '<img src="' . esc_url( $logo_foot ) . '" alt="' . esc_attr( $name ) . '" />';
+					?>
 					<div class="sbtw-reveal sbtw-foot-logo">
-						<a class="sbtw-logo" href="<?php echo esc_url( $home_url ); ?>"><img src="<?php echo esc_url( $logo_foot ); ?>" alt="<?php echo esc_attr( $name ); ?>" /></a>
+						<a class="<?php echo esc_attr( $foot_logo_class ); ?>" href="<?php echo esc_url( $home_url ); ?>"><?php echo $foot_logo_inner; ?></a>
 					</div>
 					<div class="sbtw-reveal">
 						<h4><?php echo esc_html( $name ); ?></h4>

@@ -30,6 +30,10 @@ $IMG = array(
 $SITE = array(
 	'name' => 'Masseria Montefieno',
 	'tagline' => 'A stunning Masseria in Puglia',
+	'logo_class' => 'sbtw-logo-txt',
+	'logo_html' => '<img class="sbtw-lg-w" src="' . esc_url( sbt_t3_asset( 'assets/images/logo-montefieno-white.png' ) ) . '" alt="Masseria Montefieno" /><img class="sbtw-lg-d" src="' . esc_url( sbt_t3_asset( 'assets/images/logo-montefieno-dark.png' ) ) . '" alt="Masseria Montefieno" />',
+	'logo_foot_class' => 'sbtw-logo-txt sbtw-logo-foot',
+	'logo_foot_html' => '<img src="' . esc_url( sbt_t3_asset( 'assets/images/logo-montefieno.png' ) ) . '" alt="Masseria Montefieno" />',
 	'address' => 'Contrada Montefieno<br/>70014 Conversano (Bari)<br/>Puglia, Italy',
 	'address_line_1' => 'Contrada Montefieno',
 	'address_line_2' => '70014 Conversano (Bari)',
@@ -77,13 +81,13 @@ $NAV = array(
 	array( 'key' => 'villa', 'label' => 'Masseria', 'url' => 'villa.php' ),
 	array(
 		'key' => 'house',
-		'label' => 'Accomodation',
+		'label' => 'Accommodation',
 		'url' => 'house.php',
 		'sub' => array(
 			array( 'label' => 'Rooms', 'desc' => 'Rooms only', 'url' => 'house.php' ),
 			array( 'label' => 'The whole Masseria', 'desc' => 'Exclusive rental', 'url' => 'whole-masseria.php' ),
 			array( 'label' => 'Price & Condition', 'desc' => 'Rates, check-in & terms', 'url' => 'price-and-condition.php', 'divide' => true ),
-			array( 'label' => 'Book Now', 'desc' => 'Online booking', 'url' => 'syncbooking:booking' ),
+			array( 'label' => 'Book Now', 'desc' => 'Online booking', 'url' => 'syncbooking:booking', 'book' => true ),
 		),
 	),
 	array( 'key' => 'pool', 'label' => 'Pool', 'url' => 'pool.php' ),

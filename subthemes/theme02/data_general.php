@@ -173,16 +173,18 @@ if ( function_exists( 'sbt_asset_url' ) ) {
 $NAV = [
   ['key'=>'home',         'label'=>'Home',              'url'=>'index.php'],
   ['key'=>'villa',        'label'=>'Masseria',          'url'=>'villa.php'],
-  ['key'=>'house',        'label'=>'Accomodation',      'url'=>'house.php', 'sub'=>[
+  ['key'=>'house',        'label'=>'Accommodation',     'url'=>'house.php', 'sub'=>[
       ['label'=>'Rooms', 'desc'=>'Rooms only', 'url'=>'house.php'],
       ['label'=>'The whole Masseria', 'desc'=>'Exclusive rental', 'url'=>'whole-masseria.php'],
       ['label'=>'Price &amp; Condition','desc'=>'Rates, check-in &amp; terms', 'url'=>'price-and-condition.php', 'divide'=>true],
-      ['label'=>'Book Now', 'desc'=>'Online booking', 'url'=>'syncbooking:booking'],
+      ['label'=>'Book Now', 'desc'=>'Online booking', 'url'=>'syncbooking:booking', 'book'=>true],
   ]],
   ['key'=>'spa',          'label'=>'SPA &amp; Wellness', 'url'=>'spa-wellness.php'],
-  ['key'=>'experiences',  'label'=>'Experiences',       'url'=>'experiences.php'],
+  ['key'=>'discover',     'label'=>'Discover',          'url'=>'experiences.php', 'match'=>['experiences','surroundings'], 'sub'=>[
+      ['key'=>'experiences',  'label'=>'Experiences',  'url'=>'experiences.php'],
+      ['key'=>'surroundings', 'label'=>'Surroundings', 'url'=>'surroundings.php'],
+  ]],
   ['key'=>'weddings',     'label'=>'Weddings',          'url'=>'weddings.php'],
-  ['key'=>'surroundings', 'label'=>'Surroundings',      'url'=>'surroundings.php'],
   ['key'=>'offers',       'label'=>'Offers',            'url'=>'offers.php'],
   ['key'=>'contacts',     'label'=>'Contacts',          'url'=>'contacts.php'],
 ];

@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.32' );
+define( 'SBT_VERSION', '2.1.33' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -2784,6 +2784,8 @@ function sbt_apply_default_language_pack( &$SITE, &$NAV, &$C, &$TEXT ) {
 		'experiences' => 'Esperienze',
 		'weddings' => 'Matrimoni',
 		'surroundings' => 'Dintorni',
+		'pool' => 'Piscina',
+		'farm' => 'Fattoria',
 		'offers' => 'Offerte',
 		'contacts' => 'Contatti',
 	);
