@@ -2,57 +2,56 @@
 $PAGE = 'houses';
 $PAGE_TITLE = 'Houses – Villa Rosa Resort';
 require __DIR__ . '/../header/header.php';
+$p = isset( $C['houses'] ) && is_array( $C['houses'] ) ? $C['houses'] : array();
 ?>
 <section class="sbtw-page-hero" data-screen-label="Houses banner">
-  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-085.jpg' ) ); ?>" alt="Villa Rosa houses" />
+  <img class="sbtw-bg" src="<?php echo esc_url( $p['banner'] ?? sbt_asset_url( 'assets/images/exterior-085.jpg' ) ); ?>" alt="<?php echo esc_attr( $SITE['name'] ?? 'Villa Rosa houses' ); ?>" />
   <div class="sbtw-wrap">
-    <div class="sbtw-overline">Villa Rosa Resort</div>
-    <h1>Houses</h1>
-    <nav class="sbtw-crumb"><a href="<?php echo esc_url( sbt_t1_url( 'index.php' ) ); ?>">Home</a><span>/</span>Houses</nav>
+    <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.houses.over', $p['over'] ?? '' ); ?></div>
+    <h1><?php echo sbt_t1_text( 'C.houses.h1', $p['h1'] ?? 'Houses' ); ?></h1>
+    <nav class="sbtw-crumb"><a href="<?php echo esc_url( sbt_t1_url( 'index.php' ) ); ?>"><?php echo esc_html( $TEXT['home'] ?? 'Home' ); ?></a><span>/</span><?php echo esc_html( $TEXT['houses'] ?? ( $p['h1'] ?? 'Houses' ) ); ?></nav>
   </div>
 </section>
 
 <section class="sbtw-pad" data-screen-label="Houses intro">
   <div class="sbtw-wrap">
     <div class="sbtw-section-head sbtw-reveal">
-      <div class="sbtw-overline">Your private retreat in Puglia</div>
-      <h2>An entire house, all to yourself</h2>
-      <p>The new luxury when it comes to holidays is giving yourself more freedom: the possibility of having an entire house with an external pergola at your disposal, to enjoy a fully relaxing stay. The attention to detail, a refined design, the mix of modern and ancient, and many comforts make the homes of Villa Rosa Boutique Resort very exclusive.</p>
+      <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.houses.intro_over', $p['intro_over'] ?? '' ); ?></div>
+      <h2><?php echo sbt_t1_text( 'C.houses.intro_h2', $p['intro_h2'] ?? '' ); ?></h2>
+      <p><?php echo sbt_t1_text( 'C.houses.intro_p', $p['intro_p'] ?? '', array( 'multiline' => true ) ); ?></p>
     </div>
     <div class="sbtw-house-grid">
-      <a class="sbtw-house sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( 'house-custom.php' ) ); ?>">
-        <div class="sbtw-ph"><span class="sbtw-tag">For 2 people</span><img src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-112.jpg' ) ); ?>" alt="House for 2" /></div>
+      <?php
+      $listing_cards = ( isset( $HOUSE_CARDS ) && is_array( $HOUSE_CARDS ) ) ? $HOUSE_CARDS : array();
+      foreach ( $listing_cards as $house_card ) :
+        $hc_title = $house_card['listing_title'] ?? ( $house_card['title'] ?? '' );
+        $hc_tag   = $house_card['tag'] ?? '';
+        $hc_url   = $house_card['url'] ?? 'house-custom.php';
+        $hc_img   = '';
+        if ( ! empty( $house_card['gallery'] ) && is_array( $house_card['gallery'] ) ) {
+          $hc_g   = array_values( array_filter( $house_card['gallery'] ) );
+          $hc_img = $hc_g ? $hc_g[0] : '';
+        }
+        if ( '' === $hc_img ) {
+          $hc_img = $house_card['img'] ?? '';
+        }
+        $hc_specs = ( ! empty( $house_card['specs'] ) && is_array( $house_card['specs'] ) ) ? $house_card['specs'] : array();
+      ?>
+      <a class="sbtw-house sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( $hc_url ) ); ?>">
+        <div class="sbtw-ph"><span class="sbtw-tag"><?php echo esc_html( $hc_tag ); ?></span><img src="<?php echo esc_url( $hc_img ); ?>" alt="<?php echo esc_attr( $hc_title ); ?>" /></div>
         <div class="sbtw-body">
-          <h3>Houses for 2</h3>
+          <h3><?php echo esc_html( $hc_title ); ?></h3>
+          <?php if ( $hc_specs ) : ?>
           <ul class="sbtw-specs">
-            <li><span>Maximum occupancy</span><b>2 adults + 1 cot</b></li>
-            <li><span>Bed</span><b>King-size</b></li>
+            <?php foreach ( $hc_specs as $hc_spec ) : ?>
+            <li><span><?php echo esc_html( $hc_spec[0] ?? '' ); ?></span><b><?php echo esc_html( $hc_spec[1] ?? '' ); ?></b></li>
+            <?php endforeach; ?>
           </ul>
-          <span class="sbtw-btn sbtw-btn--light sbtw-house-cta">Discover</span>
+          <?php endif; ?>
+          <span class="sbtw-btn sbtw-btn--light sbtw-house-cta"><?php echo esc_html( $TEXT['discover'] ?? 'Discover' ); ?></span>
         </div>
       </a>
-      <a class="sbtw-house sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( 'house-custom.php' ) ); ?>">
-        <div class="sbtw-ph"><span class="sbtw-tag">For 3 people</span><img src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-134.jpg' ) ); ?>" alt="House for 3" /></div>
-        <div class="sbtw-body">
-          <h3>Houses for 3</h3>
-          <ul class="sbtw-specs">
-            <li><span>Maximum occupancy</span><b>3 adults + 1 cot</b></li>
-            <li><span>Beds</span><b>King-size + sofa bed</b></li>
-          </ul>
-          <span class="sbtw-btn sbtw-btn--light sbtw-house-cta">Discover</span>
-        </div>
-      </a>
-      <a class="sbtw-house sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( 'house-custom.php' ) ); ?>">
-        <div class="sbtw-ph"><span class="sbtw-tag">For 4 people</span><img src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-147.jpg' ) ); ?>" alt="House for 4" /></div>
-        <div class="sbtw-body">
-          <h3>Houses for 4</h3>
-          <ul class="sbtw-specs">
-            <li><span>Maximum occupancy</span><b>4 adults + 1 cot</b></li>
-            <li><span>Beds</span><b>King-size + double sofa</b></li>
-          </ul>
-          <span class="sbtw-btn sbtw-btn--light sbtw-house-cta">Discover</span>
-        </div>
-      </a>
+      <?php endforeach; ?>
     </div>
   </div>
 </section>
@@ -60,9 +59,9 @@ require __DIR__ . '/../header/header.php';
 <section class="sbtw-pad" style="padding-top:0;" data-screen-label="Houses gallery">
   <div class="sbtw-wrap">
     <div class="sbtw-section-head sbtw-reveal" style="margin-bottom:38px;">
-      <div class="sbtw-overline">A look inside</div>
-      <h2>Rooms &amp; spaces</h2>
-      <p>Bedrooms, living areas, kitchens and bathrooms — a glimpse of the interiors that make every Villa Rosa house a private home.</p>
+      <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.houses.gallery_over', $p['gallery_over'] ?? 'A look inside' ); ?></div>
+      <h2><?php echo sbt_t1_text( 'C.houses.gallery_h2', $p['gallery_h2'] ?? 'Rooms &amp; spaces' ); ?></h2>
+      <p><?php echo sbt_t1_text( 'C.houses.gallery_p', $p['gallery_p'] ?? '', array( 'multiline' => true ) ); ?></p>
     </div>
     <div class="sbtw-room-gallery sbtw-reveal">
       <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-001.jpg' ) ); ?>" alt="Bedroom" />
@@ -93,12 +92,12 @@ require __DIR__ . '/../header/header.php';
   </div>
 </section>
 
-<section class="sbtw-band" style="background-image:url('<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-081.jpg' ) ); ?>');" data-screen-label="Houses CTA">
+<section class="sbtw-band" style="background-image:url('<?php echo esc_url( $p['cta_bg'] ?? sbt_asset_url( 'assets/images/exterior-081.jpg' ) ); ?>');" data-screen-label="Houses CTA">
   <div class="sbtw-inner sbtw-reveal">
-    <div class="sbtw-overline">Rates &amp; reservations</div>
-    <h2>Prices &amp; conditions</h2>
-    <p>Transparent rates, flexible terms and a warm welcome. Discover everything you need to plan your stay.</p>
-    <a class="sbtw-btn sbtw-btn--light" href="<?php echo esc_url( sbt_t1_url( 'price-and-condition.php' ) ); ?>" style="margin-top:8px;">View price &amp; condition</a>
+    <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.houses.cta_over', $p['cta_over'] ?? '' ); ?></div>
+    <h2><?php echo sbt_t1_text( 'C.houses.cta_h2', $p['cta_h2'] ?? '' ); ?></h2>
+    <p><?php echo sbt_t1_text( 'C.houses.cta_p', $p['cta_p'] ?? '', array( 'multiline' => true ) ); ?></p>
+    <a class="sbtw-btn sbtw-btn--light" href="<?php echo esc_url( sbt_t1_url( $p['cta_url'] ?? 'price-and-condition.php' ) ); ?>" style="margin-top:8px;"><?php echo sbt_t1_text( 'C.houses.cta_btn', $p['cta_btn'] ?? '' ); ?></a>
   </div>
 </section>
 
