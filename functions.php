@@ -9,8 +9,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.30' );
+define( 'SBT_VERSION', '2.1.31' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
+
+require_once __DIR__ . '/chrome-partials.php';
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
 define( 'SBT_MEDIA_OPTION', 'syncbooking_theme_media_imports' );
@@ -2499,7 +2501,7 @@ function sbt_apply_unit_structure( &$SITE, &$NAV, &$C, &$HOUSE_CARDS, &$TEXT ) {
 	$entire_label = sbt_entire_label( $subtheme );
 	$entire_url = sbt_entire_nav_url( $subtheme );
 	$is_it = 'it' === sbt_current_content_language();
-	$accommodation_menu_label = $is_it ? 'Alloggi' : 'Accomodation';
+	$accommodation_menu_label = $is_it ? 'Alloggi' : 'Accommodation';
 	$whole_menu_label = $is_it ? ( in_array( $subtheme, array( 'theme02', 'theme03' ), true ) ? 'Tutta la Masseria' : 'Tutta la Villa' ) : $entire_label;
 	$price_menu_label = $is_it ? 'Prezzi e condizioni' : 'Price & Condition';
 	$book_menu_label = $is_it ? 'Prenota ora' : 'Book Now';
@@ -2527,6 +2529,7 @@ function sbt_apply_unit_structure( &$SITE, &$NAV, &$C, &$HOUSE_CARDS, &$TEXT ) {
 						'url'   => 'syncbooking:booking',
 						'label' => $book_menu_label,
 						'desc'  => 'Online booking',
+						'book'  => true,
 					),
 				);
 			}
@@ -2606,6 +2609,7 @@ function sbt_apply_unit_structure( &$SITE, &$NAV, &$C, &$HOUSE_CARDS, &$TEXT ) {
 				'url'   => 'syncbooking:booking',
 				'label' => $book_menu_label,
 				'desc'  => 'Online booking',
+				'book'  => true,
 			);
 		}
 	}
@@ -2768,27 +2772,32 @@ function sbt_apply_default_language_pack( &$SITE, &$NAV, &$C, &$TEXT ) {
 	);
 	$TEXT = array_replace_recursive( $TEXT, $text_it );
 
+	$labels = array(
+		'home' => 'Home',
+		'villa' => 'Villa',
+		'houses' => 'Alloggi',
+		'house' => 'Alloggi',
+		'rooms' => 'Alloggi',
+		'hospitality' => 'Alloggi',
+		'spa' => 'SPA & Wellness',
+		'discover' => 'Scopri',
+		'experiences' => 'Esperienze',
+		'weddings' => 'Matrimoni',
+		'surroundings' => 'Dintorni',
+		'offers' => 'Offerte',
+		'contacts' => 'Contatti',
+	);
 	foreach ( $NAV as &$item ) {
-		if ( empty( $item['key'] ) ) {
-			continue;
-		}
-
-		$labels = array(
-			'home' => 'Home',
-			'villa' => 'Villa',
-			'houses' => 'Alloggi',
-			'house' => 'Alloggi',
-			'rooms' => 'Alloggi',
-			'hospitality' => 'Alloggi',
-			'spa' => 'SPA & Wellness',
-			'experiences' => 'Esperienze',
-			'weddings' => 'Matrimoni',
-			'surroundings' => 'Dintorni',
-			'offers' => 'Offerte',
-			'contacts' => 'Contatti',
-		);
-		if ( isset( $labels[ $item['key'] ] ) ) {
+		if ( ! empty( $item['key'] ) && isset( $labels[ $item['key'] ] ) ) {
 			$item['label'] = $labels[ $item['key'] ];
+		}
+		if ( ! empty( $item['sub'] ) && is_array( $item['sub'] ) ) {
+			foreach ( $item['sub'] as &$sub_item ) {
+				if ( ! empty( $sub_item['key'] ) && isset( $labels[ $sub_item['key'] ] ) ) {
+					$sub_item['label'] = $labels[ $sub_item['key'] ];
+				}
+			}
+			unset( $sub_item );
 		}
 	}
 	unset( $item );

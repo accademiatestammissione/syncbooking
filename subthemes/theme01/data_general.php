@@ -80,18 +80,26 @@ $NAV = array(
 	array( 'url' => 'villa.php', 'label' => 'Villa', 'key' => 'villa' ),
 	array(
 		'url' => 'houses.php',
-		'label' => 'Accomodation',
+		'label' => 'Accommodation',
 		'key' => 'houses',
 		'sub' => array(
 			array( 'url' => 'houses.php', 'label' => 'Rooms' ),
 			array( 'url' => 'whole-villa.php', 'label' => 'The whole Villa' ),
 			array( 'url' => 'price-and-condition.php', 'label' => 'Price & Condition', 'divide' => true ),
-			array( 'url' => 'syncbooking:booking', 'label' => 'Book Now' ),
+			array( 'url' => 'syncbooking:booking', 'label' => 'Book Now', 'book' => true ),
 		),
 	),
 	array( 'url' => 'spa-wellness.php', 'label' => 'SPA & Wellness', 'key' => 'spa' ),
-	array( 'url' => 'experiences.php', 'label' => 'Experiences', 'key' => 'experiences' ),
-	array( 'url' => 'surroundings.php', 'label' => 'Surroundings', 'key' => 'surroundings' ),
+	array(
+		'url' => 'experiences.php',
+		'label' => 'Discover',
+		'key' => 'discover',
+		'match' => array( 'experiences', 'surroundings' ),
+		'sub' => array(
+			array( 'url' => 'experiences.php', 'label' => 'Experiences', 'key' => 'experiences' ),
+			array( 'url' => 'surroundings.php', 'label' => 'Surroundings', 'key' => 'surroundings' ),
+		),
+	),
 	array( 'url' => 'offers.php', 'label' => 'Offers', 'key' => 'offers' ),
 	array( 'url' => 'contacts.php', 'label' => 'Contacts', 'key' => 'contacts' ),
 );
