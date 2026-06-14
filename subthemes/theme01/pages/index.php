@@ -73,13 +73,23 @@ require __DIR__ . '/../header/header.php';
       <p>The new luxury in holidays is more freedom: an entire house with an external pergola at your disposal. Refined design, a mix of modern and ancient, and every comfort make the homes of Villa Rosa very exclusive.</p>
     </div>
     <div class="sbtw-house-grid">
+      <?php
+      $home_house_cards = ( isset( $HOUSE_CARDS ) && is_array( $HOUSE_CARDS ) ) ? $HOUSE_CARDS : array();
+      foreach ( $home_house_cards as $house_card ) :
+        $hc_title = $house_card['title'] ?? '';
+        $hc_tag   = $house_card['tag'] ?? '';
+        $hc_url   = $house_card['url'] ?? 'house-custom.php';
+        $hc_imgs  = ( ! empty( $house_card['gallery'] ) && is_array( $house_card['gallery'] ) )
+          ? array_values( array_filter( $house_card['gallery'] ) )
+          : array_filter( array( $house_card['img'] ?? '' ) );
+      ?>
       <div class="sbtw-house sbtw-reveal">
-        <div class="sbtw-ph"><span class="sbtw-tag">For 2 people</span>
+        <div class="sbtw-ph"><span class="sbtw-tag"><?php echo esc_html( $hc_tag ); ?></span>
           <div class="sbtw-media-carousel" data-carousel>
             <div class="sbtw-mc-track">
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-112.jpg' ) ); ?>" alt="House for 2" />
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-120.jpg' ) ); ?>" alt="House for 2" />
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-132.jpg' ) ); ?>" alt="House for 2" />
+              <?php foreach ( $hc_imgs as $hc_img ) : ?>
+              <img src="<?php echo esc_url( $hc_img ); ?>" alt="<?php echo esc_attr( $hc_title ); ?>" />
+              <?php endforeach; ?>
             </div>
             <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
             <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>
@@ -87,47 +97,11 @@ require __DIR__ . '/../header/header.php';
           </div>
         </div>
         <div class="sbtw-body">
-          <h3>House for 2</h3>
-          <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( 'house-custom.php' ) ); ?>">Discover</a>
+          <h3><?php echo esc_html( $hc_title ); ?></h3>
+          <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( $hc_url ) ); ?>">Discover</a>
         </div>
       </div>
-      <div class="sbtw-house sbtw-reveal">
-        <div class="sbtw-ph"><span class="sbtw-tag">For 3 people</span>
-          <div class="sbtw-media-carousel" data-carousel>
-            <div class="sbtw-mc-track">
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-134.jpg' ) ); ?>" alt="House for 3" />
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-136.jpg' ) ); ?>" alt="House for 3" />
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-139.jpg' ) ); ?>" alt="House for 3" />
-            </div>
-            <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
-            <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>
-            <div class="sbtw-mc-dots"></div>
-          </div>
-        </div>
-        <div class="sbtw-body">
-          <h3>House for 3</h3>
-          <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( 'house-custom.php' ) ); ?>">Discover</a>
-        </div>
-      </div>
-      <div class="sbtw-house sbtw-reveal">
-        <div class="sbtw-ph"><span class="sbtw-tag">For 4 people</span>
-          <div class="sbtw-media-carousel" data-carousel>
-            <div class="sbtw-mc-track">
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-147.jpg' ) ); ?>" alt="House for 4" />
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-153.jpg' ) ); ?>" alt="House for 4" />
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-167.jpg' ) ); ?>" alt="House for 4" />
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-177.jpg' ) ); ?>" alt="House for 4" />
-            </div>
-            <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
-            <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>
-            <div class="sbtw-mc-dots"></div>
-          </div>
-        </div>
-        <div class="sbtw-body">
-          <h3>House for 4</h3>
-          <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( 'house-custom.php' ) ); ?>">Discover</a>
-        </div>
-      </div>
+      <?php endforeach; ?>
     </div>
   </div>
 </section>
