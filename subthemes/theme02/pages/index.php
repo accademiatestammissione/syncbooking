@@ -64,6 +64,7 @@ require __DIR__ . '/../header/header.php';
   </div>
 </section>
 
+<?php if ( ! function_exists( 'sbt_is_entire_rental_mode' ) || ! sbt_is_entire_rental_mode( 'theme02' ) ) : ?>
 <!-- ============ ROOMS ============ -->
 <section class="sbtw-houses sbtw-pad" id="houses" data-screen-label="Rooms">
   <div class="sbtw-wrap">
@@ -130,6 +131,7 @@ require __DIR__ . '/../header/header.php';
     </div>
   </div>
 </section>
+<?php endif; ?>
 
 <?php if ( ! function_exists( 'sbt_is_entire_rental_mode' ) || sbt_is_entire_rental_mode( 'theme02' ) ) : ?>
 <!-- ============ WHOLE MASSERIA ============ -->
