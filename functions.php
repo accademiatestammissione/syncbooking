@@ -91,7 +91,7 @@ function sbt_widgets_init() {
 add_action( 'widgets_init', 'sbt_widgets_init' );
 
 function sbt_display_version() {
-	return 'V2.1.29';
+	return 'V' . ( defined( 'SBT_VERSION' ) ? SBT_VERSION : '2.1.30' );
 }
 
 function sbt_enqueue_comment_reply() {
