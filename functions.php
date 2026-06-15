@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.42' );
+define( 'SBT_VERSION', '2.1.43' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -2882,6 +2882,24 @@ function sbt_apply_default_language_pack( &$SITE, &$NAV, &$C, &$TEXT ) {
 			'intro_over' => 'Pianifica con chiarezza',
 			'intro_h2' => 'Tariffe, check-in<br/>e condizioni',
 			'intro_p' => 'Le tariffe variano in base a stagione, durata e tipologia di prenotazione. Contattaci per una proposta aggiornata.',
+			'book_over' => 'Disponibilita in tempo reale',
+			'book_h3' => 'Controlla le date e prenota online',
+			'book_p' => 'Seleziona la tua casa, vedi i prezzi in tempo reale per le tue date e completa la prenotazione tramite il nostro sistema sicuro.',
+			'book_btn' => 'Prenota il soggiorno',
+			'book_note' => 'Miglior tariffa garantita prenotando diretto.',
+			'cond_over' => 'Buono a sapersi',
+			'cond_h2' => 'Condizioni',
+			'conditions' => array(
+				array( 'Check-in', 'Dalle 15:00. Arrivi in tardo orario su richiesta.' ),
+				array( 'Check-out', 'Entro le 10:30 del giorno di partenza.' ),
+				array( 'Soggiorno minimo', '2 notti; piu lungo in alta stagione e in periodi speciali.' ),
+				array( 'Incluso', 'Pulizia finale, biancheria e asciugamani, Wi-Fi, SPA, piscina e accesso al parco.' ),
+				array( 'Tassa di soggiorno', 'Applicata per persona/notte come richiesto dal Comune di Conversano.' ),
+				array( 'Animali', 'Benvenuti su richiesta: segnalalo in anticipo.' ),
+			),
+			'cta_over' => 'Su misura per le tue date',
+			'cta_h2' => 'Richiedi il tuo preventivo personalizzato',
+			'cta_btn' => 'Contattaci',
 		),
 		'spa' => array(
 			'title' => 'SPA & Wellness - Villa Rosa Resort',

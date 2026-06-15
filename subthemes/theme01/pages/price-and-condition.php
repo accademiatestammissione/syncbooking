@@ -2,32 +2,34 @@
 $PAGE = 'price-and-condition';
 $PAGE_TITLE = 'Price &amp; Condition – Villa Rosa Resort';
 require __DIR__ . '/../header/header.php';
+$p = isset( $C['price'] ) && is_array( $C['price'] ) ? $C['price'] : array();
+$houses_label = $C['houses']['h1'] ?? ( $TEXT['houses'] ?? 'Houses' );
 ?>
 <section class="sbtw-page-hero" data-screen-label="Price banner">
-  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-082.jpg' ) ); ?>" alt="Price & Condition" />
+  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-082.jpg' ) ); ?>" alt="<?php echo esc_attr( $SITE['name'] ?? 'Price & Condition' ); ?>" />
   <div class="sbtw-wrap">
-    <div class="sbtw-overline">Rates &amp; reservations</div>
-    <h1>Price &amp; Condition</h1>
-    <nav class="sbtw-crumb"><a href="<?php echo esc_url( sbt_t1_url( 'index.php' ) ); ?>">Home</a><span>/</span><a href="<?php echo esc_url( sbt_t1_url( 'houses.php' ) ); ?>">Houses</a><span>/</span>Price &amp; Condition</nav>
+    <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.price.over', $p['over'] ?? '' ); ?></div>
+    <h1><?php echo sbt_t1_text( 'C.price.h1', $p['h1'] ?? 'Price &amp; Condition' ); ?></h1>
+    <nav class="sbtw-crumb"><a href="<?php echo esc_url( sbt_t1_url( 'index.php' ) ); ?>"><?php echo esc_html( $TEXT['home'] ?? 'Home' ); ?></a><span>/</span><a href="<?php echo esc_url( sbt_t1_url( 'houses.php' ) ); ?>"><?php echo esc_html( $houses_label ); ?></a><span>/</span><?php echo esc_html( $p['h1'] ?? 'Price & Condition' ); ?></nav>
   </div>
 </section>
 
 <section class="sbtw-pad" data-screen-label="Price intro">
   <div class="sbtw-wrap">
     <div class="sbtw-section-head sbtw-reveal">
-      <div class="sbtw-overline">Transparent &amp; flexible</div>
-      <h2>Plan your stay with confidence</h2>
-      <p>Check live availability and the best rates for each house, then confirm your reservation in a few secure steps — instant booking, no waiting for a reply.</p>
+      <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.price.intro_over', $p['intro_over'] ?? '' ); ?></div>
+      <h2><?php echo sbt_t1_text( 'C.price.intro_h2', $p['intro_h2'] ?? '' ); ?></h2>
+      <p><?php echo sbt_t1_text( 'C.price.intro_p', $p['intro_p'] ?? '', array( 'multiline' => true ) ); ?></p>
     </div>
     <div class="sbtw-book-cta sbtw-reveal">
       <div class="sbtw-bc-text">
-        <div class="sbtw-overline">Real-time availability</div>
-        <h3>Check dates &amp; book online</h3>
-        <p>Select your house, see live prices for your dates and complete your reservation through our secure booking system.</p>
+        <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.price.book_over', $p['book_over'] ?? '' ); ?></div>
+        <h3><?php echo sbt_t1_text( 'C.price.book_h3', $p['book_h3'] ?? '' ); ?></h3>
+        <p><?php echo sbt_t1_text( 'C.price.book_p', $p['book_p'] ?? '', array( 'multiline' => true ) ); ?></p>
       </div>
       <div class="sbtw-bc-action">
-        <a class="sbtw-btn" href="https://villarosaresort.it/booking">Book your stay</a>
-        <span class="sbtw-bc-note">Best rate guaranteed when you book direct.</span>
+        <a class="sbtw-btn" href="<?php echo esc_url( sbt_t1_url( $p['book_url'] ?? 'syncbooking:booking' ) ); ?>"><?php echo sbt_t1_text( 'C.price.book_btn', $p['book_btn'] ?? 'Book your stay' ); ?></a>
+        <span class="sbtw-bc-note"><?php echo sbt_t1_text( 'C.price.book_note', $p['book_note'] ?? '' ); ?></span>
       </div>
     </div>
   </div>
@@ -36,25 +38,25 @@ require __DIR__ . '/../header/header.php';
 <section class="sbtw-pad" style="background:var(--surface);" data-screen-label="Conditions">
   <div class="sbtw-wrap">
     <div class="sbtw-section-head sbtw-reveal">
-      <div class="sbtw-overline">Good to know</div>
-      <h2>Conditions</h2>
+      <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.price.cond_over', $p['cond_over'] ?? '' ); ?></div>
+      <h2><?php echo sbt_t1_text( 'C.price.cond_h2', $p['cond_h2'] ?? 'Conditions' ); ?></h2>
     </div>
     <dl class="sbtw-cond-list sbtw-reveal">
-      <div class="sbtw-row"><dt>Check-in</dt><dd>From 3:00 PM. Late arrivals can be arranged on request.</dd></div>
-      <div class="sbtw-row"><dt>Check-out</dt><dd>By 10:30 AM on the day of departure.</dd></div>
-      <div class="sbtw-row"><dt>Minimum stay</dt><dd>2 nights; longer in high season and during special periods.</dd></div>
-      <div class="sbtw-row"><dt>Included</dt><dd>Final cleaning, bed linen and towels, Wi-Fi, SPA, pool and park access.</dd></div>
-      <div class="sbtw-row"><dt>City tax</dt><dd>Applied per person/night as required by the Municipality of Conversano.</dd></div>
-      <div class="sbtw-row"><dt>Pets</dt><dd>Welcome on request — please let us know in advance.</dd></div>
+      <?php
+      $conditions = ( ! empty( $p['conditions'] ) && is_array( $p['conditions'] ) ) ? $p['conditions'] : array();
+      foreach ( $conditions as $ri => $row ) :
+      ?>
+      <div class="sbtw-row"><dt><?php echo sbt_t1_text( 'C.price.conditions.' . $ri . '.0', $row[0] ?? '' ); ?></dt><dd><?php echo sbt_t1_text( 'C.price.conditions.' . $ri . '.1', $row[1] ?? '', array( 'multiline' => true ) ); ?></dd></div>
+      <?php endforeach; ?>
     </dl>
   </div>
 </section>
 
 <section class="sbtw-band" style="background-image:url('<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-090.jpg' ) ); ?>');" data-screen-label="Price CTA">
   <div class="sbtw-inner sbtw-reveal">
-    <div class="sbtw-overline">Tailored to your dates</div>
-    <h2>Request your personalised quote</h2>
-    <a class="sbtw-btn sbtw-btn--light" href="<?php echo esc_url( sbt_t1_url( 'contacts.php' ) ); ?>" style="margin-top:8px;">Contact us</a>
+    <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.price.cta_over', $p['cta_over'] ?? '' ); ?></div>
+    <h2><?php echo sbt_t1_text( 'C.price.cta_h2', $p['cta_h2'] ?? '' ); ?></h2>
+    <a class="sbtw-btn sbtw-btn--light" href="<?php echo esc_url( sbt_t1_url( $p['cta_url'] ?? 'contacts.php' ) ); ?>" style="margin-top:8px;"><?php echo sbt_t1_text( 'C.price.cta_btn', $p['cta_btn'] ?? 'Contact us' ); ?></a>
   </div>
 </section>
 
