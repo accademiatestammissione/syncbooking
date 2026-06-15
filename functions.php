@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.47' );
+define( 'SBT_VERSION', '2.1.48' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -2846,10 +2846,25 @@ function sbt_apply_default_language_pack( &$SITE, &$NAV, &$C, &$TEXT ) {
 			'h1' => 'La Villa',
 			'intro_over' => 'Il lusso di sentirsi a casa',
 			'intro_h2' => 'In vacanza,<br/>come a casa',
-			'intro_p' => 'Privacy, riservatezza, serenita e comfort a cinque stelle. Nel cuore di Conversano, avere una casa a disposizione e la soluzione ideale per chi cerca un soggiorno indipendente ed esclusivo.',
-			'amenities_over' => 'Benessere, comfort e indipendenza',
-			'amenities_h2' => 'Ogni dettaglio pensato per te',
-			'amenities_p' => 'Una gamma di servizi per comfort e relax, progettata per garantire un esperienza unica.',
+			'intro_p' => array(
+				'Privacy, riservatezza, serenita e comfort a cinque stelle. Il nuovo lusso in vacanza e darsi piu liberta: avere un intera casa a disposizione, per un soggiorno totalmente rilassante.',
+				'Nel cuore della Puglia piu bella, nell antico centro di Conversano, nel parco di una villa storica, avere una casa a disposizione e la soluzione ideale per chi cerca un soggiorno appartato, indipendente ed esclusivo.',
+				'Cura del dettaglio, design raffinato, un mix di moderno e antico, a due passi da monumenti e negozi: le case di Villa Rosa, con pergole esterne private, offrono anche i comfort tipici di un resort.',
+			),
+			'am_over' => 'Benessere, comfort e indipendenza',
+			'am_h2' => 'Ogni dettaglio pensato per te',
+			'am_p' => 'Una vasta gamma di servizi per il tuo comfort e relax, pensati per garantire la massima comodita e un esperienza unica.',
+			'amenities' => array(
+				array( 'spa', 'SPA e Wellness', 'Rilassati nella nostra SPA con bagno turco, sauna e sala massaggi per un esperienza di benessere unica.' ),
+				array( 'pool', 'Piscina esterna', 'Goditi la piscina nel giardino, perfetta per rilassarti e prendere il sole.' ),
+				array( 'park', 'Parco e Giardino', 'Un oasi di tranquillita, ideale per passeggiate e momenti di relax all aria aperta.' ),
+				array( 'gym', 'Palestra', 'Una palestra attrezzata per mantenerti in forma anche in vacanza.' ),
+				array( 'wifi', 'Wi-Fi gratuito', 'Connessione gratuita in tutti gli appartamenti e nelle aree comuni.' ),
+				array( 'kitchen', 'Cucina attrezzata', 'Ogni appartamento ha una cucina completa per preparare i pasti in totale autonomia.' ),
+			),
+			'cta_over' => 'Il tuo rifugio privato ti aspetta',
+			'cta_h2' => 'Scegli la tua casa a Villa Rosa',
+			'cta_btn' => 'Esplora le case',
 		),
 		'houses' => array(
 			'title' => 'Camere - Villa Rosa Resort',
@@ -2903,11 +2918,31 @@ function sbt_apply_default_language_pack( &$SITE, &$NAV, &$C, &$TEXT ) {
 		),
 		'spa' => array(
 			'title' => 'SPA & Wellness - Villa Rosa Resort',
-			'over' => 'Benessere',
+			'over' => 'Villa Rosa Resort & SPA',
 			'h1' => 'SPA & Wellness',
-			'intro_over' => 'Corpo e mente',
-			'intro_h2' => 'Un tempo lento<br/>per rigenerarsi',
-			'intro_p' => 'Bagno turco, sauna, idromassaggio, area relax, palestra e massaggi per una pausa di puro benessere.',
+			'intro_over' => 'Risveglia corpo e mente',
+			'intro_h2' => 'Un santuario<br/>di benessere',
+			'intro_p' => array(
+				'Dedica del tempo a te stesso nel nostro centro benessere, uno spazio intimo pensato per un relax profondo. Lascia che il calore del bagno turco, della sauna finlandese e l abbraccio dell idromassaggio sciolgano la giornata.',
+				'Dalle docce emozionali alla quieta area relax, ogni elemento e pensato per ritrovare l equilibrio e farti sentire rigenerato: il complemento perfetto alla tua fuga in Puglia.',
+			),
+			'feat_rows' => array(
+				array( 'label' => 'Acqua e calore', 'h3' => 'Idromassaggio e Bagno turco', 'p' => 'Abbandonati ai getti caldi della piscina idromassaggio e al vapore avvolgente del bagno turco: un rituale di relax senza tempo.' ),
+				array( 'label' => 'Corpo e anima', 'h3' => 'Sauna, massaggi e Yoga', 'p' => 'Sauna finlandese, doccia emozionale, una serena area relax, massaggi esperti e un programma Yoga dedicato per ritrovare te stesso.' ),
+			),
+			'am_over' => 'L esperienza wellness',
+			'am_h2' => 'Tutto per il tuo relax',
+			'amenities' => array(
+				array( 'spa', 'Bagno turco', 'Vapore avvolgente per purificare corpo e mente.' ),
+				array( 'spa', 'Sauna finlandese', 'Calore secco per sciogliere le tensioni e ritrovare energia.' ),
+				array( 'pool', 'Idromassaggio', 'Getti caldi e massaggianti per un relax totale.' ),
+				array( 'wifi', 'Doccia emozionale', 'Luce, profumo e acqua per un risveglio multisensoriale.' ),
+				array( 'park', 'Area relax', 'Uno spazio tranquillo per riposare tra un trattamento e l altro.' ),
+				array( 'gym', 'Palestra e Yoga', 'Uno spazio fitness e un programma Yoga dedicato.' ),
+			),
+			'cta_over' => 'Prenota il tuo momento',
+			'cta_h2' => 'Prenota la tua esperienza benessere',
+			'cta_btn' => 'Contattaci',
 		),
 		'experiences' => array(
 			'title' => 'Esperienze - Villa Rosa Resort',
