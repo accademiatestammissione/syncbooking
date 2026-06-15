@@ -2,6 +2,23 @@
 $PAGE = 'home';
 $PAGE_TITLE = 'Masseria Le Cerase – A 17th-century Masseria in Puglia';
 require __DIR__ . '/../header/header.php';
+$h = isset( $C['home'] ) && is_array( $C['home'] ) ? $C['home'] : array();
+$services = ( ! empty( $h['services'] ) && is_array( $h['services'] ) ) ? array_values( $h['services'] ) : array();
+$svc_icons = array(
+  '<path d="M2 17c2 0 2-1.5 4-1.5S10 17 12 17s2-1.5 4-1.5S20 17 22 17"/><path d="M2 21c2 0 2-1.5 4-1.5S10 21 12 21s2-1.5 4-1.5S20 21 22 21"/><path d="M8 13V5a2 2 0 0 1 4 0"/>',
+  '<path d="M12 21v-7"/><circle cx="12" cy="9" r="6"/>',
+  '<path d="M5 9h14l-1.5 6a2 2 0 0 1-2 1.5H8.5a2 2 0 0 1-2-1.5Z"/><path d="M9 9V7a3 3 0 0 1 6 0v2M10 19v2M14 19v2"/>',
+  '<path d="M5 12.5a10 10 0 0 1 14 0"/><path d="M8 15.5a6 6 0 0 1 8 0"/><circle cx="12" cy="19" r="1"/>',
+  '<path d="M7 3v8M5 3v4a2 2 0 0 0 4 0V3M7 11v10"/><path d="M16 3c-1.5 1-2 3-2 5s.5 3 2 3 2-1 2-3-.5-4-2-5Zm0 8v10"/>',
+  '<path d="M5 9h14l-1.5 6a2 2 0 0 1-2 1.5H8.5a2 2 0 0 1-2-1.5Z"/><path d="M9 9V7a3 3 0 0 1 6 0v2M10 19v2M14 19v2"/>',
+  '<path d="M4 15l1.5-5A2 2 0 0 1 7.4 8.6h9.2A2 2 0 0 1 18.5 10L20 15"/><path d="M3 15h18v3H3z"/><circle cx="7" cy="18" r="1.4"/><circle cx="17" cy="18" r="1.4"/>',
+  '<path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/>',
+);
+$room_cards = array(
+  array( 'tag' => 'Double', 'h3' => 'Camera degli Ulivi', 'imgs' => array( 'bedroom-1.jpg', 'bedroom-2.jpg', 'bedroom-cozy.jpg' ) ),
+  array( 'tag' => 'Double', 'h3' => 'Camera del Ciliegio', 'imgs' => array( 'bedroom-3.jpg', 'bedroom-iron.jpg', 'bedroom-1.jpg' ) ),
+  array( 'tag' => 'Double', 'h3' => 'Camera della Vigna', 'imgs' => array( 'bedroom-iron.jpg', 'bedroom-2.jpg', 'bedroom-3.jpg' ) ),
+);
 ?>
 <!-- ============ HERO ============ -->
 <section class="sbtw-hero" id="top" data-screen-label="Hero">
@@ -10,11 +27,11 @@ require __DIR__ . '/../header/header.php';
   </div>
   <div class="sbtw-hero-overlay"></div>
   <div class="sbtw-hero-inner">
-    <div class="sbtw-overline">Masseria Le Cerase · Conversano · Puglia</div>
-    <h1>A 17th-century<br/>masseria, only yours</h1>
-    <p class="sbtw-sub">A fortified country house among olive groves, cherry orchards and vineyards — yours to live, for up to ten guests.</p>
+    <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.home.hero_over', $h['hero_over'] ?? '' ); ?></div>
+    <h1><?php echo sbt_t1_text( 'C.home.hero_h1', $h['hero_h1'] ?? '' ); ?></h1>
+    <p class="sbtw-sub"><?php echo sbt_t1_text( 'C.home.hero_sub', $h['hero_sub'] ?? '', array( 'multiline' => true ) ); ?></p>
   </div>
-  <div class="sbtw-scrolldown"><span>Scroll</span><span class="sbtw-line"></span></div>
+  <div class="sbtw-scrolldown"><span><?php echo esc_html( $h['scroll_label'] ?? 'Scroll' ); ?></span><span class="sbtw-line"></span></div>
 </section>
 
 <!-- ============ WELCOME ============ -->
@@ -22,11 +39,11 @@ require __DIR__ . '/../header/header.php';
   <div class="sbtw-wrap">
     <div class="sbtw-two-col">
       <div class="sbtw-reveal">
-        <div class="sbtw-overline">Welcome</div>
-        <h2 class="sbtw-lead">Centuries of stone,<br/>surrounded by countryside</h2>
-        <p class="sbtw-body-text">Masseria Le Cerase is a fortified seventeenth-century farmhouse in the countryside of Conversano, in the heart of Puglia. Built in local limestone, it stands among organic olive groves, cherry orchards and vineyards — the trees that give the masseria its name.</p>
-        <p class="sbtw-body-text" style="margin-top:18px;">Restored with respect for its history, the masseria welcomes a single party at a time: vaulted halls, wrought-iron beds, a pool framed by olive trees, and the deep silence of the open land. A whole estate, entirely yours, for up to ten guests.</p>
-        <a class="sbtw-btn sbtw-btn--ghost" href="<?php echo esc_url( sbt_t1_url( 'villa.php' ) ); ?>" style="margin-top:30px;">Discover the Masseria</a>
+        <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.home.welcome_over', $h['welcome_over'] ?? 'Welcome' ); ?></div>
+        <h2 class="sbtw-lead"><?php echo sbt_t1_text( 'C.home.welcome_h2', $h['welcome_h2'] ?? '' ); ?></h2>
+        <p class="sbtw-body-text"><?php echo sbt_t1_text( 'C.home.welcome_p1', $h['welcome_p1'] ?? '', array( 'multiline' => true ) ); ?></p>
+        <p class="sbtw-body-text" style="margin-top:18px;"><?php echo sbt_t1_text( 'C.home.welcome_p2', $h['welcome_p2'] ?? '', array( 'multiline' => true ) ); ?></p>
+        <a class="sbtw-btn sbtw-btn--ghost" href="<?php echo esc_url( sbt_t1_url( $h['welcome_url'] ?? 'villa.php' ) ); ?>" style="margin-top:30px;"><?php echo sbt_t1_text( 'C.home.welcome_btn', $h['welcome_btn'] ?? 'Discover the Masseria' ); ?></a>
       </div>
       <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
         <div class="sbtw-mc-track">
@@ -40,7 +57,7 @@ require __DIR__ . '/../header/header.php';
         <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>
         <div class="sbtw-mc-dots"></div>
         <div class="sbtw-frame"></div>
-        <div class="sbtw-stamp">XVII<br/>century</div>
+        <div class="sbtw-stamp"><?php echo wp_kses( $h['welcome_stamp'] ?? 'XVII<br/>century', array( 'br' => array() ) ); ?></div>
       </div>
     </div>
   </div>
@@ -50,8 +67,8 @@ require __DIR__ . '/../header/header.php';
 <section class="sbtw-pad-s" data-screen-label="Gallery">
   <div class="sbtw-wrap">
     <div class="sbtw-section-head sbtw-reveal" style="margin-bottom:40px;">
-      <div class="sbtw-overline">A look inside</div>
-      <h2>Spaces that tell a story</h2>
+      <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.home.gallery_over', $h['gallery_over'] ?? 'A look inside' ); ?></div>
+      <h2><?php echo sbt_t1_text( 'C.home.gallery_h2', $h['gallery_h2'] ?? '' ); ?></h2>
     </div>
     <div class="sbtw-mosaic sbtw-reveal">
       <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/salone-volte.jpg' ) ); ?>" alt="The vaulted hall" /></div>
@@ -59,7 +76,7 @@ require __DIR__ . '/../header/header.php';
       <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/living-1.jpg' ) ); ?>" alt="The living room" /></div>
       <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/courtyard.jpg' ) ); ?>" alt="The inner courtyard" /></div>
       <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/pool-pergola.jpg' ) ); ?>" alt="The pool and pergola" /></div>
-      <button class="sbtw-m-allbtn" type="button"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Show all photos</button>
+      <button class="sbtw-m-allbtn" type="button"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><?php echo esc_html( $TEXT['show_all_photos'] ?? 'Show all photos' ); ?></button>
     </div>
   </div>
 </section>
@@ -69,18 +86,17 @@ require __DIR__ . '/../header/header.php';
 <section class="sbtw-houses sbtw-pad" id="houses" data-screen-label="Rooms">
   <div class="sbtw-wrap">
     <div class="sbtw-section-head sbtw-reveal">
-      <div class="sbtw-overline">The Rooms</div>
-      <h2>Sleeping under the vaults</h2>
-      <p>Five double bedrooms, each carved beneath ancient stone vaults and furnished with wrought-iron beds, antique wardrobes and warm linen. Space and privacy for up to ten guests, all within the same estate.</p>
+      <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.home.houses_over', $h['houses_over'] ?? 'The Rooms' ); ?></div>
+      <h2><?php echo sbt_t1_text( 'C.home.houses_h2', $h['houses_h2'] ?? '' ); ?></h2>
+      <p><?php echo sbt_t1_text( 'C.home.houses_p', $h['houses_p'] ?? '', array( 'multiline' => true ) ); ?></p>
     </div>
     <div class="sbtw-house-grid">
+      <?php foreach ( $room_cards as $rc ) : ?>
       <div class="sbtw-house sbtw-reveal">
-        <div class="sbtw-ph"><span class="sbtw-tag">Double</span>
+        <div class="sbtw-ph"><span class="sbtw-tag"><?php echo esc_html( $rc['tag'] ); ?></span>
           <div class="sbtw-media-carousel" data-carousel>
             <div class="sbtw-mc-track">
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/bedroom-1.jpg' ) ); ?>" alt="Vaulted bedroom" />
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/bedroom-2.jpg' ) ); ?>" alt="Bedroom interior" />
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/bedroom-cozy.jpg' ) ); ?>" alt="Room detail" />
+              <?php foreach ( $rc['imgs'] as $rci ) : ?><img src="<?php echo esc_url( sbt_asset_url( 'assets/images/' . $rci ) ); ?>" alt="<?php echo esc_attr( $rc['h3'] ); ?>" /><?php endforeach; ?>
             </div>
             <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
             <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>
@@ -88,46 +104,11 @@ require __DIR__ . '/../header/header.php';
           </div>
         </div>
         <div class="sbtw-body">
-          <h3>Camera degli Ulivi</h3>
-          <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( 'syncbooking:booking' ) ); ?>">Discover</a>
+          <h3><?php echo esc_html( $rc['h3'] ); ?></h3>
+          <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( 'syncbooking:booking' ) ); ?>"><?php echo esc_html( $TEXT['discover'] ?? 'Discover' ); ?></a>
         </div>
       </div>
-      <div class="sbtw-house sbtw-reveal">
-        <div class="sbtw-ph"><span class="sbtw-tag">Double</span>
-          <div class="sbtw-media-carousel" data-carousel>
-            <div class="sbtw-mc-track">
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/bedroom-3.jpg' ) ); ?>" alt="Vaulted bedroom" />
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/bedroom-iron.jpg' ) ); ?>" alt="Iron bed" />
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/bedroom-1.jpg' ) ); ?>" alt="Bedroom" />
-            </div>
-            <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
-            <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>
-            <div class="sbtw-mc-dots"></div>
-          </div>
-        </div>
-        <div class="sbtw-body">
-          <h3>Camera del Ciliegio</h3>
-          <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( 'syncbooking:booking' ) ); ?>">Discover</a>
-        </div>
-      </div>
-      <div class="sbtw-house sbtw-reveal">
-        <div class="sbtw-ph"><span class="sbtw-tag">Double</span>
-          <div class="sbtw-media-carousel" data-carousel>
-            <div class="sbtw-mc-track">
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/bedroom-iron.jpg' ) ); ?>" alt="Iron bed bedroom" />
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/bedroom-2.jpg' ) ); ?>" alt="Bedroom" />
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/bedroom-3.jpg' ) ); ?>" alt="Bedroom detail" />
-            </div>
-            <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
-            <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>
-            <div class="sbtw-mc-dots"></div>
-          </div>
-        </div>
-        <div class="sbtw-body">
-          <h3>Camera della Vigna</h3>
-          <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( 'syncbooking:booking' ) ); ?>">Discover</a>
-        </div>
-      </div>
+      <?php endforeach; ?>
     </div>
   </div>
 </section>
@@ -150,15 +131,11 @@ require __DIR__ . '/../header/header.php';
       <div class="sbtw-frame"></div>
     </div>
     <div class="sbtw-reveal">
-      <div class="sbtw-overline">Exclusive use</div>
-      <h2 class="sbtw-lead">Book the whole Masseria</h2>
-      <p class="sbtw-body-text">One booking, the entire estate: all five bedrooms, the vaulted halls, the country kitchen, the pool and the gardens — reserved exclusively for your party. The freedom of a private home, with the soul of a seventeenth-century masseria.</p>
-      <ul class="sbtw-specs" style="margin-top:28px;max-width:420px;">
-        <li><span>Guests</span><b>Up to 10</b></li>
-        <li><span>Use</span><b>Entire estate, exclusive</b></li>
-      </ul>
+      <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.home.whole_over', $h['whole_over'] ?? 'Exclusive use' ); ?></div>
+      <h2 class="sbtw-lead"><?php echo sbt_t1_text( 'C.home.whole_h2', $h['whole_h2'] ?? '' ); ?></h2>
+      <p class="sbtw-body-text"><?php echo sbt_t1_text( 'C.home.whole_p', $h['whole_p'] ?? '', array( 'multiline' => true ) ); ?></p>
       <div class="sbtw-house-actions">
-        <a class="sbtw-btn" href="<?php echo esc_url( sbt_t1_url( 'whole-masseria.php' ) ); ?>">Discover the whole masseria</a>
+        <a class="sbtw-btn" href="<?php echo esc_url( sbt_t1_url( $h['whole_url'] ?? 'whole-masseria.php' ) ); ?>"><?php echo sbt_t1_text( 'C.home.whole_btn', $h['whole_btn'] ?? 'Discover the whole masseria' ); ?></a>
       </div>
     </div>
   </div>
@@ -169,50 +146,17 @@ require __DIR__ . '/../header/header.php';
 <section class="sbtw-services sbtw-pad" id="services" data-screen-label="Services">
   <div class="sbtw-wrap">
     <div class="sbtw-section-head sbtw-reveal">
-      <div class="sbtw-overline">Comfort &amp; Care</div>
-      <h2>The estate at your service</h2>
+      <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.home.services_over', $h['services_over'] ?? 'Comfort &amp; Care' ); ?></div>
+      <h2><?php echo sbt_t1_text( 'C.home.services_h2', $h['services_h2'] ?? 'Services' ); ?></h2>
     </div>
     <div class="sbtw-svc-grid">
+      <?php foreach ( $services as $svi => $svc ) : ?>
       <div class="sbtw-svc sbtw-reveal">
-        <svg viewBox="0 0 24 24"><path d="M2 17c2 0 2-1.5 4-1.5S10 17 12 17s2-1.5 4-1.5S20 17 22 17"/><path d="M2 21c2 0 2-1.5 4-1.5S10 21 12 21s2-1.5 4-1.5S20 21 22 21"/><path d="M8 13V5a2 2 0 0 1 4 0"/></svg>
-        <h4>Private Pool</h4>
-        <p>A pool framed by a pergola and olive trees, reserved entirely for your party.</p>
+        <svg viewBox="0 0 24 24"><?php echo $svc_icons[ $svi ] ?? ''; ?></svg>
+        <h4><?php echo sbt_t1_text( 'C.home.services.' . $svi . '.0', $svc[0] ?? '' ); ?></h4>
+        <p><?php echo sbt_t1_text( 'C.home.services.' . $svi . '.1', $svc[1] ?? '', array( 'multiline' => true ) ); ?></p>
       </div>
-      <div class="sbtw-svc sbtw-reveal">
-        <svg viewBox="0 0 24 24"><path d="M12 21v-7"/><circle cx="12" cy="9" r="6"/></svg>
-        <h4>Olive Groves</h4>
-        <p>Acres of organic olive trees, cherry orchards and vineyards to wander freely.</p>
-      </div>
-      <div class="sbtw-svc sbtw-reveal">
-        <svg viewBox="0 0 24 24"><path d="M5 9h14l-1.5 6a2 2 0 0 1-2 1.5H8.5a2 2 0 0 1-2-1.5Z"/><path d="M9 9V7a3 3 0 0 1 6 0v2M10 19v2M14 19v2"/></svg>
-        <h4>Vaulted Halls</h4>
-        <p>Grand stone halls under historic vaults, for long dinners and gatherings.</p>
-      </div>
-      <div class="sbtw-svc sbtw-reveal">
-        <svg viewBox="0 0 24 24"><path d="M5 12.5a10 10 0 0 1 14 0"/><path d="M8 15.5a6 6 0 0 1 8 0"/><circle cx="12" cy="19" r="1"/></svg>
-        <h4>Wi-Fi</h4>
-        <p>Connectivity across the whole estate, for whenever you need it.</p>
-      </div>
-      <div class="sbtw-svc sbtw-reveal">
-        <svg viewBox="0 0 24 24"><path d="M7 3v8M5 3v4a2 2 0 0 0 4 0V3M7 11v10"/><path d="M16 3c-1.5 1-2 3-2 5s.5 3 2 3 2-1 2-3-.5-4-2-5Zm0 8v10"/></svg>
-        <h4>Country Kitchen</h4>
-        <p>A fully equipped kitchen under the vaults, for meals made with local produce.</p>
-      </div>
-      <div class="sbtw-svc sbtw-reveal">
-        <svg viewBox="0 0 24 24"><path d="M5 9h14l-1.5 6a2 2 0 0 1-2 1.5H8.5a2 2 0 0 1-2-1.5Z"/><path d="M9 9V7a3 3 0 0 1 6 0v2M10 19v2M14 19v2"/></svg>
-        <h4>Outdoor Dining</h4>
-        <p>Long tables in the courtyard and garden, for slow days under the sun.</p>
-      </div>
-      <div class="sbtw-svc sbtw-reveal">
-        <svg viewBox="0 0 24 24"><path d="M4 15l1.5-5A2 2 0 0 1 7.4 8.6h9.2A2 2 0 0 1 18.5 10L20 15"/><path d="M3 15h18v3H3z"/><circle cx="7" cy="18" r="1.4"/><circle cx="17" cy="18" r="1.4"/></svg>
-        <h4>On request</h4>
-        <p>Private chef, transfers and car rental arranged to make every part of Puglia yours.</p>
-      </div>
-      <div class="sbtw-svc sbtw-reveal">
-        <svg viewBox="0 0 24 24"><path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/></svg>
-        <h4>Fitness Room</h4>
-        <p>A private gym within the masseria, to stay active even on holiday.</p>
-      </div>
+      <?php endforeach; ?>
     </div>
   </div>
 </section>
@@ -220,9 +164,9 @@ require __DIR__ . '/../header/header.php';
 <!-- ============ QUOTE BAND ============ -->
 <section class="sbtw-band" id="band" style="background-image:url('<?php echo esc_url( sbt_asset_url( 'assets/images/aerial-garden.jpg' ) ); ?>');" data-screen-label="Surroundings band">
   <div class="sbtw-inner sbtw-reveal">
-    <div class="sbtw-overline">The Apulian way of living</div>
-    <h2>Slow days, long tables,<br/>and the scent of the land</h2>
-    <p>From the whitewashed lanes of Conversano to the trulli of the Itria Valley and the turquoise coast — everything you love about Puglia begins beyond the masseria's walls.</p>
+    <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.home.band_over', $h['band_over'] ?? '' ); ?></div>
+    <h2><?php echo sbt_t1_text( 'C.home.band_h2', $h['band_h2'] ?? '' ); ?></h2>
+    <p><?php echo sbt_t1_text( 'C.home.band_p', $h['band_p'] ?? '', array( 'multiline' => true ) ); ?></p>
   </div>
 </section>
 
@@ -244,18 +188,18 @@ require __DIR__ . '/../header/header.php';
         <div class="sbtw-frame"></div>
       </div>
       <div class="sbtw-reveal">
-        <div class="sbtw-label">Masseria Le Cerase</div>
-        <h3>Weddings &amp; Events</h3>
-        <p class="sbtw-body-text">An exclusive setting for the most important day. Exchange your vows in the olive garden, dine beneath the stone vaults of the Salone delle Volte, and celebrate along the lantern-lit avenue — the whole estate reserved for you and your guests.</p>
-        <a class="sbtw-btn sbtw-btn--ghost" href="<?php echo esc_url( sbt_t1_url( 'weddings.php' ) ); ?>" style="margin-top:28px;">Discover Weddings</a>
+        <div class="sbtw-label"><?php echo esc_html( $h['weddings_over'] ?? 'Masseria Le Cerase' ); ?></div>
+        <h3><?php echo sbt_t1_text( 'C.home.weddings_h2', $h['weddings_h2'] ?? 'Weddings &amp; Events' ); ?></h3>
+        <p class="sbtw-body-text"><?php echo sbt_t1_text( 'C.home.weddings_p', $h['weddings_p'] ?? '', array( 'multiline' => true ) ); ?></p>
+        <a class="sbtw-btn sbtw-btn--ghost" href="<?php echo esc_url( sbt_t1_url( $h['weddings_url'] ?? 'weddings.php' ) ); ?>" style="margin-top:28px;"><?php echo sbt_t1_text( 'C.home.weddings_btn', $h['weddings_btn'] ?? 'Discover Weddings' ); ?></a>
       </div>
     </div>
     <div class="sbtw-two-col" id="experience">
       <div class="sbtw-reveal">
-        <div class="sbtw-label">Masseria Le Cerase</div>
-        <h3>Apulian Experience</h3>
-        <p class="sbtw-body-text">We craft tailor-made experiences for each guest, shaped around your wishes — from cooking classes and olive-oil and wine tastings to private tours of the surrounding wonders of Puglia.</p>
-        <a class="sbtw-btn sbtw-btn--ghost" href="<?php echo esc_url( sbt_t1_url( 'experiences.php' ) ); ?>" style="margin-top:28px;">Explore experiences</a>
+        <div class="sbtw-label"><?php echo esc_html( $h['experience_over'] ?? 'Masseria Le Cerase' ); ?></div>
+        <h3><?php echo sbt_t1_text( 'C.home.experience_h2', $h['experience_h2'] ?? 'Apulian Experience' ); ?></h3>
+        <p class="sbtw-body-text"><?php echo sbt_t1_text( 'C.home.experience_p', $h['experience_p'] ?? '', array( 'multiline' => true ) ); ?></p>
+        <a class="sbtw-btn sbtw-btn--ghost" href="<?php echo esc_url( sbt_t1_url( $h['experience_url'] ?? 'experiences.php' ) ); ?>" style="margin-top:28px;"><?php echo sbt_t1_text( 'C.home.experience_btn', $h['experience_btn'] ?? 'Explore experiences' ); ?></a>
       </div>
       <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
         <div class="sbtw-mc-track">
@@ -277,9 +221,9 @@ require __DIR__ . '/../header/header.php';
 <!-- ============ STAY CTA BAND ============ -->
 <section class="sbtw-cta-band" id="house-cta" style="background-image:url('<?php echo esc_url( sbt_asset_url( 'assets/images/aerial-pool.jpg' ) ); ?>');" data-screen-label="Stay CTA">
   <div class="sbtw-inner sbtw-reveal">
-    <div class="sbtw-overline">The whole masseria awaits</div>
-    <h2>Your stay at<br/>Masseria Le Cerase</h2>
-    <a class="sbtw-btn sbtw-btn--light" href="<?php echo esc_url( sbt_t1_url( 'whole-masseria.php' ) ); ?>">Discover the stay</a>
+    <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.home.stay_over', $h['stay_over'] ?? 'The whole masseria awaits' ); ?></div>
+    <h2><?php echo sbt_t1_text( 'C.home.stay_h2', $h['stay_h2'] ?? 'Your stay at<br/>Masseria Le Cerase' ); ?></h2>
+    <a class="sbtw-btn sbtw-btn--light" href="<?php echo esc_url( sbt_t1_url( $h['stay_url'] ?? 'whole-masseria.php' ) ); ?>"><?php echo sbt_t1_text( 'C.home.stay_btn', $h['stay_btn'] ?? 'Discover the stay' ); ?></a>
   </div>
 </section>
 

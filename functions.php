@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.50' );
+define( 'SBT_VERSION', '2.1.51' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -3052,6 +3052,35 @@ function sbt_apply_default_language_pack( &$SITE, &$NAV, &$C, &$TEXT ) {
 			'houses_over' => 'Le camere',
 			'houses_h2' => 'Dormire sotto le volte',
 			'houses_p' => 'Camere matrimoniali sotto antiche volte in pietra, con lino caldo, dettagli d epoca e quiete di campagna.',
+			'welcome_btn' => 'Scopri la Masseria',
+			'welcome_stamp' => 'XVII<br/>secolo',
+			'gallery_over' => 'Uno sguardo dentro',
+			'gallery_h2' => 'Spazi che raccontano una storia',
+			'whole_over' => 'Uso esclusivo',
+			'services_over' => 'Comfort e cura',
+			'services_h2' => 'La tenuta al tuo servizio',
+			'services' => array(
+				array( 'Piscina privata', 'Una piscina incorniciata da pergola e ulivi, riservata solo al tuo gruppo.' ),
+				array( 'Uliveti', 'Ettari di ulivi biologici, ciliegi e vigneti da percorrere liberamente.' ),
+				array( 'Sale voltate', 'Grandi sale in pietra sotto volte storiche, per lunghe cene e ritrovi.' ),
+				array( 'Wi-Fi', 'Connessione in tutta la tenuta, quando ti serve.' ),
+				array( 'Cucina di campagna', 'Una cucina completa sotto le volte, per pasti con prodotti locali.' ),
+				array( 'Pranzi all aperto', 'Tavoli lunghi nel cortile e in giardino, per giornate lente al sole.' ),
+				array( 'Su richiesta', 'Chef privato, transfer e noleggio auto per vivere ogni angolo della Puglia.' ),
+				array( 'Sala fitness', 'Una palestra privata nella masseria, per restare attivi anche in vacanza.' ),
+			),
+			'band_over' => 'Il modo pugliese di vivere',
+			'band_h2' => 'Giornate lente, tavole lunghe<br/>e profumo di terra',
+			'band_p' => 'Dai vicoli bianchi di Conversano ai trulli della Valle d Itria e alla costa turchese: la Puglia inizia oltre le mura della masseria.',
+			'weddings_h2' => 'Matrimoni ed Eventi',
+			'weddings_p' => 'Una cornice esclusiva per il giorno piu importante. Scambiatevi le promesse nel giardino di ulivi, cenate sotto le volte del Salone delle Volte e festeggiate lungo il viale illuminato: l intera tenuta riservata a voi.',
+			'weddings_btn' => 'Scopri i Matrimoni',
+			'experience_h2' => 'Esperienza pugliese',
+			'experience_p' => 'Creiamo esperienze su misura per ogni ospite: dai sapori della tavola pugliese alle degustazioni di olio e vino, fino ai tour privati delle meraviglie della Puglia.',
+			'experience_btn' => 'Esplora le esperienze',
+			'stay_over' => 'Ti aspetta tutta la masseria',
+			'stay_h2' => 'Il tuo soggiorno alla<br/>Masseria Le Cerase',
+			'stay_btn' => 'Scopri il soggiorno',
 		),
 		'villa' => array( 'title' => 'Masseria - Masseria Le Cerase', 'h1' => 'La Masseria', 'intro_over' => 'L anima della proprieta', 'intro_h2' => 'Secoli di pietra,<br/>restaurati con cura', 'intro_p' => 'Una casa di campagna fortificata nella campagna di Conversano, circondata da ulivi, ciliegi e vigneti.' ),
 		'house' => array( 'title' => 'Camere - Masseria Le Cerase', 'h1' => 'Camere', 'intro_over' => 'Dormire sotto le volte', 'intro_h2' => 'Una camera quieta<br/>nella masseria', 'intro_p' => 'Camere matrimoniali sotto antiche volte in pietra, arredate con lino caldo e dettagli d epoca.' ),

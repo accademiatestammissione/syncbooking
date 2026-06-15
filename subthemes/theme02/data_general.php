@@ -319,6 +319,16 @@ $C['home'] = array_merge($C['home'], [
   'experience_btn' => 'Explore experiences',
   'services_over' => 'Comfort & Care',
   'services_h2' => 'The estate at your service',
+  'services' => [
+    ['Private Pool', 'A pool framed by a pergola and olive trees, reserved entirely for your party.'],
+    ['Olive Groves', 'Acres of organic olive trees, cherry orchards and vineyards to wander freely.'],
+    ['Vaulted Halls', 'Grand stone halls under historic vaults, for long dinners and gatherings.'],
+    ['Wi-Fi', 'Connectivity across the whole estate, for whenever you need it.'],
+    ['Country Kitchen', 'A fully equipped kitchen under the vaults, for meals made with local produce.'],
+    ['Outdoor Dining', 'Long tables in the courtyard and garden, for slow days under the sun.'],
+    ['On request', 'Private chef, transfers and car rental arranged to make every part of Puglia yours.'],
+    ['Fitness Room', 'A private gym within the masseria, to stay active even on holiday.'],
+  ],
   'cta_url' => 'syncbooking:booking',
   'cta_btn' => 'Request availability',
 ]);
