@@ -67,6 +67,7 @@ require __DIR__ . '/../header/header.php';
   </div>
 </section>
 
+<?php if ( ! function_exists( 'sbt_is_entire_rental_mode' ) || ! sbt_is_entire_rental_mode( 'theme03' ) ) : ?>
 <!-- ============ DISCOVER CARDS ============ -->
 <section class="sbtw-houses sbtw-pad" id="houses" data-screen-label="Discover">
   <div class="sbtw-wrap">
@@ -133,6 +134,7 @@ require __DIR__ . '/../header/header.php';
     </div>
   </div>
 </section>
+<?php endif; ?>
 
 <?php if ( ! function_exists( 'sbt_is_entire_rental_mode' ) || sbt_is_entire_rental_mode( 'theme03' ) ) : ?>
 <!-- ============ BOOK ENTIRE MASSERIA ============ -->

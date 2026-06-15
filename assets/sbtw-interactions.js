@@ -17,13 +17,36 @@
   var closeD = document.getElementById('closeDrawer');
   if (burger && drawerEl) burger.addEventListener('click', function () { drawerEl.classList.add('sbtw-open'); });
   if (closeD && drawerEl) closeD.addEventListener('click', function () { drawerEl.classList.remove('sbtw-open'); });
-  /* collapsible groups inside the drawer (Accommodation, Discover, ...) */
-  [].slice.call(document.querySelectorAll('.sbtw-drawer-label')).forEach(function (btn) {
+  /* collapsible groups inside the drawer (Accommodation, Discover, ...)
+     Themes differ: theme01 expands via the .sbtw-expanded class, theme02/03
+     via .sbtw-open + a JS-set max-height. Toggle all of them so every
+     theme's CSS works, and drive max-height from scrollHeight universally. */
+  [].slice.call(document.querySelectorAll('.sbtw-drawer-acc, .sbtw-drawer-label')).forEach(function (btn) {
     btn.addEventListener('click', function () {
-      this.classList.toggle('sbtw-expanded');
+      var open = !this.classList.contains('sbtw-open');
+      this.classList.toggle('sbtw-open', open);
+      this.classList.toggle('sbtw-expanded', open);
       var sub = this.nextElementSibling;
-      if (sub && sub.classList.contains('sbtw-sub-m')) sub.classList.toggle('sbtw-expanded');
+      if (sub && sub.classList.contains('sbtw-sub-m')) {
+        sub.classList.toggle('sbtw-open', open);
+        sub.classList.toggle('sbtw-expanded', open);
+        sub.style.maxHeight = open ? (sub.scrollHeight + 'px') : '0';
+      }
     });
+  });
+
+  /* hero slideshow: crossfade the imgs inside [data-heroslide] (theme03) */
+  [].slice.call(document.querySelectorAll('[data-heroslide]')).forEach(function (box) {
+    var slides = [].slice.call(box.querySelectorAll('img'));
+    if (!slides.length) return;
+    var si = 0;
+    slides[0].classList.add('sbtw-active');
+    if (slides.length < 2) return;
+    setInterval(function () {
+      slides[si].classList.remove('sbtw-active');
+      si = (si + 1) % slides.length;
+      slides[si].classList.add('sbtw-active');
+    }, 6000);
   });
   if (drawerEl) [].slice.call(drawerEl.querySelectorAll('a')).forEach(function (a) {
     a.addEventListener('click', function () { drawerEl.classList.remove('sbtw-open'); });

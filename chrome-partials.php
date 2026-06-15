@@ -56,7 +56,7 @@ if ( ! function_exists( 'sbt_render_site_header' ) ) {
 							<div class="sbtw-sub">
 								<?php foreach ( $item['sub'] as $sub ) : ?>
 									<?php if ( ! empty( $sub['divide'] ) ) : ?><div class="sbtw-divider"></div><?php endif; ?>
-									<a class="<?php echo ! empty( $sub['book'] ) ? 'sbtw-sub-book' : ''; ?>" href="<?php echo esc_url( $sub['url'] ?? '#' ); ?>"><span class="sbtw-t"><?php echo esc_html( $sub['label'] ?? '' ); ?></span></a>
+									<a<?php echo ! empty( $sub['book'] ) ? ' class="sbtw-sub-book"' : ''; ?> href="<?php echo esc_url( $sub['url'] ?? '#' ); ?>"><span class="sbtw-t"><?php echo esc_html( $sub['label'] ?? '' ); ?></span></a>
 								<?php endforeach; ?>
 							</div>
 						</div>
@@ -76,7 +76,7 @@ if ( ! function_exists( 'sbt_render_site_header' ) ) {
 				<div class="sbtw-lang-toggle">
 					<?php foreach ( $lang_inline as $li => $litem ) : ?>
 						<?php if ( $li > 0 ) : ?><span class="sbtw-sep">/</span><?php endif; ?>
-						<a href="<?php echo esc_url( $litem['url'] ?? '#' ); ?>" class="<?php echo ! empty( $litem['active'] ) ? 'sbtw-active' : ''; ?>"><?php echo esc_html( $litem['code'] ?? '' ); ?></a>
+						<a href="<?php echo esc_url( $litem['url'] ?? '#' ); ?>"<?php echo ! empty( $litem['active'] ) ? ' class="sbtw-active"' : ''; ?>><?php echo esc_html( $litem['code'] ?? '' ); ?></a>
 					<?php endforeach; ?>
 					<?php if ( $lang_more ) : ?>
 						<span class="sbtw-sep">/</span>
@@ -109,10 +109,10 @@ if ( ! function_exists( 'sbt_render_site_drawer' ) ) {
 			<button class="sbtw-close" id="closeDrawer" aria-label="Close">&times;</button>
 			<?php foreach ( (array) $NAV as $item ) : ?>
 				<?php if ( ! empty( $item['sub'] ) && is_array( $item['sub'] ) ) : ?>
-					<button type="button" class="sbtw-drawer-label"><?php echo esc_html( $item['label'] ?? '' ); ?><i class="sbtw-chev"></i></button>
+					<button type="button" class="sbtw-drawer-label sbtw-drawer-acc"><?php echo esc_html( $item['label'] ?? '' ); ?><i class="sbtw-chev"></i></button>
 					<div class="sbtw-sub-m">
 						<?php foreach ( $item['sub'] as $sub ) : ?>
-							<a class="<?php echo ! empty( $sub['book'] ) ? 'sbtw-sub-book' : ''; ?>" href="<?php echo esc_url( $sub['url'] ?? '#' ); ?>"><?php echo esc_html( $sub['label'] ?? '' ); ?></a>
+							<a<?php echo ! empty( $sub['book'] ) ? ' class="sbtw-sub-book"' : ''; ?> href="<?php echo esc_url( $sub['url'] ?? '#' ); ?>"><?php echo esc_html( $sub['label'] ?? '' ); ?></a>
 						<?php endforeach; ?>
 					</div>
 				<?php else : ?>
@@ -125,7 +125,7 @@ if ( ! function_exists( 'sbt_render_site_drawer' ) ) {
 				<span class="sbtw-lang-m-label">Language</span>
 				<div class="sbtw-lang-m-row">
 					<?php foreach ( $lang_items as $litem ) : ?>
-						<a href="<?php echo esc_url( $litem['url'] ?? '#' ); ?>" class="<?php echo ! empty( $litem['active'] ) ? 'sbtw-active' : ''; ?>"><?php echo esc_html( $litem['code'] ?? '' ); ?></a>
+						<a href="<?php echo esc_url( $litem['url'] ?? '#' ); ?>"<?php echo ! empty( $litem['active'] ) ? ' class="sbtw-active"' : ''; ?>><?php echo esc_html( $litem['code'] ?? '' ); ?></a>
 					<?php endforeach; ?>
 				</div>
 			</div>
