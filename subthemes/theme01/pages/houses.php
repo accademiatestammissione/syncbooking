@@ -9,7 +9,7 @@ $p = isset( $C['houses'] ) && is_array( $C['houses'] ) ? $C['houses'] : array();
   <div class="sbtw-wrap">
     <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.houses.over', $p['over'] ?? '' ); ?></div>
     <h1><?php echo sbt_t1_text( 'C.houses.h1', $p['h1'] ?? 'Houses' ); ?></h1>
-    <nav class="sbtw-crumb"><a href="<?php echo esc_url( sbt_t1_url( 'index.php' ) ); ?>"><?php echo esc_html( $TEXT['home'] ?? 'Home' ); ?></a><span>/</span><?php echo esc_html( $TEXT['houses'] ?? ( $p['h1'] ?? 'Houses' ) ); ?></nav>
+    <nav class="sbtw-crumb"><a href="<?php echo esc_url( sbt_t1_url( 'index.php' ) ); ?>"><?php echo esc_html( $TEXT['home'] ?? 'Home' ); ?></a><span>/</span><?php echo esc_html( $p['h1'] ?? ( $TEXT['houses'] ?? 'Houses' ) ); ?></nav>
   </div>
 </section>
 
