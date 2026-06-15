@@ -12,14 +12,13 @@ while ( have_posts() ) :
 		<div class="sbtw-wrap">
 			<div class="sbtw-overline"><?php echo esc_html( get_bloginfo( 'name' ) ); ?></div>
 			<h1><?php echo esc_html( get_the_title() ); ?></h1>
-			<nav class="sbtw-crumb"><a href="<?php echo esc_url( home_url( '/' ) ); ?>">Home</a><span>/</span><?php echo esc_html( get_the_title() ); ?></nav>
+			<nav class="sbtw-crumb"><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php echo esc_html( $TEXT['home'] ?? 'Home' ); ?></a><span>/</span><?php echo esc_html( get_the_title() ); ?></nav>
 		</div>
 	</section>
 
 	<section class="sbtw-pad" data-screen-label="Article body">
 		<div class="sbtw-wrap">
 			<article id="post-<?php the_ID(); ?>" <?php post_class( 'sbtw-article sbtw-reveal' ); ?>>
-				<h1 class="sbtw-title"><?php the_title(); ?></h1>
 				<div class="sbtw-article-body">
 					<?php
 					the_content();
@@ -37,9 +36,9 @@ while ( have_posts() ) :
 
 	<section class="sbtw-band" style="<?php echo esc_attr( sbt_t1_bg_style( 'post.' . get_the_ID() . '.cta_bg', $IMG['a5'] ?? $hero ) ); ?>" data-screen-label="Article CTA">
 		<div class="sbtw-inner sbtw-reveal">
-			<div class="sbtw-overline"><?php esc_html_e( 'Design your days', 'syncbooking_theme' ); ?></div>
-			<h2><?php esc_html_e( 'Plan your experiences', 'syncbooking_theme' ); ?></h2>
-			<a class="sbtw-btn sbtw-btn--light" href="<?php echo esc_url( sbt_t1_url( 'contacts.php' ) ); ?>" style="margin-top:8px;"><?php esc_html_e( 'Contact us', 'syncbooking_theme' ); ?></a>
+			<div class="sbtw-overline"><?php echo esc_html( $C['experiences']['cta_over'] ?? 'Design your days' ); ?></div>
+			<h2><?php echo esc_html( $C['experiences']['cta_h2'] ?? 'Plan your experiences' ); ?></h2>
+			<a class="sbtw-btn sbtw-btn--light" href="<?php echo esc_url( sbt_t1_url( 'contacts.php' ) ); ?>" style="margin-top:8px;"><?php echo esc_html( $TEXT['contact_us'] ?? 'Contact us' ); ?></a>
 		</div>
 	</section>
 <?php endwhile; ?>

@@ -261,7 +261,14 @@ if ( ! function_exists( 'sbt_render_contact_form' ) ) {
 	function sbt_render_contact_form( $TEXT = array() ) {
 		$status   = isset( $_GET['sbt_contact'] ) ? sanitize_key( wp_unslash( $_GET['sbt_contact'] ) ) : '';
 		$action   = function_exists( 'admin_url' ) ? admin_url( 'admin-post.php' ) : '';
-		$redirect = function_exists( 'get_permalink' ) ? ( get_permalink() ?: home_url( '/' ) ) : home_url( '/' );
+		$redirect = home_url( '/' );
+		if ( ! empty( $_SERVER['REQUEST_URI'] ) ) {
+			$host     = ! empty( $_SERVER['HTTP_HOST'] ) ? wp_unslash( $_SERVER['HTTP_HOST'] ) : wp_parse_url( home_url(), PHP_URL_HOST );
+			$path     = strtok( wp_unslash( $_SERVER['REQUEST_URI'] ), '?' );
+			$redirect = ( is_ssl() ? 'https://' : 'http://' ) . $host . $path;
+		} elseif ( function_exists( 'get_permalink' ) && get_permalink() ) {
+			$redirect = get_permalink();
+		}
 		?>
 		<form id="contact-form" class="sbtw-contact-form sbtw-reveal" method="post" action="<?php echo esc_url( $action ); ?>">
 			<input type="hidden" name="action" value="sbt_contact_submit" />
