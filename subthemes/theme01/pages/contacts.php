@@ -37,13 +37,7 @@ $p = isset( $C['contacts'] ) && is_array( $C['contacts'] ) ? $C['contacts'] : ar
           <?php if ( ! empty( $SITE['email'] ) ) : ?><p class="sbtw-big"><a href="mailto:<?php echo esc_attr( $SITE['email'] ); ?>"><?php echo esc_html( $SITE['email'] ); ?></a></p><?php endif; ?>
         </div>
       </div>
-      <form class="sbtw-contact-form sbtw-reveal" onsubmit="return false;">
-        <div class="sbtw-field"><label><?php echo esc_html( $TEXT['form_name'] ?? 'Name' ); ?></label><input type="text" placeholder="<?php echo esc_attr( $TEXT['form_name_placeholder'] ?? '' ); ?>" /></div>
-        <div class="sbtw-field"><label><?php echo esc_html( $TEXT['form_email'] ?? 'Email' ); ?></label><input type="email" placeholder="<?php echo esc_attr( $TEXT['form_email_placeholder'] ?? '' ); ?>" /></div>
-        <div class="sbtw-field"><label><?php echo esc_html( $TEXT['form_phone'] ?? 'Phone' ); ?></label><input type="tel" placeholder="<?php echo esc_attr( $TEXT['form_phone_placeholder'] ?? '' ); ?>" /></div>
-        <div class="sbtw-field"><label><?php echo esc_html( $TEXT['form_message'] ?? 'Message' ); ?></label><textarea placeholder="<?php echo esc_attr( $TEXT['form_message_placeholder'] ?? '' ); ?>"></textarea></div>
-        <button class="sbtw-btn" type="submit" style="align-self:flex-start;"><?php echo esc_html( $TEXT['form_send'] ?? 'Send message' ); ?></button>
-      </form>
+      <?php sbt_render_contact_form( $TEXT ); ?>
     </div>
   </div>
 </section>

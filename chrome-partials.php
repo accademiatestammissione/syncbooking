@@ -205,3 +205,79 @@ if ( ! function_exists( 'sbt_render_site_footer' ) ) {
 		<?php
 	}
 }
+
+/**
+ * Working contact form handler.
+ *
+ * The contact form posts to admin-post.php with action=sbt_contact_submit.
+ * We validate, email the active subtheme's address, and redirect back to the
+ * originating page with a status flag the page can display.
+ */
+if ( ! function_exists( 'sbt_handle_contact_submit' ) ) {
+	function sbt_handle_contact_submit() {
+		$redirect = isset( $_POST['sbt_redirect'] ) ? esc_url_raw( wp_unslash( $_POST['sbt_redirect'] ) ) : home_url( '/' );
+		if ( ! $redirect ) {
+			$redirect = home_url( '/' );
+		}
+
+		if ( ! isset( $_POST['sbt_contact_nonce'] ) || ! wp_verify_nonce( wp_unslash( $_POST['sbt_contact_nonce'] ), 'sbt_contact' ) ) {
+			wp_safe_redirect( add_query_arg( 'sbt_contact', 'error', $redirect ) . '#contact-form' );
+			exit;
+		}
+
+		$name    = sanitize_text_field( wp_unslash( $_POST['sbt_name'] ?? '' ) );
+		$email   = sanitize_email( wp_unslash( $_POST['sbt_email'] ?? '' ) );
+		$phone   = sanitize_text_field( wp_unslash( $_POST['sbt_phone'] ?? '' ) );
+		$message = sanitize_textarea_field( wp_unslash( $_POST['sbt_message'] ?? '' ) );
+
+		if ( '' === $name || ! is_email( $email ) || '' === $message ) {
+			wp_safe_redirect( add_query_arg( 'sbt_contact', 'error', $redirect ) . '#contact-form' );
+			exit;
+		}
+
+		$data      = function_exists( 'sbt_load_active_data' ) ? sbt_load_active_data() : array();
+		$site      = isset( $data['SITE'] ) && is_array( $data['SITE'] ) ? $data['SITE'] : array();
+		$to        = ! empty( $site['email'] ) ? $site['email'] : get_option( 'admin_email' );
+		$site_name = ! empty( $site['name'] ) ? $site['name'] : get_bloginfo( 'name' );
+
+		$subject = sprintf( '[%s] %s', $site_name, $name );
+		$body    = "Name: {$name}\nEmail: {$email}\nPhone: {$phone}\n\nMessage:\n{$message}\n";
+		$headers = array( 'Reply-To: ' . $name . ' <' . $email . '>' );
+
+		wp_mail( $to, $subject, $body, $headers );
+
+		wp_safe_redirect( add_query_arg( 'sbt_contact', 'sent', $redirect ) . '#contact-form' );
+		exit;
+	}
+	add_action( 'admin_post_sbt_contact_submit', 'sbt_handle_contact_submit' );
+	add_action( 'admin_post_nopriv_sbt_contact_submit', 'sbt_handle_contact_submit' );
+}
+
+/**
+ * Render the shared contact form (used by every subtheme contacts page).
+ * Outputs a working POST form plus the success/error notice.
+ */
+if ( ! function_exists( 'sbt_render_contact_form' ) ) {
+	function sbt_render_contact_form( $TEXT = array() ) {
+		$status   = isset( $_GET['sbt_contact'] ) ? sanitize_key( wp_unslash( $_GET['sbt_contact'] ) ) : '';
+		$action   = function_exists( 'admin_url' ) ? admin_url( 'admin-post.php' ) : '';
+		$redirect = function_exists( 'get_permalink' ) ? ( get_permalink() ?: home_url( '/' ) ) : home_url( '/' );
+		?>
+		<form id="contact-form" class="sbtw-contact-form sbtw-reveal" method="post" action="<?php echo esc_url( $action ); ?>">
+			<input type="hidden" name="action" value="sbt_contact_submit" />
+			<input type="hidden" name="sbt_redirect" value="<?php echo esc_url( $redirect ); ?>" />
+			<?php if ( function_exists( 'wp_nonce_field' ) ) { wp_nonce_field( 'sbt_contact', 'sbt_contact_nonce' ); } ?>
+			<?php if ( 'sent' === $status ) : ?>
+				<div class="sbtw-form-ok" style="margin-bottom:16px;"><?php echo esc_html( $TEXT['form_result'] ?? 'Thank you — your request has been sent. We will contact you shortly.' ); ?></div>
+			<?php elseif ( 'error' === $status ) : ?>
+				<div class="sbtw-form-err" style="margin-bottom:16px;"><?php echo esc_html( $TEXT['form_error'] ?? 'Please fill in your name, a valid email and a message.' ); ?></div>
+			<?php endif; ?>
+			<div class="sbtw-field"><label><?php echo esc_html( $TEXT['form_name'] ?? 'Name' ); ?></label><input type="text" name="sbt_name" required placeholder="<?php echo esc_attr( $TEXT['form_name_placeholder'] ?? '' ); ?>" /></div>
+			<div class="sbtw-field"><label><?php echo esc_html( $TEXT['form_email'] ?? 'Email' ); ?></label><input type="email" name="sbt_email" required placeholder="<?php echo esc_attr( $TEXT['form_email_placeholder'] ?? '' ); ?>" /></div>
+			<div class="sbtw-field"><label><?php echo esc_html( $TEXT['form_phone'] ?? 'Phone' ); ?></label><input type="tel" name="sbt_phone" placeholder="<?php echo esc_attr( $TEXT['form_phone_placeholder'] ?? '' ); ?>" /></div>
+			<div class="sbtw-field"><label><?php echo esc_html( $TEXT['form_message'] ?? 'Message' ); ?></label><textarea name="sbt_message" required placeholder="<?php echo esc_attr( $TEXT['form_message_placeholder'] ?? '' ); ?>"></textarea></div>
+			<button class="sbtw-btn" type="submit" style="align-self:flex-start;"><?php echo esc_html( $TEXT['form_send'] ?? 'Send message' ); ?></button>
+		</form>
+		<?php
+	}
+}

@@ -36,13 +36,7 @@ require __DIR__ . '/../header/header.php';
           <p class="sbtw-big"><a href="mailto:masserialecerase@gmail.com">masserialecerase@gmail.com</a></p>
         </div>
       </div>
-      <form class="sbtw-contact-form sbtw-reveal" onsubmit="return false;">
-        <div class="sbtw-field"><label>Name</label><input type="text" placeholder="Your name" /></div>
-        <div class="sbtw-field"><label>Email</label><input type="email" placeholder="you@email.com" /></div>
-        <div class="sbtw-field"><label>Phone</label><input type="tel" placeholder="+39 ..." /></div>
-        <div class="sbtw-field"><label>Message</label><textarea placeholder="Tell us about your stay, dates and number of guests…"></textarea></div>
-        <button class="sbtw-btn" type="submit" style="align-self:flex-start;">Send message</button>
-      </form>
+      <?php sbt_render_contact_form( isset( $TEXT ) ? $TEXT : array() ); ?>
     </div>
   </div>
 </section>
