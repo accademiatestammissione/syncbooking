@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.41' );
+define( 'SBT_VERSION', '2.1.42' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -2898,6 +2898,21 @@ function sbt_apply_default_language_pack( &$SITE, &$NAV, &$C, &$TEXT ) {
 			'intro_over' => 'Su misura per te',
 			'intro_h2' => 'Vivi la Puglia,<br/>a modo tuo',
 			'intro_p' => 'Creiamo esperienze personalizzate per ogni ospite: sapori, tour, mare e momenti da ricordare.',
+			'cards' => array(
+				array( 'over' => 'Gusto', 'h3' => 'Corsi di Cucina' ),
+				array( 'over' => 'Cantina', 'h3' => 'Degustazioni di Vino' ),
+				array( 'over' => 'Scopri', 'h3' => 'Tour Privati' ),
+				array( 'over' => 'Mare', 'h3' => 'Costa e Spiagge' ),
+			),
+			'wellness_over' => 'Corpo e anima',
+			'wellness_h2' => 'Wellness e SPA',
+			'wellness_p' => 'Sotto antiche volte, il nostro centro benessere e un mondo a parte: sauna, bagno turco, docce emozionali, piscina idromassaggio e area relax a lume di candela, oltre a una palestra attrezzata.',
+			'band_over' => 'Lento e autentico',
+			'band_h2' => 'L arte di vivere,<br/>alla pugliese',
+			'band_p' => 'Lunghi pranzi sotto la pergola, pietra calda di sole e la generosa accoglienza del Sud: questo e il ritmo di un soggiorno a Villa Rosa.',
+			'cta_over' => 'Progetta le tue giornate',
+			'cta_h2' => 'Pianifica le tue esperienze',
+			'cta_btn' => 'Contattaci',
 		),
 		'surroundings' => array(
 			'title' => 'Dintorni - Villa Rosa Resort',
@@ -2923,6 +2938,15 @@ function sbt_apply_default_language_pack( &$SITE, &$NAV, &$C, &$TEXT ) {
 			'intro_over' => 'Proposte speciali',
 			'intro_h2' => 'Soggiorni pensati<br/>per ogni stagione',
 			'intro_p' => 'Scopri promozioni, formule long stay e proposte wellness in periodi selezionati.',
+			'cards' => array(
+				array( 'badge' => 'Prenota prima', 'h3' => 'Prenota Prima, Risparmia', 'p' => 'Prenota con largo anticipo e approfitta di una tariffa speciale sulla tua casa preferita.' ),
+				array( 'badge' => 'Soggiorno lungo', 'h3' => '7 Notti = 6', 'p' => 'Soggiorna una settimana e paghi sei notti: il modo perfetto per rilassarti in Puglia.' ),
+				array( 'badge' => 'Benessere', 'h3' => 'Fuga SPA', 'p' => 'Un soggiorno romantico per due con una dedicata esperienza benessere nella nostra SPA.' ),
+				array( 'badge' => 'Stagione', 'h3' => 'Primavera e Autunno', 'p' => 'Scopri la Puglia nelle stagioni piu dolci con tariffe ridotte di bassa stagione.' ),
+			),
+			'cta_over' => 'Su misura per te',
+			'cta_h2' => 'Chiedi la tua migliore tariffa',
+			'cta_btn' => 'Contattaci',
 		),
 		'contacts' => array(
 			'title' => 'Contatti - Villa Rosa Resort',

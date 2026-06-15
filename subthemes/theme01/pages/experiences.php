@@ -2,28 +2,38 @@
 $PAGE = 'experiences';
 $PAGE_TITLE = 'Experiences – Villa Rosa Resort';
 require __DIR__ . '/../header/header.php';
+$p = isset( $C['experiences'] ) && is_array( $C['experiences'] ) ? $C['experiences'] : array();
+$exp_imgs = array(
+  sbt_asset_url( 'assets/images/interior-039.jpg' ),
+  sbt_asset_url( 'assets/images/interior-005.jpg' ),
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Alberobello%20trulli.JPG?width=1400',
+  'https://commons.wikimedia.org/wiki/Special:FilePath/Lama%20Monachile.jpg?width=1400',
+);
 ?>
 <section class="sbtw-page-hero" data-screen-label="Experiences banner">
-  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/apulian-breakfast.jpg' ) ); ?>" alt="Experiences" />
+  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/apulian-breakfast.jpg' ) ); ?>" alt="<?php echo esc_attr( $SITE['name'] ?? 'Experiences' ); ?>" />
   <div class="sbtw-wrap">
-    <div class="sbtw-overline">Villa Rosa Resort &amp; SPA</div>
-    <h1>Experiences</h1>
-    <nav class="sbtw-crumb"><a href="<?php echo esc_url( sbt_t1_url( 'index.php' ) ); ?>">Home</a><span>/</span>Experiences</nav>
+    <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.experiences.over', $p['over'] ?? '' ); ?></div>
+    <h1><?php echo sbt_t1_text( 'C.experiences.h1', $p['h1'] ?? 'Experiences' ); ?></h1>
+    <nav class="sbtw-crumb"><a href="<?php echo esc_url( sbt_t1_url( 'index.php' ) ); ?>"><?php echo esc_html( $TEXT['home'] ?? 'Home' ); ?></a><span>/</span><?php echo esc_html( $p['h1'] ?? 'Experiences' ); ?></nav>
   </div>
 </section>
 
 <section class="sbtw-pad" data-screen-label="Experiences intro">
   <div class="sbtw-wrap">
     <div class="sbtw-section-head sbtw-reveal">
-      <div class="sbtw-overline">Tailor-made for you</div>
-      <h2>Live Puglia, your way</h2>
-      <p>We craft bespoke experiences for every guest, shaped around your tastes and curiosities. From the flavours of the Apulian table to the wonders just beyond our gates, let us design moments you will remember long after you leave.</p>
+      <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.experiences.intro_over', $p['intro_over'] ?? '' ); ?></div>
+      <h2><?php echo sbt_t1_text( 'C.experiences.intro_h2', $p['intro_h2'] ?? '' ); ?></h2>
+      <p><?php echo sbt_t1_text( 'C.experiences.intro_p', $p['intro_p'] ?? '', array( 'multiline' => true ) ); ?></p>
     </div>
     <div class="sbtw-exp-grid">
-      <a class="sbtw-exp sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( 'post:cooking-classes' ) ); ?>"><img src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-039.jpg' ) ); ?>" alt="Cooking Classes" /><div class="sbtw-ex-body"><div class="sbtw-overline">Taste</div><h3>Cooking Classes</h3><div class="sbtw-ex-link">Discover <span></span></div></div></a>
-      <a class="sbtw-exp sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( 'post:wine-tastings' ) ); ?>"><img src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-005.jpg' ) ); ?>" alt="Wine Tastings" /><div class="sbtw-ex-body"><div class="sbtw-overline">Cellar</div><h3>Wine Tastings</h3><div class="sbtw-ex-link">Discover <span></span></div></div></a>
-      <a class="sbtw-exp sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( 'post:private-tours' ) ); ?>"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Alberobello%20trulli.JPG?width=1400" alt="Private Tours" /><div class="sbtw-ex-body"><div class="sbtw-overline">Discover</div><h3>Private Tours</h3><div class="sbtw-ex-link">Discover <span></span></div></div></a>
-      <a class="sbtw-exp sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( 'post:coast-beaches' ) ); ?>"><img src="https://commons.wikimedia.org/wiki/Special:FilePath/Lama%20Monachile.jpg?width=1400" alt="Coast & Beaches" /><div class="sbtw-ex-body"><div class="sbtw-overline">Sea</div><h3>Coast &amp; Beaches</h3><div class="sbtw-ex-link">Discover <span></span></div></div></a>
+      <?php
+      $cards = ( ! empty( $p['cards'] ) && is_array( $p['cards'] ) ) ? $p['cards'] : array();
+      foreach ( $cards as $ci => $card ) :
+        $cimg = $exp_imgs[ $ci ] ?? ( $card['img'] ?? '' );
+      ?>
+      <a class="sbtw-exp sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( $card['url'] ?? '#' ) ); ?>"><img src="<?php echo esc_url( $cimg ); ?>" alt="<?php echo esc_attr( $card['h3'] ?? '' ); ?>" /><div class="sbtw-ex-body"><div class="sbtw-overline"><?php echo sbt_t1_text( 'C.experiences.cards.' . $ci . '.over', $card['over'] ?? '' ); ?></div><h3><?php echo sbt_t1_text( 'C.experiences.cards.' . $ci . '.h3', $card['h3'] ?? '' ); ?></h3><div class="sbtw-ex-link"><?php echo esc_html( $TEXT['discover'] ?? 'Discover' ); ?> <span></span></div></div></a>
+      <?php endforeach; ?>
     </div>
   </div>
 </section>
@@ -31,9 +41,9 @@ require __DIR__ . '/../header/header.php';
 <section class="sbtw-pad" style="background:var(--surface);" data-screen-label="Experiences wellness">
   <div class="sbtw-wrap">
     <div class="sbtw-section-head sbtw-reveal" style="margin-bottom:44px;">
-      <div class="sbtw-overline">Body &amp; soul</div>
-      <h2>Wellness &amp; SPA</h2>
-      <p>Tucked beneath ancient vaults, our wellness centre is a world apart: sauna, Turkish bath, emotional showers, a hydromassage pool and a candle-lit relaxation lounge — plus a fully equipped gym for those who like to keep moving.</p>
+      <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.experiences.wellness_over', $p['wellness_over'] ?? '' ); ?></div>
+      <h2><?php echo sbt_t1_text( 'C.experiences.wellness_h2', $p['wellness_h2'] ?? '' ); ?></h2>
+      <p><?php echo sbt_t1_text( 'C.experiences.wellness_p', $p['wellness_p'] ?? '', array( 'multiline' => true ) ); ?></p>
     </div>
     <div class="sbtw-mosaic">
       <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/jacuzzi.png' ) ); ?>" alt="Villa Rosa SPA — hydromassage pool" /></div>
@@ -41,25 +51,25 @@ require __DIR__ . '/../header/header.php';
       <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/turkish-bath.png' ) ); ?>" alt="Villa Rosa SPA — Turkish bath" /></div>
       <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/relax-lounge.png' ) ); ?>" alt="Villa Rosa SPA — relaxation lounge" /></div>
       <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/gym.png' ) ); ?>" alt="Villa Rosa SPA — gym" /></div>
-      <button class="sbtw-m-allbtn" type="button"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Show all photos</button>
+      <button class="sbtw-m-allbtn" type="button"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><?php echo esc_html( $TEXT['show_all_photos'] ?? 'Show all photos' ); ?></button>
     </div>
   </div>
 </section>
 
 <section class="sbtw-band" style="background-image:url('<?php echo esc_url( sbt_asset_url( 'assets/images/wellness-corridor.jpg' ) ); ?>');" data-screen-label="Experiences band">
   <div class="sbtw-inner sbtw-reveal">
-    <div class="sbtw-overline">Unhurried &amp; authentic</div>
-    <h2>The art of living,<br/>Apulian style</h2>
-    <p>Long lunches under the pergola, sun-warmed stone, and the generous welcome of the South — this is the rhythm of a stay at Villa Rosa.</p>
+    <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.experiences.band_over', $p['band_over'] ?? '' ); ?></div>
+    <h2><?php echo sbt_t1_text( 'C.experiences.band_h2', $p['band_h2'] ?? '' ); ?></h2>
+    <p><?php echo sbt_t1_text( 'C.experiences.band_p', $p['band_p'] ?? '', array( 'multiline' => true ) ); ?></p>
   </div>
 </section>
 
 <section class="sbtw-pad" data-screen-label="Experiences CTA">
   <div class="sbtw-wrap" style="text-align:center;">
     <div class="sbtw-reveal" style="max-width:620px;margin:0 auto;">
-      <div class="sbtw-overline">Design your days</div>
-      <h2 class="sbtw-lead" style="margin-bottom:24px;">Plan your experiences</h2>
-      <a class="sbtw-btn" href="<?php echo esc_url( sbt_t1_url( 'contacts.php' ) ); ?>">Contact us</a>
+      <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.experiences.cta_over', $p['cta_over'] ?? '' ); ?></div>
+      <h2 class="sbtw-lead" style="margin-bottom:24px;"><?php echo sbt_t1_text( 'C.experiences.cta_h2', $p['cta_h2'] ?? '' ); ?></h2>
+      <a class="sbtw-btn" href="<?php echo esc_url( sbt_t1_url( $p['cta_url'] ?? 'contacts.php' ) ); ?>"><?php echo sbt_t1_text( 'C.experiences.cta_btn', $p['cta_btn'] ?? 'Contact us' ); ?></a>
     </div>
   </div>
 </section>
