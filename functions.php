@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.38' );
+define( 'SBT_VERSION', '2.1.39' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -2901,6 +2901,15 @@ function sbt_apply_default_language_pack( &$SITE, &$NAV, &$C, &$TEXT ) {
 			'intro_over' => 'Nel cuore della Puglia',
 			'intro_h2' => 'Luoghi da scoprire<br/>giorno dopo giorno',
 			'intro_p' => 'Conversano, Polignano, la Valle d Itria, Alberobello e Bari sono tutti a portata di mano.',
+			'cards' => array(
+				array( 'over' => '2 min a piedi', 'h3' => 'Conversano' ),
+				array( 'over' => '25 min', 'h3' => 'Polignano a Mare' ),
+				array( 'over' => '35 min', 'h3' => 'Alberobello e Valle d Itria' ),
+				array( 'over' => '40 min', 'h3' => 'Bari' ),
+			),
+			'cta_over' => 'Lasciati guidare',
+			'cta_h2' => 'Scopri la Puglia con noi',
+			'cta_btn' => 'Le nostre esperienze',
 		),
 		'offers' => array(
 			'title' => 'Offerte - Villa Rosa Resort',
