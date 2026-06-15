@@ -73,12 +73,20 @@
     var lbCount = lb.querySelector('.sbtw-lx-count');
     var imgs = [].slice.call(document.querySelectorAll('img[data-lightbox]'));
     var idx = 0;
+    var albumSrcs = null;
     function show(i) {
+      if (albumSrcs) {
+        idx = (i + albumSrcs.length) % albumSrcs.length;
+        lbImg.src = albumSrcs[idx];
+        if (lbCount) lbCount.textContent = (idx + 1) + ' / ' + albumSrcs.length;
+        return;
+      }
       idx = (i + imgs.length) % imgs.length;
       lbImg.src = imgs[idx].getAttribute('data-full') || imgs[idx].src;
       if (lbCount) lbCount.textContent = (idx + 1) + ' / ' + imgs.length;
     }
-    function openAt(i) { show(i); lb.classList.add('sbtw-open'); }
+    function openAt(i) { albumSrcs = null; show(i); lb.classList.add('sbtw-open'); }
+    window.sbtwOpenAlbum = function (srcs, start) { albumSrcs = srcs; show(start || 0); lb.classList.add('sbtw-open'); };
     imgs.forEach(function (im, i) { im.addEventListener('click', function () { openAt(i); }); });
     [].slice.call(document.querySelectorAll('.sbtw-m-allbtn')).forEach(function (btn) {
       btn.addEventListener('click', function () {

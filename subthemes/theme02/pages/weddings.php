@@ -1,6 +1,7 @@
 <?php
 $PAGE = 'weddings';
 $PAGE_TITLE = 'Weddings – Masseria Le Cerase';
+$PAGE_STYLES = array( 'assets/weddings.css' );
 require __DIR__ . '/../header/header.php';
 ?>
 <!-- ============ GALLERY ============ -->

@@ -29,6 +29,17 @@ if ( function_exists( 'add_query_arg' ) ) {
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <?php if ( function_exists( 'wp_head' ) ) wp_head(); ?>
 <link rel="stylesheet" href="<?php echo esc_url( $SITE_CSS_URL ); ?>" />
+<?php
+if ( ! empty( $PAGE_STYLES ) && is_array( $PAGE_STYLES ) ) {
+	foreach ( $PAGE_STYLES as $page_style ) {
+		$page_style_url = function_exists( 'sbt_asset_url' ) ? sbt_asset_url( $page_style ) : $page_style;
+		if ( function_exists( 'add_query_arg' ) ) {
+			$page_style_url = add_query_arg( 'ver', $ASSET_VERSION, $page_style_url );
+		}
+		echo '<link rel="stylesheet" href="' . esc_url( $page_style_url ) . '" />' . "\n";
+	}
+}
+?>
 </head>
 <body <?php if ( function_exists( 'body_class' ) ) { body_class( 'sbtw' ); } else { echo 'class="sbtw"'; } ?> data-page="<?php echo esc_attr( $PAGE ); ?>" data-template-version="<?php echo esc_attr( $SOURCE_VERSION ); ?>">
 <?php if ( function_exists( 'wp_body_open' ) ) wp_body_open(); ?>
