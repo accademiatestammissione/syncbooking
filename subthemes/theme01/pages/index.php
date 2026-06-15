@@ -78,7 +78,7 @@ require __DIR__ . '/../header/header.php';
       foreach ( $home_house_cards as $house_card ) :
         $hc_title = $house_card['title'] ?? '';
         $hc_tag   = $house_card['tag'] ?? '';
-        $hc_url   = $house_card['url'] ?? 'house-custom.php';
+        $hc_url   = $house_card['url'] ?? 'syncbooking:booking';
         $hc_imgs  = ( ! empty( $house_card['gallery'] ) && is_array( $house_card['gallery'] ) )
           ? array_values( array_filter( $house_card['gallery'] ) )
           : array_filter( array( $house_card['img'] ?? '' ) );

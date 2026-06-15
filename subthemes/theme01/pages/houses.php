@@ -26,7 +26,7 @@ $p = isset( $C['houses'] ) && is_array( $C['houses'] ) ? $C['houses'] : array();
       foreach ( $listing_cards as $house_card ) :
         $hc_title = $house_card['listing_title'] ?? ( $house_card['title'] ?? '' );
         $hc_tag   = $house_card['tag'] ?? '';
-        $hc_url   = $house_card['url'] ?? 'house-custom.php';
+        $hc_url   = $house_card['url'] ?? 'syncbooking:booking';
         $hc_img   = '';
         if ( ! empty( $house_card['gallery'] ) && is_array( $house_card['gallery'] ) ) {
           $hc_g   = array_values( array_filter( $house_card['gallery'] ) );
