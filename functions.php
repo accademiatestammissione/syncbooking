@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.49' );
+define( 'SBT_VERSION', '2.1.50' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -2820,6 +2820,9 @@ function sbt_apply_default_language_pack( &$SITE, &$NAV, &$C, &$TEXT ) {
 			'welcome_h2' => 'Una villa eclettica anni Trenta,<br/>rinata come retreat',
 			'welcome_p1' => 'Villa Rosa e la tua oasi di benessere. Immersa in un grande parco con alberi secolari, a pochi passi dal Castello normanno-svevo di Conversano, accoglie residenze eleganti e una storica villa eclettica degli anni Trenta.',
 			'welcome_p2' => 'Ogni dettaglio e pensato per il comfort: privacy degli alloggi, cucina attrezzata, pergola esterna, piscina, palestra e una SPA elegante.',
+			'welcome_stamp' => 'Dal<br/>1930',
+			'gallery_over' => 'Uno sguardo dentro',
+			'gallery_h2' => 'Spazi che raccontano una storia',
 			'entire_over' => 'Uso esclusivo',
 			'entire_h2' => 'Prenota<br/>tutta la villa',
 			'entire_p' => 'Un unica prenotazione, l intera proprieta: alloggi, parco secolare, piscina e pergole riservati solo a te e ai tuoi ospiti.',
@@ -2829,16 +2832,26 @@ function sbt_apply_default_language_pack( &$SITE, &$NAV, &$C, &$TEXT ) {
 			'houses_p' => 'La nuova idea di lusso in vacanza e avere piu liberta: spazi riservati, design raffinato e ogni comfort per vivere la Puglia con calma.',
 			'services_over' => 'Comfort & cura',
 			'services_h2' => 'Servizi',
+			'services' => array(
+				array( 'Piscina', 'Goditi la piscina nel giardino verde, perfetta per rilassarti e prendere il sole.' ),
+				array( 'Parco', 'Un oasi di tranquillita, ideale per passeggiate e momenti di relax all aperto.' ),
+				array( 'SPA', 'Bagno turco, vasca idromassaggio, sauna e sala massaggi per un esperienza di benessere unica.' ),
+				array( 'Wi-Fi', 'Per restare, se vuoi, sempre raggiungibile in tutta la proprieta.' ),
+				array( 'Cucina attrezzata', 'Ogni casa ha una cucina completa per preparare i pasti in totale autonomia.' ),
+				array( 'BBQ', 'La nostra area BBQ nel parco: l esperienza della grigliata all aperto con stile.' ),
+				array( 'Noleggio auto', 'Un servizio di noleggio auto per goderti ogni angolo della Puglia in autonomia.' ),
+				array( 'Palestra', 'Per mantenerti perfettamente in forma anche in vacanza.' ),
+			),
 			'band_over' => 'Il modo pugliese di vivere',
 			'band_h2' => 'Giornate lente, tavole lunghe<br/>e profumo di mare',
 			'band_p' => 'Dai vicoli bianchi di Conversano ai trulli della Valle d Itria e alla costa turchese: la Puglia inizia dalla tua porta.',
 			'spa_teaser_h3' => 'SPA & Wellness',
 			'spa_teaser_p' => 'Risveglia mente e corpo. Il nostro centro wellness offre idromassaggio, bagno turco, sauna, docce emozionali, area relax, palestra e massaggi.',
-			'experience_h3' => 'Esperienze pugliesi',
-			'experience_p' => 'Costruiamo esperienze su misura: cooking class, degustazioni, tour privati e meraviglie del territorio.',
-			'cta_over' => 'Il tuo rifugio ti aspetta',
-			'cta_h2' => 'Scegli la tua camera<br/>a Villa Rosa',
-			'cta_btn' => 'Esplora gli alloggi',
+			'experience_teaser_h3' => 'Esperienze pugliesi',
+			'experience_teaser_p' => 'Costruiamo esperienze su misura: cooking class, degustazioni, tour privati e meraviglie del territorio.',
+			'house_cta_over' => 'Il tuo rifugio ti aspetta',
+			'house_cta_h2' => 'Scegli la tua camera<br/>a Villa Rosa',
+			'house_cta_btn' => 'Esplora gli alloggi',
 		),
 		'villa' => array(
 			'title' => 'Villa - Villa Rosa Resort',
