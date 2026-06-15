@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.40' );
+define( 'SBT_VERSION', '2.1.41' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -2600,16 +2600,21 @@ function sbt_apply_unit_structure( &$SITE, &$NAV, &$C, &$HOUSE_CARDS, &$TEXT ) {
 				'desc'  => 'Units only',
 			);
 			$item['sub'][] = array(
-				'url'    => 'price-and-condition.php',
-				'label'  => $price_menu_label,
-				'desc'   => 'Rates, check-in & terms',
-				'divide' => true,
+				'url'   => $entire_url,
+				'label' => $whole_menu_label,
+				'desc'  => 'Exclusive rental',
 			);
 			$item['sub'][] = array(
-				'url'   => 'syncbooking:booking',
-				'label' => $book_menu_label,
-				'desc'  => 'Online booking',
-				'book'  => true,
+				'url'   => 'price-and-condition.php',
+				'label' => $price_menu_label,
+				'desc'  => 'Rates, check-in & terms',
+			);
+			$item['sub'][] = array(
+				'url'    => 'syncbooking:booking',
+				'label'  => $book_menu_label,
+				'desc'   => 'Online booking',
+				'divide' => true,
+				'book'   => true,
 			);
 		}
 	}
