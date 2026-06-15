@@ -2,14 +2,18 @@
 $PAGE = 'whole-villa';
 $PAGE_TITLE = 'The Whole Villa – Villa Rosa Resort';
 require __DIR__ . '/../header/header.php';
+$e = isset( $C['entire'] ) && is_array( $C['entire'] ) ? $C['entire'] : array();
+$specs = ( ! empty( $e['specs'] ) && is_array( $e['specs'] ) ) ? array_values( $e['specs'] ) : array();
+$intro_imgs = array( 'exterior-090.jpg', 'exterior-085.jpg', 'exterior-087.jpg', 'exterior-081.jpg' );
+$gallery_imgs = array( 'exterior-090.jpg', 'exterior-085.jpg', 'exterior-072.jpg', 'exterior-081.jpg', 'exterior-087.jpg', 'exterior-026.jpg', 'exterior-078.jpg', 'exterior-082.jpg', 'exterior-086.jpg', 'exterior-073.jpg', 'exterior-079.jpg', 'exterior-084.jpg' );
 ?>
 <!-- ============ BANNER ============ -->
 <section class="sbtw-page-hero" data-screen-label="Whole Villa banner">
-  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-090.jpg' ) ); ?>" alt="The whole Villa Rosa estate" />
+  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-090.jpg' ) ); ?>" alt="<?php echo esc_attr( $SITE['name'] ?? 'The whole Villa Rosa estate' ); ?>" />
   <div class="sbtw-wrap">
-    <div class="sbtw-overline">Villa Rosa Resort &amp; SPA</div>
-    <h1>The Whole Villa</h1>
-    <nav class="sbtw-crumb"><a href="<?php echo esc_url( sbt_t1_url( 'index.php' ) ); ?>">Home</a><span>/</span>The Whole Villa</nav>
+    <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.entire.over', $e['over'] ?? '' ); ?></div>
+    <h1><?php echo sbt_t1_text( 'C.entire.h1', $e['h1'] ?? 'The Whole Villa' ); ?></h1>
+    <nav class="sbtw-crumb"><a href="<?php echo esc_url( sbt_t1_url( 'index.php' ) ); ?>"><?php echo esc_html( $TEXT['home'] ?? 'Home' ); ?></a><span>/</span><?php echo esc_html( $e['h1'] ?? 'The Whole Villa' ); ?></nav>
   </div>
 </section>
 
@@ -19,10 +23,7 @@ require __DIR__ . '/../header/header.php';
     <div class="sbtw-two-col">
       <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
         <div class="sbtw-mc-track">
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-090.jpg' ) ); ?>" alt="The whole estate from above" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-085.jpg' ) ); ?>" alt="The villa at dusk" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-087.jpg' ) ); ?>" alt="The pergola" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-081.jpg' ) ); ?>" alt="The private pool" />
+          <?php foreach ( $intro_imgs as $ii ) : ?><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/' . $ii ) ); ?>" alt="The whole estate" /><?php endforeach; ?>
         </div>
         <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
         <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>
@@ -30,15 +31,15 @@ require __DIR__ . '/../header/header.php';
         <div class="sbtw-frame"></div>
       </div>
       <div class="sbtw-reveal">
-        <div class="sbtw-overline">Exclusive use</div>
-        <h2 class="sbtw-lead">One booking,<br/>the entire estate</h2>
-        <p class="sbtw-body-text">All the houses, the centuries-old park, the pool and the pergolas — reserved exclusively for you and your guests. The freedom of a private home, with the soul of a 1930s villa, in the ancient heart of Conversano.</p>
+        <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.entire.intro_over', $e['intro_over'] ?? '' ); ?></div>
+        <h2 class="sbtw-lead"><?php echo sbt_t1_text( 'C.entire.intro_h2', $e['intro_h2'] ?? '' ); ?></h2>
+        <p class="sbtw-body-text"><?php echo sbt_t1_text( 'C.entire.intro_p', $e['intro_p'] ?? '', array( 'multiline' => true ) ); ?></p>
         <ul class="sbtw-estate-specs">
-          <li><span>Guests</span><b>Up to 10</b></li>
-          <li><span>Houses</span><b>All, exclusively yours</b></li>
-          <li><span>Use</span><b>Entire estate, exclusive</b></li>
+          <?php foreach ( $specs as $si => $spec ) : ?>
+          <li><span><?php echo sbt_t1_text( 'C.entire.specs.' . $si . '.0', $spec[0] ?? '' ); ?></span><b><?php echo sbt_t1_text( 'C.entire.specs.' . $si . '.1', $spec[1] ?? '' ); ?></b></li>
+          <?php endforeach; ?>
         </ul>
-        <a class="sbtw-btn" href="https://syncbooking.com" style="margin-top:30px;">Book the whole villa</a>
+        <a class="sbtw-btn" href="<?php echo esc_url( sbt_t1_url( 'syncbooking:booking' ) ); ?>" style="margin-top:30px;"><?php echo sbt_t1_text( 'C.entire.book_btn', $e['book_btn'] ?? 'Book the whole villa' ); ?></a>
       </div>
     </div>
   </div>
@@ -48,23 +49,12 @@ require __DIR__ . '/../header/header.php';
 <section class="sbtw-pad" style="padding-top:0;" data-screen-label="Whole Villa gallery">
   <div class="sbtw-wrap">
     <div class="sbtw-section-head sbtw-reveal" style="margin-bottom:38px;">
-      <div class="sbtw-overline">The estate</div>
-      <h2>Park, pool &amp; pergolas</h2>
-      <p>Every corner of the estate is yours: the gardens, the pool, the outdoor lounges and the pergolas where days begin with breakfast and end with dinner under the stars.</p>
+      <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.entire.gallery_over', $e['gallery_over'] ?? 'The estate' ); ?></div>
+      <h2><?php echo sbt_t1_text( 'C.entire.gallery_h2', $e['gallery_h2'] ?? 'Park, pool &amp; pergolas' ); ?></h2>
+      <p><?php echo sbt_t1_text( 'C.entire.gallery_p', $e['gallery_p'] ?? 'Every corner of the estate is yours: the gardens, the pool, the outdoor lounges and the pergolas where days begin with breakfast and end with dinner under the stars.', array( 'multiline' => true ) ); ?></p>
     </div>
     <div class="sbtw-room-gallery sbtw-reveal">
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-090.jpg' ) ); ?>" alt="The estate from above" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-085.jpg' ) ); ?>" alt="The villa" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-072.jpg' ) ); ?>" alt="The park" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-081.jpg' ) ); ?>" alt="The pool" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-087.jpg' ) ); ?>" alt="The pergola" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-026.jpg' ) ); ?>" alt="The gardens" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-078.jpg' ) ); ?>" alt="Long table in the park" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-082.jpg' ) ); ?>" alt="Outdoor lounge" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-086.jpg' ) ); ?>" alt="The grounds" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-073.jpg' ) ); ?>" alt="The park" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-079.jpg' ) ); ?>" alt="Outdoor dining" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-084.jpg' ) ); ?>" alt="The villa grounds" />
+      <?php foreach ( $gallery_imgs as $gi ) : ?><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/' . $gi ) ); ?>" alt="The estate" /><?php endforeach; ?>
     </div>
   </div>
 </section>
@@ -72,10 +62,10 @@ require __DIR__ . '/../header/header.php';
 <!-- ============ BAND CTA ============ -->
 <section class="sbtw-band" style="background-image:url('<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-072.jpg' ) ); ?>');" data-screen-label="Whole Villa CTA">
   <div class="sbtw-inner sbtw-reveal">
-    <div class="sbtw-overline">Rates &amp; reservations</div>
-    <h2>Plan your exclusive stay</h2>
-    <p>Transparent rates, flexible terms and a warm welcome for you and your guests.</p>
-    <a class="sbtw-btn sbtw-btn--light" href="<?php echo esc_url( sbt_t1_url( 'price-and-condition.php' ) ); ?>" style="margin-top:8px;">View price &amp; condition</a>
+    <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.entire.cta_over', $e['cta_over'] ?? 'Rates &amp; reservations' ); ?></div>
+    <h2><?php echo sbt_t1_text( 'C.entire.cta_h2', $e['cta_h2'] ?? 'Plan your exclusive stay' ); ?></h2>
+    <p><?php echo sbt_t1_text( 'C.entire.cta_p', $e['cta_p'] ?? 'Transparent rates, flexible terms and a warm welcome for you and your guests.', array( 'multiline' => true ) ); ?></p>
+    <a class="sbtw-btn sbtw-btn--light" href="<?php echo esc_url( sbt_t1_url( $e['cta_url'] ?? 'price-and-condition.php' ) ); ?>" style="margin-top:8px;"><?php echo sbt_t1_text( 'C.entire.cta_btn', $e['cta_btn'] ?? 'View price &amp; condition' ); ?></a>
   </div>
 </section>
 

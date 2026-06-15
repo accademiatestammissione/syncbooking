@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.48' );
+define( 'SBT_VERSION', '2.1.49' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -2888,7 +2888,19 @@ function sbt_apply_default_language_pack( &$SITE, &$NAV, &$C, &$TEXT ) {
 			'intro_over' => 'Tutta la proprieta, solo per te',
 			'intro_h2' => 'Prenota<br/>Villa Rosa in esclusiva',
 			'intro_p' => 'Alloggi, parco, piscina, pergole e aree comuni riservati a un unico gruppo, per vivere la liberta di una casa privata con l anima di una villa storica.',
+			'specs' => array(
+				array( 'Uso', 'Intera proprieta' ),
+				array( 'Spazi', 'Case, piscina, parco e SPA' ),
+				array( 'Stile', 'Rifugio in villa privata' ),
+			),
+			'book_btn' => 'Prenota tutta la villa',
+			'gallery_over' => 'Uno sguardo dentro',
+			'gallery_h2' => 'Spazi riservati a te',
+			'gallery_p' => 'Ogni angolo della tenuta e tuo: i giardini, la piscina, i salotti all aperto e le pergole dove le giornate iniziano con la colazione e finiscono con la cena sotto le stelle.',
+			'cta_over' => 'Quando vuoi tu',
 			'cta_h2' => 'Richiedi disponibilita per tutta la villa',
+			'cta_p' => 'Tariffe trasparenti, condizioni flessibili e una calda accoglienza per te e i tuoi ospiti.',
+			'cta_btn' => 'Richiedi disponibilita',
 		),
 		'price' => array(
 			'title' => 'Prezzi e condizioni - Villa Rosa Resort',
