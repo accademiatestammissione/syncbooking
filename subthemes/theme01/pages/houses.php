@@ -37,7 +37,7 @@ $p = isset( $C['houses'] ) && is_array( $C['houses'] ) ? $C['houses'] : array();
         }
         $hc_specs = ( ! empty( $house_card['specs'] ) && is_array( $house_card['specs'] ) ) ? $house_card['specs'] : array();
       ?>
-      <a class="sbtw-house sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( $hc_url ) ); ?>">
+      <a class="sbtw-house sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( 'syncbooking:booking' ) ); ?>">
         <div class="sbtw-ph"><span class="sbtw-tag"><?php echo esc_html( $hc_tag ); ?></span><img src="<?php echo esc_url( $hc_img ); ?>" alt="<?php echo esc_attr( $hc_title ); ?>" /></div>
         <div class="sbtw-body">
           <h3><?php echo esc_html( $hc_title ); ?></h3>

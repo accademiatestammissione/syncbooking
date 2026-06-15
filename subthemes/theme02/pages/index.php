@@ -89,7 +89,7 @@ require __DIR__ . '/../header/header.php';
         </div>
         <div class="sbtw-body">
           <h3>Camera degli Ulivi</h3>
-          <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( 'house.php' ) ); ?>">Discover</a>
+          <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( 'syncbooking:booking' ) ); ?>">Discover</a>
         </div>
       </div>
       <div class="sbtw-house sbtw-reveal">
@@ -107,7 +107,7 @@ require __DIR__ . '/../header/header.php';
         </div>
         <div class="sbtw-body">
           <h3>Camera del Ciliegio</h3>
-          <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( 'house.php' ) ); ?>">Discover</a>
+          <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( 'syncbooking:booking' ) ); ?>">Discover</a>
         </div>
       </div>
       <div class="sbtw-house sbtw-reveal">
@@ -125,7 +125,7 @@ require __DIR__ . '/../header/header.php';
         </div>
         <div class="sbtw-body">
           <h3>Camera della Vigna</h3>
-          <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( 'house.php' ) ); ?>">Discover</a>
+          <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( 'syncbooking:booking' ) ); ?>">Discover</a>
         </div>
       </div>
     </div>

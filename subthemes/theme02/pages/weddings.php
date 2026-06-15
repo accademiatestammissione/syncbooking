@@ -228,18 +228,21 @@ require __DIR__ . '/../header/header.php';
     <div class="sbtw-overline" style="color:var(--gold);">Masseria Le Cerase</div>
     <h3 id="quoteTitle">Free quote</h3>
     <p class="sbtw-w-modal-sub">Fill in the form: we will reply within 24 hours with a tailored proposal.</p>
-    <form class="sbtw-w-form" id="quoteForm">
+    <form class="sbtw-w-form" id="quoteForm" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+      <input type="hidden" name="action" value="sbt_contact_submit" />
+      <input type="hidden" name="sbt_redirect" value="<?php echo esc_url( ( is_ssl() ? 'https://' : 'http://' ) . ( ! empty( $_SERVER['HTTP_HOST'] ) ? wp_unslash( $_SERVER['HTTP_HOST'] ) : wp_parse_url( home_url(), PHP_URL_HOST ) ) . strtok( ! empty( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '/', '?' ) ); ?>" />
+      <?php if ( function_exists( 'wp_nonce_field' ) ) { wp_nonce_field( 'sbt_contact', 'sbt_contact_nonce' ); } ?>
       <label>Full Name
-        <input type="text" name="name" required autocomplete="name" placeholder="Mario Rossi" />
+        <input type="text" name="sbt_name" required autocomplete="name" placeholder="Mario Rossi" />
       </label>
       <label>Email
-        <input type="email" name="email" required autocomplete="email" placeholder="mario.rossi@email.com" />
+        <input type="email" name="sbt_email" required autocomplete="email" placeholder="mario.rossi@email.com" />
       </label>
       <label>Phone
-        <input type="tel" name="phone" required autocomplete="tel" placeholder="+39 333 123 4567" />
+        <input type="tel" name="sbt_phone" required autocomplete="tel" placeholder="+39 333 123 4567" />
       </label>
       <label>Notes
-        <textarea name="notes" rows="4">Request for wedding information</textarea>
+        <textarea name="sbt_message" rows="4">Request for wedding information</textarea>
       </label>
       <button class="sbtw-btn" type="submit" style="width:100%;justify-content:center;">Send request</button>
       <div class="sbtw-w-resp" style="margin-top:12px;"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> Replies within 24 hours</div>
@@ -264,7 +267,9 @@ require __DIR__ . '/../header/header.php';
   if(btnM)btnM.addEventListener('click',open);
   [].slice.call(modal.querySelectorAll('[data-close-modal]')).forEach(function(el){el.addEventListener('click',close);});
   document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
-  if(form)form.addEventListener('submit',function(e){e.preventDefault();form.hidden=true;ok.hidden=false;});
+  // the form now POSTs to the server; after a successful send the page reloads
+  // with ?sbt_contact=sent — reopen the modal and show the confirmation.
+  if(/[?&]sbt_contact=sent/.test(location.search)){open();if(form)form.hidden=true;if(ok)ok.hidden=false;}
 })();
 (function(){
   var albumBase = '<?php echo esc_url( sbt_asset_url( 'assets/images/' ) ); ?>';
