@@ -112,7 +112,8 @@ if ( ! function_exists( 'sbt_render_site_drawer' ) ) {
 			// drawer matches the current design and the JS accordion works.
 			?>
 			<style id="sbtw-drawer-fallback">
-			.sbtw-drawer .sbtw-drawer-label{-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:space-between;background:transparent;background-image:none;box-shadow:none;border-radius:0;margin:0;border:0;text-align:left;width:100%;color:#f4f1e8;font-family:var(--serif);font-size:17px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);cursor:pointer;}
+			.sbtw-drawer > a{font-size:21px;padding:9px 0;}
+			.sbtw-drawer .sbtw-drawer-label{-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:space-between;background:transparent;background-image:none;box-shadow:none;border-radius:0;margin:0;border:0;text-align:left;width:100%;color:#f4f1e8;font-family:var(--serif);font-size:21px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.08);cursor:pointer;}
 			.sbtw-drawer .sbtw-drawer-label .sbtw-chev{margin-right:6px;transition:transform .3s;}
 			.sbtw-drawer .sbtw-drawer-label.sbtw-expanded .sbtw-chev,.sbtw-drawer .sbtw-drawer-label.sbtw-open .sbtw-chev{transform:rotate(225deg) translateY(-2px);}
 			.sbtw-drawer .sbtw-sub-m{display:flex;flex-direction:column;max-height:0;overflow:hidden;transition:max-height .4s ease;}
