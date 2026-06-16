@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.60' );
+define( 'SBT_VERSION', '2.1.61' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -3690,6 +3690,10 @@ function sbt_bootstrap_content( &$IMG, &$SITE, &$NAV, &$C, &$HOUSE_CARDS = array
 	sbt_normalize_theme01_seed_article_card_urls( $C );
 
 	sbt_apply_unit_structure( $SITE, $NAV, $C, $HOUSE_CARDS, $TEXT );
+	// Re-apply the per-language menu overrides so a custom Accommodation
+	// label/submenu set in the Header & Menu editor wins over the
+	// structurally-rebuilt accommodation item above.
+	sbt_apply_flat_overrides( $NAV, 'NAV', $overrides );
 	sbt_filter_disabled_nav_items( $NAV );
 	sbt_rewrite_content_urls( $NAV );
 	sbt_rewrite_content_urls( $C );
