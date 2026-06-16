@@ -104,6 +104,28 @@ if ( ! function_exists( 'sbt_render_site_drawer' ) ) {
 		$home_url       = function_exists( 'sbt_url' ) ? sbt_url( 'index.php' ) : 'index.php';
 		$lang_primary   = $SITE['lang_primary'] ?? 'EN';
 		$lang_secondary = $SITE['lang_secondary'] ?? 'IT';
+		$subtheme       = function_exists( 'sbt_active_subtheme_key' ) ? sbt_active_subtheme_key() : '';
+		if ( 'theme01' === $subtheme ) :
+			// Some live theme01 installs still serve an older site.css whose drawer
+			// has no collapsible accordion and no styled language block. Supplement
+			// it here (loaded after site.css, so these rules win) so the mobile
+			// drawer matches the current design and the JS accordion works.
+			?>
+			<style id="sbtw-drawer-fallback">
+			.sbtw-drawer .sbtw-drawer-label{-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;display:flex;align-items:center;justify-content:space-between;background:transparent;background-image:none;box-shadow:none;border-radius:0;margin:0;border:0;text-align:left;width:100%;color:#f4f1e8;font-family:var(--serif);font-size:17px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08);cursor:pointer;}
+			.sbtw-drawer .sbtw-drawer-label .sbtw-chev{margin-right:6px;transition:transform .3s;}
+			.sbtw-drawer .sbtw-drawer-label.sbtw-expanded .sbtw-chev,.sbtw-drawer .sbtw-drawer-label.sbtw-open .sbtw-chev{transform:rotate(225deg) translateY(-2px);}
+			.sbtw-drawer .sbtw-sub-m{display:flex;flex-direction:column;max-height:0;overflow:hidden;transition:max-height .4s ease;}
+			.sbtw-drawer .sbtw-sub-m.sbtw-expanded,.sbtw-drawer .sbtw-sub-m.sbtw-open{max-height:480px;}
+			.sbtw-drawer .sbtw-sub-m a{font-size:14px;padding:6px 0 6px 18px;color:#e7bdb3;border-bottom:1px solid rgba(255,255,255,.05);}
+			.sbtw-drawer .sbtw-lang-m{margin-top:auto;padding-top:26px;}
+			.sbtw-drawer .sbtw-lang-m-label{display:block;font-family:var(--sans,sans-serif);font-size:10.5px;letter-spacing:.22em;text-transform:uppercase;color:#e7bdb3;opacity:.7;margin-bottom:10px;}
+			.sbtw-drawer .sbtw-lang-m-row{display:flex;gap:10px;flex-wrap:wrap;}
+			.sbtw-drawer .sbtw-lang-m-row a{font-family:var(--sans,sans-serif);font-size:12px;letter-spacing:.14em;padding:10px 0;min-width:44px;text-align:center;border:1px solid rgba(255,255,255,.22);color:#f4f1e8;opacity:.75;}
+			.sbtw-drawer .sbtw-lang-m-row a.sbtw-active{background:var(--rose);border-color:var(--rose);color:var(--header-red-deep);opacity:1;font-weight:600;}
+			</style>
+			<?php
+		endif;
 		?>
 		<div class="sbtw-drawer" id="drawer">
 			<button class="sbtw-close" id="closeDrawer" aria-label="Close">&times;</button>
