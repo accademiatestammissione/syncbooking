@@ -2,37 +2,38 @@
 $PAGE = 'contacts';
 $PAGE_TITLE = 'Contacts – Masseria Montefieno';
 require __DIR__ . '/../header/header.php';
+$p = isset( $C['contacts'] ) && is_array( $C['contacts'] ) ? $C['contacts'] : array();
 ?>
 <section class="sbtw-page-hero" data-screen-label="Contacts banner">
-  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-04.jpg' ) ); ?>" alt="Contacts" />
+  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-04.jpg' ) ); ?>" alt="<?php echo esc_attr( $p['h1'] ?? 'Contacts' ); ?>" />
   <div class="sbtw-wrap">
-    <div class="sbtw-overline">We are here for you</div>
-    <h1>Contacts</h1>
-    <nav class="sbtw-crumb"><a href="<?php echo esc_url( sbt_t1_url( 'index.php' ) ); ?>">Home</a><span>/</span>Contacts</nav>
+    <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.contacts.over', $p['over'] ?? 'We are here for you' ); ?></div>
+    <h1><?php echo sbt_t1_text( 'C.contacts.h1', $p['h1'] ?? 'Contacts' ); ?></h1>
+    <nav class="sbtw-crumb"><a href="<?php echo esc_url( sbt_t1_url( 'index.php' ) ); ?>"><?php echo esc_html( $TEXT['home'] ?? 'Home' ); ?></a><span>/</span><?php echo esc_html( $p['h1'] ?? 'Contacts' ); ?></nav>
   </div>
 </section>
 
 <section class="sbtw-pad" data-screen-label="Contacts content">
   <div class="sbtw-wrap">
     <div class="sbtw-section-head sbtw-reveal" style="margin-bottom:56px;">
-      <div class="sbtw-overline">Get in touch</div>
-      <h2>Plan your stay with us</h2>
-      <p>For availability, tailored quotes or any request, we will be delighted to help. Reach us by phone, email or WhatsApp — or send a message using the form and we will reply as soon as possible.</p>
+      <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.contacts.intro_over', $p['intro_over'] ?? 'Get in touch' ); ?></div>
+      <h2><?php echo sbt_t1_text( 'C.contacts.intro_h2', $p['intro_h2'] ?? 'Plan your stay with us' ); ?></h2>
+      <p><?php echo sbt_t1_text( 'C.contacts.intro_p', $p['intro_p'] ?? 'For availability, tailored quotes or any request, we will be delighted to help. Reach us by phone, email or WhatsApp — or send a message using the form and we will reply as soon as possible.', array( 'multiline' => true ) ); ?></p>
     </div>
     <div class="sbtw-contact-grid">
       <div class="sbtw-contact-info sbtw-reveal">
         <div class="sbtw-ci-block">
-          <div class="sbtw-overline">Address</div>
-          <p class="sbtw-big">Masseria Montefieno<br/>Conversano (Bari)<br/>Puglia, Italy</p>
-          <p style="margin-top:8px;"><a href="https://www.google.com/maps?q=Masseria+Montefieno+Conversano">Open in Google Maps →</a></p>
+          <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.contacts.addr_over', $p['addr_over'] ?? 'Address' ); ?></div>
+          <p class="sbtw-big"><?php echo sbt_t1_text( 'C.contacts.addr_lines', $p['addr_lines'] ?? 'Masseria Montefieno<br/>Conversano (Bari)<br/>Puglia, Italy', array( 'multiline' => true ) ); ?></p>
+          <p style="margin-top:8px;"><a href="https://www.google.com/maps?q=Masseria+Montefieno+Conversano"><?php echo sbt_t1_text( 'C.contacts.maps_label', $p['maps_label'] ?? 'Open in Google Maps →' ); ?></a></p>
         </div>
         <div class="sbtw-ci-block">
-          <div class="sbtw-overline">Phone</div>
+          <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.contacts.phone_over', $p['phone_over'] ?? 'Phone' ); ?></div>
           <p class="sbtw-big"><a href="tel:+393382507545">+39 338 250 7545</a></p>
-          <a class="sbtw-wa sbtw-wa--red" href="https://wa.me/393382507545" style="margin-top:18px;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#fff;"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2Zm5.6 14.2c-.2.6-1.2 1.2-1.7 1.2-.4 0-1 .1-3.1-.8-2.6-1.1-4.3-3.8-4.4-4-.1-.2-1-1.4-1-2.6 0-1.2.6-1.8.9-2 .2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.2.1.4.1.5-.1l.7-.9c.2-.2.4-.2.6-.1l1.9.9c.2.1.4.2.4.3.1.2.1.6 0 1Z"/></svg>Chat on WhatsApp</a>
+          <a class="sbtw-wa sbtw-wa--red" href="https://wa.me/393382507545" style="margin-top:18px;"><svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:#fff;"><path d="M12 2a10 10 0 0 0-8.6 15l-1.3 4.7 4.8-1.3A10 10 0 1 0 12 2Zm5.6 14.2c-.2.6-1.2 1.2-1.7 1.2-.4 0-1 .1-3.1-.8-2.6-1.1-4.3-3.8-4.4-4-.1-.2-1-1.4-1-2.6 0-1.2.6-1.8.9-2 .2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 2c.1.2.1.4 0 .5l-.4.6c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.3 2.4 1.5.2.1.4.1.5-.1l.7-.9c.2-.2.4-.2.6-.1l1.9.9c.2.1.4.2.4.3.1.2.1.6 0 1Z"/></svg><?php echo sbt_t1_text( 'C.contacts.wa_label', $p['wa_label'] ?? 'Chat on WhatsApp' ); ?></a>
         </div>
         <div class="sbtw-ci-block">
-          <div class="sbtw-overline">Email</div>
+          <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.contacts.email_over', $p['email_over'] ?? 'Email' ); ?></div>
           <p class="sbtw-big"><a href="mailto:masserialecerase@gmail.com">masserialecerase@gmail.com</a></p>
         </div>
       </div>
