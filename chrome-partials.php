@@ -109,7 +109,7 @@ if ( ! function_exists( 'sbt_render_site_drawer' ) ) {
 			<button class="sbtw-close" id="closeDrawer" aria-label="Close">&times;</button>
 			<?php foreach ( (array) $NAV as $item ) : ?>
 				<?php if ( ! empty( $item['sub'] ) && is_array( $item['sub'] ) ) : ?>
-					<button type="button" class="sbtw-drawer-label sbtw-drawer-acc"><?php echo esc_html( $item['label'] ?? '' ); ?><i class="sbtw-chev"></i></button>
+					<button type="button" class="sbtw-drawer-label sbtw-drawer-acc" aria-expanded="false"><?php echo esc_html( $item['label'] ?? '' ); ?> <i class="sbtw-chev"></i></button>
 					<div class="sbtw-sub-m">
 						<?php foreach ( $item['sub'] as $sub ) : ?>
 							<a<?php echo ! empty( $sub['book'] ) ? ' class="sbtw-sub-book"' : ''; ?> href="<?php echo esc_url( $sub['url'] ?? '#' ); ?>"><?php echo esc_html( $sub['label'] ?? '' ); ?></a>
@@ -121,9 +121,9 @@ if ( ! function_exists( 'sbt_render_site_drawer' ) ) {
 			<?php endforeach; ?>
 			<?php $lang_items = function_exists( 'sbt_header_language_items' ) ? sbt_header_language_items() : array(); ?>
 			<?php if ( $lang_items ) : ?>
-			<div class="sbtw-lang-m">
-				<span class="sbtw-lang-m-label">Language</span>
-				<div class="sbtw-lang-m-row">
+			<div class="sbtw-lang-m sbtw-drawer-langs">
+				<span class="sbtw-lang-m-label sbtw-dl-label sbtw-drawer-langs-label"><?php echo esc_html( $SITE['lang_drawer_label'] ?? 'Language' ); ?></span>
+				<div class="sbtw-lang-m-row sbtw-dl-list sbtw-drawer-langs-row">
 					<?php foreach ( $lang_items as $litem ) : ?>
 						<a href="<?php echo esc_url( $litem['url'] ?? '#' ); ?>"<?php echo ! empty( $litem['active'] ) ? ' class="sbtw-active"' : ''; ?>><?php echo esc_html( $litem['code'] ?? '' ); ?></a>
 					<?php endforeach; ?>

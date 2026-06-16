@@ -26,6 +26,7 @@
       var open = !this.classList.contains('sbtw-open');
       this.classList.toggle('sbtw-open', open);
       this.classList.toggle('sbtw-expanded', open);
+      this.setAttribute('aria-expanded', open ? 'true' : 'false');
       var sub = this.nextElementSibling;
       if (sub && sub.classList.contains('sbtw-sub-m')) {
         sub.classList.toggle('sbtw-open', open);
