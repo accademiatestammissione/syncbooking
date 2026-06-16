@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.55' );
+define( 'SBT_VERSION', '2.1.56' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -3136,7 +3136,36 @@ function sbt_apply_default_language_pack( &$SITE, &$NAV, &$C, &$TEXT ) {
 			'cta_h2' => 'Prenota la tua camera',
 			'cta_btn' => 'Contattaci',
 		),
-		'whole' => array( 'title' => 'Tutta la Masseria - Masseria Le Cerase', 'h1' => 'Tutta la Masseria', 'intro_over' => 'Tutta la proprieta, solo tua', 'intro_h2' => 'Affitta tutta<br/>Masseria Le Cerase', 'intro_p' => 'Camere, sale voltate, cucina, piscina e giardini riservati esclusivamente al tuo gruppo.' ),
+		'whole' => array(
+			'title' => 'Tutta la Masseria - Masseria Le Cerase',
+			'over' => 'Uso esclusivo',
+			'h1' => 'Tutta la Masseria',
+			'ov_over' => 'Una prenotazione, l\'intera proprieta',
+			'ov_h2' => 'La masseria, tutta per te',
+			'ov_p' => 'La proprieta si affitta nella sua interezza: tutte e cinque le camere, le sale voltate, la cucina di campagna, la piscina e i giardini — riservati esclusivamente al tuo gruppo. Nessun altro ospite, nessuno spazio condiviso. Solo la tua masseria seicentesca tra gli ulivi.',
+			'specs' => array(
+				array( 'Ospiti', 'Fino a 10' ),
+				array( 'Camere', '5 matrimoniali' ),
+				array( 'Uso', 'Intera proprieta, esclusivo' ),
+			),
+			'act_avail' => 'Richiedi disponibilita',
+			'act_price' => 'Prezzi e condizioni',
+			'gallery_over' => 'Uno sguardo intorno',
+			'gallery_h2' => 'La proprieta, nel dettaglio',
+			'inc_over' => 'Cosa e incluso',
+			'inc_h2' => 'Tutto, esclusivamente tuo',
+			'whole_included' => array(
+				array( 'h4' => '5 Camere Matrimoniali', 'p' => 'Camere in pietra voltata per un massimo di dieci ospiti.' ),
+				array( 'h4' => 'Piscina Privata', 'p' => 'Una piscina incorniciata da un pergolato e dagli ulivi, tutta tua.' ),
+				array( 'h4' => 'Cucina di Campagna', 'p' => 'Una cucina completa con zone pranzo, interne ed esterne.' ),
+				array( 'h4' => 'Sale Voltate', 'p' => 'Grandi sale in pietra per lunghe cene e momenti di convivialita.' ),
+				array( 'h4' => 'Wi-Fi Gratuito', 'p' => 'Connessione veloce in tutta la proprieta.' ),
+				array( 'h4' => 'Parcheggio Privato', 'p' => 'Parcheggio riservato in loco all\'interno della proprieta.' ),
+			),
+			'cta_over' => 'Pronti quando lo sei tu',
+			'cta_h2' => 'Prenota tutta la masseria',
+			'cta_btn' => 'Contattaci',
+		),
 		'price' => array(
 			'title' => 'Prezzi e condizioni - Masseria Le Cerase',
 			'over' => 'Tariffe e prenotazioni',
