@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.54' );
+define( 'SBT_VERSION', '2.1.55' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -2746,6 +2746,7 @@ function sbt_apply_default_language_pack( &$SITE, &$NAV, &$C, &$TEXT ) {
 	$text_it = array(
 		'home' => 'Home',
 		'houses' => 'Camere',
+		'accommodation' => 'Alloggi',
 		'view_house' => 'Vedi camera',
 		'discover' => 'Scopri',
 		'discover_villa' => 'Scopri la Villa',
@@ -3082,8 +3083,59 @@ function sbt_apply_default_language_pack( &$SITE, &$NAV, &$C, &$TEXT ) {
 			'stay_h2' => 'Il tuo soggiorno alla<br/>Masseria Le Cerase',
 			'stay_btn' => 'Scopri il soggiorno',
 		),
-		'villa' => array( 'title' => 'Masseria - Masseria Le Cerase', 'h1' => 'La Masseria', 'intro_over' => 'L anima della proprieta', 'intro_h2' => 'Secoli di pietra,<br/>restaurati con cura', 'intro_p' => 'Una casa di campagna fortificata nella campagna di Conversano, circondata da ulivi, ciliegi e vigneti.' ),
-		'house' => array( 'title' => 'Camere - Masseria Le Cerase', 'h1' => 'Camere', 'intro_over' => 'Dormire sotto le volte', 'intro_h2' => 'Una camera quieta<br/>nella masseria', 'intro_p' => 'Camere matrimoniali sotto antiche volte in pietra, arredate con lino caldo e dettagli d epoca.' ),
+		'villa' => array(
+			'title' => 'Masseria - Masseria Le Cerase',
+			'over' => 'Masseria Le Cerase & SPA',
+			'h1' => 'La Masseria',
+			'intro_over' => 'Il lusso di sentirsi a casa',
+			'intro_h2' => 'In vacanza,<br/>come a casa',
+			'intro_p1' => 'Privacy, riservatezza, serenita e comfort a cinque stelle. Il nuovo lusso in vacanza e concedersi piu liberta: la possibilita di avere un\'intera casa a disposizione, per godersi un soggiorno di puro relax.',
+			'intro_p2' => 'Nel cuore della Puglia piu bella, nell\'antico centro di Conversano, nel parco di una villa storica, avere una casa a disposizione e la soluzione ideale per chi cerca un soggiorno appartato, indipendente e ancora piu esclusivo.',
+			'intro_p3' => 'Cura del dettaglio, design raffinato, un mix di moderno e antico, a due passi da monumenti e negozi — le camere di Masseria Le Cerase, con pergolati esterni privati, offrono anche i comfort tipici di un resort.',
+			'am_over' => 'Benessere, comfort e indipendenza',
+			'am_h2' => 'Ogni dettaglio, pensato per te',
+			'am_p' => 'Un\'ampia gamma di servizi per il tuo comfort e relax — tutto pensato per garantire il massimo comfort e un\'esperienza davvero unica.',
+			'amenities' => array(
+				array( 'h4' => 'SPA & Wellness', 'p' => 'Rilassati nella nostra SPA con bagno turco, sauna e sala massaggi per un\'esperienza wellness unica.' ),
+				array( 'h4' => 'Piscina Esterna', 'p' => 'Goditi la nostra piscina nel giardino, perfetta per rilassarsi e prendere il sole.' ),
+				array( 'h4' => 'Parco e Giardino', 'p' => 'Un\'oasi di tranquillita, ideale per passeggiate e momenti di relax all\'aria aperta.' ),
+				array( 'h4' => 'Palestra', 'p' => 'Una palestra attrezzata per restare in forma anche in vacanza.' ),
+				array( 'h4' => 'Wi-Fi Gratuito', 'p' => 'Connessione gratuita in tutti gli appartamenti e nelle aree comuni.' ),
+				array( 'h4' => 'Cucina Attrezzata', 'p' => 'Ogni appartamento dispone di una cucina completa per preparare i pasti in totale autonomia.' ),
+			),
+			'cta_over' => 'Il tuo rifugio privato ti aspetta',
+			'cta_h2' => 'Scegli la tua camera a Masseria Le Cerase',
+			'cta_btn' => 'Esplora la masseria',
+		),
+		'house' => array(
+			'title' => 'Camere - Masseria Le Cerase',
+			'over' => 'Sotto le volte',
+			'h1' => 'Camere',
+			'intro_over' => 'Intime e raffinate',
+			'intro_h2' => 'Dormire sotto antiche volte',
+			'intro_p' => 'Cinque camere matrimoniali, ciascuna ricavata sotto volte in pietra secolari e arredata con letti in ferro battuto, armadi d\'epoca e lino caldo. Le spesse mura in pietra calcarea le mantengono fresche durante l\'estate pugliese, mentre la quiete della campagna avvolge ogni camera di notte.',
+			'room_btn' => 'Vedi la camera',
+			'rooms' => array(
+				array( 'tag' => 'Matrimoniale', 'h3' => 'Camera degli Ulivi' ),
+				array( 'tag' => 'Matrimoniale', 'h3' => 'Camera del Ciliegio' ),
+				array( 'tag' => 'Matrimoniale', 'h3' => 'Camera della Vigna' ),
+			),
+			'gallery_over' => 'Uno sguardo all\'interno',
+			'gallery_h2' => 'Le camere, nel dettaglio',
+			'inc_over' => 'Cosa e incluso',
+			'inc_h2' => 'Comfort in ogni angolo',
+			'included' => array(
+				array( 'h4' => 'Cucina Attrezzata', 'p' => 'Una cucina completa con zona pranzo per la massima autonomia.' ),
+				array( 'h4' => 'Letti in Ferro Battuto', 'p' => 'Letti king-size in ferro battuto, vestiti con lino pregiato.' ),
+				array( 'h4' => 'Wi-Fi Gratuito', 'p' => 'Connessione veloce e gratuita in tutta la casa e negli spazi esterni.' ),
+				array( 'h4' => 'Piscina Privata', 'p' => 'Una piscina tra gli ulivi, riservata al tuo gruppo.' ),
+				array( 'h4' => 'Aria Condizionata', 'p' => 'Climatizzazione indipendente per la temperatura perfetta tutto l\'anno.' ),
+				array( 'h4' => 'Parcheggio Privato', 'p' => 'Parcheggio riservato in loco per un arrivo rilassato e senza pensieri.' ),
+			),
+			'cta_over' => 'Pronti quando lo sei tu',
+			'cta_h2' => 'Prenota la tua camera',
+			'cta_btn' => 'Contattaci',
+		),
 		'whole' => array( 'title' => 'Tutta la Masseria - Masseria Le Cerase', 'h1' => 'Tutta la Masseria', 'intro_over' => 'Tutta la proprieta, solo tua', 'intro_h2' => 'Affitta tutta<br/>Masseria Le Cerase', 'intro_p' => 'Camere, sale voltate, cucina, piscina e giardini riservati esclusivamente al tuo gruppo.' ),
 		'price' => array(
 			'title' => 'Prezzi e condizioni - Masseria Le Cerase',
