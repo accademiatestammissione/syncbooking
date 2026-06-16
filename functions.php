@@ -9,12 +9,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.63' );
+define( 'SBT_VERSION', '2.1.64' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
+define( 'SBT_CF7_PLUGIN_SLUG', 'contact-form-7' );
+define( 'SBT_CF7_PLUGIN_FILE', 'contact-form-7/wp-contact-form-7.php' );
 define( 'SBT_MEDIA_OPTION', 'syncbooking_theme_media_imports' );
 define( 'SBT_ASSETS_IMPORT_JOB_OPTION_PREFIX', 'syncbooking_theme_assets_import_job_' );
 define( 'SBT_ASSETS_IMPORT_DOWNLOAD_CHUNK', 1048576 );
@@ -5485,8 +5487,135 @@ function sbt_render_menu_row( $path, $item, $overrides, $page_options, $is_child
 	<?php
 }
 
+function sbt_cf7_is_active() {
+	return defined( 'WPCF7_VERSION' ) && class_exists( 'WPCF7_ContactForm' );
+}
+
+function sbt_cf7_plugin_status() {
+	if ( ! function_exists( 'get_plugins' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+	}
+
+	$plugins = function_exists( 'get_plugins' ) ? get_plugins() : array();
+	$status = array(
+		'installed'  => false,
+		'active'     => false,
+		'name'       => 'Contact Form 7',
+		'action_url' => admin_url( 'plugin-install.php?s=' . SBT_CF7_PLUGIN_SLUG . '&tab=search&type=term' ),
+	);
+
+	if ( isset( $plugins[ SBT_CF7_PLUGIN_FILE ] ) ) {
+		$plugin = $plugins[ SBT_CF7_PLUGIN_FILE ];
+		$status['installed'] = true;
+		$status['name'] = ! empty( $plugin['Name'] ) ? $plugin['Name'] : 'Contact Form 7';
+		$status['active'] = function_exists( 'is_plugin_active' ) && is_plugin_active( SBT_CF7_PLUGIN_FILE );
+		$status['action_url'] = $status['active']
+			? admin_url( 'admin.php?page=wpcf7' )
+			: wp_nonce_url( admin_url( 'plugins.php?action=activate&plugin=' . rawurlencode( SBT_CF7_PLUGIN_FILE ) ), 'activate-plugin_' . SBT_CF7_PLUGIN_FILE );
+	}
+
+	return $status;
+}
+
+/**
+ * Contact Form 7 templates for the contact and weddings forms.
+ * Field markup uses the theme classes so CF7 inherits the existing styling.
+ */
+function sbt_cf7_form_template( $key ) {
+	if ( 'weddings' === $key ) {
+		$form = '<div class="sbtw-field"><label>Full Name</label>[text* your-name autocomplete:name]</div>' . "\n"
+			. '<div class="sbtw-field"><label>Email</label>[email* your-email autocomplete:email]</div>' . "\n"
+			. '<div class="sbtw-field"><label>Phone</label>[tel* your-phone autocomplete:tel]</div>' . "\n"
+			. '<div class="sbtw-field"><label>Notes</label>[textarea your-message "Request for wedding information"]</div>' . "\n"
+			. '[submit class:sbtw-btn "Send request"]';
+		$subject = '[_site_title] - Wedding quote request from [your-name]';
+		$title   = 'SyncBooking Weddings';
+	} else {
+		$form = '<div class="sbtw-field"><label>Name</label>[text* your-name autocomplete:name]</div>' . "\n"
+			. '<div class="sbtw-field"><label>Email</label>[email* your-email autocomplete:email]</div>' . "\n"
+			. '<div class="sbtw-field"><label>Phone</label>[tel your-phone autocomplete:tel]</div>' . "\n"
+			. '<div class="sbtw-field"><label>Message</label>[textarea* your-message]</div>' . "\n"
+			. '[submit class:sbtw-btn "Send message"]';
+		$subject = '[_site_title] - Contact request from [your-name]';
+		$title   = 'SyncBooking Contact';
+	}
+
+	$body = "Name: [your-name]\nEmail: [your-email]\nPhone: [your-phone]\n\nMessage:\n[your-message]\n\n-- \nSent from [_site_title] ([_site_url])";
+
+	return array(
+		'form'    => $form,
+		'subject' => $subject,
+		'title'   => $title,
+		'body'    => $body,
+	);
+}
+
+/**
+ * Get the id of the CF7 form for $key ('contact'|'weddings'), creating it on
+ * first use. Returns 0 when CF7 is not available.
+ */
+function sbt_cf7_get_form_id( $key ) {
+	if ( ! sbt_cf7_is_active() ) {
+		return 0;
+	}
+
+	$key = 'weddings' === $key ? 'weddings' : 'contact';
+	$options = sbt_get_options();
+	$stored = isset( $options['cf7_forms'][ $key ] ) ? absint( $options['cf7_forms'][ $key ] ) : 0;
+	if ( $stored && 'wpcf7_contact_form' === get_post_type( $stored ) ) {
+		return $stored;
+	}
+
+	$tpl = sbt_cf7_form_template( $key );
+	$contact_form = WPCF7_ContactForm::get_template( array( 'title' => $tpl['title'] ) );
+	if ( ! $contact_form ) {
+		return 0;
+	}
+
+	$properties = $contact_form->get_properties();
+	$properties['form'] = $tpl['form'];
+	$mail = isset( $properties['mail'] ) && is_array( $properties['mail'] ) ? $properties['mail'] : array();
+	$mail = wp_parse_args(
+		array(
+			'recipient'          => get_option( 'admin_email' ),
+			'subject'            => $tpl['subject'],
+			'body'               => $tpl['body'],
+			'additional_headers' => 'Reply-To: [your-email]',
+		),
+		$mail
+	);
+	$properties['mail'] = $mail;
+	$contact_form->set_properties( $properties );
+	$contact_form->set_title( $tpl['title'] );
+	$id = $contact_form->save();
+
+	if ( $id ) {
+		if ( ! isset( $options['cf7_forms'] ) || ! is_array( $options['cf7_forms'] ) ) {
+			$options['cf7_forms'] = array();
+		}
+		$options['cf7_forms'][ $key ] = $id;
+		update_option( SBT_OPTION, $options );
+	}
+
+	return absint( $id );
+}
+
+/**
+ * Output the CF7 form for $key, or false when CF7 is not available.
+ */
+function sbt_cf7_render( $key ) {
+	$id = sbt_cf7_get_form_id( $key );
+	if ( ! $id ) {
+		return false;
+	}
+
+	echo do_shortcode( '[contact-form-7 id="' . absint( $id ) . '"]' );
+	return true;
+}
+
 function sbt_render_general_settings_tab( $data, $overrides ) {
 	$plugin_status = sbt_syncbooking_plugin_status();
+	$cf7_status = sbt_cf7_plugin_status();
 	$edit_mode = sbt_edit_mode();
 	$subtheme = sbt_active_subtheme_key();
 	$default_unit_label = in_array( $subtheme, array( 'theme02', 'theme03' ), true ) ? 'Room' : ( $data['SITE']['unit_label'] ?? 'House' );
@@ -5524,6 +5653,25 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 				<p style="margin:10px 0 0;">
 					<a class="button <?php echo $plugin_status['active'] ? '' : 'button-primary'; ?>" href="<?php echo esc_url( $plugin_status['action_url'] ); ?>">
 						<?php echo esc_html( $plugin_status['active'] ? 'Go to plugins' : ( $plugin_status['installed'] ? 'Activate SyncBooking' : 'Install SyncBooking' ) ); ?>
+					</a>
+				</p>
+			</div>
+		</div>
+
+		<div class="sbt-status <?php echo $cf7_status['active'] ? 'is-ok' : 'is-warning'; ?>">
+			<span class="sbt-status__dot" aria-hidden="true"></span>
+			<div>
+				<strong>Required plugin: Contact Form 7</strong>
+				<?php if ( $cf7_status['active'] ) : ?>
+					<span><?php echo esc_html( $cf7_status['name'] ); ?> is active. The contact and weddings forms are handled by Contact Form 7.</span>
+				<?php elseif ( $cf7_status['installed'] ) : ?>
+					<span><?php echo esc_html( $cf7_status['name'] ); ?> is installed but not active. Activate it so the contact and weddings forms use Contact Form 7.</span>
+				<?php else : ?>
+					<span><a href="https://wordpress.org/plugins/contact-form-7/" target="_blank" rel="noopener">Contact Form 7</a> is not installed. The theme uses it for the contact and weddings forms (a built-in form is used as a fallback until it is active).</span>
+				<?php endif; ?>
+				<p style="margin:10px 0 0;">
+					<a class="button <?php echo $cf7_status['active'] ? '' : 'button-primary'; ?>" href="<?php echo esc_url( $cf7_status['action_url'] ); ?>">
+						<?php echo esc_html( $cf7_status['active'] ? 'Manage forms' : ( $cf7_status['installed'] ? 'Activate Contact Form 7' : 'Install Contact Form 7' ) ); ?>
 					</a>
 				</p>
 			</div>

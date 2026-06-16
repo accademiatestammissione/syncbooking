@@ -211,6 +211,12 @@ $badges    = ( ! empty( $p['badges'] ) && is_array( $p['badges'] ) ) ? $p['badge
     <div class="sbtw-overline" style="color:var(--gold);"><?php echo sbt_t1_text( 'C.weddings.quote_modal_over', $p['quote_modal_over'] ?? 'Masseria Le Cerase' ); ?></div>
     <h3 id="quoteTitle"><?php echo sbt_t1_text( 'C.weddings.quote_modal_title', $p['quote_modal_title'] ?? 'Free quote' ); ?></h3>
     <p class="sbtw-w-modal-sub"><?php echo sbt_t1_text( 'C.weddings.quote_modal_sub', $p['quote_modal_sub'] ?? 'Fill in the form: we will reply within 24 hours with a tailored proposal.', array( 'multiline' => true ) ); ?></p>
+    <?php if ( function_exists( 'sbt_cf7_is_active' ) && sbt_cf7_is_active() ) : ?>
+    <div class="sbtw-w-form sbtw-cf7-form">
+      <?php sbt_cf7_render( 'weddings' ); ?>
+      <div class="sbtw-w-resp" style="margin-top:12px;"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg> <?php echo sbt_t1_text( 'C.weddings.quote_response', $p['quote_response'] ?? 'Replies within 24 hours' ); ?></div>
+    </div>
+    <?php else : ?>
     <form class="sbtw-w-form" id="quoteForm" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
       <input type="hidden" name="action" value="sbt_contact_submit" />
       <input type="hidden" name="sbt_redirect" value="<?php echo esc_url( ( is_ssl() ? 'https://' : 'http://' ) . ( ! empty( $_SERVER['HTTP_HOST'] ) ? wp_unslash( $_SERVER['HTTP_HOST'] ) : wp_parse_url( home_url(), PHP_URL_HOST ) ) . strtok( ! empty( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '/', '?' ) ); ?>" />
@@ -235,6 +241,7 @@ $badges    = ( ! empty( $p['badges'] ) && is_array( $p['badges'] ) ) ? $p['badge
       <h4><?php echo sbt_t1_text( 'C.weddings.quote_modal_ok_title', $p['quote_modal_ok_title'] ?? 'Request sent!' ); ?></h4>
       <p><?php echo sbt_t1_text( 'C.weddings.quote_modal_ok_p', $p['quote_modal_ok_p'] ?? 'Thank you — we will get back to you within 24 hours at the address provided.', array( 'multiline' => true ) ); ?></p>
     </div>
+    <?php endif; ?>
   </div>
 </div>
 <script>

@@ -282,6 +282,15 @@ if ( ! function_exists( 'sbt_handle_contact_submit' ) ) {
  */
 if ( ! function_exists( 'sbt_render_contact_form' ) ) {
 	function sbt_render_contact_form( $TEXT = array() ) {
+		if ( function_exists( 'sbt_cf7_is_active' ) && sbt_cf7_is_active() ) {
+			echo '<div id="contact-form" class="sbtw-contact-form sbtw-reveal sbtw-cf7-form">';
+			if ( ! sbt_cf7_render( 'contact' ) ) {
+				echo '<p>' . esc_html( $TEXT['form_error'] ?? 'The contact form is temporarily unavailable.' ) . '</p>';
+			}
+			echo '</div>';
+			return;
+		}
+
 		$status   = isset( $_GET['sbt_contact'] ) ? sanitize_key( wp_unslash( $_GET['sbt_contact'] ) ) : '';
 		$action   = function_exists( 'admin_url' ) ? admin_url( 'admin-post.php' ) : '';
 		$redirect = home_url( '/' );
