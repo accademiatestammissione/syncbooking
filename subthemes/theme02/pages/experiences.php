@@ -59,13 +59,11 @@ $exp_imgs = array( 'kitchen-dining.jpg', 'bedroom-2.jpg', 'courtyard.jpg', 'aeri
   </div>
 </section>
 
-<section class="sbtw-pad" data-screen-label="Experiences CTA">
-  <div class="sbtw-wrap" style="text-align:center;">
-    <div class="sbtw-reveal" style="max-width:620px;margin:0 auto;">
-      <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.experiences.cta_over', $p['cta_over'] ?? 'Design your days' ); ?></div>
-      <h2 class="sbtw-lead" style="margin-bottom:24px;"><?php echo sbt_t1_text( 'C.experiences.cta_h2', $p['cta_h2'] ?? 'Plan your experiences' ); ?></h2>
-      <a class="sbtw-btn" href="<?php echo esc_url( sbt_t1_url( $p['cta_url'] ?? 'contacts.php' ) ); ?>"><?php echo sbt_t1_text( 'C.experiences.cta_btn', $p['cta_btn'] ?? 'Contact us' ); ?></a>
-    </div>
+<section class="sbtw-band" style="background-image:url('<?php echo esc_url( sbt_asset_url( 'assets/images/masseria-dusk.jpg' ) ); ?>');" data-screen-label="Experiences CTA">
+  <div class="sbtw-inner sbtw-reveal">
+    <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.experiences.cta_over', $p['cta_over'] ?? 'Design your days' ); ?></div>
+    <h2><?php echo sbt_t1_text( 'C.experiences.cta_h2', $p['cta_h2'] ?? 'Plan your experiences' ); ?></h2>
+    <a class="sbtw-btn sbtw-btn--light" href="<?php echo esc_url( sbt_t1_url( $p['cta_url'] ?? 'contacts.php' ) ); ?>" style="margin-top:8px;"><?php echo sbt_t1_text( 'C.experiences.cta_btn', $p['cta_btn'] ?? 'Contact us' ); ?></a>
   </div>
 </section>
 

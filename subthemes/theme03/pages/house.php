@@ -45,7 +45,7 @@ $second_specs = ( ! empty( $p['second_specs'] ) && is_array( $p['second_specs'] 
         </div>
         <div class="sbtw-body">
           <h3><?php echo sbt_t1_text( 'C.house.rooms.' . $ri . '.h3', $room['h3'] ?? '' ); ?></h3>
-          <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( 'contacts.php' ) ); ?>"><?php echo sbt_t1_text( 'C.house.room_btn', $p['room_btn'] ?? 'Request availability' ); ?></a>
+          <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( 'syncbooking:booking' ) ); ?>"><?php echo sbt_t1_text( 'C.house.room_btn', $p['room_btn'] ?? 'Request availability' ); ?></a>
         </div>
       </div>
       <?php endforeach; ?>
@@ -77,7 +77,7 @@ $second_specs = ( ! empty( $p['second_specs'] ) && is_array( $p['second_specs'] 
         <?php endforeach; ?>
       </ul>
       <div class="sbtw-house-actions">
-        <a class="sbtw-btn" href="<?php echo esc_url( sbt_t1_url( 'contacts.php' ) ); ?>"><?php echo sbt_t1_text( 'C.house.second_btn', $p['second_btn'] ?? 'Request availability' ); ?></a>
+        <a class="sbtw-btn" href="<?php echo esc_url( sbt_t1_url( 'syncbooking:booking' ) ); ?>"><?php echo sbt_t1_text( 'C.house.second_btn', $p['second_btn'] ?? 'Request availability' ); ?></a>
       </div>
     </div>
   </div>

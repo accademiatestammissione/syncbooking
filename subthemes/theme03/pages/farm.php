@@ -3,7 +3,7 @@ $PAGE = 'farm';
 $PAGE_TITLE = 'The Farm – Masseria Montefieno';
 require __DIR__ . '/../header/header.php';
 $p = isset( $C['farm'] ) && is_array( $C['farm'] ) ? $C['farm'] : array();
-$shop = $p['shop_url'] ?? 'http://masserialecerase.com/shop';
+$shop = $p['shop_url'] ?? 'https://shop.masseriamontefieno.com/';
 ?>
 <section class="sbtw-page-hero" data-screen-label="Farm banner">
   <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-27.jpg' ) ); ?>" alt="<?php echo esc_attr( $p['h1'] ?? 'The Farm' ); ?>" />
