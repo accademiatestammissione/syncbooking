@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.51' );
+define( 'SBT_VERSION', '2.1.52' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -3088,8 +3088,30 @@ function sbt_apply_default_language_pack( &$SITE, &$NAV, &$C, &$TEXT ) {
 		'price' => array( 'title' => 'Prezzi e condizioni - Masseria Le Cerase', 'h1' => 'Prezzi e condizioni', 'intro_over' => 'Condizioni chiare', 'intro_h2' => 'Pianifica il soggiorno<br/>con chiarezza', 'intro_p' => 'Tariffe e condizioni variano per stagione, durata e tipologia di prenotazione.' ),
 		'spa' => array( 'title' => 'SPA & Wellness - Masseria Le Cerase', 'h1' => 'SPA & Wellness', 'intro_over' => 'Benessere lento', 'intro_h2' => 'Rituali quieti<br/>in campagna', 'intro_p' => 'Momenti wellness e massaggi possono essere organizzati intorno al tuo soggiorno.' ),
 		'experiences' => array( 'title' => 'Esperienze - Masseria Le Cerase', 'h1' => 'Esperienze', 'intro_over' => 'Vivi la Puglia a modo tuo', 'intro_h2' => 'Momenti costruiti<br/>intorno a te', 'intro_p' => 'Cooking class, degustazioni, tour privati e giornate al mare possono essere organizzati su misura.' ),
-		'surroundings' => array( 'title' => 'Dintorni - Masseria Le Cerase', 'h1' => 'Dintorni', 'intro_over' => 'Nel cuore della Puglia', 'intro_h2' => 'Una regione<br/>di cui innamorarsi', 'intro_p' => 'Conversano, Polignano, Alberobello, la Valle d Itria e Bari sono facilmente raggiungibili.' ),
-		'offers' => array( 'title' => 'Offerte - Masseria Le Cerase', 'h1' => 'Offerte', 'intro_over' => 'Proposte stagionali', 'intro_h2' => 'Soggiorni speciali<br/>in campagna', 'intro_p' => 'Le offerte possono essere adattate al periodo, alla durata e al tipo di prenotazione.' ),
+		'surroundings' => array(
+			'title' => 'Dintorni - Masseria Le Cerase', 'h1' => 'Dintorni', 'over' => 'Conversano e oltre',
+			'intro_over' => 'Nel cuore della Puglia', 'intro_h2' => 'Una regione<br/>di cui innamorarsi',
+			'intro_p' => 'Masseria Le Cerase sorge nel cuore antico di Conversano, uno dei borghi piu affascinanti della Puglia, coronato dal Castello normanno-svevo. Da qui le meraviglie della regione sono facilmente raggiungibili: borghi bianchi, i trulli della Valle d Itria e la costa turchese.',
+			'cards' => array(
+				array( 'over' => '2 min a piedi', 'h3' => 'Conversano' ),
+				array( 'over' => '25 min', 'h3' => 'Polignano a Mare' ),
+				array( 'over' => '35 min', 'h3' => 'Alberobello e Valle d Itria' ),
+				array( 'over' => '40 min', 'h3' => 'Bari' ),
+			),
+			'band_over' => 'Lasciati guidare', 'band_h2' => 'Scopri la Puglia con noi', 'band_btn' => 'Le nostre esperienze',
+		),
+		'offers' => array(
+			'title' => 'Offerte - Masseria Le Cerase', 'h1' => 'Offerte', 'over' => 'Le offerte della Masseria',
+			'intro_over' => 'Le migliori condizioni', 'intro_h2' => 'Promozioni stagionali',
+			'intro_p' => 'Prenota il tuo soggiorno nel cuore della Puglia alle migliori condizioni. Scopri le offerte attuali e contattaci per tariffe esclusive su misura.',
+			'cards' => array(
+				array( 'badge' => 'Prenota prima', 'h3' => 'Prenota Prima, Risparmia', 'p' => 'Prenota con largo anticipo e approfitta di una tariffa speciale sulla tua casa preferita.' ),
+				array( 'badge' => 'Soggiorno lungo', 'h3' => '7 Notti = 6', 'p' => 'Soggiorna una settimana e paghi sei notti: il modo perfetto per rilassarti in Puglia.' ),
+				array( 'badge' => 'Benessere', 'h3' => 'Fuga SPA', 'p' => 'Un soggiorno romantico per due con una dedicata esperienza benessere nella nostra SPA.' ),
+				array( 'badge' => 'Stagione', 'h3' => 'Primavera e Autunno', 'p' => 'Scopri la Puglia nelle stagioni piu dolci con tariffe ridotte di bassa stagione.' ),
+			),
+			'cta_over' => 'Su misura per te', 'cta_h2' => 'Chiedi la tua migliore tariffa', 'cta_btn' => 'Contattaci',
+		),
 		'contacts' => array( 'title' => 'Contatti - Masseria Le Cerase', 'h1' => 'Contatti', 'intro_over' => 'Scrivici', 'intro_h2' => 'Pianifica soggiorno o evento', 'intro_p' => 'Per disponibilita, preventivi o richieste speciali, saremo felici di aiutarti.' ),
 	);
 

@@ -393,8 +393,15 @@ $C['surroundings'] = [
   'intro_over' => 'In the heart of Puglia',
   'intro_h2'   => 'A region to fall in love with',
   'intro_p'    => "Masseria Le Cerase lies in the countryside of Conversano, one of Puglia's most charming towns, crowned by its Norman-Swabian Castle. From here, the wonders of the region are all within easy reach — whitewashed villages, the trulli of the Itria Valley and the turquoise Adriatic coast.",
+  'cards' => [
+    ['over' => '2 min walk', 'h3' => 'Conversano', 'url' => 'post:conversano'],
+    ['over' => '25 min', 'h3' => 'Polignano a Mare', 'url' => 'post:polignano-a-mare'],
+    ['over' => '35 min', 'h3' => 'Alberobello &amp; Itria Valley', 'url' => 'post:alberobello-itria-valley'],
+    ['over' => '40 min', 'h3' => 'Bari', 'url' => 'post:bari'],
+  ],
   'band_over'  => 'Let us guide you',
   'band_h2'    => 'Discover Puglia with us',
+  'band_btn'   => 'See our experiences',
 ];
 
 /* ---------- CONTACTS ---------- */
@@ -612,6 +619,12 @@ $C['offers'] = [
   'intro_over' => 'Seasonal proposals',
   'intro_h2' => 'Special stays<br>in the countryside',
   'intro_p' => 'Offers can be adapted to the selected period, booking type and length of stay. Contact us for updated availability and a tailored proposal.',
+  'cards' => [
+    ['badge' => 'Early booking', 'h3' => 'Book Early, Save More', 'p' => 'Reserve well in advance and enjoy a special rate on your favourite house.', 'url' => 'post:book-early-save-more'],
+    ['badge' => 'Long stay', 'h3' => '7 Nights = 6', 'p' => 'Stay a week and pay for six nights — the perfect way to truly unwind in Puglia.', 'url' => 'post:seven-nights-six'],
+    ['badge' => 'Wellness', 'h3' => 'SPA Escape', 'p' => 'A romantic stay for two with a dedicated wellness experience in our SPA.', 'url' => 'post:spa-escape'],
+    ['badge' => 'Season', 'h3' => 'Spring &amp; Autumn', 'p' => 'Discover Puglia in its gentlest seasons with our reduced shoulder-season rates.', 'url' => 'post:spring-autumn'],
+  ],
   'cta_over' => 'Ask for details',
   'cta_h2' => 'Contact us for more information',
   'cta_url' => 'contacts.php',
