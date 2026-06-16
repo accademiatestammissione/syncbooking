@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.52' );
+define( 'SBT_VERSION', '2.1.53' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -3087,7 +3087,22 @@ function sbt_apply_default_language_pack( &$SITE, &$NAV, &$C, &$TEXT ) {
 		'whole' => array( 'title' => 'Tutta la Masseria - Masseria Le Cerase', 'h1' => 'Tutta la Masseria', 'intro_over' => 'Tutta la proprieta, solo tua', 'intro_h2' => 'Affitta tutta<br/>Masseria Le Cerase', 'intro_p' => 'Camere, sale voltate, cucina, piscina e giardini riservati esclusivamente al tuo gruppo.' ),
 		'price' => array( 'title' => 'Prezzi e condizioni - Masseria Le Cerase', 'h1' => 'Prezzi e condizioni', 'intro_over' => 'Condizioni chiare', 'intro_h2' => 'Pianifica il soggiorno<br/>con chiarezza', 'intro_p' => 'Tariffe e condizioni variano per stagione, durata e tipologia di prenotazione.' ),
 		'spa' => array( 'title' => 'SPA & Wellness - Masseria Le Cerase', 'h1' => 'SPA & Wellness', 'intro_over' => 'Benessere lento', 'intro_h2' => 'Rituali quieti<br/>in campagna', 'intro_p' => 'Momenti wellness e massaggi possono essere organizzati intorno al tuo soggiorno.' ),
-		'experiences' => array( 'title' => 'Esperienze - Masseria Le Cerase', 'h1' => 'Esperienze', 'intro_over' => 'Vivi la Puglia a modo tuo', 'intro_h2' => 'Momenti costruiti<br/>intorno a te', 'intro_p' => 'Cooking class, degustazioni, tour privati e giornate al mare possono essere organizzati su misura.' ),
+		'experiences' => array(
+			'title' => 'Esperienze - Masseria Le Cerase', 'h1' => 'Esperienze', 'over' => 'Esperienza pugliese',
+			'intro_over' => 'Vivi la Puglia a modo tuo', 'intro_h2' => 'Momenti costruiti<br/>intorno a te',
+			'intro_p' => 'Creiamo esperienze su misura per ogni ospite, modellate sui tuoi gusti e sulle tue curiosita: dai sapori della tavola pugliese alle meraviglie appena oltre le nostre mura.',
+			'cards' => array(
+				array( 'over' => 'Gusto', 'h3' => 'Corsi di Cucina' ),
+				array( 'over' => 'Cantina', 'h3' => 'Degustazioni di Vino' ),
+				array( 'over' => 'Scopri', 'h3' => 'Tour Privati' ),
+				array( 'over' => 'Mare', 'h3' => 'Costa e Spiagge' ),
+			),
+			'wellness_over' => 'Corpo e anima', 'wellness_h2' => 'Wellness e SPA',
+			'wellness_p' => 'Sotto antiche volte, il nostro centro benessere e un mondo a parte: sauna, bagno turco, docce emozionali, piscina idromassaggio e area relax a lume di candela, oltre a una palestra attrezzata.',
+			'band_over' => 'Lento e autentico', 'band_h2' => 'L arte di vivere,<br/>alla pugliese',
+			'band_p' => 'Lunghi pranzi sotto la pergola, pietra calda di sole e la generosa accoglienza del Sud: questo e il ritmo di un soggiorno alla Masseria Le Cerase.',
+			'cta_over' => 'Progetta le tue giornate', 'cta_h2' => 'Pianifica le tue esperienze', 'cta_btn' => 'Contattaci',
+		),
 		'surroundings' => array(
 			'title' => 'Dintorni - Masseria Le Cerase', 'h1' => 'Dintorni', 'over' => 'Conversano e oltre',
 			'intro_over' => 'Nel cuore della Puglia', 'intro_h2' => 'Una regione<br/>di cui innamorarsi',
