@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.58' );
+define( 'SBT_VERSION', '2.1.59' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -2738,8 +2738,160 @@ function sbt_migrate_theme01_seed_article_card_overrides() {
 }
 add_action( 'admin_init', 'sbt_migrate_theme01_seed_article_card_overrides' );
 
+function sbt_apply_ui_language_pack( $lang, &$TEXT, &$NAV ) {
+	$text_packs = array(
+		'fr' => array(
+			'home' => 'Accueil',
+			'houses' => 'Chambres',
+			'accommodation' => 'Hebergement',
+			'view_house' => 'Voir la chambre',
+			'discover' => 'Decouvrir',
+			'discover_villa' => 'Decouvrir la Villa',
+			'discover_spa' => 'Decouvrir le SPA',
+			'explore_experiences' => 'Explorer les experiences',
+			'show_all_photos' => 'Voir toutes les photos',
+			'request_availability' => 'Demander disponibilite',
+			'price_condition' => 'Tarifs et conditions',
+			'contact_us' => 'Contactez-nous',
+			'contacts' => 'Contact',
+			'stay_in_touch' => 'Restons en contact',
+			'privacy_policy' => 'Politique de confidentialite',
+			'all_rights_reserved' => 'Tous droits reserves',
+			'address' => 'Adresse',
+			'phone' => 'Telephone',
+			'email' => 'Email',
+			'open_maps' => 'Ouvrir dans Google Maps ->',
+			'chat_whatsapp' => 'Ecrire sur WhatsApp',
+			'form_name' => 'Nom',
+			'form_email' => 'Email',
+			'form_phone' => 'Telephone',
+			'form_message' => 'Message',
+			'form_name_placeholder' => 'Votre nom',
+			'form_email_placeholder' => 'vous@email.com',
+			'form_phone_placeholder' => '+39 ...',
+			'form_message_placeholder' => 'Indiquez dates, voyageurs et type de sejour...',
+			'form_send' => 'Envoyer le message',
+			'form_result' => 'Merci, votre demande a ete envoyee. Nous vous contacterons bientot.',
+		),
+		'de' => array(
+			'home' => 'Startseite',
+			'houses' => 'Zimmer',
+			'accommodation' => 'Unterkunft',
+			'view_house' => 'Zimmer ansehen',
+			'discover' => 'Entdecken',
+			'discover_villa' => 'Die Villa entdecken',
+			'discover_spa' => 'Das SPA entdecken',
+			'explore_experiences' => 'Erlebnisse entdecken',
+			'show_all_photos' => 'Alle Fotos anzeigen',
+			'request_availability' => 'Verfugbarkeit anfragen',
+			'price_condition' => 'Preise und Konditionen',
+			'contact_us' => 'Kontaktieren Sie uns',
+			'contacts' => 'Kontakt',
+			'stay_in_touch' => 'In Kontakt bleiben',
+			'privacy_policy' => 'Datenschutzerklarung',
+			'all_rights_reserved' => 'Alle Rechte vorbehalten',
+			'address' => 'Adresse',
+			'phone' => 'Telefon',
+			'email' => 'E-Mail',
+			'open_maps' => 'In Google Maps offnen ->',
+			'chat_whatsapp' => 'Auf WhatsApp schreiben',
+			'form_name' => 'Name',
+			'form_email' => 'E-Mail',
+			'form_phone' => 'Telefon',
+			'form_message' => 'Nachricht',
+			'form_name_placeholder' => 'Ihr Name',
+			'form_email_placeholder' => 'sie@email.com',
+			'form_phone_placeholder' => '+39 ...',
+			'form_message_placeholder' => 'Nennen Sie Daten, Gaste und Art des Aufenthalts...',
+			'form_send' => 'Nachricht senden',
+			'form_result' => 'Danke, Ihre Anfrage wurde gesendet. Wir melden uns in Kurze.',
+		),
+		'es' => array(
+			'home' => 'Inicio',
+			'houses' => 'Habitaciones',
+			'accommodation' => 'Alojamiento',
+			'view_house' => 'Ver la habitacion',
+			'discover' => 'Descubrir',
+			'discover_villa' => 'Descubrir la Villa',
+			'discover_spa' => 'Descubrir el SPA',
+			'explore_experiences' => 'Explorar las experiencias',
+			'show_all_photos' => 'Ver todas las fotos',
+			'request_availability' => 'Solicitar disponibilidad',
+			'price_condition' => 'Precios y condiciones',
+			'contact_us' => 'Contactanos',
+			'contacts' => 'Contacto',
+			'stay_in_touch' => 'Mantente en contacto',
+			'privacy_policy' => 'Politica de privacidad',
+			'all_rights_reserved' => 'Todos los derechos reservados',
+			'address' => 'Direccion',
+			'phone' => 'Telefono',
+			'email' => 'Email',
+			'open_maps' => 'Abrir en Google Maps ->',
+			'chat_whatsapp' => 'Escribenos por WhatsApp',
+			'form_name' => 'Nombre',
+			'form_email' => 'Email',
+			'form_phone' => 'Telefono',
+			'form_message' => 'Mensaje',
+			'form_name_placeholder' => 'Tu nombre',
+			'form_email_placeholder' => 'tu@email.com',
+			'form_phone_placeholder' => '+39 ...',
+			'form_message_placeholder' => 'Cuentanos fechas, huespedes y tipo de estancia...',
+			'form_send' => 'Enviar mensaje',
+			'form_result' => 'Gracias, tu solicitud ha sido enviada. Te contactaremos pronto.',
+		),
+	);
+
+	$label_packs = array(
+		'fr' => array(
+			'home' => 'Accueil', 'villa' => 'Villa', 'houses' => 'Hebergement', 'house' => 'Hebergement',
+			'rooms' => 'Hebergement', 'hospitality' => 'Hebergement', 'spa' => 'SPA & Bien-etre', 'discover' => 'Decouvrir',
+			'experiences' => 'Experiences', 'weddings' => 'Mariages', 'surroundings' => 'Alentours', 'pool' => 'Piscine',
+			'farm' => 'Ferme', 'offers' => 'Offres', 'contacts' => 'Contact',
+		),
+		'de' => array(
+			'home' => 'Startseite', 'villa' => 'Villa', 'houses' => 'Unterkunft', 'house' => 'Unterkunft',
+			'rooms' => 'Unterkunft', 'hospitality' => 'Unterkunft', 'spa' => 'SPA & Wellness', 'discover' => 'Entdecken',
+			'experiences' => 'Erlebnisse', 'weddings' => 'Hochzeiten', 'surroundings' => 'Umgebung', 'pool' => 'Pool',
+			'farm' => 'Bauernhof', 'offers' => 'Angebote', 'contacts' => 'Kontakt',
+		),
+		'es' => array(
+			'home' => 'Inicio', 'villa' => 'Villa', 'houses' => 'Alojamiento', 'house' => 'Alojamiento',
+			'rooms' => 'Alojamiento', 'hospitality' => 'Alojamiento', 'spa' => 'SPA & Bienestar', 'discover' => 'Descubrir',
+			'experiences' => 'Experiencias', 'weddings' => 'Bodas', 'surroundings' => 'Alrededores', 'pool' => 'Piscina',
+			'farm' => 'Granja', 'offers' => 'Ofertas', 'contacts' => 'Contacto',
+		),
+	);
+
+	if ( isset( $text_packs[ $lang ] ) ) {
+		$TEXT = array_replace_recursive( $TEXT, $text_packs[ $lang ] );
+	}
+
+	if ( isset( $label_packs[ $lang ] ) ) {
+		$labels = $label_packs[ $lang ];
+		foreach ( $NAV as &$item ) {
+			if ( ! empty( $item['key'] ) && isset( $labels[ $item['key'] ] ) ) {
+				$item['label'] = $labels[ $item['key'] ];
+			}
+			if ( ! empty( $item['sub'] ) && is_array( $item['sub'] ) ) {
+				foreach ( $item['sub'] as &$sub_item ) {
+					if ( ! empty( $sub_item['key'] ) && isset( $labels[ $sub_item['key'] ] ) ) {
+						$sub_item['label'] = $labels[ $sub_item['key'] ];
+					}
+				}
+				unset( $sub_item );
+			}
+		}
+		unset( $item );
+	}
+}
+
 function sbt_apply_default_language_pack( &$SITE, &$NAV, &$C, &$TEXT ) {
-	if ( 'it' !== sbt_current_content_language() ) {
+	$sbt_lang = sbt_current_content_language();
+	if ( in_array( $sbt_lang, array( 'fr', 'de', 'es' ), true ) ) {
+		sbt_apply_ui_language_pack( $sbt_lang, $TEXT, $NAV );
+		return;
+	}
+	if ( 'it' !== $sbt_lang ) {
 		return;
 	}
 
