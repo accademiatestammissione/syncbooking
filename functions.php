@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.53' );
+define( 'SBT_VERSION', '2.1.54' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -3085,8 +3085,60 @@ function sbt_apply_default_language_pack( &$SITE, &$NAV, &$C, &$TEXT ) {
 		'villa' => array( 'title' => 'Masseria - Masseria Le Cerase', 'h1' => 'La Masseria', 'intro_over' => 'L anima della proprieta', 'intro_h2' => 'Secoli di pietra,<br/>restaurati con cura', 'intro_p' => 'Una casa di campagna fortificata nella campagna di Conversano, circondata da ulivi, ciliegi e vigneti.' ),
 		'house' => array( 'title' => 'Camere - Masseria Le Cerase', 'h1' => 'Camere', 'intro_over' => 'Dormire sotto le volte', 'intro_h2' => 'Una camera quieta<br/>nella masseria', 'intro_p' => 'Camere matrimoniali sotto antiche volte in pietra, arredate con lino caldo e dettagli d epoca.' ),
 		'whole' => array( 'title' => 'Tutta la Masseria - Masseria Le Cerase', 'h1' => 'Tutta la Masseria', 'intro_over' => 'Tutta la proprieta, solo tua', 'intro_h2' => 'Affitta tutta<br/>Masseria Le Cerase', 'intro_p' => 'Camere, sale voltate, cucina, piscina e giardini riservati esclusivamente al tuo gruppo.' ),
-		'price' => array( 'title' => 'Prezzi e condizioni - Masseria Le Cerase', 'h1' => 'Prezzi e condizioni', 'intro_over' => 'Condizioni chiare', 'intro_h2' => 'Pianifica il soggiorno<br/>con chiarezza', 'intro_p' => 'Tariffe e condizioni variano per stagione, durata e tipologia di prenotazione.' ),
-		'spa' => array( 'title' => 'SPA & Wellness - Masseria Le Cerase', 'h1' => 'SPA & Wellness', 'intro_over' => 'Benessere lento', 'intro_h2' => 'Rituali quieti<br/>in campagna', 'intro_p' => 'Momenti wellness e massaggi possono essere organizzati intorno al tuo soggiorno.' ),
+		'price' => array(
+			'title' => 'Prezzi e condizioni - Masseria Le Cerase',
+			'over' => 'Tariffe e prenotazioni',
+			'h1' => 'Prezzi e condizioni',
+			'intro_over' => 'Trasparenza e flessibilita',
+			'intro_h2' => 'Pianifica il soggiorno con serenita',
+			'intro_p' => 'Verifica la disponibilita in tempo reale e le migliori tariffe per ogni camera, poi conferma la prenotazione in pochi passaggi sicuri — prenotazione immediata, senza attese.',
+			'bc_over' => 'Disponibilita in tempo reale',
+			'bc_h3' => 'Controlla le date e prenota online',
+			'bc_p' => 'Scegli la camera, vedi le tariffe live per le tue date e completa la prenotazione tramite il nostro sistema sicuro.',
+			'bc_btn' => 'Prenota il soggiorno',
+			'bc_note' => 'Miglior tariffa garantita prenotando direttamente.',
+			'cond_over' => 'Buono a sapersi',
+			'cond_h2' => 'Condizioni',
+			'conditions' => array(
+				array( 'dt' => 'Check-in', 'dd' => 'Dalle 15:00. Arrivi in tarda serata su richiesta.' ),
+				array( 'dt' => 'Check-out', 'dd' => 'Entro le 10:30 del giorno di partenza.' ),
+				array( 'dt' => 'Soggiorno minimo', 'dd' => '2 notti; piu lungo in alta stagione e nei periodi speciali.' ),
+				array( 'dt' => 'Incluso', 'dd' => 'Pulizia finale, biancheria da letto e da bagno, Wi-Fi, SPA, piscina e accesso al parco.' ),
+				array( 'dt' => 'Tassa di soggiorno', 'dd' => 'Applicata per persona/notte come previsto dal Comune di Conversano.' ),
+				array( 'dt' => 'Animali', 'dd' => 'Benvenuti su richiesta — segnalalo in anticipo.' ),
+			),
+			'cta_over' => 'Su misura per le tue date',
+			'cta_h2' => 'Richiedi il tuo preventivo personalizzato',
+			'cta_btn' => 'Contattaci',
+		),
+		'spa' => array(
+			'title' => 'SPA & Wellness - Masseria Le Cerase',
+			'over' => 'Masseria Le Cerase & SPA',
+			'h1' => 'SPA & Wellness',
+			'intro_over' => 'Risveglia corpo e mente',
+			'intro_h2' => 'Un rifugio<br/>di benessere',
+			'intro_p1' => 'Dedica tempo a te stesso nel nostro centro benessere, uno spazio intimo pensato per il relax profondo. Lascia che il calore del bagno turco, il tepore della sauna finlandese e l\'abbraccio dell\'idromassaggio sciolgano la giornata.',
+			'intro_p2' => 'Dalle docce emozionali a una tranquilla area relax, ogni elemento e pensato per ritrovare l\'equilibrio e farti sentire rigenerato — il complemento perfetto alla tua fuga pugliese.',
+			'feat1_label' => 'Acqua e calore',
+			'feat1_h3' => 'Idromassaggio e bagno turco',
+			'feat1_p' => 'Lasciati avvolgere dai getti caldi della piscina idromassaggio e dal vapore avvolgente del bagno turco — un rituale di relax senza tempo.',
+			'feat2_label' => 'Corpo e anima',
+			'feat2_h3' => 'Sauna, massaggi e Yoga',
+			'feat2_p' => 'Sauna finlandese, doccia emozionale, una serena area relax, massaggi esperti e un programma Yoga dedicato per ritrovare se stessi.',
+			'am_over' => 'L\'esperienza wellness',
+			'am_h2' => 'Tutto per il tuo relax',
+			'amenities' => array(
+				array( 'h4' => 'Bagno Turco', 'p' => 'Vapore avvolgente per purificare corpo e mente.' ),
+				array( 'h4' => 'Sauna Finlandese', 'p' => 'Calore secco per sciogliere le tensioni e ritrovare energia.' ),
+				array( 'h4' => 'Idromassaggio', 'p' => 'Getti caldi e massaggianti per un relax totale.' ),
+				array( 'h4' => 'Doccia Emozionale', 'p' => 'Luce, profumo e acqua per un risveglio multisensoriale.' ),
+				array( 'h4' => 'Area Relax', 'p' => 'Uno spazio tranquillo per riposare tra un trattamento e l\'altro.' ),
+				array( 'h4' => 'Palestra e Yoga', 'p' => 'Uno spazio fitness e un programma Yoga dedicato.' ),
+			),
+			'cta_over' => 'Prenota il tuo momento',
+			'cta_h2' => 'Prenota la tua esperienza wellness',
+			'cta_btn' => 'Contattaci',
+		),
 		'experiences' => array(
 			'title' => 'Esperienze - Masseria Le Cerase', 'h1' => 'Esperienze', 'over' => 'Esperienza pugliese',
 			'intro_over' => 'Vivi la Puglia a modo tuo', 'intro_h2' => 'Momenti costruiti<br/>intorno a te',
