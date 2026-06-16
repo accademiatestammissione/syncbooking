@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.64' );
+define( 'SBT_VERSION', '2.1.65' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -168,6 +168,8 @@ function sbt_default_options() {
 		'overrides'          => array(),
 		'custom_house_pages' => array(),
 		'disabled_theme_pages' => array(),
+		'contact_email'      => '',
+		'cf7_forms'          => array(),
 	);
 }
 
@@ -4815,6 +4817,12 @@ function sbt_sanitize_options( $raw ) {
 	$options['overrides'] = isset( $existing['overrides'] ) && is_array( $existing['overrides'] ) ? $existing['overrides'] : array();
 	$options['custom_house_pages'] = isset( $existing['custom_house_pages'] ) && is_array( $existing['custom_house_pages'] ) ? $existing['custom_house_pages'] : array();
 	$options['disabled_theme_pages'] = isset( $existing['disabled_theme_pages'] ) && is_array( $existing['disabled_theme_pages'] ) ? $existing['disabled_theme_pages'] : array();
+	$options['cf7_forms'] = isset( $existing['cf7_forms'] ) && is_array( $existing['cf7_forms'] ) ? $existing['cf7_forms'] : array();
+	$options['contact_email'] = isset( $existing['contact_email'] ) ? sanitize_email( $existing['contact_email'] ) : '';
+	if ( isset( $raw['contact_email'] ) ) {
+		$candidate = sanitize_email( wp_unslash( $raw['contact_email'] ) );
+		$options['contact_email'] = ( '' === $candidate || is_email( $candidate ) ) ? $candidate : $options['contact_email'];
+	}
 	$options['admin_language'] = isset( $raw['admin_language'] ) && in_array( sanitize_key( wp_unslash( $raw['admin_language'] ) ), array( 'it', 'en' ), true ) ? sanitize_key( wp_unslash( $raw['admin_language'] ) ) : sbt_admin_language();
 	$options['edit_mode'] = isset( $raw['edit_mode'] ) && in_array( sanitize_key( wp_unslash( $raw['edit_mode'] ) ), array( 'standard', 'visual' ), true ) ? sanitize_key( wp_unslash( $raw['edit_mode'] ) ) : sbt_edit_mode();
 	$available_languages = sbt_available_languages();
@@ -5491,6 +5499,53 @@ function sbt_cf7_is_active() {
 	return defined( 'WPCF7_VERSION' ) && class_exists( 'WPCF7_ContactForm' );
 }
 
+/**
+ * Email address that receives contact and weddings form submissions.
+ * Uses the admin-configured address, falling back to the WordPress admin email.
+ */
+function sbt_contact_recipient_email() {
+	$options = sbt_get_options();
+	$email = isset( $options['contact_email'] ) ? sanitize_email( $options['contact_email'] ) : '';
+	if ( $email && is_email( $email ) ) {
+		return $email;
+	}
+
+	return get_option( 'admin_email' );
+}
+
+/**
+ * Keep the recipient of the stored CF7 forms in sync with the configured email.
+ */
+function sbt_cf7_update_recipients() {
+	if ( ! sbt_cf7_is_active() || ! function_exists( 'wpcf7_contact_form' ) ) {
+		return;
+	}
+
+	$email = sbt_contact_recipient_email();
+	$options = sbt_get_options();
+	$forms = isset( $options['cf7_forms'] ) && is_array( $options['cf7_forms'] ) ? $options['cf7_forms'] : array();
+	foreach ( $forms as $form_id ) {
+		$form_id = absint( $form_id );
+		if ( ! $form_id || 'wpcf7_contact_form' !== get_post_type( $form_id ) ) {
+			continue;
+		}
+		$contact_form = wpcf7_contact_form( $form_id );
+		if ( ! $contact_form ) {
+			continue;
+		}
+		$properties = $contact_form->get_properties();
+		if ( ! isset( $properties['mail'] ) || ! is_array( $properties['mail'] ) ) {
+			continue;
+		}
+		if ( ( $properties['mail']['recipient'] ?? '' ) === $email ) {
+			continue;
+		}
+		$properties['mail']['recipient'] = $email;
+		$contact_form->set_properties( $properties );
+		$contact_form->save();
+	}
+}
+
 function sbt_cf7_plugin_status() {
 	if ( ! function_exists( 'get_plugins' ) ) {
 		require_once ABSPATH . 'wp-admin/includes/plugin.php';
@@ -5577,7 +5632,7 @@ function sbt_cf7_get_form_id( $key ) {
 	$mail = isset( $properties['mail'] ) && is_array( $properties['mail'] ) ? $properties['mail'] : array();
 	$mail = wp_parse_args(
 		array(
-			'recipient'          => get_option( 'admin_email' ),
+			'recipient'          => sbt_contact_recipient_email(),
 			'subject'            => $tpl['subject'],
 			'body'               => $tpl['body'],
 			'additional_headers' => 'Reply-To: [your-email]',
@@ -5675,6 +5730,22 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 					</a>
 				</p>
 			</div>
+		</div>
+
+		<?php
+		$sbt_saved_options = sbt_get_options();
+		$sbt_contact_email = isset( $sbt_saved_options['contact_email'] ) ? $sbt_saved_options['contact_email'] : '';
+		$sbt_admin_email = get_option( 'admin_email' );
+		?>
+		<div class="sbt-card">
+			<h3>Notification email</h3>
+			<p class="sbt-muted">The main email address that receives contact and weddings form submissions. Leave empty to use the WordPress site admin email (<code><?php echo esc_html( $sbt_admin_email ); ?></code>).</p>
+			<div class="sbt-field">
+				<label for="sbt-contact-email">Recipient email</label>
+				<input type="email" id="sbt-contact-email" class="large-text" name="<?php echo esc_attr( SBT_OPTION ); ?>[contact_email]" value="<?php echo esc_attr( $sbt_contact_email ); ?>" placeholder="<?php echo esc_attr( $sbt_admin_email ); ?>">
+			</div>
+			<p class="sbt-muted" style="margin-top:8px;">Currently delivering to: <code><?php echo esc_html( sbt_contact_recipient_email() ); ?></code></p>
+			<?php submit_button( 'Save notification email' ); ?>
 		</div>
 
 		<div class="sbt-status is-ok">
@@ -6043,6 +6114,7 @@ function sbt_render_admin_page() {
 			update_option( SBT_OPTION, sbt_sanitize_options( $raw_options ) );
 			sbt_sync_custom_house_pages();
 			sbt_create_theme_pages();
+			sbt_cf7_update_recipients();
 			echo '<div class="notice notice-success is-dismissible"><p>SyncBooking settings saved.</p></div>';
 		}
 	}

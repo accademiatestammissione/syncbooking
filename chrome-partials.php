@@ -260,7 +260,7 @@ if ( ! function_exists( 'sbt_handle_contact_submit' ) ) {
 
 		$data      = function_exists( 'sbt_load_active_data' ) ? sbt_load_active_data() : array();
 		$site      = isset( $data['SITE'] ) && is_array( $data['SITE'] ) ? $data['SITE'] : array();
-		$to        = ! empty( $site['email'] ) ? $site['email'] : get_option( 'admin_email' );
+		$to        = function_exists( 'sbt_contact_recipient_email' ) ? sbt_contact_recipient_email() : ( ! empty( $site['email'] ) ? $site['email'] : get_option( 'admin_email' ) );
 		$site_name = ! empty( $site['name'] ) ? $site['name'] : get_bloginfo( 'name' );
 
 		$subject = sprintf( '[%s] %s', $site_name, $name );
