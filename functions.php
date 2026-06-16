@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.65' );
+define( 'SBT_VERSION', '2.1.66' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -4818,6 +4818,9 @@ function sbt_sanitize_options( $raw ) {
 	$options['custom_house_pages'] = isset( $existing['custom_house_pages'] ) && is_array( $existing['custom_house_pages'] ) ? $existing['custom_house_pages'] : array();
 	$options['disabled_theme_pages'] = isset( $existing['disabled_theme_pages'] ) && is_array( $existing['disabled_theme_pages'] ) ? $existing['disabled_theme_pages'] : array();
 	$options['cf7_forms'] = isset( $existing['cf7_forms'] ) && is_array( $existing['cf7_forms'] ) ? $existing['cf7_forms'] : array();
+	if ( ! empty( $existing['contact_email_seeded'] ) ) {
+		$options['contact_email_seeded'] = 1;
+	}
 	$options['contact_email'] = isset( $existing['contact_email'] ) ? sanitize_email( $existing['contact_email'] ) : '';
 	if ( isset( $raw['contact_email'] ) ) {
 		$candidate = sanitize_email( wp_unslash( $raw['contact_email'] ) );
@@ -5514,6 +5517,28 @@ function sbt_contact_recipient_email() {
 }
 
 /**
+ * On first load, pre-fill the notification email with the WordPress admin
+ * email so the field is populated out of the box. Runs once (guarded by a
+ * marker) so the user can later clear it without it being re-seeded.
+ */
+function sbt_seed_contact_email() {
+	$raw = get_option( SBT_OPTION, array() );
+	if ( ! is_array( $raw ) ) {
+		$raw = array();
+	}
+	if ( ! empty( $raw['contact_email_seeded'] ) ) {
+		return;
+	}
+	if ( empty( $raw['contact_email'] ) ) {
+		$raw['contact_email'] = sanitize_email( get_option( 'admin_email' ) );
+	}
+	$raw['contact_email_seeded'] = 1;
+	update_option( SBT_OPTION, $raw );
+}
+add_action( 'after_switch_theme', 'sbt_seed_contact_email' );
+add_action( 'admin_init', 'sbt_seed_contact_email' );
+
+/**
  * Keep the recipient of the stored CF7 forms in sync with the configured email.
  */
 function sbt_cf7_update_recipients() {
@@ -5739,7 +5764,7 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 		?>
 		<div class="sbt-card">
 			<h3>Notification email</h3>
-			<p class="sbt-muted">The main email address that receives contact and weddings form submissions. Leave empty to use the WordPress site admin email (<code><?php echo esc_html( $sbt_admin_email ); ?></code>).</p>
+			<p class="sbt-muted">The main email address that receives contact and weddings form submissions. It is set to the WordPress site admin email (<code><?php echo esc_html( $sbt_admin_email ); ?></code>) by default — change it to your preferred address. If you clear it, the site admin email is used.</p>
 			<div class="sbt-field">
 				<label for="sbt-contact-email">Recipient email</label>
 				<input type="email" id="sbt-contact-email" class="large-text" name="<?php echo esc_attr( SBT_OPTION ); ?>[contact_email]" value="<?php echo esc_attr( $sbt_contact_email ); ?>" placeholder="<?php echo esc_attr( $sbt_admin_email ); ?>">
