@@ -109,7 +109,7 @@ $svc_icons = array(
         </div>
         <div class="sbtw-body">
           <h3><?php echo esc_html( $hc_title ); ?></h3>
-          <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( 'syncbooking:booking' ) ); ?>"><?php echo esc_html( $TEXT['discover'] ?? 'Discover' ); ?></a>
+          <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( 'houses.php' ) ); ?>"><?php echo esc_html( $TEXT['discover'] ?? 'Discover' ); ?></a>
         </div>
       </div>
       <?php endforeach; ?>

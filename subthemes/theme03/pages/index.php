@@ -112,7 +112,7 @@ $svc_svgs = array(
         </div>
         <div class="sbtw-body">
           <h3><?php echo sbt_t1_text( 'C.home.rooms.' . $ri . '.h3', $room['h3'] ?? '' ); ?></h3>
-          <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( 'syncbooking:booking' ) ); ?>"><?php echo sbt_t1_text( 'C.home.discover_btn', $p['discover_btn'] ?? 'Discover' ); ?></a>
+          <a class="sbtw-btn sbtw-btn--light sbtw-house-cta" href="<?php echo esc_url( sbt_t1_url( 'house.php' ) ); ?>"><?php echo sbt_t1_text( 'C.home.discover_btn', $p['discover_btn'] ?? 'Discover' ); ?></a>
         </div>
       </div>
       <?php endforeach; ?>

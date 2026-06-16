@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.67' );
+define( 'SBT_VERSION', '2.1.68' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -329,17 +329,22 @@ function sbt_unit_label( $overrides = array() ) {
 
 function sbt_unit_label_for_subtheme( $subtheme = '' ) {
 	$subtheme = '' === $subtheme ? sbt_active_subtheme_key() : sanitize_key( $subtheme );
-	$default = in_array( $subtheme, array( 'theme02', 'theme03' ), true ) ? 'Room' : 'House';
+	$is_it = function_exists( 'sbt_current_content_language' ) && 'it' === sbt_current_content_language();
+	$default = in_array( $subtheme, array( 'theme02', 'theme03' ), true ) ? ( $is_it ? 'Camera' : 'Room' ) : ( $is_it ? 'Casa' : 'House' );
 
 	return sbt_unit_label( array( 'SITE.unit_label' => sbt_structural_override_value( $subtheme, 'SITE.unit_label', $default ) ) );
 }
 
 function sbt_unit_label_options() {
 	return array(
-		'Room'      => 'Rooms',
-		'House'     => 'Houses',
-		'Unit'      => 'Units',
-		'Apartment' => 'Apartments',
+		'Room'        => 'Rooms',
+		'House'       => 'Houses',
+		'Unit'        => 'Units',
+		'Apartment'   => 'Apartments',
+		'Casa'        => 'Case',
+		'Camera'      => 'Camere',
+		'Appartamento' => 'Appartamenti',
+		'Stanza'      => 'Stanze',
 	);
 }
 
@@ -416,7 +421,8 @@ function sbt_unit_default_title( $unit_label, $number ) {
 	$unit_label = wp_strip_all_tags( (string) $unit_label );
 	$unit_label = '' !== $unit_label ? $unit_label : 'House';
 	$people = absint( $number ) + 1;
-	return trim( sprintf( '%s for %d people', $unit_label, $people ) );
+	$is_it = function_exists( 'sbt_current_content_language' ) && 'it' === sbt_current_content_language();
+	return trim( sprintf( $is_it ? '%s per %d persone' : '%s for %d people', $unit_label, $people ) );
 }
 
 function sbt_unit_content_key( $number ) {
@@ -2565,7 +2571,9 @@ function sbt_apply_unit_structure( &$SITE, &$NAV, &$C, &$HOUSE_CARDS, &$TEXT ) {
 		$number = $index + 1;
 		$content_key = $house_page['content_key'] ?? '';
 		$content = $content_key && isset( $C[ $content_key ] ) && is_array( $C[ $content_key ] ) ? $C[ $content_key ] : array();
-		$display_title = ! empty( $house_page['title'] ) ? $house_page['title'] : ( $content['h1'] ?? sbt_unit_default_title( $unit_label, $number ) );
+		$display_title = ( ! empty( $house_page['custom_title'] ) && ! empty( $house_page['title'] ) )
+			? $house_page['title']
+			: sbt_unit_default_title( $unit_label, $number );
 		if ( $content_key && isset( $C[ $content_key ] ) && is_array( $C[ $content_key ] ) ) {
 			$C[ $content_key ]['title'] = $display_title . ' - ' . ( $SITE['name'] ?? 'SyncBooking' );
 			$C[ $content_key ]['h1'] = $display_title;
@@ -2967,6 +2975,27 @@ function sbt_apply_default_language_pack( &$SITE, &$NAV, &$C, &$TEXT ) {
 	unset( $item );
 
 	$theme01 = array(
+		'house2' => array(
+			'listing_specs' => array(
+				array( 'Superficie media', '30-40 m2' ),
+				array( 'Capienza massima', '2 adulti + 1 culla' ),
+				array( 'Letto', 'King-size' ),
+			),
+		),
+		'house3' => array(
+			'listing_specs' => array(
+				array( 'Superficie media', '40-50 m2' ),
+				array( 'Capienza massima', '3 adulti + 1 culla' ),
+				array( 'Letti', 'King-size + divano letto' ),
+			),
+		),
+		'house4' => array(
+			'listing_specs' => array(
+				array( 'Superficie media', '50-60 m2' ),
+				array( 'Capienza massima', '4 adulti + 1 culla' ),
+				array( 'Letti', 'King-size + divano letto doppio' ),
+			),
+		),
 		'home' => array(
 			'title' => 'Villa Rosa Resort - Una villa in Puglia',
 			'hero_over' => 'Villa Rosa Resort & SPA - Conversano',
