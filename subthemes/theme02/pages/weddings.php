@@ -107,6 +107,8 @@ $badges    = ( ! empty( $p['badges'] ) && is_array( $p['badges'] ) ) ? $p['badge
             <?php foreach ( $brochures as $bi => $br ) :
               $is_dl  = ! empty( $br['download'] );
               $b_url  = $br['url'] ?? '#';
+              $is_abs = (bool) preg_match( '#^https?://#i', $b_url );
+              $b_href = $is_abs ? $b_url : ( $is_dl ? sbt_asset_url( $b_url ) : sbt_t1_url( $b_url ) );
               $icon   = $is_dl
                 ? '<svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.7;"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>'
                 : '<svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.7;"><path d="M14 3h7v7"/><path d="M10 14L21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/></svg>'; ?>
@@ -114,11 +116,7 @@ $badges    = ( ! empty( $p['badges'] ) && is_array( $p['badges'] ) ) ? $p['badge
               <span class="sbtw-pr-tag"><?php echo $icon; ?>PDF</span>
               <h4><?php echo sbt_t1_text( 'C.weddings.brochures.' . $bi . '.h4', $br['h4'] ?? '' ); ?></h4>
               <div class="sbtw-pr-exp"><?php echo sbt_t1_text( 'C.weddings.brochures.' . $bi . '.exp', $br['exp'] ?? '', array( 'multiline' => true ) ); ?></div>
-              <?php if ( $is_dl ) : ?>
-              <a href="<?php echo esc_url( sbt_asset_url( $b_url ) ); ?>" download><?php echo sbt_t1_text( 'C.weddings.brochures.' . $bi . '.label', $br['label'] ?? 'Download PDF →' ); ?></a>
-              <?php else : ?>
-              <a href="<?php echo esc_url( sbt_t1_url( $b_url ) ); ?>" target="_blank" rel="noopener"><?php echo sbt_t1_text( 'C.weddings.brochures.' . $bi . '.label', $br['label'] ?? 'Download PDF →' ); ?></a>
-              <?php endif; ?>
+              <a href="<?php echo esc_url( $b_href ); ?>" target="_blank" rel="noopener"<?php echo $is_dl ? ' download' : ''; ?>><?php echo sbt_t1_text( 'C.weddings.brochures.' . $bi . '.label', $br['label'] ?? 'Download PDF →' ); ?></a>
             </div>
             <?php endforeach; ?>
           </div>
