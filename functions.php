@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.73' );
+define( 'SBT_VERSION', '2.1.74' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -585,14 +585,6 @@ function sbt_page_templates() {
 	$subtheme_key = sbt_active_subtheme_key();
 	$subtheme = sbt_active_subtheme();
 	$pages = $subtheme['pages'];
-	if ( 'theme01' === $subtheme_key ) {
-		$entire_slug = sbt_entire_page_slug( $subtheme_key );
-		$pages[ $entire_slug ] = array(
-			'title'       => sbt_entire_label( $subtheme_key ),
-			'file'        => sbt_entire_page_file( $subtheme_key ),
-			'content_key' => 'entire',
-		);
-	}
 
 	if ( sbt_is_entire_rental_mode( $subtheme_key ) ) {
 		unset( $pages['houses'], $pages['house'], $pages['rooms'] );
@@ -610,7 +602,8 @@ function sbt_page_templates() {
 		return $pages;
 	}
 
-	unset( $pages['houses'], $pages['house'], $pages['rooms'] );
+	// Units mode: drop the whole-estate page; only the unit listing applies.
+	unset( $pages['houses'], $pages['house'], $pages['rooms'], $pages[ sbt_entire_page_slug( $subtheme_key ) ] );
 	$unit_label = sbt_unit_label_for_subtheme( $subtheme_key );
 	$listing_slug = sbt_unit_listing_slug( $subtheme_key );
 	$pages[ $listing_slug ] = array(
@@ -1937,8 +1930,42 @@ function sbt_create_theme_pages() {
 			}
 		}
 	}
+	sbt_prune_offmode_theme_pages();
 	sbt_sync_syncbooking_bar_pages();
 	sbt_apply_reading_page_defaults();
+}
+
+/**
+ * Trash the structural pages that do not belong to the active rental mode:
+ * in units mode the whole-estate page, in entire mode the unit listing and
+ * the individual unit pages. Keeps the Pages/menu in sync with the choice.
+ */
+function sbt_prune_offmode_theme_pages() {
+	$subtheme = sbt_active_subtheme_key();
+	if ( ! in_array( $subtheme, array( 'theme01', 'theme02', 'theme03' ), true ) ) {
+		return;
+	}
+
+	if ( sbt_is_entire_rental_mode( $subtheme ) ) {
+		$kill = array( 'houses', 'house', 'rooms', sbt_unit_listing_slug( $subtheme ) );
+	} else {
+		$kill = array( sbt_entire_page_slug( $subtheme ), 'whole-villa', 'whole-masseria', 'entire-villa' );
+	}
+
+	$kill = array_values( array_unique( array_filter( array_map( 'sanitize_title', $kill ) ) ) );
+	foreach ( $kill as $slug ) {
+		$posts = get_posts( array(
+			'post_type'      => 'page',
+			'post_status'    => array( 'publish', 'draft', 'pending', 'future', 'private' ),
+			'posts_per_page' => -1,
+			'meta_key'       => '_sbt_base_slug',
+			'meta_value'     => $slug,
+			'fields'         => 'ids',
+		) );
+		foreach ( $posts as $page_id ) {
+			wp_trash_post( $page_id );
+		}
+	}
 }
 add_action( 'after_switch_theme', 'sbt_create_theme_pages' );
 add_action( 'after_switch_theme', 'sbt_sync_custom_house_pages' );
@@ -2691,11 +2718,6 @@ function sbt_apply_unit_structure( &$SITE, &$NAV, &$C, &$HOUSE_CARDS, &$TEXT ) {
 				'url'   => $listing_url,
 				'label' => $plural_label,
 				'desc'  => 'Units only',
-			);
-			$item['sub'][] = array(
-				'url'   => $entire_url,
-				'label' => $whole_menu_label,
-				'desc'  => 'Exclusive rental',
 			);
 			$item['sub'][] = array(
 				'url'   => 'price-and-condition.php',
@@ -6225,41 +6247,69 @@ function sbt_render_menu_tab( $data, $overrides, $edit_language = 'en' ) {
 	$extra_rows[] = array( 'label' => '', 'url' => '' );
 	$extra_rows[] = array( 'label' => '', 'url' => '' );
 	?>
+	<style>
+		.sbt-menu-block { border:1px solid #e2e4e7; border-radius:10px; padding:0; margin:0 0 16px; overflow:hidden; background:#fff; }
+		.sbt-menu-block.is-removed { opacity:.6; }
+		.sbt-menu-block__head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 16px; background:#f6f7f8; border-bottom:1px solid #e2e4e7; }
+		.sbt-menu-block__title { font-weight:600; font-size:14px; color:#1d2327; display:inline-flex; align-items:center; gap:8px; }
+		.sbt-menu-block__title .dashicons { color:#7d8794; }
+		.sbt-menu-block__body { padding:14px 16px 4px; }
+		.sbt-menu-block__body .sbt-menu-item { border:0; padding:0; margin:0; }
+		.sbt-remove-toggle { display:inline-flex; align-items:center; gap:7px; cursor:pointer; user-select:none; border:1px solid #d6a2a2; color:#a32626; background:#fff; border-radius:999px; padding:5px 12px; font-size:12px; font-weight:600; line-height:1; transition:background .15s, color .15s, border-color .15s; }
+		.sbt-remove-toggle:hover { background:#fcecec; }
+		.sbt-remove-toggle input { position:absolute; opacity:0; width:0; height:0; }
+		.sbt-remove-toggle .dashicons { font-size:15px; width:15px; height:15px; }
+		.sbt-remove-toggle .sbt-remove-on { display:none; }
+		.sbt-remove-toggle.is-on { background:#a32626; border-color:#a32626; color:#fff; }
+		.sbt-remove-toggle.is-on .sbt-remove-off { display:none; }
+		.sbt-remove-toggle.is-on .sbt-remove-on { display:inline; }
+		.sbt-add-grid { display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr)); }
+		.sbt-add-card { border:1px dashed #c8ccd1; border-radius:10px; padding:14px 16px; background:#fbfbfc; }
+		.sbt-add-card .sbt-field + .sbt-field { margin-top:10px; }
+	</style>
 	<div class="sbt-panel">
 		<?php sbt_render_section_language_tabs( 'menu', $edit_language ); ?>
 		<h2>Top menu</h2>
-		<p class="sbt-muted">Edit the header menu for the active subtheme. Each item can have a different label and link for each language. Tick "Remove from menu" to hide an item, and use "Add menu items" to append new ones.</p>
+		<p class="sbt-muted">Edit the header menu for the active subtheme. Each item can have a different label and link for each language. Use the <strong>Remove</strong> toggle to hide an item, and <strong>Add menu items</strong> below to append new ones.</p>
 		<?php foreach ( $data['NAV'] as $index => $item ) : ?>
 			<?php
 			$item_key = $item['key'] ?? '';
-			sbt_render_menu_row( 'NAV.' . $index, $item, $overrides, $page_options );
-			if ( $item_key ) :
+			$is_removed = $item_key && in_array( $item_key, $removed, true );
 			?>
-			<div class="sbt-field" style="margin:-6px 0 18px;">
-				<label style="display:inline-flex;align-items:center;gap:8px;font-weight:600;">
-					<input type="checkbox" name="<?php echo esc_attr( SBT_OPTION . '[nav_removed][]' ); ?>" value="<?php echo esc_attr( $item_key ); ?>" <?php checked( in_array( $item_key, $removed, true ) ); ?>>
-					Remove "<?php echo esc_html( $item['label'] ?? $item_key ); ?>" from the menu
-				</label>
+			<div class="sbt-menu-block<?php echo $is_removed ? ' is-removed' : ''; ?>">
+				<div class="sbt-menu-block__head">
+					<span class="sbt-menu-block__title"><span class="dashicons dashicons-menu-alt"></span><?php echo esc_html( $item['label'] ?? ( $item_key ? $item_key : 'Menu item' ) ); ?></span>
+					<?php if ( $item_key ) : ?>
+					<label class="sbt-remove-toggle<?php echo $is_removed ? ' is-on' : ''; ?>">
+						<input type="checkbox" name="<?php echo esc_attr( SBT_OPTION . '[nav_removed][]' ); ?>" value="<?php echo esc_attr( $item_key ); ?>" <?php checked( $is_removed ); ?> onchange="this.closest('.sbt-remove-toggle').classList.toggle('is-on', this.checked); this.closest('.sbt-menu-block').classList.toggle('is-removed', this.checked);">
+						<span class="dashicons dashicons-trash"></span>
+						<span class="sbt-remove-off">Remove</span>
+						<span class="sbt-remove-on">Removed</span>
+					</label>
+					<?php endif; ?>
+				</div>
+				<div class="sbt-menu-block__body">
+					<?php sbt_render_menu_row( 'NAV.' . $index, $item, $overrides, $page_options ); ?>
+				</div>
 			</div>
-			<?php endif; ?>
 		<?php endforeach; ?>
 
 		<h2 style="margin-top:28px;">Add menu items</h2>
 		<p class="sbt-muted">Add custom links to the header menu (e.g. a blog, an external page). Leave a row empty to skip it. New items are appended after the existing ones; the label is shared across languages.</p>
-		<?php foreach ( $extra_rows as $ei => $extra_item ) : ?>
-			<div class="sbt-menu-item">
-				<div class="sbt-field-grid">
+		<div class="sbt-add-grid">
+			<?php foreach ( $extra_rows as $ei => $extra_item ) : ?>
+				<div class="sbt-add-card">
 					<div class="sbt-field">
 						<label>New item label</label>
-						<input type="text" name="<?php echo esc_attr( SBT_OPTION . '[nav_extra][' . $ei . '][label]' ); ?>" value="<?php echo esc_attr( $extra_item['label'] ?? '' ); ?>" placeholder="e.g. Blog">
+						<input type="text" class="large-text" name="<?php echo esc_attr( SBT_OPTION . '[nav_extra][' . $ei . '][label]' ); ?>" value="<?php echo esc_attr( $extra_item['label'] ?? '' ); ?>" placeholder="e.g. Blog">
 					</div>
 					<div class="sbt-field">
 						<label>Linked page or URL</label>
 						<?php sbt_render_link_target_control( SBT_OPTION . '[nav_extra][' . $ei . '][url]', sbt_editable_url_value( $extra_item['url'] ?? '' ) ); ?>
 					</div>
 				</div>
-			</div>
-		<?php endforeach; ?>
+			<?php endforeach; ?>
+		</div>
 		<?php submit_button( 'Save menu' ); ?>
 	</div>
 	<?php
