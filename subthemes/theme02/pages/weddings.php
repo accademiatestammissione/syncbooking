@@ -117,6 +117,7 @@ $badges    = ( ! empty( $p['badges'] ) && is_array( $p['badges'] ) ) ? $p['badge
               <h4><?php echo sbt_t1_text( 'C.weddings.brochures.' . $bi . '.h4', $br['h4'] ?? '' ); ?></h4>
               <div class="sbtw-pr-exp"><?php echo sbt_t1_text( 'C.weddings.brochures.' . $bi . '.exp', $br['exp'] ?? '', array( 'multiline' => true ) ); ?></div>
               <a href="<?php echo esc_url( $b_href ); ?>" target="_blank" rel="noopener"<?php echo $is_dl ? ' download' : ''; ?>><?php echo sbt_t1_text( 'C.weddings.brochures.' . $bi . '.label', $br['label'] ?? 'Download PDF →' ); ?></a>
+              <?php echo sbt_t1_control( 'C.weddings.brochures.' . $bi . '.url', $b_url, 'PDF link', 'url' ); ?>
             </div>
             <?php endforeach; ?>
           </div>
