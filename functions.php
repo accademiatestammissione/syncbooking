@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.71' );
+define( 'SBT_VERSION', '2.1.72' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -364,9 +364,17 @@ function sbt_default_entire_label( $subtheme = '' ) {
 	return in_array( $subtheme, array( 'theme02', 'theme03' ), true ) ? 'Entire Masseria' : 'Entire Villa';
 }
 
+function sbt_default_rental_mode( $subtheme = '' ) {
+	$subtheme = '' === $subtheme ? sbt_active_subtheme_key() : $subtheme;
+	// Out of the box theme02 (Masseria Le Cerase) sells the entire masseria;
+	// theme01/theme03 sell individual units. The user can change this in
+	// General Settings.
+	return 'theme02' === $subtheme ? 'entire' : 'units';
+}
+
 function sbt_rental_mode( $subtheme = '' ) {
 	$subtheme = '' === $subtheme ? sbt_active_subtheme_key() : $subtheme;
-	$mode = sbt_structural_override_value( $subtheme, 'SITE.rental_mode', 'units' );
+	$mode = sbt_structural_override_value( $subtheme, 'SITE.rental_mode', sbt_default_rental_mode( $subtheme ) );
 	return 'entire' === $mode ? 'entire' : 'units';
 }
 
@@ -5963,7 +5971,7 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 	$subtheme = sbt_active_subtheme_key();
 	$default_unit_label = in_array( $subtheme, array( 'theme02', 'theme03' ), true ) ? 'Room' : ( $data['SITE']['unit_label'] ?? 'House' );
 	$unit_overrides = array(
-		'SITE.rental_mode'  => sbt_structural_override_value( $subtheme, 'SITE.rental_mode', 'units' ),
+		'SITE.rental_mode'  => sbt_structural_override_value( $subtheme, 'SITE.rental_mode', sbt_default_rental_mode( $subtheme ) ),
 		'SITE.entire_label' => sbt_structural_override_value( $subtheme, 'SITE.entire_label', sbt_default_entire_label( $subtheme ) ),
 		'SITE.unit_label'   => sbt_structural_override_value( $subtheme, 'SITE.unit_label', $default_unit_label ),
 		'SITE.unit_count'   => sbt_structural_override_value( $subtheme, 'SITE.unit_count', $data['SITE']['unit_count'] ?? '3' ),
