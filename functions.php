@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.72' );
+define( 'SBT_VERSION', '2.1.73' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -366,10 +366,10 @@ function sbt_default_entire_label( $subtheme = '' ) {
 
 function sbt_default_rental_mode( $subtheme = '' ) {
 	$subtheme = '' === $subtheme ? sbt_active_subtheme_key() : $subtheme;
-	// Out of the box theme02 (Masseria Le Cerase) sells the entire masseria;
-	// theme01/theme03 sell individual units. The user can change this in
-	// General Settings.
-	return 'theme02' === $subtheme ? 'entire' : 'units';
+	// Out of the box theme02 (Le Cerase) and theme03 (Montefieno) sell the
+	// entire masseria; theme01 (Villa Rosa) sells individual houses. The user
+	// can change this in General Settings.
+	return in_array( $subtheme, array( 'theme02', 'theme03' ), true ) ? 'entire' : 'units';
 }
 
 function sbt_rental_mode( $subtheme = '' ) {
