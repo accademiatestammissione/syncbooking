@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.76' );
+define( 'SBT_VERSION', '2.1.77' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -5590,6 +5590,8 @@ function sbt_render_admin_shell_start( $active_tab ) {
 		.sbt-section-card > h3 { margin:0 0 3px; font-size:15px; display:flex; align-items:center; gap:8px; }
 		.sbt-section-card > h3 .dashicons { color:#8c8f94; }
 		.sbt-section-card > .sbt-section-desc { color:#646970; margin:0 0 16px; font-size:13px; }
+		.sbt-grid > .sbt-card > h3 { display:flex; align-items:center; gap:8px; }
+		.sbt-grid > .sbt-card > h3 .dashicons { color:#8c8f94; }
 		.sbt-field input:not([type=checkbox]):not([type=radio]),
 		.sbt-field select,
 		.sbt-field textarea { border:1px solid #c3c4c7; border-radius:6px; padding:8px 11px; min-height:38px; background:#fff; box-shadow:none; transition:border-color .15s ease, box-shadow .15s ease; }
@@ -5599,6 +5601,10 @@ function sbt_render_admin_shell_start( $active_tab ) {
 		.sbt-field-hint { color:#646970; font-size:12px; margin:5px 0 0; }
 		.sbt-table { border-collapse:collapse; width:100%; }
 		.sbt-table th, .sbt-table td { border-bottom:1px solid #dcdcde; padding:12px; text-align:left; vertical-align:top; }
+		.sbt-table thead th { background:#f6f7f7; font-size:11px; text-transform:uppercase; letter-spacing:.03em; color:#646970; border-bottom-color:#dcdcde; }
+		.sbt-table tbody tr:last-child td { border-bottom:0; }
+		.sbt-section-card > .sbt-table { margin:0; }
+		.sbt-section-card > .sbt-table:not(:first-child) { margin-top:4px; }
 		.sbt-menu-item { background:#f6f7f7; border:1px solid #dcdcde; border-radius:8px; margin:0 0 12px; padding:14px; }
 		.sbt-submenu { border-left:3px solid #dcdcde; margin:12px 0 0 18px; padding-left:14px; }
 		.sbt-actions { display:flex; flex-wrap:wrap; gap:8px; }
@@ -6074,7 +6080,7 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 
 		<div class="sbt-grid">
 			<div class="sbt-card">
-				<h3>Assets online</h3>
+				<h3><span class="dashicons dashicons-cloud"></span>Assets online</h3>
 				<p class="sbt-muted">CSS, JavaScript, media and demo files are not bundled in the theme/plugin. They are downloaded only from the online assets.zip into WordPress uploads, with no local fallback, and the theme does not modify imported asset files.</p>
 				<p class="sbt-muted">Source: <code><?php echo esc_html( sbt_remote_assets_zip_url( sbt_active_subtheme_key() ) ); ?></code></p>
 				<?php if ( ! empty( $media_status['updated_at'] ) ) : ?>
@@ -6097,8 +6103,8 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 			</div>
 
 			<div class="sbt-card">
-				<h3>Edit mode</h3>
-				<p class="sbt-muted">Choose how page content is edited. Header, menu and footer fields stay inside Header & Menu.</p>
+				<h3><span class="dashicons dashicons-edit"></span>Edit mode</h3>
+				<p class="sbt-muted">Choose how page content is edited. Header and footer fields are in the Header & Footer tab; the menu is in the Menu tab.</p>
 				<div class="sbt-mode-grid">
 					<label class="sbt-mode-card">
 						<span class="sbt-mode-title">
@@ -6117,7 +6123,7 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 				</div>
 			</div>
 			<div class="sbt-card">
-				<h3>Sellable structure</h3>
+				<h3><span class="dashicons dashicons-cart"></span>Sellable structure</h3>
 				<p class="sbt-muted">Choose Entire Structure or Units (Rooms, Houses). If you choose Entire Structure, unit count and extra accommodation pages are disabled.</p>
 				<?php sbt_render_admin_fields( 'SITE', array(
 					'rental_mode'  => $unit_overrides['SITE.rental_mode'],
@@ -6143,7 +6149,7 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 				</script>
 			</div>
 			<div class="sbt-card">
-				<h3>Unit titles</h3>
+				<h3><span class="dashicons dashicons-building"></span>Unit titles</h3>
 				<p class="sbt-muted"><?php echo $is_entire ? 'Entire Structure mode is active: unit titles are hidden and not used until you switch back to Units.' : 'These are the sellable unit types shown on the website. If you select 3 units, the theme creates 3 detail pages; use real product names such as Room for 2 People, Deluxe Room for 3 People, Family Room for 4 People, House for 4 People or Apartment Deluxe.'; ?></p>
 				<div class="sbt-field-grid" data-sbt-unit-names>
 					<?php for ( $number = 1; $number <= 20; $number++ ) : ?>
@@ -6424,12 +6430,13 @@ function sbt_render_pages_tab() {
 	$language_label = esc_html( implode( ' / ', array_map( 'strtoupper', $languages ) ) );
 	?>
 	<div class="sbt-panel">
-		<h2>Pages of subtheme</h2>
-		<p class="sbt-muted">Open the complete editor for core and internal pages. Each editor contains the language tabs for the enabled languages.</p>
+		<h2>Pages</h2>
+		<p class="sbt-muted" style="margin-top:0;">Open the complete editor for core and internal pages. Each editor contains the language tabs for the enabled languages.</p>
 
-		<h2 style="margin-top:24px;">Core pages</h2>
-		<p class="sbt-muted">Home and Contacts are required pages for the theme. They can be edited and previewed, but they cannot be disabled.</p>
-		<table class="sbt-table" style="margin-bottom:28px;">
+		<div class="sbt-section-card">
+		<h3><span class="dashicons dashicons-admin-home"></span>Core pages</h3>
+		<p class="sbt-section-desc">Home and Contacts are required pages for the theme. They can be edited and previewed, but they cannot be disabled.</p>
+		<table class="sbt-table">
 			<thead><tr><th>Page</th><th>Languages</th><th>Base slug</th><th>Status</th><th>Actions</th></tr></thead>
 			<tbody>
 				<?php foreach ( $core_slugs as $slug ) : ?>
@@ -6463,11 +6470,13 @@ function sbt_render_pages_tab() {
 				<?php endforeach; ?>
 			</tbody>
 		</table>
+		</div>
 
 		<?php if ( in_array( sbt_active_subtheme_key(), array( 'theme01', 'theme02', 'theme03' ), true ) && ! sbt_is_entire_rental_mode() ) : ?>
-			<h2 style="margin-top:24px;">Unit detail pages</h2>
-			<p class="sbt-muted">These pages represent the room, house or unit types you sell, such as Room for 2 People, Deluxe Room for 3 People or Family Room for 4 People. They are generated from the unit count set in General Settings; open each page once and edit all enabled languages from the language tabs.</p>
-			<table class="sbt-table" style="margin-bottom:28px;">
+			<div class="sbt-section-card">
+			<h3><span class="dashicons dashicons-building"></span>Unit detail pages</h3>
+			<p class="sbt-section-desc">These pages represent the room, house or unit types you sell, such as Room for 2 People, Deluxe Room for 3 People or Family Room for 4 People. They are generated from the unit count set in General Settings; open each page once and edit all enabled languages from the language tabs.</p>
+			<table class="sbt-table">
 				<thead><tr><th><?php echo esc_html( $unit_label ); ?></th><th>Languages</th><th>Slug base</th><th>Status</th><th>Actions</th></tr></thead>
 				<tbody>
 					<?php foreach ( $pages as $slug => $page ) : ?>
@@ -6505,10 +6514,12 @@ function sbt_render_pages_tab() {
 					<?php endforeach; ?>
 				</tbody>
 			</table>
+			</div>
 		<?php endif; ?>
 
-		<h2>Internal pages</h2>
-		<p class="sbt-muted">These pages can be disabled when they are not needed. Disabling a page moves all its language versions to the trash; restoring it recreates the active language versions.</p>
+		<div class="sbt-section-card">
+		<h3><span class="dashicons dashicons-admin-page"></span>Internal pages</h3>
+		<p class="sbt-section-desc">These pages can be disabled when they are not needed. Disabling a page moves all its language versions to the trash; restoring it recreates the active language versions.</p>
 		<table class="sbt-table">
 			<thead><tr><th>Page</th><th>Languages</th><th>Base slug</th><th>Status</th><th>Actions</th></tr></thead>
 			<tbody>
@@ -6550,6 +6561,7 @@ function sbt_render_pages_tab() {
 				<?php endforeach; ?>
 			</tbody>
 		</table>
+		</div>
 		<?php submit_button( 'Create/update theme pages' ); ?>
 	</div>
 	<?php
