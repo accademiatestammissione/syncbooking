@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.77' );
+define( 'SBT_VERSION', '2.1.78' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -2357,8 +2357,50 @@ function sbt_theme03_seed_articles() {
 	);
 }
 
+function sbt_theme02_seed_articles() {
+	$img = function ( $name ) {
+		return function_exists( 'sbt_asset_url' ) ? sbt_asset_url( 'assets/images/' . $name ) : $name;
+	};
+	$contact_url = home_url( '/contacts/' );
+
+	return array(
+		array( 'slug' => 'conversano', 'title' => 'Conversano, the noble heart of Puglia', 'over' => '2 min walk', 'hero' => $img( 'conversano-castle.jpg' ), 'category' => 'Surroundings', 'category_slug' => 'surroundings', 'group' => 'theme02_surroundings', 'excerpt' => 'A graceful old town of stone lanes, noble palaces and quiet squares, a short stroll from Masseria Le Cerase.', 'content' => '<p>Conversano is the first discovery waiting beyond the gates of Masseria Le Cerase. Elegant, walkable and deeply authentic, the town keeps the rhythm of Puglia without the rush of the coast.</p><p>Its Norman-Swabian Castle dominates the historic centre, while churches, monasteries and aristocratic palaces reveal a layered history.</p><h2>What to see</h2><p>Start with the castle and the cathedral, then let the small streets guide you toward hidden courtyards, local bakeries and sunset aperitifs.</p><h3>Perfect for</h3><ul><li>A slow walk after breakfast.</li><li>An easy dinner without taking the car.</li><li>Guests who want culture and local life within reach.</li></ul><p><a href="' . esc_url( $contact_url ) . '">Contact us</a> for tips.</p>' ),
+		array( 'slug' => 'polignano-a-mare', 'title' => 'Polignano a Mare and the Adriatic cliffs', 'over' => '25 min', 'hero' => $img( 'masseria-dusk.jpg' ), 'category' => 'Surroundings', 'category_slug' => 'surroundings', 'group' => 'theme02_surroundings', 'excerpt' => 'White balconies, sea caves and dramatic cliffs make Polignano a Mare an essential coastal stop near Conversano.', 'content' => '<p>Polignano a Mare is one of the most iconic views of the Adriatic coast: houses rising above the cliffs, narrow lanes opening suddenly to blue water, and terraces where the sea feels close enough to touch.</p><p>Wander through the old centre, pause at the viewpoints, then follow the sound of the waves toward Lama Monachile, the town beach framed by stone walls.</p><h2>How to enjoy it</h2><p>Visit early for quiet streets, or arrive in the late afternoon for golden light and dinner by the sea.</p><h3>Perfect for</h3><ul><li>Sea views and photography.</li><li>A half-day coastal trip.</li><li>Romantic dinners by the water.</li></ul>' ),
+		array( 'slug' => 'alberobello-itria-valley', 'title' => 'Alberobello and the Itria Valley', 'over' => '35 min', 'hero' => $img( 'facade-vines.jpg' ), 'category' => 'Surroundings', 'category_slug' => 'surroundings', 'group' => 'theme02_surroundings', 'excerpt' => 'Trulli, dry-stone walls, olive groves and whitewashed villages define one of the most recognisable landscapes in Puglia.', 'content' => '<p>The Itria Valley is the postcard image of inland Puglia: rolling countryside, ancient olive trees, white villages and the unmistakable silhouettes of the trulli.</p><p>Alberobello is the most famous stop, protected by UNESCO. Around it, towns like Locorotondo, Cisternino and Martina Franca offer a quieter, equally beautiful rhythm.</p><h2>A day among villages</h2><p>Plan a relaxed itinerary with one main town and one smaller stop. The pleasure is in slowing down.</p><h3>Perfect for</h3><ul><li>Architecture and countryside drives.</li><li>Lunch in a whitewashed village.</li><li>Guests who want the classic trulli experience.</li></ul>' ),
+		array( 'slug' => 'bari', 'title' => 'Bari, between old town and seafront', 'over' => '40 min', 'hero' => $img( 'great-hall.jpg' ), 'category' => 'Surroundings', 'category_slug' => 'surroundings', 'group' => 'theme02_surroundings', 'excerpt' => 'The regional capital mixes the charm of Bari Vecchia with elegant shopping streets and a long seafront promenade.', 'content' => '<p>Bari is the lively capital of Puglia and a rewarding contrast to the quiet of Conversano. Bari Vecchia is a maze of stone alleys, shrines and the scent of fresh pasta.</p><p>Beyond the old centre, the city opens into broad shopping streets, historic theatres and one of the most pleasant seafront promenades in southern Italy.</p><h2>What not to miss</h2><p>Visit the Basilica di San Nicola, walk through Bari Vecchia, then continue toward the Murat district for shopping and cafes.</p><h3>Perfect for</h3><ul><li>A full day of culture and shopping.</li><li>Street food and local markets.</li><li>Travellers using Bari airport.</li></ul>' ),
+		array( 'slug' => 'book-early-save-more', 'title' => 'Book Early, Save More', 'over' => 'Early booking', 'hero' => $img( 'pool-pergola.jpg' ), 'category' => 'Offers', 'category_slug' => 'offers', 'group' => 'theme02_offers', 'excerpt' => 'Reserve in advance and access a dedicated early-booking rate for your stay at Masseria Le Cerase.', 'content' => '<p>Planning ahead is the easiest way to secure the dates you prefer and enjoy a more convenient rate at Masseria Le Cerase.</p><p>The offer adapts to your dates, room type and length of stay. Ideal for summer holidays and special occasions.</p><h2>What the offer includes</h2><ul><li>Priority choice of dates.</li><li>Dedicated early-booking conditions.</li><li>Personal assistance before arrival.</li></ul><p><a href="' . esc_url( $contact_url ) . '">Contact us</a> for a tailored quote.</p>' ),
+		array( 'slug' => 'seven-nights-six', 'title' => '7 Nights = 6', 'over' => 'Long stay', 'hero' => $img( 'courtyard.jpg' ), 'category' => 'Offers', 'category_slug' => 'offers', 'group' => 'theme02_offers', 'excerpt' => 'Stay a week in Puglia and enjoy one night on us in selected periods.', 'content' => '<p>A week lets you settle into the rhythm of the masseria: slow breakfasts, the pool, the sea, nearby towns and long evenings.</p><p>With the 7 Nights = 6 offer, longer stays become even more inviting.</p><h2>Why choose it</h2><ul><li>More time to enjoy the estate.</li><li>Enough days for sea, towns and rest.</li><li>Better value for weekly holidays.</li></ul>' ),
+		array( 'slug' => 'spa-escape', 'title' => 'SPA Escape', 'over' => 'Wellness', 'hero' => $img( 'relax-lounge.png' ), 'category' => 'Offers', 'category_slug' => 'offers', 'group' => 'theme02_offers', 'excerpt' => 'A romantic stay for two with dedicated time in the wellness centre.', 'content' => '<p>The SPA Escape is designed for couples who want to add a moment of wellbeing to their stay at Masseria Le Cerase.</p><p>Between privacy, quiet and the warmth of the SPA, the masseria becomes a place to pause and recharge.</p><h2>Ideal for</h2><ul><li>Romantic weekends and anniversaries.</li><li>Short wellness breaks in Puglia.</li><li>Guests seeking privacy and calm.</li></ul>' ),
+		array( 'slug' => 'spring-autumn', 'title' => 'Spring & Autumn', 'over' => 'Season', 'hero' => $img( 'masseria-night.jpg' ), 'category' => 'Offers', 'category_slug' => 'offers', 'group' => 'theme02_offers', 'excerpt' => 'Discover Puglia in the gentlest seasons, with dedicated rates and a slower pace.', 'content' => '<p>Spring and autumn are wonderful times to discover Puglia: soft light, quieter towns and a countryside rich with colour.</p><p>This offer is for those who love mild temperatures and an authentic, unhurried way to explore.</p><h2>What makes it special</h2><ul><li>Reduced rates in selected periods.</li><li>Great conditions for excursions.</li><li>A calmer Puglia, between sea and inland towns.</li></ul>' ),
+		array( 'slug' => 'cooking-classes', 'title' => 'Cooking Classes in the heart of Puglia', 'over' => 'Taste', 'hero' => $img( 'apulian-breakfast.jpg' ), 'category' => 'Experiences', 'category_slug' => 'experiences', 'group' => 'theme02_experiences', 'excerpt' => 'An Apulian cooking class with local ingredients, family recipes and the pleasure of sharing.', 'content' => '<p>Live Puglia your way: a cooking class is one of the warmest ways to enter the local culture, among flour, oil, vegetables, herbs and stories.</p><p>Depending on the season, the experience can focus on fresh pasta, traditional focaccia, the local market or a full Apulian menu.</p><h2>What to expect</h2><ul><li>A relaxed, hands-on lesson.</li><li>Seasonal ingredients and traditional techniques.</li><li>A final tasting or shared lunch.</li></ul>' ),
+		array( 'slug' => 'wine-tastings', 'title' => 'Wine Tastings', 'over' => 'Cellar', 'hero' => $img( 'apulian-table.jpg' ), 'category' => 'Experiences', 'category_slug' => 'experiences', 'group' => 'theme02_experiences', 'excerpt' => 'Discover local labels, native grapes and the generous character of Apulian wine.', 'content' => '<p>Puglia is a land of generous wines, sun-drenched vineyards and native grapes with a bold character.</p><p>A private tasting is the ideal way to discover this side of the region with calm, stories and pairings.</p><h2>Tailored to you</h2><ul><li>Reds, whites and rosés from selected producers.</li><li>Pairings with Apulian flavours.</li><li>For couples, families and small groups.</li></ul>' ),
+		array( 'slug' => 'private-tours', 'title' => 'Private Tours', 'over' => 'Discover', 'hero' => $img( 'conversano-castle.jpg' ), 'category' => 'Experiences', 'category_slug' => 'experiences', 'group' => 'theme02_experiences', 'excerpt' => 'Tailor-made itineraries from Conversano to villages, landscapes and hidden corners of Puglia.', 'content' => '<p>From the flavours of the Apulian table to the wonders just beyond our walls, we can design moments to remember.</p><p>Private tours are ideal for those who want to discover Puglia with freedom, comfort and a route built around their interests.</p><h2>Possible itineraries</h2><ul><li>Conversano, Polignano a Mare and the Adriatic coast.</li><li>Alberobello, Locorotondo and the Itria Valley.</li><li>Bari old town, markets and cultural stops.</li></ul>' ),
+		array( 'slug' => 'coast-beaches', 'title' => 'Coast & Beaches', 'over' => 'Sea', 'hero' => $img( 'aerial-pool.jpg' ), 'category' => 'Experiences', 'category_slug' => 'experiences', 'group' => 'theme02_experiences', 'excerpt' => 'Reach the Adriatic coast from Conversano and discover beaches, cliffs, sea caves and relaxed seaside days.', 'content' => '<p>The coast is one of the great pleasures of staying near Conversano. In a short drive you can reach cliffs, coves, beach clubs and panoramic terraces.</p><p>We can help you choose the right seaside experience: a quiet beach morning, a scenic stop in Polignano a Mare, a boat excursion or a long lunch by the water.</p><h2>Perfect for</h2><ul><li>Guests who want sea views and easy beach days.</li><li>Families looking for comfortable seaside options.</li><li>Couples planning a romantic coastal afternoon.</li></ul>' ),
+	);
+}
+
 function sbt_active_seed_articles() {
-	return 'theme03' === sbt_active_subtheme_key() ? sbt_theme03_seed_articles() : sbt_theme01_seed_articles();
+	$key = sbt_active_subtheme_key();
+	if ( 'theme03' === $key ) {
+		return sbt_theme03_seed_articles();
+	}
+	if ( 'theme02' === $key ) {
+		return sbt_theme02_seed_articles();
+	}
+	return sbt_theme01_seed_articles();
+}
+
+function sbt_theme02_seed_article_translations() {
+	$translations = sbt_italian_seed_article_translations();
+	foreach ( $translations as $slug => &$entry ) {
+		foreach ( array( 'title', 'excerpt', 'content' ) as $field ) {
+			if ( isset( $entry[ $field ] ) ) {
+				$entry[ $field ] = str_replace( 'Villa Rosa Resort', 'Masseria Le Cerase', $entry[ $field ] );
+			}
+		}
+	}
+	unset( $entry );
+	return $translations;
 }
 
 function sbt_theme03_seed_article_translations() {
@@ -2371,7 +2413,14 @@ function sbt_theme03_seed_article_translations() {
 }
 
 function sbt_active_seed_article_translations() {
-	return 'theme03' === sbt_active_subtheme_key() ? sbt_theme03_seed_article_translations() : sbt_italian_seed_article_translations();
+	$key = sbt_active_subtheme_key();
+	if ( 'theme03' === $key ) {
+		return sbt_theme03_seed_article_translations();
+	}
+	if ( 'theme02' === $key ) {
+		return sbt_theme02_seed_article_translations();
+	}
+	return sbt_italian_seed_article_translations();
 }
 
 function sbt_italian_seed_article_translations() {
@@ -3335,7 +3384,7 @@ function sbt_apply_default_language_pack( &$SITE, &$NAV, &$C, &$TEXT ) {
 			'welcome_h2' => 'Secoli di pietra,<br/>circondati dalla campagna',
 			'welcome_p1' => 'Masseria Le Cerase e una masseria fortificata del Seicento nella campagna di Conversano, nel cuore della Puglia.',
 			'welcome_p2' => 'Restaurata nel rispetto della sua storia, accoglie un solo gruppo alla volta: sale voltate, letti in ferro battuto, piscina tra gli ulivi e il silenzio della campagna.',
-			'whole_h2' => 'Oppure scegli<br/>tutta la masseria',
+			'whole_h2' => 'Prenota tutta la Masseria',
 			'whole_p' => 'Un unica prenotazione, l intera proprieta riservata al tuo gruppo.',
 			'whole_btn' => 'Scopri tutta la masseria',
 			'houses_over' => 'Le camere',
@@ -6002,6 +6051,36 @@ function sbt_cf7_render( $key ) {
 	echo do_shortcode( '[contact-form-7 id="' . absint( $id ) . '"]' );
 	return true;
 }
+
+/**
+ * Front-end CSS that makes the Contact Form 7 markup fit the theme form
+ * containers (full-width fields, contained on mobile, tidy submit + response).
+ * Contact Form 7 wraps controls in <span class="wpcf7-form-control-wrap">, which
+ * otherwise leaves inputs inline / half width and overflowing on mobile.
+ */
+function sbt_cf7_front_styles() {
+	if ( is_admin() || ! function_exists( 'sbt_cf7_is_active' ) || ! sbt_cf7_is_active() ) {
+		return;
+	}
+	?>
+	<style id="sbt-cf7-fit">
+		.sbtw-cf7-form, .sbtw-cf7-form .wpcf7, .sbtw-cf7-form form.wpcf7-form { width:100%; max-width:100%; box-sizing:border-box; }
+		.sbtw-cf7-form .wpcf7-form-control-wrap { display:block; width:100%; }
+		.sbtw-cf7-form input.wpcf7-form-control:not(.wpcf7-submit):not([type=checkbox]):not([type=radio]),
+		.sbtw-cf7-form textarea.wpcf7-form-control,
+		.sbtw-cf7-form select.wpcf7-form-control { display:block; width:100%; max-width:100%; box-sizing:border-box; }
+		.sbtw-cf7-form .wpcf7-form > p { margin:0 0 16px; }
+		.sbtw-cf7-form .sbtw-field { width:100%; }
+		.sbtw-cf7-form .wpcf7-not-valid-tip { font-size:12px; margin-top:4px; }
+		.sbtw-cf7-form .wpcf7-response-output { margin:14px 0 0; padding:10px 14px; font-size:13.5px; border-radius:8px; }
+		.sbtw-cf7-form .wpcf7-spinner { margin:0 8px; }
+		.sbtw-cf7-form .wpcf7-submit { width:100%; justify-content:center; }
+		.sbtw-contact-form.sbtw-cf7-form .wpcf7-submit { width:auto; align-self:flex-start; }
+		.sbtw-w-modal .sbtw-cf7-form { max-width:100%; overflow:hidden; }
+	</style>
+	<?php
+}
+add_action( 'wp_head', 'sbt_cf7_front_styles', 99 );
 
 function sbt_render_general_settings_tab( $data, $overrides ) {
 	$plugin_status = sbt_syncbooking_plugin_status();
