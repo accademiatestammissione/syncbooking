@@ -72,8 +72,8 @@ $SITE = array(
 	'vat' => 'IT08825490728',
 	'cin' => 'IT072019B400085362',
 	'webdev' => array( 'label' => 'SyncBooking', 'url' => 'https://syncbooking.com' ),
-	'source_version' => '4.0',
-	'source_build_date' => '2026-06-14',
+	'source_version' => '5.0',
+	'source_build_date' => '2026-06-16',
 );
 
 $NAV = array(

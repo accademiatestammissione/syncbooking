@@ -53,8 +53,8 @@ $SITE = [
   'vat'       => 'IT08825490728',
   'cin'       => 'IT072019B400085362',
   'webdev'    => ['label' => 'SyncBooking', 'url' => 'https://syncbooking.com'],
-  'source_version' => '4.0',
-  'source_build_date' => '2026-06-14',
+  'source_version' => '5.0',
+  'source_build_date' => '2026-06-16',
 ];
 
 /* ---- IMAGES (by friendly key) ---- */
@@ -306,6 +306,7 @@ $C['home'] = array_merge($C['home'], [
   'whole_p' => 'One booking, the entire estate: all five bedrooms, the vaulted halls, the country kitchen, the pool and the gardens - reserved exclusively for your party.',
   'whole_url' => 'whole-masseria.php',
   'whole_btn' => 'Discover the whole masseria',
+  'whole_specs' => array( array( 'Guests', 'Up to 10' ), array( 'Use', 'Entire estate, exclusive' ) ),
   'whole_gallery' => [$IMG['whole'], $IMG['masseria_pool'], $IMG['masseria_facade'], $IMG['masseria_courtyard']],
   'weddings_over' => 'Masseria Le Cerase',
   'weddings_h2' => 'Weddings & Events',

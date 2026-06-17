@@ -134,6 +134,12 @@ $room_cards = array(
       <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.home.whole_over', $h['whole_over'] ?? 'Exclusive use' ); ?></div>
       <h2 class="sbtw-lead"><?php echo sbt_t1_text( 'C.home.whole_h2', $h['whole_h2'] ?? '' ); ?></h2>
       <p class="sbtw-body-text"><?php echo sbt_t1_text( 'C.home.whole_p', $h['whole_p'] ?? '', array( 'multiline' => true ) ); ?></p>
+      <?php $whole_specs = ( ! empty( $h['whole_specs'] ) && is_array( $h['whole_specs'] ) ) ? $h['whole_specs'] : array( array( 'Guests', 'Up to 10' ), array( 'Use', 'Entire estate, exclusive' ) ); ?>
+      <ul class="sbtw-specs" style="margin-top:28px;max-width:420px;">
+        <?php foreach ( $whole_specs as $wsi => $wspec ) : ?>
+        <li><span><?php echo sbt_t1_text( 'C.home.whole_specs.' . $wsi . '.0', $wspec[0] ?? '' ); ?></span><b><?php echo sbt_t1_text( 'C.home.whole_specs.' . $wsi . '.1', $wspec[1] ?? '' ); ?></b></li>
+        <?php endforeach; ?>
+      </ul>
       <div class="sbtw-house-actions">
         <a class="sbtw-btn" href="<?php echo esc_url( sbt_t1_url( $h['whole_url'] ?? 'whole-masseria.php' ) ); ?>"><?php echo sbt_t1_text( 'C.home.whole_btn', $h['whole_btn'] ?? 'Discover the whole masseria' ); ?></a>
       </div>

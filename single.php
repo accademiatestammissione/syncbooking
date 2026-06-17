@@ -23,6 +23,15 @@ while ( have_posts() ) :
 	<section class="sbtw-pad" data-screen-label="Article body">
 		<div class="sbtw-wrap">
 			<article id="post-<?php the_ID(); ?>" <?php post_class( 'sbtw-article sbtw-reveal' ); ?>>
+				<?php
+				$sbt_cats = get_the_category();
+				$sbt_cat_name = ( ! empty( $sbt_cats ) && isset( $sbt_cats[0] ) ) ? $sbt_cats[0]->name : ( $TEXT['journal'] ?? 'Journal' );
+				$sbt_words = str_word_count( wp_strip_all_tags( get_the_content() ) );
+				$sbt_read = max( 1, (int) ceil( $sbt_words / 200 ) );
+				?>
+				<div class="sbtw-overline"><?php echo esc_html( $sbt_cat_name ); ?></div>
+				<h1 class="sbtw-title"><?php echo esc_html( get_the_title() ); ?></h1>
+				<p class="sbtw-meta"><?php echo esc_html( $sbt_cat_name . ' · ' . $sbt_read . ' ' . ( $TEXT['min_read'] ?? 'min read' ) ); ?></p>
 				<div class="sbtw-article-body">
 					<?php
 					the_content();

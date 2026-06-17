@@ -138,6 +138,12 @@ $svc_icons = array(
         <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.home.entire_over', $h['entire_over'] ?? 'Exclusive use' ); ?></div>
         <h2 class="sbtw-lead"><?php echo sbt_t1_text( 'C.home.entire_h2', $h['entire_h2'] ?? '' ); ?></h2>
         <p class="sbtw-body-text"><?php echo sbt_t1_text( 'C.home.entire_p', $h['entire_p'] ?? '', array( 'multiline' => true ) ); ?></p>
+        <?php $entire_specs = ( ! empty( $h['entire_specs'] ) && is_array( $h['entire_specs'] ) ) ? $h['entire_specs'] : array( array( 'Guests', 'Up to 10' ), array( 'Use', 'Entire estate, exclusive' ) ); ?>
+        <ul class="sbtw-estate-specs">
+          <?php foreach ( $entire_specs as $esi => $espec ) : ?>
+          <li><span><?php echo sbt_t1_text( 'C.home.entire_specs.' . $esi . '.0', $espec[0] ?? '' ); ?></span><b><?php echo sbt_t1_text( 'C.home.entire_specs.' . $esi . '.1', $espec[1] ?? '' ); ?></b></li>
+          <?php endforeach; ?>
+        </ul>
         <a class="sbtw-btn sbtw-btn--ghost" href="<?php echo esc_url( sbt_t1_url( $h['entire_url'] ?? 'entire.php' ) ); ?>" style="margin-top:30px;"><?php echo sbt_t1_text( 'C.home.entire_btn', $h['entire_btn'] ?? 'Discover the whole villa' ); ?></a>
       </div>
     </div>

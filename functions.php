@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.81' );
+define( 'SBT_VERSION', '2.1.82' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -3165,6 +3165,7 @@ function sbt_apply_default_language_pack( &$SITE, &$NAV, &$C, &$TEXT ) {
 			'entire_h2' => 'Prenota<br/>tutta la villa',
 			'entire_p' => 'Un unica prenotazione, l intera proprieta: alloggi, parco secolare, piscina e pergole riservati solo a te e ai tuoi ospiti.',
 			'entire_btn' => 'Scopri tutta la villa',
+			'entire_specs' => array( array( 'Ospiti', 'Fino a 10' ), array( 'Uso', 'Intera proprieta, esclusivo' ) ),
 			'houses_over' => 'Le camere',
 			'houses_h2' => 'Il tuo rifugio privato',
 			'houses_p' => 'La nuova idea di lusso in vacanza e avere piu liberta: spazi riservati, design raffinato e ogni comfort per vivere la Puglia con calma.',
@@ -3387,6 +3388,7 @@ function sbt_apply_default_language_pack( &$SITE, &$NAV, &$C, &$TEXT ) {
 			'whole_h2' => 'Prenota tutta la Masseria',
 			'whole_p' => 'Un unica prenotazione, l intera proprieta riservata al tuo gruppo.',
 			'whole_btn' => 'Scopri tutta la masseria',
+			'whole_specs' => array( array( 'Ospiti', 'Fino a 10' ), array( 'Uso', 'Intera proprieta, esclusivo' ) ),
 			'houses_over' => 'Le camere',
 			'houses_h2' => 'Dormire sotto le volte',
 			'houses_p' => 'Camere matrimoniali sotto antiche volte in pietra, con lino caldo, dettagli d epoca e quiete di campagna.',
