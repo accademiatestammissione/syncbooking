@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.68' );
+define( 'SBT_VERSION', '2.1.69' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -170,6 +170,8 @@ function sbt_default_options() {
 		'disabled_theme_pages' => array(),
 		'contact_email'      => '',
 		'cf7_forms'          => array(),
+		'nav_extra'          => array(),
+		'nav_removed'        => array(),
 	);
 }
 
@@ -3727,11 +3729,44 @@ function sbt_bootstrap_content( &$IMG, &$SITE, &$NAV, &$C, &$HOUSE_CARDS = array
 	// label/submenu set in the Header & Menu editor wins over the
 	// structurally-rebuilt accommodation item above.
 	sbt_apply_flat_overrides( $NAV, 'NAV', $overrides );
+	sbt_apply_custom_nav_items( $NAV );
 	sbt_filter_disabled_nav_items( $NAV );
 	sbt_rewrite_content_urls( $NAV );
 	sbt_rewrite_content_urls( $C );
 	sbt_rewrite_content_urls( $HOUSE_CARDS );
 	sbt_rewrite_content_urls( $EXPERIENCES );
+}
+
+/**
+ * Apply the admin "Menu" tab customisations: remove items flagged for removal
+ * and append custom items, both stored per subtheme in the plugin options.
+ */
+function sbt_apply_custom_nav_items( &$NAV ) {
+	if ( ! is_array( $NAV ) ) {
+		return;
+	}
+	$subtheme = sbt_active_subtheme_key();
+	$options = sbt_get_options();
+	$removed = isset( $options['nav_removed'][ $subtheme ] ) && is_array( $options['nav_removed'][ $subtheme ] ) ? $options['nav_removed'][ $subtheme ] : array();
+	$extra = isset( $options['nav_extra'][ $subtheme ] ) && is_array( $options['nav_extra'][ $subtheme ] ) ? $options['nav_extra'][ $subtheme ] : array();
+
+	if ( $removed ) {
+		$NAV = array_values( array_filter( $NAV, function ( $item ) use ( $removed ) {
+			$key = is_array( $item ) && ! empty( $item['key'] ) ? $item['key'] : '';
+			return ! ( $key && in_array( $key, $removed, true ) );
+		} ) );
+	}
+
+	foreach ( $extra as $extra_item ) {
+		if ( empty( $extra_item['label'] ) ) {
+			continue;
+		}
+		$NAV[] = array(
+			'label' => $extra_item['label'],
+			'url'   => $extra_item['url'] ?? '#',
+			'key'   => $extra_item['key'] ?? '',
+		);
+	}
 }
 
 function sbt_rewrite_content_urls( &$value ) {
@@ -4847,6 +4882,40 @@ function sbt_sanitize_options( $raw ) {
 	$options['custom_house_pages'] = isset( $existing['custom_house_pages'] ) && is_array( $existing['custom_house_pages'] ) ? $existing['custom_house_pages'] : array();
 	$options['disabled_theme_pages'] = isset( $existing['disabled_theme_pages'] ) && is_array( $existing['disabled_theme_pages'] ) ? $existing['disabled_theme_pages'] : array();
 	$options['cf7_forms'] = isset( $existing['cf7_forms'] ) && is_array( $existing['cf7_forms'] ) ? $existing['cf7_forms'] : array();
+	$options['nav_extra'] = isset( $existing['nav_extra'] ) && is_array( $existing['nav_extra'] ) ? $existing['nav_extra'] : array();
+	$options['nav_removed'] = isset( $existing['nav_removed'] ) && is_array( $existing['nav_removed'] ) ? $existing['nav_removed'] : array();
+	if ( isset( $raw['nav_extra'] ) || isset( $raw['nav_removed'] ) ) {
+		$nav_extra = array();
+		if ( isset( $raw['nav_extra'] ) && is_array( $raw['nav_extra'] ) ) {
+			foreach ( $raw['nav_extra'] as $extra_item ) {
+				if ( ! is_array( $extra_item ) ) {
+					continue;
+				}
+				$label = isset( $extra_item['label'] ) ? sanitize_text_field( wp_unslash( $extra_item['label'] ) ) : '';
+				if ( '' === trim( $label ) ) {
+					continue;
+				}
+				$url = isset( $extra_item['url'] ) ? sbt_sanitize_editable_override( 'NAV.extra.url', wp_unslash( $extra_item['url'] ) ) : '';
+				$nav_extra[] = array(
+					'label' => $label,
+					'url'   => $url,
+					'key'   => 'extra_' . substr( md5( $label . '|' . $url ), 0, 8 ),
+				);
+			}
+		}
+		$options['nav_extra'][ $options['subtheme'] ] = $nav_extra;
+
+		$nav_removed = array();
+		if ( isset( $raw['nav_removed'] ) && is_array( $raw['nav_removed'] ) ) {
+			foreach ( $raw['nav_removed'] as $removed_key ) {
+				$removed_key = sanitize_key( wp_unslash( $removed_key ) );
+				if ( '' !== $removed_key ) {
+					$nav_removed[] = $removed_key;
+				}
+			}
+		}
+		$options['nav_removed'][ $options['subtheme'] ] = array_values( array_unique( $nav_removed ) );
+	}
 	if ( ! empty( $existing['contact_email_seeded'] ) ) {
 		$options['contact_email_seeded'] = 1;
 	}
@@ -5176,7 +5245,7 @@ function sbt_admin_current_tab() {
 		return 'pages';
 	}
 
-	return in_array( $tab, array( 'themes', 'general', 'header', 'pages' ), true ) ? $tab : 'themes';
+	return in_array( $tab, array( 'themes', 'general', 'header', 'menu', 'pages' ), true ) ? $tab : 'themes';
 }
 
 function sbt_admin_tab_url( $tab ) {
@@ -5269,7 +5338,8 @@ function sbt_render_admin_shell_start( $active_tab ) {
 	$tabs = array(
 		'themes'   => 'Themes',
 		'general'  => 'General Settings',
-		'header'   => 'Header & Menu',
+		'header'   => 'Header & Footer',
+		'menu'     => 'Menu',
 		'pages'    => 'Pages',
 	);
 	?>
@@ -5945,12 +6015,6 @@ function sbt_render_header_menu_tab( $data, $overrides, $edit_language = 'en' ) 
 			sbt_render_header_field( 'SITE.email', 'Email', $data['SITE']['email'] ?? '', $overrides, 'email' );
 			?>
 		</div>
-		<h2 style="margin-top:28px;">Top menu</h2>
-		<?php sbt_render_section_language_tabs( 'header', $edit_language ); ?>
-		<p class="sbt-muted">Each menu item can have a different label and link for each language.</p>
-		<?php foreach ( $data['NAV'] as $index => $item ) : ?>
-			<?php sbt_render_menu_row( 'NAV.' . $index, $item, $overrides, $page_options ); ?>
-		<?php endforeach; ?>
 		<h2 style="margin-top:28px;">Footer and links</h2>
 		<?php sbt_render_section_language_tabs( 'header', $edit_language ); ?>
 		<p class="sbt-muted">Manage footer text, social links, legal details and language-specific links.</p>
@@ -5973,7 +6037,58 @@ function sbt_render_header_menu_tab( $data, $overrides, $edit_language = 'en' ) 
 			sbt_render_header_field( 'SITE.webdev.url', 'Web developer link URL', $data['SITE']['webdev']['url'] ?? '', $overrides, 'url' );
 			?>
 		</div>
-		<?php submit_button( 'Save header and menu' ); ?>
+		<?php submit_button( 'Save header and footer' ); ?>
+	</div>
+	<?php
+}
+
+function sbt_render_menu_tab( $data, $overrides, $edit_language = 'en' ) {
+	$page_options = sbt_page_file_options();
+	$subtheme = sbt_active_subtheme_key();
+	$options = sbt_get_options();
+	$removed = isset( $options['nav_removed'][ $subtheme ] ) && is_array( $options['nav_removed'][ $subtheme ] ) ? $options['nav_removed'][ $subtheme ] : array();
+	$extra = isset( $options['nav_extra'][ $subtheme ] ) && is_array( $options['nav_extra'][ $subtheme ] ) ? array_values( $options['nav_extra'][ $subtheme ] ) : array();
+	// Always show a couple of blank rows after the saved ones so new items can be added.
+	$extra_rows = $extra;
+	$extra_rows[] = array( 'label' => '', 'url' => '' );
+	$extra_rows[] = array( 'label' => '', 'url' => '' );
+	?>
+	<div class="sbt-panel">
+		<?php sbt_render_section_language_tabs( 'menu', $edit_language ); ?>
+		<h2>Top menu</h2>
+		<p class="sbt-muted">Edit the header menu for the active subtheme. Each item can have a different label and link for each language. Tick "Remove from menu" to hide an item, and use "Add menu items" to append new ones.</p>
+		<?php foreach ( $data['NAV'] as $index => $item ) : ?>
+			<?php
+			$item_key = $item['key'] ?? '';
+			sbt_render_menu_row( 'NAV.' . $index, $item, $overrides, $page_options );
+			if ( $item_key ) :
+			?>
+			<div class="sbt-field" style="margin:-6px 0 18px;">
+				<label style="display:inline-flex;align-items:center;gap:8px;font-weight:600;">
+					<input type="checkbox" name="<?php echo esc_attr( SBT_OPTION . '[nav_removed][]' ); ?>" value="<?php echo esc_attr( $item_key ); ?>" <?php checked( in_array( $item_key, $removed, true ) ); ?>>
+					Remove "<?php echo esc_html( $item['label'] ?? $item_key ); ?>" from the menu
+				</label>
+			</div>
+			<?php endif; ?>
+		<?php endforeach; ?>
+
+		<h2 style="margin-top:28px;">Add menu items</h2>
+		<p class="sbt-muted">Add custom links to the header menu (e.g. a blog, an external page). Leave a row empty to skip it. New items are appended after the existing ones; the label is shared across languages.</p>
+		<?php foreach ( $extra_rows as $ei => $extra_item ) : ?>
+			<div class="sbt-menu-item">
+				<div class="sbt-field-grid">
+					<div class="sbt-field">
+						<label>New item label</label>
+						<input type="text" name="<?php echo esc_attr( SBT_OPTION . '[nav_extra][' . $ei . '][label]' ); ?>" value="<?php echo esc_attr( $extra_item['label'] ?? '' ); ?>" placeholder="e.g. Blog">
+					</div>
+					<div class="sbt-field">
+						<label>Linked page or URL</label>
+						<?php sbt_render_link_target_control( SBT_OPTION . '[nav_extra][' . $ei . '][url]', sbt_editable_url_value( $extra_item['url'] ?? '' ) ); ?>
+					</div>
+				</div>
+			</div>
+		<?php endforeach; ?>
+		<?php submit_button( 'Save menu' ); ?>
 	</div>
 	<?php
 }
@@ -6194,6 +6309,8 @@ function sbt_render_admin_page() {
 				sbt_render_general_settings_tab( $data, $overrides );
 			} elseif ( 'header' === $active_tab ) {
 				sbt_render_header_menu_tab( $data, $overrides, $edit_language );
+			} elseif ( 'menu' === $active_tab ) {
+				sbt_render_menu_tab( $data, $overrides, $edit_language );
 			} elseif ( 'pages' === $active_tab ) {
 				sbt_render_pages_tab();
 			}
