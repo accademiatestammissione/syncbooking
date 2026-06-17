@@ -651,7 +651,7 @@ $C['weddings'] = [
   ],
   'brochure_title' => 'Brochure',
   'brochures' => [
-    [ 'h4' => 'Gallery Brochure', 'exp' => 'A selection of our spaces and settings, in high resolution.', 'label' => 'Download PDF →', 'url' => 'https://masserialecerase.com/brochure/Gallery.pdf', 'download' => true ],
+    [ 'h4' => 'Gallery Brochure', 'exp' => 'A selection of our spaces and settings, in high resolution.', 'label' => 'Download PDF →', 'url' => 'https://masserialecerase.com/brochure/gallery.pdf', 'download' => true ],
     [ 'h4' => 'Weddings Brochure', 'exp' => 'Packages, menus and services for your wedding in the Masseria.', 'label' => 'Download PDF →', 'url' => 'https://masserialecerase.com/brochure/EN.pdf', 'download' => true ],
   ],
   'map_title' => 'Map',
