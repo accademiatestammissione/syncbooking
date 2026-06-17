@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.74' );
+define( 'SBT_VERSION', '2.1.75' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -6050,22 +6050,6 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 			</div>
 		</div>
 
-		<?php
-		$sbt_saved_options = sbt_get_options();
-		$sbt_contact_email = isset( $sbt_saved_options['contact_email'] ) ? $sbt_saved_options['contact_email'] : '';
-		$sbt_admin_email = get_option( 'admin_email' );
-		?>
-		<div class="sbt-card">
-			<h3>Notification email</h3>
-			<p class="sbt-muted">The main email address that receives contact and weddings form submissions. It is set to the WordPress site admin email (<code><?php echo esc_html( $sbt_admin_email ); ?></code>) by default — change it to your preferred address. If you clear it, the site admin email is used.</p>
-			<div class="sbt-field">
-				<label for="sbt-contact-email">Recipient email</label>
-				<input type="email" id="sbt-contact-email" class="large-text" name="<?php echo esc_attr( SBT_OPTION ); ?>[contact_email]" value="<?php echo esc_attr( $sbt_contact_email ); ?>" placeholder="<?php echo esc_attr( $sbt_admin_email ); ?>">
-			</div>
-			<p class="sbt-muted" style="margin-top:8px;">Currently delivering to: <code><?php echo esc_html( sbt_contact_recipient_email() ); ?></code></p>
-			<?php submit_button( 'Save notification email' ); ?>
-		</div>
-
 		<div class="sbt-status is-ok">
 			<span class="sbt-status__dot" aria-hidden="true"></span>
 			<div>
@@ -6231,6 +6215,20 @@ function sbt_render_header_menu_tab( $data, $overrides, $edit_language = 'en' ) 
 			sbt_render_header_field( 'SITE.webdev.url', 'Web developer link URL', $data['SITE']['webdev']['url'] ?? '', $overrides, 'url' );
 			?>
 		</div>
+
+		<?php
+		$sbt_saved_options = sbt_get_options();
+		$sbt_contact_email = isset( $sbt_saved_options['contact_email'] ) ? $sbt_saved_options['contact_email'] : '';
+		$sbt_admin_email = get_option( 'admin_email' );
+		?>
+		<h2 style="margin-top:28px;">Notification email</h2>
+		<p class="sbt-muted">The main email address that receives contact and weddings form submissions. It defaults to the WordPress site admin email (<code><?php echo esc_html( $sbt_admin_email ); ?></code>). If you clear it, the site admin email is used. Currently delivering to: <code><?php echo esc_html( sbt_contact_recipient_email() ); ?></code>.</p>
+		<div class="sbt-field-grid">
+			<div class="sbt-field">
+				<label for="sbt-contact-email">Recipient email</label>
+				<input type="email" id="sbt-contact-email" class="large-text" name="<?php echo esc_attr( SBT_OPTION ); ?>[contact_email]" value="<?php echo esc_attr( $sbt_contact_email ); ?>" placeholder="<?php echo esc_attr( $sbt_admin_email ); ?>">
+			</div>
+		</div>
 		<?php submit_button( 'Save header and footer' ); ?>
 	</div>
 	<?php
@@ -6248,51 +6246,74 @@ function sbt_render_menu_tab( $data, $overrides, $edit_language = 'en' ) {
 	$extra_rows[] = array( 'label' => '', 'url' => '' );
 	?>
 	<style>
-		.sbt-menu-block { border:1px solid #e2e4e7; border-radius:10px; padding:0; margin:0 0 16px; overflow:hidden; background:#fff; }
-		.sbt-menu-block.is-removed { opacity:.6; }
-		.sbt-menu-block__head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 16px; background:#f6f7f8; border-bottom:1px solid #e2e4e7; }
-		.sbt-menu-block__title { font-weight:600; font-size:14px; color:#1d2327; display:inline-flex; align-items:center; gap:8px; }
-		.sbt-menu-block__title .dashicons { color:#7d8794; }
-		.sbt-menu-block__body { padding:14px 16px 4px; }
-		.sbt-menu-block__body .sbt-menu-item { border:0; padding:0; margin:0; }
-		.sbt-remove-toggle { display:inline-flex; align-items:center; gap:7px; cursor:pointer; user-select:none; border:1px solid #d6a2a2; color:#a32626; background:#fff; border-radius:999px; padding:5px 12px; font-size:12px; font-weight:600; line-height:1; transition:background .15s, color .15s, border-color .15s; }
-		.sbt-remove-toggle:hover { background:#fcecec; }
-		.sbt-remove-toggle input { position:absolute; opacity:0; width:0; height:0; }
-		.sbt-remove-toggle .dashicons { font-size:15px; width:15px; height:15px; }
-		.sbt-remove-toggle .sbt-remove-on { display:none; }
-		.sbt-remove-toggle.is-on { background:#a32626; border-color:#a32626; color:#fff; }
-		.sbt-remove-toggle.is-on .sbt-remove-off { display:none; }
-		.sbt-remove-toggle.is-on .sbt-remove-on { display:inline; }
-		.sbt-add-grid { display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr)); }
-		.sbt-add-card { border:1px dashed #c8ccd1; border-radius:10px; padding:14px 16px; background:#fbfbfc; }
+		.sbt-wpmenu { max-width:760px; }
+		.sbt-wpmenu .menu { margin:0; padding:0; }
+		.sbt-wpmenu .menu-item { list-style:none; margin:0 0 -1px; }
+		.sbt-wpmenu .menu-item-handle { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:11px 14px; border:1px solid #dcdcde; background:#f6f7f7; font-size:13px; cursor:pointer; }
+		.sbt-wpmenu .menu-item.is-open .menu-item-handle { background:#fff; }
+		.sbt-wpmenu .menu-item.is-removed .menu-item-handle { background:#fbeaea; border-color:#e6b8b8; }
+		.sbt-wpmenu .item-title { font-weight:600; color:#1d2327; display:flex; align-items:center; gap:8px; }
+		.sbt-wpmenu .item-title .dashicons { color:#8c8f94; }
+		.sbt-wpmenu .item-title .sbt-removed-tag { color:#b32d2e; font-weight:600; font-size:12px; }
+		.sbt-wpmenu .item-controls { display:flex; align-items:center; gap:14px; color:#646970; }
+		.sbt-wpmenu .item-type { font-size:12px; }
+		.sbt-wpmenu .item-edit { color:#2271b1; display:inline-flex; align-items:center; }
+		.sbt-wpmenu .menu-item.is-open .item-edit .dashicons { transform:rotate(180deg); }
+		.sbt-wpmenu .menu-item-settings { display:none; padding:16px; border:1px solid #dcdcde; border-top:0; background:#fff; }
+		.sbt-wpmenu .menu-item.is-open .menu-item-settings { display:block; }
+		.sbt-wpmenu .menu-item-settings .sbt-menu-item { border:0; padding:0; margin:0; }
+		.sbt-wpmenu .sbt-mi-actions { margin-top:12px; padding-top:12px; border-top:1px solid #f0f0f1; }
+		.sbt-wpmenu .sbt-remove-link { color:#b32d2e; cursor:pointer; font-size:13px; display:inline-flex; align-items:center; gap:7px; user-select:none; }
+		.sbt-wpmenu .sbt-remove-link input { margin:0; }
+		.sbt-add-grid { display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr)); max-width:760px; }
+		.sbt-add-card { border:1px dashed #c8ccd1; border-radius:8px; padding:14px 16px; background:#fbfbfc; }
 		.sbt-add-card .sbt-field + .sbt-field { margin-top:10px; }
 	</style>
 	<div class="sbt-panel">
 		<?php sbt_render_section_language_tabs( 'menu', $edit_language ); ?>
-		<h2>Top menu</h2>
-		<p class="sbt-muted">Edit the header menu for the active subtheme. Each item can have a different label and link for each language. Use the <strong>Remove</strong> toggle to hide an item, and <strong>Add menu items</strong> below to append new ones.</p>
-		<?php foreach ( $data['NAV'] as $index => $item ) : ?>
-			<?php
-			$item_key = $item['key'] ?? '';
-			$is_removed = $item_key && in_array( $item_key, $removed, true );
-			?>
-			<div class="sbt-menu-block<?php echo $is_removed ? ' is-removed' : ''; ?>">
-				<div class="sbt-menu-block__head">
-					<span class="sbt-menu-block__title"><span class="dashicons dashicons-menu-alt"></span><?php echo esc_html( $item['label'] ?? ( $item_key ? $item_key : 'Menu item' ) ); ?></span>
-					<?php if ( $item_key ) : ?>
-					<label class="sbt-remove-toggle<?php echo $is_removed ? ' is-on' : ''; ?>">
-						<input type="checkbox" name="<?php echo esc_attr( SBT_OPTION . '[nav_removed][]' ); ?>" value="<?php echo esc_attr( $item_key ); ?>" <?php checked( $is_removed ); ?> onchange="this.closest('.sbt-remove-toggle').classList.toggle('is-on', this.checked); this.closest('.sbt-menu-block').classList.toggle('is-removed', this.checked);">
-						<span class="dashicons dashicons-trash"></span>
-						<span class="sbt-remove-off">Remove</span>
-						<span class="sbt-remove-on">Removed</span>
-					</label>
-					<?php endif; ?>
-				</div>
-				<div class="sbt-menu-block__body">
-					<?php sbt_render_menu_row( 'NAV.' . $index, $item, $overrides, $page_options ); ?>
-				</div>
-			</div>
-		<?php endforeach; ?>
+		<h2>Menu structure</h2>
+		<p class="sbt-muted">Click a menu item to expand it. Each item can have a different label and link for each language. Tick <strong>Remove this item</strong> to hide it, and use <strong>Add menu items</strong> below to append new ones.</p>
+		<div class="sbt-wpmenu">
+			<ul class="menu">
+				<?php foreach ( $data['NAV'] as $index => $item ) : ?>
+					<?php
+					$item_key = $item['key'] ?? '';
+					$is_removed = $item_key && in_array( $item_key, $removed, true );
+					$item_type = ( ! empty( $item['sub'] ) && is_array( $item['sub'] ) ) ? 'Submenu' : 'Page';
+					?>
+					<li class="menu-item<?php echo $is_removed ? ' is-removed' : ''; ?>">
+						<div class="menu-item-handle">
+							<span class="item-title"><span class="dashicons dashicons-menu"></span><?php echo esc_html( $item['label'] ?? ( $item_key ? $item_key : 'Menu item' ) ); ?><?php if ( $is_removed ) : ?> <span class="sbt-removed-tag">— removed</span><?php endif; ?></span>
+							<span class="item-controls">
+								<span class="item-type"><?php echo esc_html( $item_type ); ?></span>
+								<span class="item-edit"><span class="dashicons dashicons-arrow-down-alt2"></span></span>
+							</span>
+						</div>
+						<div class="menu-item-settings">
+							<?php sbt_render_menu_row( 'NAV.' . $index, $item, $overrides, $page_options ); ?>
+							<?php if ( $item_key ) : ?>
+							<div class="sbt-mi-actions">
+								<label class="sbt-remove-link">
+									<input type="checkbox" name="<?php echo esc_attr( SBT_OPTION . '[nav_removed][]' ); ?>" value="<?php echo esc_attr( $item_key ); ?>" <?php checked( $is_removed ); ?> onchange="this.closest('.menu-item').classList.toggle('is-removed', this.checked);">
+									<span class="dashicons dashicons-trash"></span> Remove this item from the menu
+								</label>
+							</div>
+							<?php endif; ?>
+						</div>
+					</li>
+				<?php endforeach; ?>
+			</ul>
+		</div>
+		<script>
+		( function () {
+			document.querySelectorAll( '.sbt-wpmenu .menu-item-handle' ).forEach( function ( handle ) {
+				handle.addEventListener( 'click', function ( e ) {
+					if ( e.target.closest( 'a, input, select, button, label' ) ) { return; }
+					handle.closest( '.menu-item' ).classList.toggle( 'is-open' );
+				} );
+			} );
+		} )();
+		</script>
 
 		<h2 style="margin-top:28px;">Add menu items</h2>
 		<p class="sbt-muted">Add custom links to the header menu (e.g. a blog, an external page). Leave a row empty to skip it. New items are appended after the existing ones; the label is shared across languages.</p>
