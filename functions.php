@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.70' );
+define( 'SBT_VERSION', '2.1.71' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -2268,6 +2268,77 @@ function sbt_theme01_seed_articles() {
 	);
 }
 
+function sbt_theme03_seed_articles() {
+	$img = function ( $name ) {
+		return function_exists( 'sbt_asset_url' ) ? sbt_asset_url( 'assets/images/' . $name ) : $name;
+	};
+	$contact_url = home_url( '/contacts/' );
+
+	return array(
+		array(
+			'slug'          => 'conversano',
+			'title'         => 'Conversano, the noble heart of Puglia',
+			'over'          => '10 min',
+			'hero'          => $img( 'mf-27.jpg' ),
+			'category'      => 'Surroundings',
+			'category_slug' => 'surroundings',
+			'group'         => 'theme03_surroundings',
+			'excerpt'       => 'A graceful old town of stone lanes, noble palaces and quiet squares, a short drive from Masseria Montefieno.',
+			'content'       => '<p>Conversano is the closest discovery to Masseria Montefieno. Elegant, walkable and deeply authentic, the town keeps the slow rhythm of inland Puglia.</p><p>Its Norman-Swabian Castle dominates the historic centre, while churches, monasteries and aristocratic palaces reveal a layered history.</p><h2>What to see</h2><p>Start with the castle and the cathedral, then let the small streets guide you toward hidden courtyards, local bakeries and sunset aperitifs.</p><h3>Perfect for</h3><ul><li>A slow walk after breakfast.</li><li>An easy dinner just minutes from the masseria.</li><li>Guests who want culture and local life within reach.</li></ul><p>For tips and timings, <a href="' . esc_url( $contact_url ) . '">contact us</a>.</p>',
+		),
+		array(
+			'slug'          => 'polignano-a-mare',
+			'title'         => 'Polignano a Mare and the Adriatic cliffs',
+			'over'          => '15 min',
+			'hero'          => $img( 'mf-25.jpg' ),
+			'category'      => 'Surroundings',
+			'category_slug' => 'surroundings',
+			'group'         => 'theme03_surroundings',
+			'excerpt'       => 'White balconies, sea caves and dramatic cliffs make Polignano a Mare one of the essential coastal stops near Montefieno.',
+			'content'       => '<p>Polignano a Mare is one of the most iconic views of the Adriatic coast: houses rising above the cliffs, narrow lanes opening suddenly to blue water, and terraces where the sea feels close enough to touch.</p><p>Wander through the old centre, pause at the viewpoints, then follow the sound of the waves toward Lama Monachile, the town beach framed by stone walls.</p><h2>How to enjoy it</h2><p>Visit early in the morning for quiet streets, or arrive in the late afternoon for golden light and dinner by the sea.</p><h3>Perfect for</h3><ul><li>Sea views and photography.</li><li>A half-day coastal trip.</li><li>Romantic dinners by the water.</li></ul>',
+		),
+		array(
+			'slug'          => 'castellana-grotte',
+			'title'         => 'Castellana Grotte, wonders underground',
+			'over'          => '10 min',
+			'hero'          => $img( 'mf-13.jpg' ),
+			'category'      => 'Surroundings',
+			'category_slug' => 'surroundings',
+			'group'         => 'theme03_surroundings',
+			'excerpt'       => 'One of Italy\'s most spectacular cave systems, a short drive from Masseria Montefieno.',
+			'content'       => '<p>The Caves of Castellana are among the most remarkable natural wonders in Italy: a deep network of caverns, tunnels and crystalline formations carved over millions of years.</p><p>Guided tours lead through grand chambers to the famous White Cave, where alabaster concretions shine under the lights.</p><h2>Good to know</h2><p>Tours run on a fixed schedule and the temperature underground is cool year-round, so bring a light layer. It is an easy and memorable half-day from the masseria.</p><h3>Perfect for</h3><ul><li>Families and curious travellers.</li><li>A change of pace from the coast.</li><li>A cooler activity on a hot summer day.</li></ul>',
+		),
+		array(
+			'slug'          => 'alberobello-itria-valley',
+			'title'         => 'Alberobello and the Itria Valley',
+			'over'          => '15 min',
+			'hero'          => $img( 'mf-17.jpg' ),
+			'category'      => 'Surroundings',
+			'category_slug' => 'surroundings',
+			'group'         => 'theme03_surroundings',
+			'excerpt'       => 'Trulli, dry-stone walls, olive groves and whitewashed villages define one of the most recognisable landscapes in Puglia.',
+			'content'       => '<p>The Itria Valley is the postcard image of inland Puglia: rolling countryside, ancient olive trees, white villages and the unmistakable silhouettes of the trulli.</p><p>Alberobello is the most famous stop, protected by UNESCO and loved for its cone-roofed houses. Around it, towns like Locorotondo, Cisternino and Martina Franca offer a quieter, equally beautiful rhythm.</p><h2>A day among villages</h2><p>Plan a relaxed itinerary with one main town and one smaller stop. The distances are short, but the pleasure is in slowing down.</p><h3>Perfect for</h3><ul><li>Architecture and countryside drives.</li><li>Lunch in a whitewashed village.</li><li>Guests who want the classic trulli experience.</li></ul>',
+		),
+	);
+}
+
+function sbt_active_seed_articles() {
+	return 'theme03' === sbt_active_subtheme_key() ? sbt_theme03_seed_articles() : sbt_theme01_seed_articles();
+}
+
+function sbt_theme03_seed_article_translations() {
+	return array(
+		'conversano' => array( 'title' => 'Conversano, il cuore nobile della Puglia', 'excerpt' => 'Un centro storico elegante, fatto di pietra, palazzi nobiliari e piazze tranquille, a pochi minuti da Masseria Montefieno.', 'content' => '<p>Conversano e la scoperta piu vicina a Masseria Montefieno. Elegante, autentica e facile da vivere a piedi, custodisce il ritmo lento della Puglia interna.</p><p>Il castello normanno-svevo domina il centro storico, mentre chiese, monasteri e palazzi raccontano una storia stratificata.</p><h2>Cosa vedere</h2><p>Inizia dal castello e dalla cattedrale, poi lasciati guidare dalle stradine verso cortili nascosti, forni locali e aperitivi al tramonto.</p><h3>Perfetto per</h3><ul><li>Una passeggiata lenta dopo colazione.</li><li>Una cena a pochi minuti dalla masseria.</li><li>Chi cerca cultura e vita locale a portata di mano.</li></ul>' ),
+		'polignano-a-mare' => array( 'title' => 'Polignano a Mare e le scogliere adriatiche', 'excerpt' => 'Balconi bianchi, grotte marine e scogliere spettacolari rendono Polignano una tappa essenziale vicino Montefieno.', 'content' => '<p>Polignano a Mare e una delle immagini piu iconiche della costa adriatica: case sospese sulle scogliere, vicoli chiari e terrazze aperte sul blu.</p><p>Attraversa il centro storico fino a Lama Monachile, la celebre spiaggia incastonata nella pietra.</p><h2>Come viverla</h2><p>Arriva al mattino per le strade piu tranquille, oppure nel tardo pomeriggio per la luce dorata e una cena vista mare.</p><h3>Perfetto per</h3><ul><li>Panorami e fotografie.</li><li>Una mezza giornata sulla costa.</li><li>Cene romantiche sul mare.</li></ul>' ),
+		'castellana-grotte' => array( 'title' => 'Castellana Grotte, meraviglie nel sottosuolo', 'excerpt' => 'Uno dei sistemi di grotte piu spettacolari d\'Italia, a pochi minuti da Masseria Montefieno.', 'content' => '<p>Le Grotte di Castellana sono tra le meraviglie naturali piu straordinarie d\'Italia: una rete profonda di caverne, gallerie e formazioni cristalline scolpite in milioni di anni.</p><p>Le visite guidate conducono tra grandi sale fino alla celebre Grotta Bianca, dove le concrezioni di alabastro brillano sotto le luci.</p><h2>Buono a sapersi</h2><p>Le visite seguono orari fissi e la temperatura nel sottosuolo e fresca tutto l\'anno: porta una giacca leggera. E una mezza giornata facile e indimenticabile dalla masseria.</p><h3>Perfetto per</h3><ul><li>Famiglie e viaggiatori curiosi.</li><li>Un cambio di ritmo rispetto alla costa.</li><li>Un\'attivita piu fresca nelle giornate calde.</li></ul>' ),
+		'alberobello-itria-valley' => array( 'title' => 'Alberobello e la Valle d\'Itria', 'excerpt' => 'Trulli, muretti a secco, ulivi e borghi bianchi: uno dei paesaggi piu riconoscibili della Puglia.', 'content' => '<p>La Valle d\'Itria e la Puglia dell\'immaginario: campagne morbide, ulivi antichi, borghi bianchi e il profilo inconfondibile dei trulli.</p><p>Alberobello e la tappa piu famosa, protetta dall\'UNESCO; intorno, Locorotondo, Cisternino e Martina Franca offrono un ritmo piu quieto.</p><h2>Una giornata tra i borghi</h2><p>Scegli un itinerario lento, con una tappa principale e una secondaria. Il piacere e nel fermarsi.</p><h3>Perfetto per</h3><ul><li>Architettura e strade di campagna.</li><li>Pranzi nei borghi bianchi.</li><li>Chi vuole vivere l\'esperienza dei trulli.</li></ul>' ),
+	);
+}
+
+function sbt_active_seed_article_translations() {
+	return 'theme03' === sbt_active_subtheme_key() ? sbt_theme03_seed_article_translations() : sbt_italian_seed_article_translations();
+}
+
 function sbt_italian_seed_article_translations() {
 	return array(
 		'conversano' => array( 'title' => 'Conversano, il cuore nobile della Puglia', 'excerpt' => 'Un centro storico elegante, fatto di pietra, palazzi nobiliari e piazze tranquille, a pochi passi da Villa Rosa Resort.', 'content' => '<p>Conversano e la prima scoperta fuori dai cancelli di Villa Rosa Resort. Elegante, autentica e facile da vivere a piedi, custodisce il ritmo della Puglia piu vera.</p><p>Il castello normanno-svevo domina il centro storico, mentre chiese, monasteri e palazzi raccontano una storia stratificata e accogliente.</p><h2>Cosa vedere</h2><p>Inizia dal castello e dalla cattedrale, poi lasciati guidare dalle stradine verso cortili nascosti, forni locali e aperitivi al tramonto.</p><h3>Perfetto per</h3><ul><li>Una passeggiata lenta dopo colazione.</li><li>Una cena senza prendere l auto.</li><li>Chi cerca cultura e vita locale a portata di mano.</li></ul>' ),
@@ -2291,7 +2362,7 @@ function sbt_seed_article_for_language( $article, $language ) {
 		return $article;
 	}
 
-	$translations = sbt_italian_seed_article_translations();
+	$translations = sbt_active_seed_article_translations();
 	$slug = isset( $article['slug'] ) ? sanitize_title( $article['slug'] ) : '';
 	if ( isset( $translations[ $slug ] ) ) {
 		$article = array_merge( $article, $translations[ $slug ] );
@@ -2310,14 +2381,14 @@ function sbt_seed_article_for_language( $article, $language ) {
 }
 
 function sbt_create_seed_posts() {
-	if ( ! in_array( sbt_active_subtheme_key(), array( 'theme01', 'theme02' ), true ) ) {
+	if ( ! in_array( sbt_active_subtheme_key(), array( 'theme01', 'theme02', 'theme03' ), true ) ) {
 		return;
 	}
 
 	$category_cache = array();
 
 	foreach ( sbt_enabled_languages() as $language ) {
-	foreach ( sbt_theme01_seed_articles() as $base_article ) {
+	foreach ( sbt_active_seed_articles() as $base_article ) {
 		$article = sbt_seed_article_for_language( $base_article, $language );
 		$category_name = isset( $article['category'] ) ? $article['category'] : 'Articles';
 		$category_slug = isset( $article['category_slug'] ) ? sanitize_title( $article['category_slug'] ) : sanitize_title( $category_name );
