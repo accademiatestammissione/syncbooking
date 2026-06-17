@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.75' );
+define( 'SBT_VERSION', '2.1.76' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -5586,6 +5586,17 @@ function sbt_render_admin_shell_start( $active_tab ) {
 		.sbt-editor-field textarea,
 		.sbt-card .large-text { max-width:100%; min-width:0; width:100%; }
 		.sbt-card select { text-overflow:ellipsis; }
+		.sbt-section-card { border:1px solid #e2e4e7; border-radius:10px; padding:18px 20px 20px; margin:0 0 16px; background:#fff; }
+		.sbt-section-card > h3 { margin:0 0 3px; font-size:15px; display:flex; align-items:center; gap:8px; }
+		.sbt-section-card > h3 .dashicons { color:#8c8f94; }
+		.sbt-section-card > .sbt-section-desc { color:#646970; margin:0 0 16px; font-size:13px; }
+		.sbt-field input:not([type=checkbox]):not([type=radio]),
+		.sbt-field select,
+		.sbt-field textarea { border:1px solid #c3c4c7; border-radius:6px; padding:8px 11px; min-height:38px; background:#fff; box-shadow:none; transition:border-color .15s ease, box-shadow .15s ease; }
+		.sbt-field input:focus,
+		.sbt-field select:focus,
+		.sbt-field textarea:focus { border-color:#2271b1; box-shadow:0 0 0 1px #2271b1; outline:2px solid transparent; }
+		.sbt-field-hint { color:#646970; font-size:12px; margin:5px 0 0; }
 		.sbt-table { border-collapse:collapse; width:100%; }
 		.sbt-table th, .sbt-table td { border-bottom:1px solid #dcdcde; padding:12px; text-align:left; vertical-align:top; }
 		.sbt-menu-item { background:#f6f7f7; border:1px solid #dcdcde; border-radius:8px; margin:0 0 12px; padding:14px; }
@@ -6177,58 +6188,106 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 function sbt_render_header_menu_tab( $data, $overrides, $edit_language = 'en' ) {
 	$page_options = sbt_page_file_options();
 	?>
+	<?php
+	$sbt_saved_options = sbt_get_options();
+	$sbt_contact_email = isset( $sbt_saved_options['contact_email'] ) ? $sbt_saved_options['contact_email'] : '';
+	$sbt_admin_email = get_option( 'admin_email' );
+	?>
 	<div class="sbt-panel">
-		<?php sbt_render_section_language_tabs( 'header', $edit_language ); ?>
-		<h2>Header elements</h2>
-		<p class="sbt-muted">Edit identity, logos, quick contacts and header text for the active subtheme.</p>
-		<div class="sbt-field-grid">
-			<?php
-			sbt_render_header_field( 'SITE.name', 'Property name', $data['SITE']['name'] ?? '', $overrides );
-			sbt_render_header_field( 'SITE.tagline', 'Tagline', $data['SITE']['tagline'] ?? '', $overrides );
-			sbt_render_header_field( 'IMG.logo', 'Logo header image', $data['IMG']['logo'] ?? '', $overrides, 'image' );
-			sbt_render_header_field( 'IMG.logo_foot', 'Logo footer image', $data['IMG']['logo_foot'] ?? '', $overrides, 'image' );
-			sbt_render_header_field( 'SITE.wa', 'WhatsApp URL', $data['SITE']['wa'] ?? '', $overrides, 'url' );
-			sbt_render_header_field( 'SITE.whatsapp_label', 'WhatsApp text', $data['SITE']['whatsapp_label'] ?? 'WhatsApp', $overrides );
-			sbt_render_header_field( 'SITE.phone1', 'Primary phone', $data['SITE']['phone1'] ?? '', $overrides );
-			sbt_render_header_field( 'SITE.email', 'Email', $data['SITE']['email'] ?? '', $overrides, 'email' );
-			?>
+		<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:4px;">
+			<h2 style="margin:0;">Header &amp; Footer</h2>
+			<?php sbt_render_section_language_tabs( 'header', $edit_language ); ?>
 		</div>
-		<h2 style="margin-top:28px;">Footer and links</h2>
-		<?php sbt_render_section_language_tabs( 'header', $edit_language ); ?>
-		<p class="sbt-muted">Manage footer text, social links, legal details and language-specific links.</p>
-		<div class="sbt-field-grid">
-			<?php
-			sbt_render_header_field( 'TEXT.contacts', 'Footer contacts title', $data['TEXT']['contacts'] ?? 'Contacts', $overrides );
-			sbt_render_header_field( 'TEXT.stay_in_touch', 'Footer social title', $data['TEXT']['stay_in_touch'] ?? 'Stay in touch', $overrides );
-			sbt_render_header_field( 'TEXT.privacy_policy', 'Privacy policy label', $data['TEXT']['privacy_policy'] ?? 'Privacy Policy', $overrides );
-			sbt_render_header_field( 'TEXT.all_rights_reserved', 'All rights reserved label', $data['TEXT']['all_rights_reserved'] ?? 'All rights reserved', $overrides );
-			sbt_render_header_field( 'SITE.address_line_1', 'Footer address line 1', sbt_site_address_line_value( $data['SITE'] ?? array(), 1 ), $overrides );
-			sbt_render_header_field( 'SITE.address_line_2', 'Footer address line 2', sbt_site_address_line_value( $data['SITE'] ?? array(), 2 ), $overrides );
-			sbt_render_header_field( 'SITE.address_line_3', 'Footer address line 3', sbt_site_address_line_value( $data['SITE'] ?? array(), 3 ), $overrides );
-			sbt_render_header_field( 'SITE.map', 'Google Maps link', $data['SITE']['map'] ?? '', $overrides, 'url' );
-			sbt_render_header_field( 'SITE.facebook', 'Facebook URL', $data['SITE']['facebook'] ?? '', $overrides, 'url' );
-			sbt_render_header_field( 'SITE.instagram', 'Instagram URL', $data['SITE']['instagram'] ?? '', $overrides, 'url' );
-			sbt_render_header_field( 'SITE.vat', 'VAT number', $data['SITE']['vat'] ?? '', $overrides );
-			sbt_render_header_field( 'SITE.cin', 'CIN', $data['SITE']['cin'] ?? '', $overrides );
-			sbt_render_header_field( 'SITE.year', 'Footer year', $data['SITE']['year'] ?? '', $overrides );
-			sbt_render_header_field( 'SITE.webdev.label', 'Web developer link label', $data['SITE']['webdev']['label'] ?? '', $overrides );
-			sbt_render_header_field( 'SITE.webdev.url', 'Web developer link URL', $data['SITE']['webdev']['url'] ?? '', $overrides, 'url' );
-			?>
-		</div>
+		<p class="sbt-muted" style="margin-top:0;">Identity, logos, contacts, footer and legal details for the active subtheme. Text fields can differ per language; links and images are shared.</p>
 
-		<?php
-		$sbt_saved_options = sbt_get_options();
-		$sbt_contact_email = isset( $sbt_saved_options['contact_email'] ) ? $sbt_saved_options['contact_email'] : '';
-		$sbt_admin_email = get_option( 'admin_email' );
-		?>
-		<h2 style="margin-top:28px;">Notification email</h2>
-		<p class="sbt-muted">The main email address that receives contact and weddings form submissions. It defaults to the WordPress site admin email (<code><?php echo esc_html( $sbt_admin_email ); ?></code>). If you clear it, the site admin email is used. Currently delivering to: <code><?php echo esc_html( sbt_contact_recipient_email() ); ?></code>.</p>
-		<div class="sbt-field-grid">
-			<div class="sbt-field">
-				<label for="sbt-contact-email">Recipient email</label>
-				<input type="email" id="sbt-contact-email" class="large-text" name="<?php echo esc_attr( SBT_OPTION ); ?>[contact_email]" value="<?php echo esc_attr( $sbt_contact_email ); ?>" placeholder="<?php echo esc_attr( $sbt_admin_email ); ?>">
+		<div class="sbt-section-card">
+			<h3><span class="dashicons dashicons-admin-home"></span>Identity</h3>
+			<p class="sbt-section-desc">The property name and tagline shown in the header and footer.</p>
+			<div class="sbt-field-grid">
+				<?php
+				sbt_render_header_field( 'SITE.name', 'Property name', $data['SITE']['name'] ?? '', $overrides );
+				sbt_render_header_field( 'SITE.tagline', 'Tagline', $data['SITE']['tagline'] ?? '', $overrides );
+				?>
 			</div>
 		</div>
+
+		<div class="sbt-section-card">
+			<h3><span class="dashicons dashicons-format-image"></span>Logos</h3>
+			<p class="sbt-section-desc">Logo images used in the header and the footer.</p>
+			<div class="sbt-field-grid">
+				<?php
+				sbt_render_header_field( 'IMG.logo', 'Header logo', $data['IMG']['logo'] ?? '', $overrides, 'image' );
+				sbt_render_header_field( 'IMG.logo_foot', 'Footer logo', $data['IMG']['logo_foot'] ?? '', $overrides, 'image' );
+				?>
+			</div>
+		</div>
+
+		<div class="sbt-section-card">
+			<h3><span class="dashicons dashicons-phone"></span>Quick contacts</h3>
+			<p class="sbt-section-desc">WhatsApp, phone and email shown in the header bar.</p>
+			<div class="sbt-field-grid">
+				<?php
+				sbt_render_header_field( 'SITE.wa', 'WhatsApp URL', $data['SITE']['wa'] ?? '', $overrides, 'url' );
+				sbt_render_header_field( 'SITE.whatsapp_label', 'WhatsApp text', $data['SITE']['whatsapp_label'] ?? 'WhatsApp', $overrides );
+				sbt_render_header_field( 'SITE.phone1', 'Primary phone', $data['SITE']['phone1'] ?? '', $overrides );
+				sbt_render_header_field( 'SITE.email', 'Email', $data['SITE']['email'] ?? '', $overrides, 'email' );
+				?>
+			</div>
+		</div>
+
+		<div class="sbt-section-card">
+			<h3><span class="dashicons dashicons-editor-table"></span>Footer text</h3>
+			<p class="sbt-section-desc">Section titles and legal labels shown in the footer.</p>
+			<div class="sbt-field-grid">
+				<?php
+				sbt_render_header_field( 'TEXT.contacts', 'Footer contacts title', $data['TEXT']['contacts'] ?? 'Contacts', $overrides );
+				sbt_render_header_field( 'TEXT.stay_in_touch', 'Footer social title', $data['TEXT']['stay_in_touch'] ?? 'Stay in touch', $overrides );
+				sbt_render_header_field( 'TEXT.privacy_policy', 'Privacy policy label', $data['TEXT']['privacy_policy'] ?? 'Privacy Policy', $overrides );
+				sbt_render_header_field( 'TEXT.all_rights_reserved', 'All rights reserved label', $data['TEXT']['all_rights_reserved'] ?? 'All rights reserved', $overrides );
+				?>
+			</div>
+		</div>
+
+		<div class="sbt-section-card">
+			<h3><span class="dashicons dashicons-location"></span>Address &amp; map</h3>
+			<p class="sbt-section-desc">Footer address lines and the Google Maps link.</p>
+			<div class="sbt-field-grid">
+				<?php
+				sbt_render_header_field( 'SITE.address_line_1', 'Address line 1', sbt_site_address_line_value( $data['SITE'] ?? array(), 1 ), $overrides );
+				sbt_render_header_field( 'SITE.address_line_2', 'Address line 2', sbt_site_address_line_value( $data['SITE'] ?? array(), 2 ), $overrides );
+				sbt_render_header_field( 'SITE.address_line_3', 'Address line 3', sbt_site_address_line_value( $data['SITE'] ?? array(), 3 ), $overrides );
+				sbt_render_header_field( 'SITE.map', 'Google Maps link', $data['SITE']['map'] ?? '', $overrides, 'url' );
+				?>
+			</div>
+		</div>
+
+		<div class="sbt-section-card">
+			<h3><span class="dashicons dashicons-share"></span>Social &amp; legal</h3>
+			<p class="sbt-section-desc">Social links, VAT/CIN, copyright year and the web developer credit.</p>
+			<div class="sbt-field-grid">
+				<?php
+				sbt_render_header_field( 'SITE.facebook', 'Facebook URL', $data['SITE']['facebook'] ?? '', $overrides, 'url' );
+				sbt_render_header_field( 'SITE.instagram', 'Instagram URL', $data['SITE']['instagram'] ?? '', $overrides, 'url' );
+				sbt_render_header_field( 'SITE.vat', 'VAT number', $data['SITE']['vat'] ?? '', $overrides );
+				sbt_render_header_field( 'SITE.cin', 'CIN', $data['SITE']['cin'] ?? '', $overrides );
+				sbt_render_header_field( 'SITE.year', 'Footer year', $data['SITE']['year'] ?? '', $overrides );
+				sbt_render_header_field( 'SITE.webdev.label', 'Web developer label', $data['SITE']['webdev']['label'] ?? '', $overrides );
+				sbt_render_header_field( 'SITE.webdev.url', 'Web developer URL', $data['SITE']['webdev']['url'] ?? '', $overrides, 'url' );
+				?>
+			</div>
+		</div>
+
+		<div class="sbt-section-card">
+			<h3><span class="dashicons dashicons-email"></span>Notification email</h3>
+			<p class="sbt-section-desc">Where contact and weddings form submissions are delivered. Defaults to the WordPress site admin email (<code><?php echo esc_html( $sbt_admin_email ); ?></code>) when left empty. Currently delivering to: <code><?php echo esc_html( sbt_contact_recipient_email() ); ?></code>.</p>
+			<div class="sbt-field-grid">
+				<div class="sbt-field">
+					<label for="sbt-contact-email">Recipient email</label>
+					<input type="email" id="sbt-contact-email" name="<?php echo esc_attr( SBT_OPTION ); ?>[contact_email]" value="<?php echo esc_attr( $sbt_contact_email ); ?>" placeholder="<?php echo esc_attr( $sbt_admin_email ); ?>">
+				</div>
+			</div>
+		</div>
+
 		<?php submit_button( 'Save header and footer' ); ?>
 	</div>
 	<?php
