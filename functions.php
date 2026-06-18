@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.85' );
+define( 'SBT_VERSION', '2.1.86' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -6296,9 +6296,6 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 						registered: <?php echo esc_html( $media_status['registered'] ?? 0 ); ?>,
 						errors: <?php echo esc_html( $media_status['failed'] ?? 0 ); ?>.
 					</p>
-					<?php if ( $assets_update_available ) : ?>
-						<p class="sbt-status is-warning" style="margin:8px 0 0;"><strong>Update available:</strong> the online assets.zip has changed (different size or date) since the last import. It will be re-downloaded.</p>
-					<?php endif; ?>
 				<?php else : ?>
 					<p class="sbt-muted">Assets have not been imported for this subtheme yet.</p>
 				<?php endif; ?>
