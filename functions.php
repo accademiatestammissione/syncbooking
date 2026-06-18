@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.82' );
+define( 'SBT_VERSION', '2.1.83' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -1567,17 +1567,108 @@ function sbt_assets_import_finish( $job ) {
 
 	$imports = get_option( SBT_MEDIA_OPTION, array() );
 	$imports[ $job['subtheme'] ] = array(
-		'downloaded'  => absint( $job['extracted'] ?? 0 ),
-		'registered'  => absint( $job['registered'] ?? 0 ),
-		'skipped'     => absint( $job['skipped'] ?? 0 ),
-		'failed'      => count( $job['failed'] ?? array() ),
-		'updated_at'  => current_time( 'mysql' ),
-		'source'      => $job['url'],
-		'method'      => 'progressive',
-		'total_bytes' => absint( $job['total_bytes'] ?? 0 ),
+		'downloaded'      => absint( $job['extracted'] ?? 0 ),
+		'registered'      => absint( $job['registered'] ?? 0 ),
+		'skipped'         => absint( $job['skipped'] ?? 0 ),
+		'failed'          => count( $job['failed'] ?? array() ),
+		'updated_at'      => current_time( 'mysql' ),
+		'source'          => $job['url'],
+		'method'          => 'progressive',
+		'total_bytes'     => absint( $job['total_bytes'] ?? 0 ),
+		'remote_length'   => absint( $job['total_bytes'] ?? 0 ),
+		'remote_modified' => (string) ( $job['remote_modified'] ?? '' ),
+		'remote_etag'     => (string) ( $job['remote_etag'] ?? '' ),
 	);
 	update_option( SBT_MEDIA_OPTION, $imports );
 	delete_option( sbt_assets_import_job_option( $job['subtheme'] ) );
+	delete_transient( sbt_remote_assets_signature_transient( $job['subtheme'] ) );
+}
+
+/**
+ * Transient key that caches the last HEAD signature of a subtheme's online assets.zip.
+ */
+function sbt_remote_assets_signature_transient( $subtheme_key ) {
+	return 'sbt_assets_sig_' . sanitize_key( $subtheme_key );
+}
+
+/**
+ * Fetch the online assets.zip size / modified date / ETag via a HEAD request.
+ * Returns an empty array when the signature cannot be determined (offline, HEAD
+ * unsupported, error response) so callers can avoid forcing a needless re-download.
+ */
+function sbt_fetch_remote_assets_signature( $url ) {
+	if ( ! $url ) {
+		return array();
+	}
+	$head = wp_remote_head( $url, array(
+		'timeout'     => 12,
+		'redirection' => 3,
+	) );
+	if ( is_wp_error( $head ) ) {
+		return array();
+	}
+	$code = absint( wp_remote_retrieve_response_code( $head ) );
+	if ( $code < 200 || $code >= 400 ) {
+		return array();
+	}
+	return array(
+		'length'   => absint( wp_remote_retrieve_header( $head, 'content-length' ) ),
+		'modified' => (string) wp_remote_retrieve_header( $head, 'last-modified' ),
+		'etag'     => (string) wp_remote_retrieve_header( $head, 'etag' ),
+	);
+}
+
+/**
+ * Cached remote signature for a subtheme's assets.zip. Cached for 15 minutes so
+ * admin page loads don't hammer the asset host; pass $force on explicit actions.
+ */
+function sbt_remote_assets_signature( $subtheme_key, $force = false ) {
+	$key = sanitize_key( $subtheme_key );
+	$url = sbt_remote_assets_zip_url( $key );
+	if ( ! $url ) {
+		return array();
+	}
+	$tkey = sbt_remote_assets_signature_transient( $key );
+	if ( ! $force ) {
+		$cached = get_transient( $tkey );
+		if ( is_array( $cached ) ) {
+			return $cached;
+		}
+	}
+	$sig = sbt_fetch_remote_assets_signature( $url );
+	set_transient( $tkey, $sig, 15 * MINUTE_IN_SECONDS );
+	return $sig;
+}
+
+/**
+ * Whether the online assets.zip has changed (size or date, or ETag when both
+ * sides expose one) since the last successful import for this subtheme. Returns
+ * false when nothing has been imported yet or the remote signature is unknown,
+ * so we never trigger a re-download we can't justify.
+ */
+function sbt_remote_assets_changed( $subtheme_key, $force = false ) {
+	$key = sanitize_key( $subtheme_key );
+	$status = sbt_media_import_status( $key );
+	if ( empty( $status['updated_at'] ) ) {
+		return false;
+	}
+	$remote = sbt_remote_assets_signature( $key, $force );
+	if ( empty( $remote ) ) {
+		return false;
+	}
+
+	$stored_etag = isset( $status['remote_etag'] ) ? (string) $status['remote_etag'] : '';
+	if ( '' !== $stored_etag && '' !== (string) $remote['etag'] ) {
+		return $stored_etag !== (string) $remote['etag'];
+	}
+
+	$stored_len = isset( $status['remote_length'] ) ? absint( $status['remote_length'] ) : absint( $status['total_bytes'] ?? 0 );
+	$stored_mod = isset( $status['remote_modified'] ) ? (string) $status['remote_modified'] : '';
+
+	$len_changed = ( $remote['length'] > 0 && $stored_len > 0 && $remote['length'] !== $stored_len );
+	$mod_changed = ( '' !== $stored_mod && '' !== (string) $remote['modified'] && $stored_mod !== (string) $remote['modified'] );
+
+	return $len_changed || $mod_changed;
 }
 
 function sbt_assets_import_completed( $subtheme_key = '' ) {
@@ -1647,7 +1738,7 @@ function sbt_ajax_start_assets_import() {
 		sbt_assets_import_error_response( __( 'No remote assets.zip is configured for this subtheme.', 'syncbooking_theme' ) );
 	}
 
-	if ( sbt_assets_import_completed( $key ) ) {
+	if ( sbt_assets_import_completed( $key ) && ! sbt_remote_assets_changed( $key, true ) ) {
 		$job = array(
 			'id'       => '',
 			'subtheme' => $key,
@@ -1681,6 +1772,8 @@ function sbt_ajax_start_assets_import() {
 		'redirection' => 3,
 	) );
 	$total_bytes = is_wp_error( $head ) ? 0 : absint( wp_remote_retrieve_header( $head, 'content-length' ) );
+	$remote_modified = is_wp_error( $head ) ? '' : (string) wp_remote_retrieve_header( $head, 'last-modified' );
+	$remote_etag = is_wp_error( $head ) ? '' : (string) wp_remote_retrieve_header( $head, 'etag' );
 
 	$job = array(
 		'id'               => $job_id,
@@ -1691,6 +1784,8 @@ function sbt_ajax_start_assets_import() {
 		'target_base'      => $target_base,
 		'bytes_downloaded' => 0,
 		'total_bytes'      => $total_bytes,
+		'remote_modified'  => $remote_modified,
+		'remote_etag'      => $remote_etag,
 		'extract_index'    => 0,
 		'total_entries'    => 0,
 		'register_index'   => 0,
@@ -6106,6 +6201,8 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 	$entire_slug = sbt_entire_page_slug( $subtheme );
 	$media_status = sbt_media_import_status();
 	$assets_import_complete = sbt_assets_import_completed( $subtheme );
+	$assets_update_available = $assets_import_complete && sbt_remote_assets_changed( $subtheme );
+	$assets_needs_action = ( ! $assets_import_complete ) || $assets_update_available;
 	?>
 	<div class="sbt-panel">
 		<h2>General Settings</h2>
@@ -6172,12 +6269,15 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 						registered: <?php echo esc_html( $media_status['registered'] ?? 0 ); ?>,
 						errors: <?php echo esc_html( $media_status['failed'] ?? 0 ); ?>.
 					</p>
+					<?php if ( $assets_update_available ) : ?>
+						<p class="sbt-status is-warning" style="margin:8px 0 0;"><strong>Update available:</strong> the online assets.zip has changed (different size or date) since the last import. It will be re-downloaded.</p>
+					<?php endif; ?>
 				<?php else : ?>
 					<p class="sbt-muted">Assets have not been imported for this subtheme yet.</p>
 				<?php endif; ?>
-				<div class="sbt-assets-import" data-nonce="<?php echo esc_attr( wp_create_nonce( 'sbt_assets_import' ) ); ?>" data-subtheme="<?php echo esc_attr( sbt_active_subtheme_key() ); ?>" data-auto-import="<?php echo $assets_import_complete ? '0' : '1'; ?>" data-complete="<?php echo $assets_import_complete ? '1' : '0'; ?>">
-					<button type="button" class="button button-primary sbt-assets-import-button" <?php disabled( $assets_import_complete ); ?>>
-						<?php echo esc_html( $assets_import_complete ? 'Assets already imported' : 'Download / resume assets' ); ?>
+				<div class="sbt-assets-import" data-nonce="<?php echo esc_attr( wp_create_nonce( 'sbt_assets_import' ) ); ?>" data-subtheme="<?php echo esc_attr( sbt_active_subtheme_key() ); ?>" data-auto-import="<?php echo $assets_needs_action ? '1' : '0'; ?>" data-complete="<?php echo $assets_needs_action ? '0' : '1'; ?>">
+					<button type="button" class="button button-primary sbt-assets-import-button" <?php disabled( ! $assets_needs_action ); ?>>
+						<?php echo esc_html( $assets_update_available ? 'Update available - re-download assets' : ( $assets_import_complete ? 'Assets already imported' : 'Download / resume assets' ) ); ?>
 					</button>
 					<div class="sbt-assets-progress" style="display:none;" aria-hidden="true"><div class="sbt-assets-progress__bar"></div></div>
 					<p class="sbt-muted sbt-assets-import-message"></p>
