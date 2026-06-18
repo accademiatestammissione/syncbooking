@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.84' );
+define( 'SBT_VERSION', '2.1.85' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -1668,7 +1668,20 @@ function sbt_remote_assets_changed( $subtheme_key, $force = false ) {
 	$len_changed = ( $remote['length'] > 0 && $stored_len > 0 && $remote['length'] !== $stored_len );
 	$mod_changed = ( '' !== $stored_mod && '' !== (string) $remote['modified'] && $stored_mod !== (string) $remote['modified'] );
 
-	return $len_changed || $mod_changed;
+	// Fallback for imports made before signatures were recorded (no stored
+	// ETag/Last-Modified): if the online zip's Last-Modified is newer than the
+	// import timestamp, treat it as changed. Catches the case where the byte
+	// size is coincidentally identical.
+	$date_changed = false;
+	if ( '' === $stored_etag && '' === $stored_mod && '' !== (string) $remote['modified'] ) {
+		$remote_ts = strtotime( (string) $remote['modified'] );
+		$import_ts = strtotime( (string) $status['updated_at'] );
+		if ( $remote_ts && $import_ts && $remote_ts > $import_ts ) {
+			$date_changed = true;
+		}
+	}
+
+	return $len_changed || $mod_changed || $date_changed;
 }
 
 function sbt_assets_import_completed( $subtheme_key = '' ) {
@@ -1733,12 +1746,18 @@ function sbt_ajax_start_assets_import() {
 	}
 
 	$key = isset( $_POST['subtheme'] ) ? sanitize_key( wp_unslash( $_POST['subtheme'] ) ) : sbt_active_subtheme_key();
+	$force = ! empty( $_POST['force'] );
 	$url = sbt_remote_assets_zip_url( $key );
 	if ( ! $url ) {
 		sbt_assets_import_error_response( __( 'No remote assets.zip is configured for this subtheme.', 'syncbooking_theme' ) );
 	}
 
-	if ( sbt_assets_import_completed( $key ) && ! sbt_remote_assets_changed( $key, true ) ) {
+	// A forced re-download bypasses both the "already imported" gate and any
+	// resumable job: clear stale state and pull the online zip fresh.
+	if ( $force ) {
+		delete_transient( sbt_remote_assets_signature_transient( $key ) );
+		delete_option( sbt_assets_import_job_option( $key ) );
+	} elseif ( sbt_assets_import_completed( $key ) && ! sbt_remote_assets_changed( $key, true ) ) {
 		$job = array(
 			'id'       => '',
 			'subtheme' => $key,
@@ -1758,7 +1777,7 @@ function sbt_ajax_start_assets_import() {
 	wp_mkdir_p( $target_base );
 	wp_mkdir_p( $tmp_base );
 
-	$old_job = sbt_assets_import_resume_job( $key );
+	$old_job = $force ? array() : sbt_assets_import_resume_job( $key );
 	if ( $old_job ) {
 		wp_send_json_success( sbt_assets_import_response_data( $old_job, __( 'Resuming assets import in the background.', 'syncbooking_theme' ) ) );
 	}
@@ -4794,10 +4813,10 @@ function sbt_admin_footer_scripts() {
 				$control.find('.sbt-link-value').val($(this).val());
 			});
 
-			function runAssetsImport($button, automatic){
+			function runAssetsImport($button, automatic, force){
 				var $button = $(this);
 				var $wrap = $button.closest('.sbt-assets-import');
-				if ($wrap.data('running') || $wrap.data('complete')) {
+				if ($wrap.data('running') || (!force && $wrap.data('complete'))) {
 					return;
 				}
 				$wrap.data('running', true);
@@ -4838,7 +4857,8 @@ function sbt_admin_footer_scripts() {
 						if (response.data.done) {
 							$wrap.data('complete', true);
 							$wrap.data('running', false);
-							$button.prop('disabled', true).text('Assets already imported');
+							if ($button.hasClass('sbt-assets-import-button')) { $button.prop('disabled', true).text('Assets already imported'); } else { $button.prop('disabled', false); }
+							$message.text('Assets re-downloaded. Reload the website (Ctrl/Cmd+Shift+R) to see the latest design.');
 							return;
 						}
 						window.setTimeout(function(){ step(jobId); }, 250);
@@ -4853,7 +4873,8 @@ function sbt_admin_footer_scripts() {
 				$.post(ajaxurl, {
 					action: 'sbt_start_assets_import',
 					nonce: nonce,
-					subtheme: subtheme
+					subtheme: subtheme,
+					force: force ? 1 : 0
 				}).done(function(response){
 					if (!response || !response.success) {
 						fail({ responseJSON: response });
@@ -4863,7 +4884,8 @@ function sbt_admin_footer_scripts() {
 					if (response.data.done) {
 						$wrap.data('complete', true);
 						$wrap.data('running', false);
-						$button.prop('disabled', true).text('Assets already imported');
+						if ($button.hasClass('sbt-assets-import-button')) { $button.prop('disabled', true).text('Assets already imported'); } else { $button.prop('disabled', false); }
+						$message.text('Assets re-downloaded. Reload the website (Ctrl/Cmd+Shift+R) to see the latest design.');
 						return;
 					}
 					step(response.data.job_id);
@@ -4872,7 +4894,12 @@ function sbt_admin_footer_scripts() {
 
 			$(document).on('click', '.sbt-assets-import-button', function(e){
 				e.preventDefault();
-				runAssetsImport.call(this, $(this), false);
+				runAssetsImport.call(this, $(this), false, false);
+			});
+
+			$(document).on('click', '.sbt-assets-force-button', function(e){
+				e.preventDefault();
+				runAssetsImport.call(this, $(this), false, true);
 			});
 
 			window.setTimeout(function(){
@@ -6279,6 +6306,8 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 					<button type="button" class="button button-primary sbt-assets-import-button" <?php disabled( ! $assets_needs_action ); ?>>
 						<?php echo esc_html( $assets_update_available ? 'Update available - re-download assets' : ( $assets_import_complete ? 'Assets already imported' : 'Download / resume assets' ) ); ?>
 					</button>
+					<button type="button" class="button sbt-assets-force-button" style="margin-left:8px;">Force re-download</button>
+					<p class="sbt-muted" style="margin:8px 0 0;font-size:11px;">Use <strong>Force re-download</strong> to always re-pull the online assets.zip (CSS, JS, images) even if it looks already imported &mdash; e.g. after updating the design.</p>
 					<div class="sbt-assets-progress" style="display:none;" aria-hidden="true"><div class="sbt-assets-progress__bar"></div></div>
 					<p class="sbt-muted sbt-assets-import-message"></p>
 				</div>
