@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.86' );
+define( 'SBT_VERSION', '2.1.87' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -4816,7 +4816,7 @@ function sbt_admin_footer_scripts() {
 			function runAssetsImport($button, automatic, force){
 				var $button = $(this);
 				var $wrap = $button.closest('.sbt-assets-import');
-				if ($wrap.data('running') || (!force && $wrap.data('complete'))) {
+				if ($wrap.data('running')) {
 					return;
 				}
 				$wrap.data('running', true);
@@ -4857,8 +4857,7 @@ function sbt_admin_footer_scripts() {
 						if (response.data.done) {
 							$wrap.data('complete', true);
 							$wrap.data('running', false);
-							if ($button.hasClass('sbt-assets-import-button')) { $button.prop('disabled', true).text('Assets already imported'); } else { $button.prop('disabled', false); }
-							$message.text('Assets re-downloaded. Reload the website (Ctrl/Cmd+Shift+R) to see the latest design.');
+							$button.prop('disabled', false); if ($button.hasClass('sbt-assets-import-button')) { $button.text('Check for asset updates'); }
 							return;
 						}
 						window.setTimeout(function(){ step(jobId); }, 250);
@@ -4884,8 +4883,7 @@ function sbt_admin_footer_scripts() {
 					if (response.data.done) {
 						$wrap.data('complete', true);
 						$wrap.data('running', false);
-						if ($button.hasClass('sbt-assets-import-button')) { $button.prop('disabled', true).text('Assets already imported'); } else { $button.prop('disabled', false); }
-						$message.text('Assets re-downloaded. Reload the website (Ctrl/Cmd+Shift+R) to see the latest design.');
+						$button.prop('disabled', false); if ($button.hasClass('sbt-assets-import-button')) { $button.text('Check for asset updates'); }
 						return;
 					}
 					step(response.data.job_id);
@@ -6300,10 +6298,12 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 					<p class="sbt-muted">Assets have not been imported for this subtheme yet.</p>
 				<?php endif; ?>
 				<div class="sbt-assets-import" data-nonce="<?php echo esc_attr( wp_create_nonce( 'sbt_assets_import' ) ); ?>" data-subtheme="<?php echo esc_attr( sbt_active_subtheme_key() ); ?>" data-auto-import="<?php echo $assets_needs_action ? '1' : '0'; ?>" data-complete="<?php echo $assets_needs_action ? '0' : '1'; ?>">
-					<button type="button" class="button button-primary sbt-assets-import-button" <?php disabled( ! $assets_needs_action ); ?>>
-						<?php echo esc_html( $assets_update_available ? 'Update available - re-download assets' : ( $assets_import_complete ? 'Assets already imported' : 'Download / resume assets' ) ); ?>
-					</button>
-					<button type="button" class="button sbt-assets-force-button" style="margin-left:8px;">Force re-download</button>
+					<div class="sbt-assets-buttons" style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+						<button type="button" class="button button-primary sbt-assets-import-button">
+							<?php echo esc_html( $assets_update_available ? 'Update available - re-download assets' : ( $assets_import_complete ? 'Check for asset updates' : 'Download / resume assets' ) ); ?>
+						</button>
+						<button type="button" class="button button-primary sbt-assets-force-button">Force re-download</button>
+					</div>
 					<p class="sbt-muted" style="margin:8px 0 0;font-size:11px;">Use <strong>Force re-download</strong> to always re-pull the online assets.zip (CSS, JS, images) even if it looks already imported &mdash; e.g. after updating the design.</p>
 					<div class="sbt-assets-progress" style="display:none;" aria-hidden="true"><div class="sbt-assets-progress__bar"></div></div>
 					<p class="sbt-muted sbt-assets-import-message"></p>
