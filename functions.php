@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.88' );
+define( 'SBT_VERSION', '2.1.89' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -537,7 +537,7 @@ function sbt_rebase_asset_url( $url ) {
 	if ( ! is_string( $url ) || '' === $url || ! function_exists( 'sbt_asset_url' ) ) {
 		return $url;
 	}
-	if ( preg_match( '#/(assets/[^?#]+)$#', $url, $m ) ) {
+	if ( preg_match( '~/(assets/[^?#]+)$~', $url, $m ) ) {
 		return sbt_asset_url( $m[1] );
 	}
 	return $url;
