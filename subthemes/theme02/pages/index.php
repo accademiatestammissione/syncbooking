@@ -116,7 +116,7 @@ $room_cards = array(
 
 <?php if ( ! function_exists( 'sbt_is_entire_rental_mode' ) || sbt_is_entire_rental_mode( 'theme02' ) ) : ?>
 <!-- ============ WHOLE MASSERIA ============ -->
-<section class="sbtw-pad-s" id="whole-masseria" style="background:var(--surface);" data-screen-label="Whole masseria">
+<section class="sbtw-pad-s sbtw-surface" id="whole-masseria" data-screen-label="Whole masseria">
   <div class="sbtw-wrap sbtw-two-col">
     <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
       <div class="sbtw-mc-track">

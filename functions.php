@@ -9,10 +9,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.87' );
+define( 'SBT_VERSION', '2.1.88' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
+require_once __DIR__ . '/chrome-config.php';
 define( 'SBT_REQUIRED_PLUGIN_SLUG', 'syncbooking' );
 define( 'SBT_REQUIRED_PLUGIN_FILE', 'syncbooking/sync-booking.php' );
 define( 'SBT_CF7_PLUGIN_SLUG', 'contact-form-7' );
@@ -521,6 +522,25 @@ function sbt_asset_url( $path ) {
 
 function sbt_prepare_local_asset_path( $asset_path, $local_path, $subtheme_key = '' ) {
 	return $asset_path;
+}
+
+/**
+ * Re-resolve a possibly-stale asset URL to the active theme's current location.
+ *
+ * Asset URLs that were stored when the uploads import had not run yet froze the
+ * dead clone-theme CDN fallback (e.g. seed-article hero meta). Any URL that
+ * still carries an "assets/..." tail is rebased through sbt_asset_url() so it
+ * points at WP uploads when the file is present. Media-library URLs (no
+ * "/assets/" segment) are returned untouched.
+ */
+function sbt_rebase_asset_url( $url ) {
+	if ( ! is_string( $url ) || '' === $url || ! function_exists( 'sbt_asset_url' ) ) {
+		return $url;
+	}
+	if ( preg_match( '#/(assets/[^?#]+)$#', $url, $m ) ) {
+		return sbt_asset_url( $m[1] );
+	}
+	return $url;
 }
 
 function sbt_remote_assets_zip_url( $subtheme_key = '' ) {

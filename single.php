@@ -10,6 +10,11 @@ while ( have_posts() ) :
 		$hero_fallback = sbt_asset_url( 'assets/images/masseria-dusk.jpg' );
 	}
 	$hero = has_post_thumbnail() ? get_the_post_thumbnail_url( get_the_ID(), 'full' ) : ( $hero_meta ?: $hero_fallback );
+	// Stored hero meta may hold a dead clone-theme CDN URL from before the
+	// assets import ran; rebase it to the active theme's uploads if present.
+	if ( function_exists( 'sbt_rebase_asset_url' ) ) {
+		$hero = sbt_rebase_asset_url( $hero );
+	}
 	?>
 	<section class="sbtw-page-hero" data-screen-label="Article banner">
 		<?php echo sbt_t1_img( 'post.' . get_the_ID() . '.banner', $hero, get_the_title(), array( 'class' => 'sbtw-bg' ) ); ?>

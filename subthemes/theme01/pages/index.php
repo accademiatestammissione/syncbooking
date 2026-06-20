@@ -18,6 +18,7 @@ $svc_icons = array(
 <!-- ============ HERO ============ -->
 <section class="sbtw-hero" id="top" data-screen-label="Hero">
   <div class="sbtw-hero-video">
+    <img class="sbtw-hero-poster" id="heroPoster" src="<?php echo esc_url( sbt_asset_url( 'assets/images/hero-poster.jpg' ) ); ?>" alt="" aria-hidden="true" />
     <iframe src="https://player.vimeo.com/video/687646681?autoplay=1&controls=0&mute=1&muted=1&loop=1&playlist=687646681&disablekb=1&modestbranding=1&playsinline=1&rel=0&background=1" allow="autoplay; fullscreen" title="Villa Rosa"></iframe>
   </div>
   <div class="sbtw-hero-overlay"></div>
