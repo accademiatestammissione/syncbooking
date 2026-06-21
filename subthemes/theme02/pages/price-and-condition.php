@@ -34,7 +34,7 @@ $p = isset( $C['price'] ) && is_array( $C['price'] ) ? $C['price'] : array();
   </div>
 </section>
 
-<section class="sbtw-pad" style="background:var(--surface);" data-screen-label="Conditions">
+<section class="sbtw-pad sbtw-surface" style="background:var(--surface);" data-screen-label="Conditions">
   <div class="sbtw-wrap">
     <div class="sbtw-section-head sbtw-reveal">
       <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.price.cond_over', $p['cond_over'] ?? 'Good to know' ); ?></div>

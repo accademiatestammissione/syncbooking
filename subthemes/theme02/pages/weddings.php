@@ -16,7 +16,7 @@ $faqs      = ( ! empty( $p['faqs'] ) && is_array( $p['faqs'] ) ) ? $p['faqs'] : 
 $badges    = ( ! empty( $p['badges'] ) && is_array( $p['badges'] ) ) ? $p['badges'] : array();
 ?>
 <!-- ============ GALLERY ============ -->
-<section style="padding-top:92px;background:var(--surface);" data-screen-label="Weddings gallery">
+<section class="sbtw-surface" style="padding-top:92px;background:var(--surface);" data-screen-label="Weddings gallery">
   <div class="sbtw-wrap" style="padding-top:18px;padding-bottom:18px;">
     <div class="sbtw-w-gallery">
       <?php foreach ( $gallery as $gi => $gimg ) : ?>

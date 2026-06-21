@@ -33,7 +33,7 @@ $exp_imgs = array( 'kitchen-dining.jpg', 'bedroom-2.jpg', 'courtyard.jpg', 'aeri
   </div>
 </section>
 
-<section class="sbtw-pad" style="background:var(--surface);" data-screen-label="Experiences wellness">
+<section class="sbtw-pad sbtw-surface" style="background:var(--surface);" data-screen-label="Experiences wellness">
   <div class="sbtw-wrap">
     <div class="sbtw-section-head sbtw-reveal" style="margin-bottom:44px;">
       <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.experiences.wellness_over', $p['wellness_over'] ?? 'Body &amp; soul' ); ?></div>

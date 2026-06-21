@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.90' );
+define( 'SBT_VERSION', '2.1.91' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -1166,8 +1166,31 @@ function sbt_sanitize_editable_url( $url ) {
 	return 0 === strpos( (string) $url, 'syncbooking:' ) ? sanitize_text_field( $url ) : esc_url_raw( $url );
 }
 
+function sbt_sanitize_hex_color_value( $val, $default = '' ) {
+	$val = is_string( $val ) ? trim( $val ) : '';
+	if ( '' === $val ) {
+		return $default;
+	}
+	if ( '#' !== substr( $val, 0, 1 ) ) {
+		$val = '#' . $val;
+	}
+	if ( ! preg_match( '/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/', $val ) ) {
+		return $default;
+	}
+	if ( 4 === strlen( $val ) ) {
+		$val = '#' . $val[1] . $val[1] . $val[2] . $val[2] . $val[3] . $val[3];
+	}
+	return strtolower( $val );
+}
+
 function sbt_sanitize_editable_override( $path, $value ) {
 	$value = wp_unslash( $value );
+
+	// Palette colours must be valid hex — they feed CSS variables via SBTW_CONFIG.
+	if ( 0 === strpos( (string) $path, 'SITE.color_' ) ) {
+		return sbt_sanitize_hex_color_value( $value, '' );
+	}
+
 	$kind = sbt_field_kind( $path, $value );
 
 	if ( 'url' === $kind ) {
@@ -5631,7 +5654,7 @@ function sbt_admin_current_tab() {
 		return 'pages';
 	}
 
-	return in_array( $tab, array( 'themes', 'general', 'header', 'menu', 'pages' ), true ) ? $tab : 'themes';
+	return in_array( $tab, array( 'themes', 'general', 'header', 'colors', 'menu', 'pages' ), true ) ? $tab : 'themes';
 }
 
 function sbt_admin_tab_url( $tab ) {
@@ -5725,6 +5748,7 @@ function sbt_render_admin_shell_start( $active_tab ) {
 		'themes'   => 'Themes',
 		'general'  => 'General Settings',
 		'header'   => 'Header & Footer',
+		'colors'   => 'Colours',
 		'menu'     => 'Menu',
 		'pages'    => 'Pages',
 	);
@@ -6419,6 +6443,120 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 	<?php
 }
 
+function sbt_render_colors_tab( $data, $overrides ) {
+	$site = isset( $data['SITE'] ) && is_array( $data['SITE'] ) ? $data['SITE'] : array();
+
+	// token => [ field key, label, default hex, description ]
+	$tokens = array(
+		array( 'color_bg',           'Page background', '#f6f2ea', 'Base background behind every page.' ),
+		array( 'color_surface',      'Surface / cards', '#fbf8f2', 'Cards, panels and raised sections.' ),
+		array( 'color_ink',          'Text & headings', '#2b2723', 'Primary text and headings.' ),
+		array( 'color_muted',        'Secondary text',  '#7d7468', 'Muted / helper text.' ),
+		array( 'color_line',         'Borders & lines', '#e6dfd2', 'Dividers and field borders.' ),
+		array( 'color_primary',      'Primary accent',  '#8a463f', 'Buttons, links, header bar, active nav.' ),
+		array( 'color_primary_deep', 'Primary — deep',  '#73362f', 'Hover, dropdowns and the mobile drawer.' ),
+		array( 'color_primary_soft', 'Primary — soft',  '#a8645a', 'Softer accent variant.' ),
+		array( 'color_accent',       'Rose accent',     '#b47e6e', 'Overlines, underlines, fine details.' ),
+		array( 'color_gold',         'Gold detail',     '#a98c5b', 'Occasional gold detail colour.' ),
+	);
+
+	// Preset palettes. Order matches $tokens: bg, surface, ink, muted, line, primary, deep, soft, rose, gold.
+	$presets = array(
+		'Terracotta'      => array( '#f6f2ea', '#fbf8f2', '#2b2723', '#7d7468', '#e6dfd2', '#8a463f', '#73362f', '#a8645a', '#b47e6e', '#a98c5b' ),
+		'Olive grove'     => array( '#f3f4ec', '#f9faf3', '#262922', '#6f7464', '#dde1d2', '#4f6138', '#3c4b2a', '#6f815a', '#93a06f', '#b09a5b' ),
+		'Adriatic blue'   => array( '#eef2f4', '#f7fafb', '#1f2730', '#66727d', '#d6dee3', '#2f5d73', '#234656', '#5a8197', '#7fa6b6', '#b9a05c' ),
+		'Charcoal & gold' => array( '#f4f2ee', '#faf8f4', '#232323', '#74706a', '#e0dcd4', '#2c2c2c', '#1a1a1a', '#555049', '#9a8f7e', '#b08d4f' ),
+		'Rose'            => array( '#f8f1ef', '#fdf7f5', '#2c2522', '#847069', '#ecdcd6', '#9a4f57', '#7e3b43', '#b86f76', '#c98c92', '#b89a6a' ),
+		'Forest'          => array( '#eef2ee', '#f6faf6', '#1f2620', '#647065', '#d6e0d6', '#2f5d44', '#224634', '#5a8169', '#7fa68d', '#ab9357' ),
+	);
+	?>
+	<style>
+		.sbt-palette-grid { display:grid; gap:12px; grid-template-columns:repeat(auto-fill,minmax(min(190px,100%),1fr)); }
+		.sbt-palette { display:flex; align-items:center; gap:10px; padding:10px 12px; border:1px solid #dcdcde; border-radius:8px; background:#fff; cursor:pointer; text-align:left; transition:border-color .15s, box-shadow .15s; }
+		.sbt-palette:hover { border-color:#2271b1; box-shadow:0 1px 6px rgba(34,113,177,.18); }
+		.sbt-palette-swatches { display:inline-flex; flex:0 0 auto; }
+		.sbt-palette-swatches i { width:18px; height:18px; border-radius:50%; margin-left:-5px; border:2px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,.06); }
+		.sbt-palette-swatches i:first-child { margin-left:0; }
+		.sbt-palette-name { font-weight:600; font-size:13px; color:#1d2327; }
+		.sbt-color-grid { display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr)); }
+		.sbt-color-field { display:flex; gap:12px; align-items:flex-start; border:1px solid #ececec; border-radius:8px; padding:10px 12px; }
+		.sbt-color-field input.sbt-color-pick { width:46px; height:46px; flex:0 0 auto; padding:0; border:1px solid #dcdcde; border-radius:8px; background:none; cursor:pointer; }
+		.sbt-color-meta { display:flex; flex-direction:column; gap:3px; min-width:0; }
+		.sbt-color-meta label { font-weight:600; font-size:13px; color:#1d2327; }
+		.sbt-color-meta input.sbt-color-hex { width:96px; font-family:monospace; text-transform:lowercase; }
+		.sbt-color-desc { font-size:11px; color:#646970; }
+	</style>
+	<div class="sbt-panel">
+		<h2 style="margin:0 0 4px;">Colours</h2>
+		<p class="sbt-muted" style="margin-top:0;">One palette recolours the whole active subtheme. Each token feeds a CSS variable that <code>assets/site.js</code> applies across every page — header, footer, buttons, cards and text. Pick a preset to start, then fine-tune. Colours are shared across all languages.</p>
+
+		<div class="sbt-section-card">
+			<h3><span class="dashicons dashicons-art"></span>Preset palettes</h3>
+			<p class="sbt-section-desc">Click a palette to load it into the pickers below, then press Save.</p>
+			<div class="sbt-palette-grid">
+				<?php foreach ( $presets as $pname => $cols ) : ?>
+					<button type="button" class="sbt-palette" data-colors="<?php echo esc_attr( implode( ',', $cols ) ); ?>">
+						<span class="sbt-palette-swatches">
+							<?php foreach ( array( $cols[5], $cols[6], $cols[8], $cols[9], $cols[1] ) as $sw ) : ?>
+								<i style="background:<?php echo esc_attr( $sw ); ?>;"></i>
+							<?php endforeach; ?>
+						</span>
+						<span class="sbt-palette-name"><?php echo esc_html( $pname ); ?></span>
+					</button>
+				<?php endforeach; ?>
+			</div>
+		</div>
+
+		<div class="sbt-section-card">
+			<h3><span class="dashicons dashicons-admin-customizer"></span>Palette tokens</h3>
+			<p class="sbt-section-desc">Fine-tune any colour, or leave them to keep the current theme. Type a hex value or use the swatch picker.</p>
+			<div class="sbt-color-grid">
+				<?php
+				foreach ( $tokens as $t ) {
+					$path    = 'SITE.' . $t[0];
+					$current = array_key_exists( $path, $overrides ) ? $overrides[ $path ] : ( $site[ $t[0] ] ?? $t[2] );
+					$current = sbt_sanitize_hex_color_value( $current, $t[2] );
+					$name    = SBT_OPTION . '[overrides][' . $path . ']';
+					?>
+					<div class="sbt-color-field">
+						<input type="color" class="sbt-color-pick" data-token="<?php echo esc_attr( $t[0] ); ?>" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $current ); ?>">
+						<span class="sbt-color-meta">
+							<label><?php echo esc_html( $t[1] ); ?></label>
+							<input type="text" class="sbt-color-hex" data-token="<?php echo esc_attr( $t[0] ); ?>" value="<?php echo esc_attr( $current ); ?>" maxlength="7" spellcheck="false">
+							<span class="sbt-color-desc"><?php echo esc_html( $t[3] ); ?></span>
+						</span>
+					</div>
+					<?php
+				}
+				?>
+			</div>
+		</div>
+
+		<?php submit_button( 'Save colours' ); ?>
+	</div>
+	<script>
+	(function(){
+		var order = ['color_bg','color_surface','color_ink','color_muted','color_line','color_primary','color_primary_deep','color_primary_soft','color_accent','color_gold'];
+		function pick(tok){ return document.querySelector('.sbt-color-pick[data-token="'+tok+'"]'); }
+		function hex(tok){ return document.querySelector('.sbt-color-hex[data-token="'+tok+'"]'); }
+		function valid(v){ return /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(v); }
+		document.querySelectorAll('.sbt-color-pick').forEach(function(p){
+			p.addEventListener('input', function(){ var h=hex(p.getAttribute('data-token')); if(h) h.value=p.value; });
+		});
+		document.querySelectorAll('.sbt-color-hex').forEach(function(h){
+			h.addEventListener('input', function(){ var v=h.value.trim(); if(v && v[0]!=='#') v='#'+v; if(valid(v)){ var p=pick(h.getAttribute('data-token')); if(p) p.value=v; } });
+		});
+		document.querySelectorAll('.sbt-palette').forEach(function(btn){
+			btn.addEventListener('click', function(){
+				var cols=(btn.getAttribute('data-colors')||'').split(',');
+				order.forEach(function(tok,i){ var c=cols[i]; if(!c) return; var p=pick(tok), h=hex(tok); if(p) p.value=c; if(h) h.value=c; });
+			});
+		});
+	})();
+	</script>
+	<?php
+}
+
 function sbt_render_header_menu_tab( $data, $overrides, $edit_language = 'en' ) {
 	$page_options = sbt_page_file_options();
 	?>
@@ -6834,7 +6972,7 @@ function sbt_render_admin_page() {
 	$active = sbt_active_subtheme_key();
 	$active_tab = sbt_admin_current_tab();
 	$edit_language = sbt_current_content_language();
-	$form_edit_language = 'general' === $active_tab ? 'en' : $edit_language;
+	$form_edit_language = in_array( $active_tab, array( 'general', 'colors' ), true ) ? 'en' : $edit_language;
 	$overrides = sbt_active_overrides( $edit_language );
 	$data = sbt_load_active_data();
 
@@ -6851,6 +6989,8 @@ function sbt_render_admin_page() {
 				sbt_render_general_settings_tab( $data, $overrides );
 			} elseif ( 'header' === $active_tab ) {
 				sbt_render_header_menu_tab( $data, $overrides, $edit_language );
+			} elseif ( 'colors' === $active_tab ) {
+				sbt_render_colors_tab( $data, $overrides );
 			} elseif ( 'menu' === $active_tab ) {
 				sbt_render_menu_tab( $data, $overrides, $edit_language );
 			} elseif ( 'pages' === $active_tab ) {

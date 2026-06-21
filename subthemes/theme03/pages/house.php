@@ -54,7 +54,7 @@ $second_specs = ( ! empty( $p['second_specs'] ) && is_array( $p['second_specs'] 
 </section>
 
 <!-- ============ SECOND HOUSE ============ -->
-<section class="sbtw-pad-s" style="background:var(--surface);" data-screen-label="Second house">
+<section class="sbtw-pad-s sbtw-surface" style="background:var(--surface);" data-screen-label="Second house">
   <div class="sbtw-wrap sbtw-two-col">
     <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
       <div class="sbtw-mc-track">

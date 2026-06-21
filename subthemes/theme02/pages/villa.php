@@ -44,7 +44,7 @@ $gal = ( ! empty( $p['gallery'] ) && is_array( $p['gallery'] ) ) ? $p['gallery']
 </section>
 
 <!-- ============ AMENITIES ============ -->
-<section class="sbtw-pad" style="background:var(--surface);" data-screen-label="Villa amenities">
+<section class="sbtw-pad sbtw-surface" style="background:var(--surface);" data-screen-label="Villa amenities">
   <div class="sbtw-wrap">
     <div class="sbtw-section-head sbtw-reveal">
       <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.villa.am_over', $p['am_over'] ?? 'Wellness, comfort &amp; independence' ); ?></div>

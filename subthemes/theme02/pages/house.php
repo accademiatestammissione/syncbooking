@@ -52,7 +52,7 @@ $rooms = ( ! empty( $p['rooms'] ) && is_array( $p['rooms'] ) ) ? $p['rooms'] : a
   </div>
 </section>
 
-<section class="sbtw-pad-s" style="background:var(--surface);" data-screen-label="Rooms gallery">
+<section class="sbtw-pad-s sbtw-surface" style="background:var(--surface);" data-screen-label="Rooms gallery">
   <div class="sbtw-wrap">
     <div class="sbtw-section-head sbtw-reveal" style="margin-bottom:40px;">
       <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.house.gallery_over', $p['gallery_over'] ?? 'A look inside' ); ?></div>

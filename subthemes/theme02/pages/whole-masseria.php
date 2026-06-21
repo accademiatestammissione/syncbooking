@@ -46,7 +46,7 @@ $p = isset( $C['whole'] ) && is_array( $C['whole'] ) ? $C['whole'] : array();
   </div>
 </section>
 
-<section class="sbtw-pad-s" style="background:var(--surface);" data-screen-label="Whole masseria gallery">
+<section class="sbtw-pad-s sbtw-surface" style="background:var(--surface);" data-screen-label="Whole masseria gallery">
   <div class="sbtw-wrap">
     <div class="sbtw-section-head sbtw-reveal" style="margin-bottom:40px;">
       <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.whole.gallery_over', $p['gallery_over'] ?? 'A look around' ); ?></div>

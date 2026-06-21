@@ -67,7 +67,7 @@ $p = isset( $C['spa'] ) && is_array( $C['spa'] ) ? $C['spa'] : array();
   </div>
 </section>
 
-<section class="sbtw-pad" style="background:var(--surface);" data-screen-label="SPA amenities">
+<section class="sbtw-pad sbtw-surface" style="background:var(--surface);" data-screen-label="SPA amenities">
   <div class="sbtw-wrap">
     <div class="sbtw-section-head sbtw-reveal">
       <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.spa.am_over', $p['am_over'] ?? 'The wellness experience' ); ?></div>
