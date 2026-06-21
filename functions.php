@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * WordPress bridge for SyncBooking multi-subtheme package.
  *
@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.89' );
+define( 'SBT_VERSION', '2.1.90' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';

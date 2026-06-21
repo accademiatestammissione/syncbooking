@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 $PAGE = 'experiences';
 require sbt_subtheme_path( 'header/header.php' );
 
