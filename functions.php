@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.91' );
+define( 'SBT_VERSION', '2.1.92' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -6043,26 +6043,33 @@ function sbt_contact_recipient_email() {
 }
 
 /**
- * On first load, pre-fill the notification email with the WordPress admin
- * email so the field is populated out of the box. Runs once (guarded by a
- * marker) so the user can later clear it without it being re-seeded.
+ * The notification email is left EMPTY by default so it follows the live
+ * WordPress admin email (shown as the field placeholder and resolved by
+ * sbt_contact_recipient_email()). It is no longer auto-seeded, which previously
+ * froze the admin email captured at activation and left CF7 forms delivering to
+ * a stale address.
+ *
+ * One-time migration: clear any value that the old seeding stored, so existing
+ * installs revert to the live admin email and the generated Contact Form 7 forms
+ * are re-synced. Guarded by a standalone option so it runs once and never wipes a
+ * recipient the user sets afterwards.
  */
-function sbt_seed_contact_email() {
-	$raw = get_option( SBT_OPTION, array() );
-	if ( ! is_array( $raw ) ) {
-		$raw = array();
-	}
-	if ( ! empty( $raw['contact_email_seeded'] ) ) {
+function sbt_reset_seeded_contact_email() {
+	if ( get_option( 'sbt_contact_email_reset' ) ) {
 		return;
 	}
-	if ( empty( $raw['contact_email'] ) ) {
-		$raw['contact_email'] = sanitize_email( get_option( 'admin_email' ) );
+	$raw = get_option( SBT_OPTION, array() );
+	if ( is_array( $raw ) && ! empty( $raw['contact_email_seeded'] ) ) {
+		$raw['contact_email'] = '';
+		unset( $raw['contact_email_seeded'] );
+		update_option( SBT_OPTION, $raw );
+		if ( function_exists( 'sbt_cf7_update_recipients' ) ) {
+			sbt_cf7_update_recipients();
+		}
 	}
-	$raw['contact_email_seeded'] = 1;
-	update_option( SBT_OPTION, $raw );
+	update_option( 'sbt_contact_email_reset', 1 );
 }
-add_action( 'after_switch_theme', 'sbt_seed_contact_email' );
-add_action( 'admin_init', 'sbt_seed_contact_email' );
+add_action( 'admin_init', 'sbt_reset_seeded_contact_email' );
 
 /**
  * Keep the recipient of the stored CF7 forms in sync with the configured email.
