@@ -2,6 +2,9 @@
 $PAGE = 'weddings';
 $PAGE_TITLE = 'Weddings – Masseria Le Cerase';
 $PAGE_STYLES = array( 'assets/weddings.css' );
+// The weddings page opens with a light gallery, so it uses a solid header
+// (v7 site.js/site.css read the data-solid-header body attribute).
+$SOLID_HEADER = true;
 require __DIR__ . '/../header/header.php';
 $p = isset( $C['weddings'] ) && is_array( $C['weddings'] ) ? $C['weddings'] : array();
 $chk = '<svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>';
@@ -16,7 +19,7 @@ $faqs      = ( ! empty( $p['faqs'] ) && is_array( $p['faqs'] ) ) ? $p['faqs'] : 
 $badges    = ( ! empty( $p['badges'] ) && is_array( $p['badges'] ) ) ? $p['badges'] : array();
 ?>
 <!-- ============ GALLERY ============ -->
-<section class="sbtw-surface" style="padding-top:92px;background:var(--surface);" data-screen-label="Weddings gallery">
+<section class="sbtw-surface" data-screen-label="Weddings gallery">
   <div class="sbtw-wrap" style="padding-top:18px;padding-bottom:18px;">
     <div class="sbtw-w-gallery">
       <?php foreach ( $gallery as $gi => $gimg ) : ?>

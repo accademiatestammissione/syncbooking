@@ -30,7 +30,7 @@ if ( function_exists( 'add_query_arg' ) ) {
 <?php if ( function_exists( 'wp_head' ) ) wp_head(); ?>
 <link rel="stylesheet" href="<?php echo esc_url( $SITE_CSS_URL ); ?>" />
 </head>
-<body <?php if ( function_exists( 'body_class' ) ) { body_class( 'sbtw' ); } else { echo 'class="sbtw"'; } ?> data-page="<?php echo esc_attr( $PAGE ); ?>" data-template-version="<?php echo esc_attr( $SOURCE_VERSION ); ?>">
+<body <?php if ( function_exists( 'body_class' ) ) { body_class( 'sbtw' ); } else { echo 'class="sbtw"'; } ?> data-page="<?php echo esc_attr( $PAGE ); ?>" data-template-version="<?php echo esc_attr( $SOURCE_VERSION ); ?>"<?php echo ( isset( $SOLID_HEADER ) && $SOLID_HEADER ) ? ' data-solid-header' : ''; ?>>
 <?php if ( function_exists( 'wp_body_open' ) ) wp_body_open(); ?>
 <?php
 if ( function_exists( 'sbt_render_site_config' ) ) {
