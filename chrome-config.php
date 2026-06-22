@@ -148,6 +148,11 @@ if ( ! function_exists( 'sbt_build_site_config' ) ) {
 				'headerText'  => $SITE['color_header_text'] ?? '',
 				'footerBg'    => $SITE['color_footer_bg'] ?? '',
 				'footerText'  => $SITE['color_footer_text'] ?? '',
+				// v7 bottom booking bar colours are intentionally NOT emitted: the
+				// site.css bar vars fall back to the palette ( var(--sb-bar-bg,
+				// var(--green)), var(--sb-submit-bg, var(--green-deep)), … ), so the
+				// bar follows the theme primary automatically and is not separately
+				// editable from the admin.
 			),
 			'nav'             => $nav,
 			'languages'       => $languages,
