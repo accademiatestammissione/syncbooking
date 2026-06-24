@@ -17,13 +17,18 @@ $reviews   = ( ! empty( $p['reviews'] ) && is_array( $p['reviews'] ) ) ? $p['rev
 $brochures = ( ! empty( $p['brochures'] ) && is_array( $p['brochures'] ) ) ? $p['brochures'] : array();
 $faqs      = ( ! empty( $p['faqs'] ) && is_array( $p['faqs'] ) ) ? $p['faqs'] : array();
 $badges    = ( ! empty( $p['badges'] ) && is_array( $p['badges'] ) ) ? $p['badges'] : array();
+// Risolve un valore gallery in URL: filename -> asset URL; URL pieno (dopo modifica dall'editor) -> usato com'è.
+$sb_img_src = function ( $v ) {
+	$v = (string) $v;
+	return preg_match( '#^https?://#i', $v ) ? $v : sbt_asset_url( 'assets/images/' . $v );
+};
 ?>
 <!-- ============ GALLERY ============ -->
 <section class="sbtw-surface" data-screen-label="Weddings gallery">
   <div class="sbtw-wrap" style="padding-top:18px;padding-bottom:18px;">
     <div class="sbtw-w-gallery">
       <?php foreach ( $gallery as $gi => $gimg ) : ?>
-      <div class="sbtw-g-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/' . $gimg ) ); ?>" alt="<?php echo esc_attr( ( $p['h1'] ?? 'Weddings' ) . ' ' . ( $gi + 1 ) ); ?>" /></div>
+      <div class="sbtw-g-item"><?php echo sbt_t1_img( 'C.weddings.gallery.' . $gi, $sb_img_src( $gimg ), ( $p['h1'] ?? 'Weddings' ) . ' ' . ( $gi + 1 ), array( 'data-lightbox' => '' ) ); ?></div>
       <?php endforeach; ?>
       <div class="sbtw-w-tour"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.4 2.5 15.6 0 18M12 3c-2.5 2.4-2.5 15.6 0 18"/></svg><?php echo sbt_t1_text( 'C.weddings.tour_label', $p['tour_label'] ?? 'Tour 360°' ); ?></div>
       <div class="sbtw-w-galbtns">
@@ -98,7 +103,7 @@ $badges    = ( ! empty( $p['badges'] ) && is_array( $p['badges'] ) ) ? $p['badge
             <?php foreach ( $reviews as $ri => $rev ) :
               $album = $rev['album'] ?? '';
               $rimg  = $rev['img'] ?? ''; ?>
-            <div class="sbtw-w-rev" data-album="<?php echo esc_attr( $album ); ?>"><img src="<?php echo esc_url( sbt_asset_url( 'assets/images/' . $rimg ) ); ?>" alt="<?php echo esc_attr( $rev['name'] ?? '' ); ?>" /><div class="sbtw-rv-c"><b><?php echo sbt_t1_text( 'C.weddings.reviews.' . $ri . '.name', $rev['name'] ?? '' ); ?></b><span><?php echo sbt_t1_text( 'C.weddings.reviews.' . $ri . '.meta', $rev['meta'] ?? '' ); ?></span></div></div>
+            <div class="sbtw-w-rev" data-album="<?php echo esc_attr( $album ); ?>"><?php echo sbt_t1_img( 'C.weddings.reviews.' . $ri . '.img', $sb_img_src( $rimg ), $rev['name'] ?? '' ); ?><div class="sbtw-rv-c"><b><?php echo sbt_t1_text( 'C.weddings.reviews.' . $ri . '.name', $rev['name'] ?? '' ); ?></b><span><?php echo sbt_t1_text( 'C.weddings.reviews.' . $ri . '.meta', $rev['meta'] ?? '' ); ?></span></div></div>
             <?php endforeach; ?>
           </div>
         </div>
