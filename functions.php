@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.97' );
+define( 'SBT_VERSION', '2.1.98' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -510,13 +510,16 @@ function sbt_asset_url( $path ) {
 	$path = ltrim( (string) $path, '/' );
 	$uploads = wp_get_upload_dir();
 	if ( empty( $uploads['error'] ) ) {
+		// Always resolve to the active subtheme's uploads — that's where the
+		// downloaded assets.zip is imported. Never fall back to the (dead)
+		// clone-theme CDN for individual files: a not-yet-imported asset should
+		// point at its real uploads URL so it loads as soon as it is imported.
 		$local = trailingslashit( $uploads['basedir'] ) . 'syncbooking-theme/' . $subtheme_key . '/' . $path;
-		if ( file_exists( $local ) ) {
-			$served_path = sbt_prepare_local_asset_path( $path, $local, $subtheme_key );
-			return trailingslashit( $uploads['baseurl'] ) . 'syncbooking-theme/' . $subtheme_key . '/' . str_replace( '%2F', '/', rawurlencode( $served_path ) );
-		}
+		$served_path = file_exists( $local ) ? sbt_prepare_local_asset_path( $path, $local, $subtheme_key ) : $path;
+		return trailingslashit( $uploads['baseurl'] ) . 'syncbooking-theme/' . $subtheme_key . '/' . str_replace( '%2F', '/', rawurlencode( $served_path ) );
 	}
 
+	// Uploads directory unavailable (rare) — last-resort remote base.
 	return trailingslashit( sbt_remote_assets_base_url( $subtheme_key ) ) . str_replace( '%2F', '/', rawurlencode( $path ) );
 }
 
