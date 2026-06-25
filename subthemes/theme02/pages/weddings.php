@@ -22,7 +22,17 @@ $sb_img_src = function ( $v ) {
 	$v = (string) $v;
 	return preg_match( '#^https?://#i', $v ) ? $v : sbt_asset_url( 'assets/images/' . $v );
 };
+// In the visual editor we expose the lightbox albums (gallery + per-review) as
+// editable thumbnail strips; for visitors they stay hidden and only feed the
+// lightbox.
+$sbt_vfe_on = function_exists( 'sbt_visual_meta_editor_enabled' ) && sbt_visual_meta_editor_enabled();
 ?>
+<?php if ( $sbt_vfe_on ) : ?>
+<style>
+.sbtw-w-rev-album{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;padding:8px;background:rgba(0,0,0,.05);border-radius:8px;}
+.sbtw-w-rev-album img{width:58px;height:58px;object-fit:cover;border-radius:4px;}
+</style>
+<?php endif; ?>
 <!-- ============ GALLERY ============ -->
 <section class="sbtw-surface" data-screen-label="Weddings gallery">
   <div class="sbtw-wrap" style="padding-top:18px;padding-bottom:18px;">
@@ -101,9 +111,9 @@ $sb_img_src = function ( $v ) {
           <p><?php echo sbt_t1_text( 'C.weddings.reviews_p', $p['reviews_p'] ?? '', array( 'multiline' => true ) ); ?></p>
           <div class="sbtw-w-reviews">
             <?php foreach ( $reviews as $ri => $rev ) :
-              $album = $rev['album'] ?? '';
-              $rimg  = $rev['img'] ?? ''; ?>
-            <div class="sbtw-w-rev" data-album="<?php echo esc_attr( $album ); ?>"><?php echo sbt_t1_img( 'C.weddings.reviews.' . $ri . '.img', $sb_img_src( $rimg ), $rev['name'] ?? '' ); ?><div class="sbtw-rv-c"><b><?php echo sbt_t1_text( 'C.weddings.reviews.' . $ri . '.name', $rev['name'] ?? '' ); ?></b><span><?php echo sbt_t1_text( 'C.weddings.reviews.' . $ri . '.meta', $rev['meta'] ?? '' ); ?></span></div></div>
+              $rimg       = $rev['img'] ?? '';
+              $album_imgs = ( isset( $rev['album'] ) && is_array( $rev['album'] ) ) ? array_values( $rev['album'] ) : array(); ?>
+            <div class="sbtw-w-rev" data-rev="<?php echo (int) $ri; ?>"><?php echo sbt_t1_img( 'C.weddings.reviews.' . $ri . '.img', $sb_img_src( $rimg ), $rev['name'] ?? '' ); ?><div class="sbtw-rv-c"><b><?php echo sbt_t1_text( 'C.weddings.reviews.' . $ri . '.name', $rev['name'] ?? '' ); ?></b><span><?php echo sbt_t1_text( 'C.weddings.reviews.' . $ri . '.meta', $rev['meta'] ?? '' ); ?></span></div><div class="sbtw-w-rev-album"<?php echo $sbt_vfe_on ? '' : ' hidden'; ?>><?php foreach ( $album_imgs as $ai => $aimg ) { echo sbt_t1_img( 'C.weddings.reviews.' . $ri . '.album.' . $ai, $sb_img_src( $aimg ), ( $rev['name'] ?? '' ) . ' ' . ( $ai + 1 ) ); } ?></div></div>
             <?php endforeach; ?>
           </div>
         </div>
@@ -268,12 +278,13 @@ $sb_img_src = function ( $v ) {
   // with ?sbt_contact=sent — reopen the modal and show the confirmation.
   if(/[?&]sbt_contact=sent/.test(location.search)){open();if(form)form.hidden=true;if(ok)ok.hidden=false;}
 })();
+<?php if ( ! $sbt_vfe_on ) : ?>
 (function(){
-  var albumBase = '<?php echo esc_url( sbt_asset_url( 'assets/images/' ) ); ?>';
-  [].slice.call(document.querySelectorAll('.sbtw-w-rev[data-album]')).forEach(function(card){
+  // Reviews: clicking a card opens its (editable) album in the lightbox.
+  [].slice.call(document.querySelectorAll('.sbtw-w-rev')).forEach(function(card){
     card.addEventListener('click', function(){
-      var srcs = card.getAttribute('data-album').split('|').map(function(n){ return albumBase + n + '.jpg'; });
-      if(window.sbtwOpenAlbum) window.sbtwOpenAlbum(srcs, 0);
+      var srcs = [].map.call(card.querySelectorAll('.sbtw-w-rev-album img'), function(im){ return im.getAttribute('data-full') || im.src; }).filter(Boolean);
+      if(srcs.length && window.sbtwOpenAlbum) window.sbtwOpenAlbum(srcs, 0);
     });
   });
 })();
@@ -284,6 +295,7 @@ $sb_img_src = function ( $v ) {
     if(first)first.click();
   });}
 })();
+<?php endif; ?>
 </script>
 
 <?php require __DIR__ . '/../footer/footer.php'; ?>

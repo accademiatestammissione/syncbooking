@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.99' );
+define( 'SBT_VERSION', '2.2.0' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -4385,7 +4385,7 @@ function sbt_visual_meta_editor_assets() {
 		}
 
 		function addGalleryEditors(){
-			document.querySelectorAll('.sbtw-gallery,.gallery,.sbtw-mosaic,.mosaic,.sbtw-media-carousel,.media-carousel').forEach(function(scope){
+			document.querySelectorAll('.sbtw-gallery,.gallery,.sbtw-mosaic,.mosaic,.sbtw-media-carousel,.media-carousel,.sbtw-w-gallery,.sbtw-w-rev-album').forEach(function(scope){
 				if (scope.querySelector('.sbt-vfe-gallery-edit')) return;
 				var firstField = scope.querySelector('img[data-sbt-vfe-gallery-item][data-sbt-vfe-gallery-path]');
 				if (!firstField) return;

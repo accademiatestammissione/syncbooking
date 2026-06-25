@@ -643,12 +643,12 @@ $C['weddings'] = [
   'reviews_title' => 'Reviews',
   'reviews_p' => 'Some of the couples who celebrated their most important day at Masseria Le Cerase.',
   'reviews' => [
-    [ 'name' => 'Giusy & Nicola', 'meta' => '108 photos · 2025', 'img' => 'great-hall.jpg', 'album' => 'great-hall|salone-volte|lounge-dining|courtyard|masseria-night|aerial-pool' ],
-    [ 'name' => 'Donato & Ada', 'meta' => '100 photos · 2025', 'img' => 'salone-volte.jpg', 'album' => 'salone-volte|lounge-vault|kitchen-dining|facade-flowers|masseria-dusk' ],
-    [ 'name' => 'Flavio & Vania', 'meta' => '100 photos · 2024', 'img' => 'courtyard.jpg', 'album' => 'courtyard|facade-vines|aerial-garden|great-hall|masseria-bluehour' ],
-    [ 'name' => 'Gioia & Paolo', 'meta' => '100 photos · 2024', 'img' => 'pool-pergola.jpg', 'album' => 'pool-pergola|aerial-pool|apulian-table|lounge-dining|facade-glow' ],
-    [ 'name' => 'Paolo & Simona', 'meta' => '100 photos · 2024', 'img' => 'masseria-night.jpg', 'album' => 'masseria-night|facade-glow|salone-volte|courtyard|masseria-dusk' ],
-    [ 'name' => 'Marco & Paolo', 'meta' => '50 photos · 2014', 'img' => 'facade-flowers.jpg', 'album' => 'facade-flowers|facade-vines|courtyard|aerial-garden|great-hall' ],
+    [ 'name' => 'Giusy & Nicola', 'meta' => '108 photos · 2025', 'img' => 'great-hall.jpg', 'album' => [ 'great-hall.jpg', 'salone-volte.jpg', 'lounge-dining.jpg', 'courtyard.jpg', 'masseria-night.jpg', 'aerial-pool.jpg' ] ],
+    [ 'name' => 'Donato & Ada', 'meta' => '100 photos · 2025', 'img' => 'salone-volte.jpg', 'album' => [ 'salone-volte.jpg', 'lounge-vault.jpg', 'kitchen-dining.jpg', 'facade-flowers.jpg', 'masseria-dusk.jpg' ] ],
+    [ 'name' => 'Flavio & Vania', 'meta' => '100 photos · 2024', 'img' => 'courtyard.jpg', 'album' => [ 'courtyard.jpg', 'facade-vines.jpg', 'aerial-garden.jpg', 'great-hall.jpg', 'masseria-bluehour.jpg' ] ],
+    [ 'name' => 'Gioia & Paolo', 'meta' => '100 photos · 2024', 'img' => 'pool-pergola.jpg', 'album' => [ 'pool-pergola.jpg', 'aerial-pool.jpg', 'apulian-table.jpg', 'lounge-dining.jpg', 'facade-glow.jpg' ] ],
+    [ 'name' => 'Paolo & Simona', 'meta' => '100 photos · 2024', 'img' => 'masseria-night.jpg', 'album' => [ 'masseria-night.jpg', 'facade-glow.jpg', 'salone-volte.jpg', 'courtyard.jpg', 'masseria-dusk.jpg' ] ],
+    [ 'name' => 'Marco & Paolo', 'meta' => '50 photos · 2014', 'img' => 'facade-flowers.jpg', 'album' => [ 'facade-flowers.jpg', 'facade-vines.jpg', 'courtyard.jpg', 'aerial-garden.jpg', 'great-hall.jpg' ] ],
   ],
   'brochure_title' => 'Brochure',
   'brochures' => [
