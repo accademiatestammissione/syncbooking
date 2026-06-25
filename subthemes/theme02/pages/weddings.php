@@ -1,7 +1,7 @@
 <?php
 $PAGE = 'weddings';
 $PAGE_TITLE = 'Weddings – Masseria Le Cerase';
-$PAGE_STYLES = array( 'assets/weddings.css' );
+$PAGE_STYLES = array( 'assets/syncbooking_weddings.css' );
 // The weddings page opens with a light gallery, so it uses a solid header
 // (v7 site.js/site.css read the data-solid-header body attribute).
 $SOLID_HEADER = true;

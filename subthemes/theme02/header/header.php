@@ -12,7 +12,7 @@ if ( ! isset( $PAGE_TITLE ) ) {
 $SOURCE_VERSION = $SITE['source_version'] ?? '1.0.0';
 $SOURCE_BUILD_DATE = $SITE['source_build_date'] ?? '2026-06-07';
 $ASSET_VERSION = defined( 'SBT_VERSION' ) ? SBT_VERSION : $SOURCE_VERSION;
-$SITE_CSS_URL = function_exists( 'sbt_asset_url' ) ? sbt_asset_url( 'assets/site.css' ) : 'assets/site.css';
+$SITE_CSS_URL = function_exists( 'sbt_asset_url_existing' ) ? sbt_asset_url_existing( array( 'assets/syncbooking_site.css', 'assets/site.css' ) ) : 'assets/syncbooking_site.css';
 if ( function_exists( 'add_query_arg' ) ) {
 	$SITE_CSS_URL = add_query_arg( 'ver', $ASSET_VERSION, $SITE_CSS_URL );
 } else {
@@ -32,7 +32,7 @@ if ( function_exists( 'add_query_arg' ) ) {
 <?php
 if ( ! empty( $PAGE_STYLES ) && is_array( $PAGE_STYLES ) ) {
 	foreach ( $PAGE_STYLES as $page_style ) {
-		$page_style_url = function_exists( 'sbt_asset_url' ) ? sbt_asset_url( $page_style ) : $page_style;
+		$page_style_url = function_exists( 'sbt_asset_url_existing' ) ? sbt_asset_url_existing( array( $page_style, str_replace( 'assets/syncbooking_', 'assets/', $page_style ) ) ) : $page_style;
 		if ( function_exists( 'add_query_arg' ) ) {
 			$page_style_url = add_query_arg( 'ver', $ASSET_VERSION, $page_style_url );
 		}

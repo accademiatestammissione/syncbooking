@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.1.95' );
+define( 'SBT_VERSION', '2.1.96' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -522,6 +522,34 @@ function sbt_asset_url( $path ) {
 
 function sbt_prepare_local_asset_path( $asset_path, $local_path, $subtheme_key = '' ) {
 	return $asset_path;
+}
+
+/**
+ * Resolve the first of several candidate asset paths that actually exists in the
+ * active subtheme's uploads, falling back to the first candidate otherwise.
+ *
+ * Used for renamed assets (e.g. site.css -> syncbooking_site.css): the theme
+ * references the new name first, but keeps working with the old name in uploads
+ * until the renamed assets.zip is re-imported, avoiding a CSS/JS-less window.
+ */
+function sbt_asset_url_existing( $candidates ) {
+	$candidates = array_values( array_filter( (array) $candidates ) );
+	if ( ! $candidates ) {
+		return '';
+	}
+	$subtheme_key = sbt_active_subtheme_key();
+	$uploads = wp_get_upload_dir();
+	if ( empty( $uploads['error'] ) ) {
+		foreach ( $candidates as $path ) {
+			$rel = ltrim( (string) $path, '/' );
+			$local = trailingslashit( $uploads['basedir'] ) . 'syncbooking-theme/' . $subtheme_key . '/' . $rel;
+			if ( file_exists( $local ) ) {
+				return sbt_asset_url( $path );
+			}
+		}
+	}
+
+	return sbt_asset_url( $candidates[0] );
 }
 
 /**
@@ -6495,7 +6523,7 @@ function sbt_render_colors_tab( $data, $overrides ) {
 	</style>
 	<div class="sbt-panel">
 		<h2 style="margin:0 0 4px;">Colours</h2>
-		<p class="sbt-muted" style="margin-top:0;">One palette recolours the whole active subtheme. Each token feeds a CSS variable that <code>assets/site.js</code> applies across every page — header, footer, buttons, cards and text. Pick a preset to start, then fine-tune. Colours are shared across all languages.</p>
+		<p class="sbt-muted" style="margin-top:0;">One palette recolours the whole active subtheme. Each token feeds a CSS variable that <code>assets/syncbooking_site.js</code> applies across every page — header, footer, buttons, cards and text. Pick a preset to start, then fine-tune. Colours are shared across all languages.</p>
 
 		<div class="sbt-section-card">
 			<h3><span class="dashicons dashicons-art"></span>Preset palettes</h3>

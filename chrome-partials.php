@@ -3,7 +3,7 @@
  * Server-side header / footer chrome.
  *
  * As of v6 the shared header, drawer, footer and lightbox are built client-side
- * by the external assets/site.js, configured from WordPress via the
+ * by the external assets/syncbooking_site.js, configured from WordPress via the
  * window.SBTW_CONFIG object emitted by sbt_render_site_config() (built from the
  * bootstrapped $NAV / $SITE / $IMG data). The server-side sbt_render_site_*
  * functions below are retained as a fallback but are no longer called.

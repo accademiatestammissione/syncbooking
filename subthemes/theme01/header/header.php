@@ -12,7 +12,7 @@ if ( ! isset( $PAGE_TITLE ) ) {
 $SOURCE_VERSION = $SITE['source_version'] ?? '1.0.0';
 $SOURCE_BUILD_DATE = $SITE['source_build_date'] ?? '2026-06-07';
 $ASSET_VERSION = defined( 'SBT_VERSION' ) ? SBT_VERSION : $SOURCE_VERSION;
-$SITE_CSS_URL = function_exists( 'sbt_asset_url' ) ? sbt_asset_url( 'assets/site.css' ) : 'assets/site.css';
+$SITE_CSS_URL = function_exists( 'sbt_asset_url_existing' ) ? sbt_asset_url_existing( array( 'assets/syncbooking_site.css', 'assets/site.css' ) ) : 'assets/syncbooking_site.css';
 if ( function_exists( 'add_query_arg' ) ) {
 	$SITE_CSS_URL = add_query_arg( 'ver', $ASSET_VERSION, $SITE_CSS_URL );
 } else {

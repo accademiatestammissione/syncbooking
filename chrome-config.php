@@ -2,14 +2,14 @@
 /**
  * Site chrome configuration (window.SBTW_CONFIG).
  *
- * The v6 assets/site.js builds the header, drawer, footer and lightbox
+ * The v6 assets/syncbooking_site.js builds the header, drawer, footer and lightbox
  * client-side from a global `window.SBTW_CONFIG` object. This file derives that
  * object from the bootstrapped WordPress data ($NAV / $SITE / $IMG) and emits it
  * just before site.js loads, so the external script stays untouched while every
  * brand / nav / footer / language value is driven by WordPress.
  *
  * Flow: header.php calls sbt_render_site_config() (sets the constant) -> footer.php
- * loads assets/site.js (reads the constant and renders the chrome).
+ * loads assets/syncbooking_site.js (reads the constant and renders the chrome).
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! function_exists( 'sbt_build_site_config' ) ) {
 	/**
-	 * Build the window.SBTW_CONFIG object consumed by the v6 assets/site.js
+	 * Build the window.SBTW_CONFIG object consumed by the v6 assets/syncbooking_site.js
 	 * chrome builder, from the bootstrapped $NAV / $SITE / $IMG data. site.js
 	 * renders the header, drawer, footer and lightbox client-side from this
 	 * config, so all nav/brand/footer/language data stays driven by WordPress.
@@ -180,7 +180,7 @@ if ( ! function_exists( 'sbt_build_site_config' ) ) {
 
 if ( ! function_exists( 'sbt_render_site_config' ) ) {
 	/**
-	 * Emit window.SBTW_CONFIG before assets/site.js loads, so the external
+	 * Emit window.SBTW_CONFIG before assets/syncbooking_site.js loads, so the external
 	 * chrome builder uses the live WordPress data instead of its baked defaults.
 	 */
 	function sbt_render_site_config( $NAV, $SITE, $IMG ) {
