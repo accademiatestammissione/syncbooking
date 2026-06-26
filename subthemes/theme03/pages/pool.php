@@ -42,9 +42,10 @@ $p = isset( $C['pool'] ) && is_array( $C['pool'] ) ? $C['pool'] : array();
 <section class="sbtw-pad-s" style="padding-top:0;" data-screen-label="Pool gallery">
   <div class="sbtw-wrap">
     <div class="sbtw-gallery">
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-20.jpg' ) ); ?>" alt="The pool through the branches" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-11.jpg' ) ); ?>" alt="Loungers in the olive garden" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-18.jpg' ) ); ?>" alt="The pool and the pergola" />
+      <?php $sbt_gal = ( ! empty( $p['gallery'] ) && is_array( $p['gallery'] ) ) ? array_values( $p['gallery'] ) : array( 'mf-20.jpg', 'mf-11.jpg', 'mf-18.jpg' ); ?>
+      <?php foreach ( $sbt_gal as $gi => $gimg ) : ?>
+      <?php echo sbt_t1_img( 'C.pool.gallery.' . $gi, sbt_gallery_src( $gimg ), ( $p['h1'] ?? 'The Pool' ) . ' ' . ( $gi + 1 ), array( 'data-lightbox' => '' ) ); ?>
+      <?php endforeach; ?>
     </div>
   </div>
 </section>

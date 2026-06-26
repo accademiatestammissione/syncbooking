@@ -43,12 +43,10 @@ $am_icons = array(
 <section class="sbtw-pad-s" style="padding-top:0;" data-screen-label="Villa gallery">
   <div class="sbtw-wrap">
     <div class="sbtw-gallery">
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-067.jpg' ) ); ?>" alt="Villa Rosa interior" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-001.jpg' ) ); ?>" alt="Villa Rosa detail" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-048.jpg' ) ); ?>" alt="Villa Rosa room" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-094.jpg' ) ); ?>" alt="Villa Rosa living" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-087.jpg' ) ); ?>" alt="Villa Rosa garden" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-081.jpg' ) ); ?>" alt="Villa Rosa pool" />
+      <?php $sbt_gal = ( ! empty( $v['gallery'] ) && is_array( $v['gallery'] ) ) ? array_values( $v['gallery'] ) : array( 'interior-067.jpg', 'interior-001.jpg', 'interior-048.jpg', 'interior-094.jpg', 'exterior-087.jpg', 'exterior-081.jpg' ); ?>
+      <?php foreach ( $sbt_gal as $gi => $gimg ) : ?>
+      <?php echo sbt_t1_img( 'C.villa.gallery.' . $gi, sbt_gallery_src( $gimg ), ( $v['h1'] ?? 'Villa Rosa' ) . ' ' . ( $gi + 1 ), array( 'data-lightbox' => '' ) ); ?>
+      <?php endforeach; ?>
     </div>
   </div>
 </section>

@@ -53,11 +53,10 @@ $specs = ( ! empty( $p['specs'] ) && is_array( $p['specs'] ) ) ? $p['specs'] : a
       <h2><?php echo sbt_t1_text( 'C.whole.gallery_h2', $p['gallery_h2'] ?? 'The estate, in detail' ); ?></h2>
     </div>
     <div class="sbtw-mosaic">
-      <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-11.jpg' ) ); ?>" alt="The garden among the olives" /></div>
-      <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-04.jpg' ) ); ?>" alt="The veranda" /></div>
-      <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-03.jpg' ) ); ?>" alt="The kitchen and dining room" /></div>
-      <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-13.jpg' ) ); ?>" alt="The dry-stone walls" /></div>
-      <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-17.jpg' ) ); ?>" alt="The estate among the olives" /></div>
+      <?php $sbt_gal = ( ! empty( $p['gallery'] ) && is_array( $p['gallery'] ) ) ? array_values( $p['gallery'] ) : array( 'mf-11.jpg', 'mf-04.jpg', 'mf-03.jpg', 'mf-13.jpg', 'mf-17.jpg' ); ?>
+      <?php foreach ( $sbt_gal as $gi => $gimg ) : ?>
+      <div class="sbtw-m-item"><?php echo sbt_t1_img( 'C.whole.gallery.' . $gi, sbt_gallery_src( $gimg ), ( $p['h1'] ?? ( $SITE['name'] ?? 'Gallery' ) ) . ' ' . ( $gi + 1 ), array( 'data-lightbox' => '' ) ); ?></div>
+      <?php endforeach; ?>
       <button class="sbtw-m-allbtn" type="button"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect></svg><?php echo esc_html( $TEXT['show_all_photos'] ?? 'Show all photos' ); ?></button>
     </div>
   </div>

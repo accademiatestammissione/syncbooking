@@ -37,7 +37,7 @@ $gal = ( ! empty( $p['gallery'] ) && is_array( $p['gallery'] ) ) ? $p['gallery']
   <div class="sbtw-wrap">
     <div class="sbtw-gallery">
       <?php foreach ( $gal as $gi => $gimg ) : ?>
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/' . $gimg ) ); ?>" alt="<?php echo esc_attr( ( $p['h1'] ?? 'Masseria' ) . ' ' . ( $gi + 1 ) ); ?>" />
+      <?php echo sbt_t1_img( 'C.villa.gallery.' . $gi, sbt_gallery_src( $gimg ), ( $p['h1'] ?? 'Masseria' ) . ' ' . ( $gi + 1 ), array( 'data-lightbox' => '' ) ); ?>
       <?php endforeach; ?>
     </div>
   </div>

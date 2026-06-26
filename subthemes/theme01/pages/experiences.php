@@ -46,11 +46,10 @@ $exp_imgs = array(
       <p><?php echo sbt_t1_text( 'C.experiences.wellness_p', $p['wellness_p'] ?? '', array( 'multiline' => true ) ); ?></p>
     </div>
     <div class="sbtw-mosaic">
-      <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/jacuzzi.png' ) ); ?>" alt="Villa Rosa SPA — hydromassage pool" /></div>
-      <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/sauna.png' ) ); ?>" alt="Villa Rosa SPA — sauna" /></div>
-      <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/turkish-bath.png' ) ); ?>" alt="Villa Rosa SPA — Turkish bath" /></div>
-      <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/relax-lounge.png' ) ); ?>" alt="Villa Rosa SPA — relaxation lounge" /></div>
-      <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/gym.png' ) ); ?>" alt="Villa Rosa SPA — gym" /></div>
+      <?php $sbt_gal = ( ! empty( $p['gallery'] ) && is_array( $p['gallery'] ) ) ? array_values( $p['gallery'] ) : array( 'jacuzzi.png', 'sauna.png', 'turkish-bath.png', 'relax-lounge.png', 'gym.png' ); ?>
+      <?php foreach ( $sbt_gal as $gi => $gimg ) : ?>
+      <div class="sbtw-m-item"><?php echo sbt_t1_img( 'C.experiences.gallery.' . $gi, sbt_gallery_src( $gimg ), ( $p['h1'] ?? ( $SITE['name'] ?? 'Gallery' ) ) . ' ' . ( $gi + 1 ), array( 'data-lightbox' => '' ) ); ?></div>
+      <?php endforeach; ?>
       <button class="sbtw-m-allbtn" type="button"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><?php echo esc_html( $TEXT['show_all_photos'] ?? 'Show all photos' ); ?></button>
     </div>
   </div>
