@@ -6,7 +6,7 @@ $p = isset( $C['experiences'] ) && is_array( $C['experiences'] ) ? $C['experienc
 $exp_imgs = array( 'kitchen-dining.jpg', 'bedroom-2.jpg', 'courtyard.jpg', 'aerial-pool.jpg' );
 ?>
 <section class="sbtw-page-hero" data-screen-label="Experiences banner">
-  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/apulian-breakfast.jpg' ) ); ?>" alt="<?php echo esc_attr( $SITE['name'] ?? 'Experiences' ); ?>" />
+  <?php echo sbt_t1_img( 'C.experiences.hero_bg', sbt_gallery_src( ( isset( $C['experiences']['hero_bg'] ) && $C['experiences']['hero_bg'] !== '' ) ? $C['experiences']['hero_bg'] : 'apulian-breakfast.jpg' ), $SITE['name'] ?? 'Experiences', array( 'class' => 'sbtw-bg' ) ); ?>
   <div class="sbtw-wrap">
     <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.experiences.over', $p['over'] ?? '' ); ?></div>
     <h1><?php echo sbt_t1_text( 'C.experiences.h1', $p['h1'] ?? 'Experiences' ); ?></h1>

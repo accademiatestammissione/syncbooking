@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.6' );
+define( 'SBT_VERSION', '2.2.7' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -4298,6 +4298,8 @@ function sbt_visual_meta_editor_assets() {
 		.sbt-vfe-control .sbt-vfe-edit { background:#fff; color:#2271b1; margin-left:0; }
 		.sbt-vfe-image-wrap { display:block; position:relative; }
 		.sbt-vfe-image-wrap > .sbt-vfe-control { left:10px; position:absolute; top:10px; z-index:5; }
+		/* Full-bleed hero backgrounds: keep the edit wrapper out of the layout box so the absolutely-positioned img still fills the hero. */
+		.sbtw-page-hero > .sbt-vfe-image-wrap { display:contents; }
 		.sbt-vfe-gallery-scope { position:relative; }
 		.sbt-vfe-gallery-edit { align-items:center; background:rgba(34,113,177,.96); border:0; border-radius:999px; color:#fff; cursor:pointer; display:inline-flex; font:600 12px/1 system-ui,sans-serif; gap:6px; padding:8px 11px; position:absolute; right:10px; top:10px; z-index:8; }
 		.sbt-vfe-modal { align-items:center; background:rgba(0,0,0,.45); bottom:0; display:none; justify-content:center; left:0; padding:24px; position:fixed; right:0; top:0; z-index:999999; }

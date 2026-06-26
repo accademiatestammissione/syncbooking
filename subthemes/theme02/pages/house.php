@@ -11,7 +11,7 @@ $room_imgs = array(
 $rooms = ( ! empty( $p['rooms'] ) && is_array( $p['rooms'] ) ) ? $p['rooms'] : array();
 ?>
 <section class="sbtw-page-hero" data-screen-label="Rooms banner">
-  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/facade-vines.jpg' ) ); ?>" alt="<?php echo esc_attr( $p['h1'] ?? 'Rooms' ); ?>" />
+  <?php echo sbt_t1_img( 'C.house.hero_bg', sbt_gallery_src( ( isset( $C['house']['hero_bg'] ) && $C['house']['hero_bg'] !== '' ) ? $C['house']['hero_bg'] : 'facade-vines.jpg' ), $p['h1'] ?? 'Rooms', array( 'class' => 'sbtw-bg' ) ); ?>
   <div class="sbtw-wrap">
     <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.house.over', $p['over'] ?? 'Under the vaults' ); ?></div>
     <h1><?php echo sbt_t1_text( 'C.house.h1', $p['h1'] ?? 'Rooms' ); ?></h1>

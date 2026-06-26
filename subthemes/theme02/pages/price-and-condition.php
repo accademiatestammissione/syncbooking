@@ -5,7 +5,7 @@ require __DIR__ . '/../header/header.php';
 $p = isset( $C['price'] ) && is_array( $C['price'] ) ? $C['price'] : array();
 ?>
 <section class="sbtw-page-hero" data-screen-label="Price banner">
-  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/courtyard.jpg' ) ); ?>" alt="<?php echo esc_attr( $p['h1'] ?? 'Price & Condition' ); ?>" />
+  <?php echo sbt_t1_img( 'C.price.hero_bg', sbt_gallery_src( ( isset( $C['price']['hero_bg'] ) && $C['price']['hero_bg'] !== '' ) ? $C['price']['hero_bg'] : 'courtyard.jpg' ), $p['h1'] ?? 'Price & Condition', array( 'class' => 'sbtw-bg' ) ); ?>
   <div class="sbtw-wrap">
     <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.price.over', $p['over'] ?? 'Rates &amp; reservations' ); ?></div>
     <h1><?php echo sbt_t1_text( 'C.price.h1', $p['h1'] ?? 'Price &amp; Condition' ); ?></h1>

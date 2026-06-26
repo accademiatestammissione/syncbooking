@@ -5,7 +5,7 @@ require __DIR__ . '/../header/header.php';
 $p = isset( $C['pool'] ) && is_array( $C['pool'] ) ? $C['pool'] : array();
 ?>
 <section class="sbtw-page-hero" data-screen-label="Pool banner">
-  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-18.jpg' ) ); ?>" alt="<?php echo esc_attr( $p['h1'] ?? 'The Pool' ); ?>" />
+  <?php echo sbt_t1_img( 'C.pool.hero_bg', sbt_gallery_src( ( isset( $C['pool']['hero_bg'] ) && $C['pool']['hero_bg'] !== '' ) ? $C['pool']['hero_bg'] : 'mf-18.jpg' ), $p['h1'] ?? 'The Pool', array( 'class' => 'sbtw-bg' ) ); ?>
   <div class="sbtw-wrap">
     <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.pool.over', $p['over'] ?? 'Among the olive trees' ); ?></div>
     <h1><?php echo sbt_t1_text( 'C.pool.h1', $p['h1'] ?? 'The Pool' ); ?></h1>

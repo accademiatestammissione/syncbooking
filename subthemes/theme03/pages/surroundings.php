@@ -7,7 +7,7 @@ $surr_imgs = array( 'mf-27.jpg', 'mf-25.jpg', 'mf-13.jpg', 'mf-17.jpg' );
 $cards = ( ! empty( $p['cards'] ) && is_array( $p['cards'] ) ) ? $p['cards'] : array();
 ?>
 <section class="sbtw-page-hero" data-screen-label="Surroundings banner">
-  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-25.jpg' ) ); ?>" alt="<?php echo esc_attr( $p['h1'] ?? 'Surroundings' ); ?>" />
+  <?php echo sbt_t1_img( 'C.surroundings.hero_bg', sbt_gallery_src( ( isset( $C['surroundings']['hero_bg'] ) && $C['surroundings']['hero_bg'] !== '' ) ? $C['surroundings']['hero_bg'] : 'mf-25.jpg' ), $p['h1'] ?? 'Surroundings', array( 'class' => 'sbtw-bg' ) ); ?>
   <div class="sbtw-wrap">
     <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.surroundings.over', $p['over'] ?? 'Conversano &amp; beyond' ); ?></div>
     <h1><?php echo sbt_t1_text( 'C.surroundings.h1', $p['h1'] ?? 'Surroundings' ); ?></h1>

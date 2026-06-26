@@ -6,7 +6,7 @@ $p = isset( $C['farm'] ) && is_array( $C['farm'] ) ? $C['farm'] : array();
 $shop = $p['shop_url'] ?? 'https://shop.masseriamontefieno.com/';
 ?>
 <section class="sbtw-page-hero" data-screen-label="Farm banner">
-  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-27.jpg' ) ); ?>" alt="<?php echo esc_attr( $p['h1'] ?? 'The Farm' ); ?>" />
+  <?php echo sbt_t1_img( 'C.farm.hero_bg', sbt_gallery_src( ( isset( $C['farm']['hero_bg'] ) && $C['farm']['hero_bg'] !== '' ) ? $C['farm']['hero_bg'] : 'mf-27.jpg' ), $p['h1'] ?? 'The Farm', array( 'class' => 'sbtw-bg' ) ); ?>
   <div class="sbtw-wrap">
     <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.farm.over', $p['over'] ?? 'Seven hectares of farmland' ); ?></div>
     <h1><?php echo sbt_t1_text( 'C.farm.h1', $p['h1'] ?? 'The Farm' ); ?></h1>

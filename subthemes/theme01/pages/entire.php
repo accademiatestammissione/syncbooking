@@ -9,7 +9,7 @@ $gallery_imgs = array( 'exterior-090.jpg', 'exterior-085.jpg', 'exterior-072.jpg
 ?>
 <!-- ============ BANNER ============ -->
 <section class="sbtw-page-hero" data-screen-label="Whole Villa banner">
-  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-090.jpg' ) ); ?>" alt="<?php echo esc_attr( $SITE['name'] ?? 'The whole Villa Rosa estate' ); ?>" />
+  <?php echo sbt_t1_img( 'C.entire.hero_bg', sbt_gallery_src( ( isset( $C['entire']['hero_bg'] ) && $C['entire']['hero_bg'] !== '' ) ? $C['entire']['hero_bg'] : 'exterior-090.jpg' ), $SITE['name'] ?? 'The whole Villa Rosa estate', array( 'class' => 'sbtw-bg' ) ); ?>
   <div class="sbtw-wrap">
     <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.entire.over', $e['over'] ?? '' ); ?></div>
     <h1><?php echo sbt_t1_text( 'C.entire.h1', $e['h1'] ?? 'The Whole Villa' ); ?></h1>

@@ -18,7 +18,7 @@ $row0_imgs = ( ! empty( $s['row0_imgs'] ) && is_array( $s['row0_imgs'] ) ) ? arr
 $row1_imgs = ( ! empty( $s['row1_imgs'] ) && is_array( $s['row1_imgs'] ) ) ? array_values( $s['row1_imgs'] ) : array( 'sauna.png', 'relax-area.png', 'gym.png' );
 ?>
 <section class="sbtw-page-hero" data-screen-label="SPA banner">
-  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/relax-lounge.png' ) ); ?>" alt="<?php echo esc_attr( $SITE['name'] ?? 'SPA & Wellness' ); ?>" />
+  <?php echo sbt_t1_img( 'C.spa.hero_bg', sbt_gallery_src( ( isset( $C['spa']['hero_bg'] ) && $C['spa']['hero_bg'] !== '' ) ? $C['spa']['hero_bg'] : 'relax-lounge.png' ), $SITE['name'] ?? 'SPA & Wellness', array( 'class' => 'sbtw-bg' ) ); ?>
   <div class="sbtw-wrap">
     <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.spa.over', $s['over'] ?? '' ); ?></div>
     <h1><?php echo sbt_t1_text( 'C.spa.h1', $s['h1'] ?? 'SPA &amp; Wellness' ); ?></h1>

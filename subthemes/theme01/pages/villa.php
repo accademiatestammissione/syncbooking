@@ -16,7 +16,7 @@ $am_icons = array(
 ?>
 <!-- ============ BANNER ============ -->
 <section class="sbtw-page-hero" data-screen-label="Villa banner">
-  <img class="sbtw-bg" src="<?php echo esc_url( $v['banner'] ?? sbt_asset_url( 'assets/images/exterior-085.jpg' ) ); ?>" alt="<?php echo esc_attr( $SITE['name'] ?? 'Villa Rosa Resort' ); ?>" />
+  <?php echo sbt_t1_img( 'C.villa.banner', $v['banner'] ?? sbt_asset_url( 'assets/images/exterior-085.jpg' ), $SITE['name'] ?? 'Villa Rosa Resort', array( 'class' => 'sbtw-bg' ) ); ?>
   <div class="sbtw-wrap">
     <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.villa.over', $v['over'] ?? '' ); ?></div>
     <h1><?php echo sbt_t1_text( 'C.villa.h1', $v['h1'] ?? 'The Villa' ); ?></h1>

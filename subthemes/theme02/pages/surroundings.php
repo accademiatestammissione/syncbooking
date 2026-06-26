@@ -6,7 +6,7 @@ $p = isset( $C['surroundings'] ) && is_array( $C['surroundings'] ) ? $C['surroun
 $surr_imgs = array( 'conversano-castle.jpg', 'masseria-bluehour.jpg', 'aerial-garden.jpg', 'facade-vines.jpg' );
 ?>
 <section class="sbtw-page-hero" data-screen-label="Surroundings banner">
-  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/conversano-castle.jpg' ) ); ?>" alt="<?php echo esc_attr( $SITE['name'] ?? 'Surroundings' ); ?>" />
+  <?php echo sbt_t1_img( 'C.surroundings.hero_bg', sbt_gallery_src( ( isset( $C['surroundings']['hero_bg'] ) && $C['surroundings']['hero_bg'] !== '' ) ? $C['surroundings']['hero_bg'] : 'conversano-castle.jpg' ), $SITE['name'] ?? 'Surroundings', array( 'class' => 'sbtw-bg' ) ); ?>
   <div class="sbtw-wrap">
     <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.surroundings.over', $p['over'] ?? '' ); ?></div>
     <h1><?php echo sbt_t1_text( 'C.surroundings.h1', $p['h1'] ?? 'Surroundings' ); ?></h1>

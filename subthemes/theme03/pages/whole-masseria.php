@@ -6,7 +6,7 @@ $p = isset( $C['whole'] ) && is_array( $C['whole'] ) ? $C['whole'] : array();
 $specs = ( ! empty( $p['specs'] ) && is_array( $p['specs'] ) ) ? $p['specs'] : array();
 ?>
 <section class="sbtw-page-hero" data-screen-label="Whole masseria banner">
-  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-17.jpg' ) ); ?>" alt="<?php echo esc_attr( $p['h1'] ?? 'The Whole Masseria' ); ?>" />
+  <?php echo sbt_t1_img( 'C.whole.hero_bg', sbt_gallery_src( ( isset( $C['whole']['hero_bg'] ) && $C['whole']['hero_bg'] !== '' ) ? $C['whole']['hero_bg'] : 'mf-17.jpg' ), $p['h1'] ?? 'The Whole Masseria', array( 'class' => 'sbtw-bg' ) ); ?>
   <div class="sbtw-wrap">
     <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.whole.over', $p['over'] ?? 'Exclusive use' ); ?></div>
     <h1><?php echo sbt_t1_text( 'C.whole.h1', $p['h1'] ?? 'The Whole Masseria' ); ?></h1>

@@ -11,7 +11,7 @@ $offer_imgs = array(
 );
 ?>
 <section class="sbtw-page-hero" data-screen-label="Offers banner">
-  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-090.jpg' ) ); ?>" alt="<?php echo esc_attr( $SITE['name'] ?? 'Offers' ); ?>" />
+  <?php echo sbt_t1_img( 'C.offers.hero_bg', sbt_gallery_src( ( isset( $C['offers']['hero_bg'] ) && $C['offers']['hero_bg'] !== '' ) ? $C['offers']['hero_bg'] : 'exterior-090.jpg' ), $SITE['name'] ?? 'Offers', array( 'class' => 'sbtw-bg' ) ); ?>
   <div class="sbtw-wrap">
     <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.offers.over', $p['over'] ?? '' ); ?></div>
     <h1><?php echo sbt_t1_text( 'C.offers.h1', $p['h1'] ?? 'Offers' ); ?></h1>

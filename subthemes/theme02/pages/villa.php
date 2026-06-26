@@ -9,7 +9,7 @@ $gal = ( ! empty( $p['gallery'] ) && is_array( $p['gallery'] ) ) ? $p['gallery']
 ?>
 <!-- ============ BANNER ============ -->
 <section class="sbtw-page-hero" data-screen-label="Villa banner">
-  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/aerial-pool.jpg' ) ); ?>" alt="<?php echo esc_attr( $p['h1'] ?? 'The Masseria' ); ?>" />
+  <?php echo sbt_t1_img( 'C.villa.hero_bg', sbt_gallery_src( ( isset( $C['villa']['hero_bg'] ) && $C['villa']['hero_bg'] !== '' ) ? $C['villa']['hero_bg'] : 'aerial-pool.jpg' ), $p['h1'] ?? 'The Masseria', array( 'class' => 'sbtw-bg' ) ); ?>
   <div class="sbtw-wrap">
     <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.villa.over', $p['over'] ?? 'Masseria Le Cerase &amp; SPA' ); ?></div>
     <h1><?php echo sbt_t1_text( 'C.villa.h1', $p['h1'] ?? 'The Masseria' ); ?></h1>

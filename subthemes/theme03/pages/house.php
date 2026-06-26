@@ -12,7 +12,7 @@ $rooms = ( ! empty( $p['rooms'] ) && is_array( $p['rooms'] ) ) ? $p['rooms'] : a
 $second_specs = ( ! empty( $p['second_specs'] ) && is_array( $p['second_specs'] ) ) ? $p['second_specs'] : array();
 ?>
 <section class="sbtw-page-hero" data-screen-label="Bedrooms banner">
-  <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-10.jpg' ) ); ?>" alt="<?php echo esc_attr( $p['h1'] ?? 'Bedrooms' ); ?>" />
+  <?php echo sbt_t1_img( 'C.house.hero_bg', sbt_gallery_src( ( isset( $C['house']['hero_bg'] ) && $C['house']['hero_bg'] !== '' ) ? $C['house']['hero_bg'] : 'mf-10.jpg' ), $p['h1'] ?? 'Bedrooms', array( 'class' => 'sbtw-bg' ) ); ?>
   <div class="sbtw-wrap">
     <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.house.over', $p['over'] ?? 'Restored stone' ); ?></div>
     <h1><?php echo sbt_t1_text( 'C.house.h1', $p['h1'] ?? 'Bedrooms' ); ?></h1>
