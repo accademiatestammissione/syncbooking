@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.7' );
+define( 'SBT_VERSION', '2.2.8' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -4299,7 +4299,7 @@ function sbt_visual_meta_editor_assets() {
 		.sbt-vfe-image-wrap { display:block; position:relative; }
 		.sbt-vfe-image-wrap > .sbt-vfe-control { left:10px; position:absolute; top:10px; z-index:5; }
 		/* Full-bleed hero backgrounds: keep the edit wrapper out of the layout box so the absolutely-positioned img still fills the hero. */
-		.sbtw-page-hero > .sbt-vfe-image-wrap { display:contents; }
+		.sbtw-page-hero > .sbt-vfe-image-wrap, .sbtw-exp > .sbt-vfe-image-wrap, .sbtw-offer-card > .sbt-vfe-image-wrap { display:contents; }
 		.sbt-vfe-gallery-scope { position:relative; }
 		.sbt-vfe-gallery-edit { align-items:center; background:rgba(34,113,177,.96); border:0; border-radius:999px; color:#fff; cursor:pointer; display:inline-flex; font:600 12px/1 system-ui,sans-serif; gap:6px; padding:8px 11px; position:absolute; right:10px; top:10px; z-index:8; }
 		.sbt-vfe-modal { align-items:center; background:rgba(0,0,0,.45); bottom:0; display:none; justify-content:center; left:0; padding:24px; position:fixed; right:0; top:0; z-index:999999; }
@@ -4353,7 +4353,7 @@ function sbt_visual_meta_editor_assets() {
 		}
 
 		function closestGalleryUrls(field){
-			var scope = field.closest('.sbtw-media-carousel,.media-carousel,.sbtw-mosaic,.mosaic,.sbtw-gallery,.gallery,.sbtw-house,.house,.sbtw-feature,.feature,.sbtw-page-hero,.page-hero') || document;
+			var scope = field.closest('.sbtw-media-carousel,.media-carousel,.sbtw-mosaic,.mosaic,.sbtw-gallery,.gallery,.sbtw-room-gallery,.room-gallery,.sbtw-house,.house,.sbtw-feature,.feature,.sbtw-page-hero,.page-hero') || document;
 			var urls = [];
 			scope.querySelectorAll('img').forEach(function(img){
 				var src = img.getAttribute('src');
@@ -4397,7 +4397,7 @@ function sbt_visual_meta_editor_assets() {
 		}
 
 		function addGalleryEditors(){
-			document.querySelectorAll('.sbtw-gallery,.gallery,.sbtw-mosaic,.mosaic,.sbtw-media-carousel,.media-carousel,.sbtw-w-gallery,.sbtw-w-rev-album').forEach(function(scope){
+			document.querySelectorAll('.sbtw-gallery,.gallery,.sbtw-mosaic,.mosaic,.sbtw-media-carousel,.media-carousel,.sbtw-room-gallery,.room-gallery,.sbtw-w-gallery,.sbtw-w-rev-album').forEach(function(scope){
 				if (scope.querySelector('.sbt-vfe-gallery-edit')) return;
 				var firstField = scope.querySelector('img[data-sbt-vfe-gallery-item][data-sbt-vfe-gallery-path]');
 				if (!firstField) return;

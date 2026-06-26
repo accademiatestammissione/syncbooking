@@ -64,30 +64,10 @@ $p = isset( $C['houses'] ) && is_array( $C['houses'] ) ? $C['houses'] : array();
       <p><?php echo sbt_t1_text( 'C.houses.gallery_p', $p['gallery_p'] ?? '', array( 'multiline' => true ) ); ?></p>
     </div>
     <div class="sbtw-room-gallery sbtw-reveal">
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-001.jpg' ) ); ?>" alt="Bedroom" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-067.jpg' ) ); ?>" alt="Living area" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-048.jpg' ) ); ?>" alt="Bedroom" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-052.jpg' ) ); ?>" alt="Kitchen" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-004.jpg' ) ); ?>" alt="Bedroom" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-094.jpg' ) ); ?>" alt="Living area" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-069.jpg' ) ); ?>" alt="Bathroom" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-047.jpg' ) ); ?>" alt="Bedroom" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-053.jpg' ) ); ?>" alt="Living area" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-007.jpg' ) ); ?>" alt="Bedroom" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-010.jpg' ) ); ?>" alt="Kitchen" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-058.jpg' ) ); ?>" alt="Living area" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-030.jpg' ) ); ?>" alt="Bedroom" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-099.jpg' ) ); ?>" alt="Bathroom" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-068.jpg' ) ); ?>" alt="Living area" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-055.jpg' ) ); ?>" alt="Bedroom" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-095.jpg' ) ); ?>" alt="Kitchen" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-092.jpg' ) ); ?>" alt="Bedroom" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-077.jpg' ) ); ?>" alt="Living area" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-102.jpg' ) ); ?>" alt="Bedroom" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-106.jpg' ) ); ?>" alt="Bathroom" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-097.jpg' ) ); ?>" alt="Bedroom" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-059.jpg' ) ); ?>" alt="Living area" />
-      <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-103.jpg' ) ); ?>" alt="Bedroom" />
+      <?php $sbt_rg = ( ! empty( $p['room_gallery'] ) && is_array( $p['room_gallery'] ) ) ? array_values( $p['room_gallery'] ) : array( 'interior-001.jpg', 'interior-067.jpg', 'interior-048.jpg', 'interior-052.jpg', 'interior-004.jpg', 'interior-094.jpg', 'interior-069.jpg', 'interior-047.jpg', 'interior-053.jpg', 'interior-007.jpg', 'interior-010.jpg', 'interior-058.jpg', 'interior-030.jpg', 'interior-099.jpg', 'interior-068.jpg', 'interior-055.jpg', 'interior-095.jpg', 'interior-092.jpg', 'interior-077.jpg', 'interior-102.jpg', 'interior-106.jpg', 'interior-097.jpg', 'interior-059.jpg', 'interior-103.jpg' ); ?>
+      <?php foreach ( $sbt_rg as $rgi => $rgimg ) : ?>
+      <?php echo sbt_t1_img( 'C.houses.room_gallery.' . $rgi, sbt_gallery_src( $rgimg ), ( $p['h1'] ?? 'Rooms' ) . ' ' . ( $rgi + 1 ), array( 'data-lightbox' => '' ) ); ?>
+      <?php endforeach; ?>
     </div>
   </div>
 </section>

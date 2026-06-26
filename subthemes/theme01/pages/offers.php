@@ -32,7 +32,7 @@ $offer_imgs = array(
       foreach ( $cards as $ci => $card ) :
         $cimg = $offer_imgs[ $ci ] ?? ( $card['img'] ?? '' );
       ?>
-      <a class="sbtw-offer-card sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( $card['url'] ?? '#' ) ); ?>"><img src="<?php echo esc_url( $cimg ); ?>" alt="<?php echo esc_attr( $card['h3'] ?? '' ); ?>" /><span class="sbtw-badge"><?php echo sbt_t1_text( 'C.offers.cards.' . $ci . '.badge', $card['badge'] ?? '' ); ?></span><div class="sbtw-oc-body"><h3><?php echo sbt_t1_text( 'C.offers.cards.' . $ci . '.h3', $card['h3'] ?? '' ); ?></h3><p><?php echo sbt_t1_text( 'C.offers.cards.' . $ci . '.p', $card['p'] ?? '', array( 'multiline' => true ) ); ?></p></div></a>
+      <a class="sbtw-offer-card sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( $card['url'] ?? '#' ) ); ?>"><?php echo sbt_t1_img( 'C.offers.cards.' . $ci . '.img', sbt_gallery_src( ! empty( $card['img'] ) ? $card['img'] : $cimg ), $card['h3'] ?? '', array() ); ?><span class="sbtw-badge"><?php echo sbt_t1_text( 'C.offers.cards.' . $ci . '.badge', $card['badge'] ?? '' ); ?></span><div class="sbtw-oc-body"><h3><?php echo sbt_t1_text( 'C.offers.cards.' . $ci . '.h3', $card['h3'] ?? '' ); ?></h3><p><?php echo sbt_t1_text( 'C.offers.cards.' . $ci . '.p', $card['p'] ?? '', array( 'multiline' => true ) ); ?></p></div></a>
       <?php endforeach; ?>
     </div>
   </div>

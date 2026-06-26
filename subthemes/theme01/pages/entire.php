@@ -5,7 +5,7 @@ require __DIR__ . '/../header/header.php';
 $e = isset( $C['entire'] ) && is_array( $C['entire'] ) ? $C['entire'] : array();
 $specs = ( ! empty( $e['specs'] ) && is_array( $e['specs'] ) ) ? array_values( $e['specs'] ) : array();
 $intro_imgs = ( ! empty( $e['intro_imgs'] ) && is_array( $e['intro_imgs'] ) ) ? array_values( $e['intro_imgs'] ) : array( 'exterior-090.jpg', 'exterior-085.jpg', 'exterior-087.jpg', 'exterior-081.jpg' );
-$gallery_imgs = array( 'exterior-090.jpg', 'exterior-085.jpg', 'exterior-072.jpg', 'exterior-081.jpg', 'exterior-087.jpg', 'exterior-026.jpg', 'exterior-078.jpg', 'exterior-082.jpg', 'exterior-086.jpg', 'exterior-073.jpg', 'exterior-079.jpg', 'exterior-084.jpg' );
+$gallery_imgs = ( ! empty( $e['room_gallery'] ) && is_array( $e['room_gallery'] ) ) ? array_values( $e['room_gallery'] ) : array( 'exterior-090.jpg', 'exterior-085.jpg', 'exterior-072.jpg', 'exterior-081.jpg', 'exterior-087.jpg', 'exterior-026.jpg', 'exterior-078.jpg', 'exterior-082.jpg', 'exterior-086.jpg', 'exterior-073.jpg', 'exterior-079.jpg', 'exterior-084.jpg' );
 ?>
 <!-- ============ BANNER ============ -->
 <section class="sbtw-page-hero" data-screen-label="Whole Villa banner">
@@ -54,7 +54,7 @@ $gallery_imgs = array( 'exterior-090.jpg', 'exterior-085.jpg', 'exterior-072.jpg
       <p><?php echo sbt_t1_text( 'C.entire.gallery_p', $e['gallery_p'] ?? 'Every corner of the estate is yours: the gardens, the pool, the outdoor lounges and the pergolas where days begin with breakfast and end with dinner under the stars.', array( 'multiline' => true ) ); ?></p>
     </div>
     <div class="sbtw-room-gallery sbtw-reveal">
-      <?php foreach ( $gallery_imgs as $gi ) : ?><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/' . $gi ) ); ?>" alt="The estate" /><?php endforeach; ?>
+      <?php foreach ( $gallery_imgs as $gix => $gi ) : ?><?php echo sbt_t1_img( 'C.entire.room_gallery.' . $gix, sbt_gallery_src( $gi ), 'The estate ' . ( $gix + 1 ), array( 'data-lightbox' => '' ) ); ?><?php endforeach; ?>
     </div>
   </div>
 </section>

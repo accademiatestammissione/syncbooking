@@ -27,7 +27,7 @@ $surr_imgs = array( 'conversano-castle.jpg', 'masseria-bluehour.jpg', 'aerial-ga
       foreach ( $cards as $ci => $card ) :
         $cimg = $surr_imgs[ $ci ] ?? '';
       ?>
-      <a class="sbtw-exp sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( $card['url'] ?? '#' ) ); ?>"><img src="<?php echo esc_url( sbt_asset_url( 'assets/images/' . $cimg ) ); ?>" alt="<?php echo esc_attr( $card['h3'] ?? '' ); ?>" /><div class="sbtw-ex-body"><div class="sbtw-overline"><?php echo sbt_t1_text( 'C.surroundings.cards.' . $ci . '.over', $card['over'] ?? '' ); ?></div><h3><?php echo sbt_t1_text( 'C.surroundings.cards.' . $ci . '.h3', $card['h3'] ?? '' ); ?></h3><div class="sbtw-ex-link"><?php echo esc_html( $TEXT['discover'] ?? 'Discover' ); ?> <span></span></div></div></a>
+      <a class="sbtw-exp sbtw-reveal" href="<?php echo esc_url( sbt_t1_url( $card['url'] ?? '#' ) ); ?>"><?php echo sbt_t1_img( 'C.surroundings.cards.' . $ci . '.img', sbt_gallery_src( ! empty( $card['img'] ) ? $card['img'] : $cimg ), $card['h3'] ?? '', array() ); ?><div class="sbtw-ex-body"><div class="sbtw-overline"><?php echo sbt_t1_text( 'C.surroundings.cards.' . $ci . '.over', $card['over'] ?? '' ); ?></div><h3><?php echo sbt_t1_text( 'C.surroundings.cards.' . $ci . '.h3', $card['h3'] ?? '' ); ?></h3><div class="sbtw-ex-link"><?php echo esc_html( $TEXT['discover'] ?? 'Discover' ); ?> <span></span></div></div></a>
       <?php endforeach; ?>
     </div>
   </div>
