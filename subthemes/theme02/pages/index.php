@@ -47,11 +47,10 @@ $room_cards = array(
       </div>
       <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
         <div class="sbtw-mc-track">
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/aerial-pool.jpg' ) ); ?>" alt="Masseria Le Cerase — aerial view" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/facade-vines.jpg' ) ); ?>" alt="Masseria Le Cerase — facade and vineyards" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/courtyard.jpg' ) ); ?>" alt="Masseria Le Cerase — inner courtyard" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/facade-flowers.jpg' ) ); ?>" alt="Masseria Le Cerase — entrance" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/masseria-night.jpg' ) ); ?>" alt="Masseria Le Cerase — by night" />
+          <?php $sbt_welcome = ( ! empty( $h['welcome_imgs'] ) && is_array( $h['welcome_imgs'] ) ) ? array_values( $h['welcome_imgs'] ) : array( 'aerial-pool.jpg', 'facade-vines.jpg', 'courtyard.jpg', 'facade-flowers.jpg', 'masseria-night.jpg' ); ?>
+          <?php foreach ( $sbt_welcome as $wi => $wim ) : ?>
+          <?php echo sbt_t1_img( 'C.home.welcome_imgs.' . $wi, sbt_gallery_src( $wim ), ( $SITE['name'] ?? 'Gallery' ) . ' ' . ( $wi + 1 ), array( 'data-lightbox' => '' ) ); ?>
+          <?php endforeach; ?>
         </div>
         <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
         <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>

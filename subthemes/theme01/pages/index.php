@@ -43,11 +43,10 @@ $svc_icons = array(
       </div>
       <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
         <div class="sbtw-mc-track">
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-085.jpg' ) ); ?>" alt="Villa Rosa Resort" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-067.jpg' ) ); ?>" alt="Villa Rosa — living" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-001.jpg' ) ); ?>" alt="Villa Rosa — bedroom" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-026.jpg' ) ); ?>" alt="Villa Rosa — the pergola" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-072.jpg' ) ); ?>" alt="Villa Rosa — the park &amp; pool" />
+          <?php $sbt_welcome = ( ! empty( $h['welcome_imgs'] ) && is_array( $h['welcome_imgs'] ) ) ? array_values( $h['welcome_imgs'] ) : array( 'exterior-085.jpg', 'interior-067.jpg', 'interior-001.jpg', 'exterior-026.jpg', 'exterior-072.jpg' ); ?>
+          <?php foreach ( $sbt_welcome as $wi => $wim ) : ?>
+          <?php echo sbt_t1_img( 'C.home.welcome_imgs.' . $wi, sbt_gallery_src( $wim ), ( $SITE['name'] ?? 'Gallery' ) . ' ' . ( $wi + 1 ), array( 'data-lightbox' => '' ) ); ?>
+          <?php endforeach; ?>
         </div>
         <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
         <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>

@@ -4,7 +4,7 @@ $PAGE_TITLE = 'The Whole Villa – Villa Rosa Resort';
 require __DIR__ . '/../header/header.php';
 $e = isset( $C['entire'] ) && is_array( $C['entire'] ) ? $C['entire'] : array();
 $specs = ( ! empty( $e['specs'] ) && is_array( $e['specs'] ) ) ? array_values( $e['specs'] ) : array();
-$intro_imgs = array( 'exterior-090.jpg', 'exterior-085.jpg', 'exterior-087.jpg', 'exterior-081.jpg' );
+$intro_imgs = ( ! empty( $e['intro_imgs'] ) && is_array( $e['intro_imgs'] ) ) ? array_values( $e['intro_imgs'] ) : array( 'exterior-090.jpg', 'exterior-085.jpg', 'exterior-087.jpg', 'exterior-081.jpg' );
 $gallery_imgs = array( 'exterior-090.jpg', 'exterior-085.jpg', 'exterior-072.jpg', 'exterior-081.jpg', 'exterior-087.jpg', 'exterior-026.jpg', 'exterior-078.jpg', 'exterior-082.jpg', 'exterior-086.jpg', 'exterior-073.jpg', 'exterior-079.jpg', 'exterior-084.jpg' );
 ?>
 <!-- ============ BANNER ============ -->
@@ -23,7 +23,7 @@ $gallery_imgs = array( 'exterior-090.jpg', 'exterior-085.jpg', 'exterior-072.jpg
     <div class="sbtw-two-col">
       <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
         <div class="sbtw-mc-track">
-          <?php foreach ( $intro_imgs as $ii ) : ?><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/' . $ii ) ); ?>" alt="The whole estate" /><?php endforeach; ?>
+          <?php foreach ( $intro_imgs as $ii_i => $ii ) : ?><?php echo sbt_t1_img( 'C.entire.intro_imgs.' . $ii_i, sbt_gallery_src( $ii ), 'The whole estate ' . ( $ii_i + 1 ), array( 'data-lightbox' => '' ) ); ?><?php endforeach; ?>
         </div>
         <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
         <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>

@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.4' );
+define( 'SBT_VERSION', '2.2.5' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -4253,7 +4253,7 @@ function sbt_vfe_control( $path, $value, $label = 'Edit', $type = 'text' ) {
 }
 
 function sbt_vfe_is_gallery_item_path( $path ) {
-	return (bool) preg_match( '/(?:^|\.)(?:gallery\d*|album\d*|[A-Za-z0-9_]*_gallery|[A-Za-z0-9_]*_album)\.\d+$/', (string) $path );
+	return (bool) preg_match( '/(?:^|\.)(?:gallery\d*|album\d*|imgs\d*|[A-Za-z0-9_]*_gallery|[A-Za-z0-9_]*_album|[A-Za-z0-9_]*_imgs)\.\d+$/', (string) $path );
 }
 
 function sbt_vfe_image( $path, $src, $attrs = array() ) {

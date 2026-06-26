@@ -51,11 +51,10 @@ $svc_svgs = array(
       </div>
       <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
         <div class="sbtw-mc-track">
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-05.jpg' ) ); ?>" alt="Masseria Montefieno — the facade" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-04.jpg' ) ); ?>" alt="Masseria Montefieno — the veranda" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-08.jpg' ) ); ?>" alt="Masseria Montefieno — the pergola" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-02.jpg' ) ); ?>" alt="Masseria Montefieno — garden details" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-17.jpg' ) ); ?>" alt="Masseria Montefieno — the estate" />
+          <?php $sbt_welcome = ( ! empty( $p['welcome_imgs'] ) && is_array( $p['welcome_imgs'] ) ) ? array_values( $p['welcome_imgs'] ) : array( 'mf-05.jpg', 'mf-04.jpg', 'mf-08.jpg', 'mf-02.jpg', 'mf-17.jpg' ); ?>
+          <?php foreach ( $sbt_welcome as $wi => $wim ) : ?>
+          <?php echo sbt_t1_img( 'C.home.welcome_imgs.' . $wi, sbt_gallery_src( $wim ), ( $SITE['name'] ?? 'Gallery' ) . ' ' . ( $wi + 1 ), array( 'data-lightbox' => '' ) ); ?>
+          <?php endforeach; ?>
         </div>
         <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
         <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>
@@ -95,13 +94,13 @@ $svc_svgs = array(
     </div>
     <div class="sbtw-house-grid">
       <?php foreach ( $rooms as $ri => $room ) :
-        $imgs = $room_imgs[ $ri ] ?? array(); ?>
+        $imgs = ( ! empty( $p['imgs' . $ri] ) && is_array( $p['imgs' . $ri] ) ) ? array_values( $p['imgs' . $ri] ) : ( $room_imgs[ $ri ] ?? array() ); ?>
       <div class="sbtw-house sbtw-reveal">
         <div class="sbtw-ph"><span class="sbtw-tag"><?php echo sbt_t1_text( 'C.home.rooms.' . $ri . '.tag', $room['tag'] ?? 'Main house' ); ?></span>
           <div class="sbtw-media-carousel" data-carousel>
             <div class="sbtw-mc-track">
-              <?php foreach ( $imgs as $im ) : ?>
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/' . $im ) ); ?>" alt="<?php echo esc_attr( $room['h3'] ?? 'Room' ); ?>" />
+              <?php foreach ( $imgs as $im_i => $im ) : ?>
+              <?php echo sbt_t1_img( 'C.home.imgs' . $ri . '.' . $im_i, sbt_gallery_src( $im ), $room['h3'] ?? 'Room', array() ); ?>
               <?php endforeach; ?>
             </div>
             <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>

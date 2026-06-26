@@ -14,8 +14,8 @@ $am_icons = array(
   '<path d="M12 21v-7"/><circle cx="12" cy="9" r="6"/>',
   '<path d="M3 9v6M6 7v10M18 7v10M21 9v6M6 12h12"/>',
 );
-$row0_imgs = array( 'jacuzzi.png', 'hammam.png', 'turkish-bath.png' );
-$row1_imgs = array( 'sauna.png', 'relax-area.png', 'gym.png' );
+$row0_imgs = ( ! empty( $s['row0_imgs'] ) && is_array( $s['row0_imgs'] ) ) ? array_values( $s['row0_imgs'] ) : array( 'jacuzzi.png', 'hammam.png', 'turkish-bath.png' );
+$row1_imgs = ( ! empty( $s['row1_imgs'] ) && is_array( $s['row1_imgs'] ) ) ? array_values( $s['row1_imgs'] ) : array( 'sauna.png', 'relax-area.png', 'gym.png' );
 ?>
 <section class="sbtw-page-hero" data-screen-label="SPA banner">
   <img class="sbtw-bg" src="<?php echo esc_url( sbt_asset_url( 'assets/images/relax-lounge.png' ) ); ?>" alt="<?php echo esc_attr( $SITE['name'] ?? 'SPA & Wellness' ); ?>" />
@@ -45,7 +45,7 @@ $row1_imgs = array( 'sauna.png', 'relax-area.png', 'gym.png' );
     <div class="sbtw-two-col">
       <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
         <div class="sbtw-mc-track">
-          <?php foreach ( $row0_imgs as $ri ) : ?><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/' . $ri ) ); ?>" alt="SPA" /><?php endforeach; ?>
+          <?php foreach ( $row0_imgs as $ri_i => $rim ) : ?><?php echo sbt_t1_img( 'C.spa.row0_imgs.' . $ri_i, sbt_gallery_src( $rim ), 'SPA ' . ( $ri_i + 1 ), array( 'data-lightbox' => '' ) ); ?><?php endforeach; ?>
         </div>
         <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
         <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>
@@ -66,7 +66,7 @@ $row1_imgs = array( 'sauna.png', 'relax-area.png', 'gym.png' );
       </div>
       <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
         <div class="sbtw-mc-track">
-          <?php foreach ( $row1_imgs as $ri ) : ?><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/' . $ri ) ); ?>" alt="SPA" /><?php endforeach; ?>
+          <?php foreach ( $row1_imgs as $ri_i => $rim ) : ?><?php echo sbt_t1_img( 'C.spa.row1_imgs.' . $ri_i, sbt_gallery_src( $rim ), 'SPA ' . ( $ri_i + 1 ), array( 'data-lightbox' => '' ) ); ?><?php endforeach; ?>
         </div>
         <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
         <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>

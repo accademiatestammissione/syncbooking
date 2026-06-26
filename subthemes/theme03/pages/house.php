@@ -29,13 +29,13 @@ $second_specs = ( ! empty( $p['second_specs'] ) && is_array( $p['second_specs'] 
     </div>
     <div class="sbtw-house-grid">
       <?php foreach ( $rooms as $ri => $room ) :
-        $imgs = $room_imgs[ $ri ] ?? array(); ?>
+        $imgs = ( ! empty( $p['imgs' . $ri] ) && is_array( $p['imgs' . $ri] ) ) ? array_values( $p['imgs' . $ri] ) : ( $room_imgs[ $ri ] ?? array() ); ?>
       <div class="sbtw-house sbtw-reveal">
         <div class="sbtw-ph"><span class="sbtw-tag"><?php echo sbt_t1_text( 'C.house.rooms.' . $ri . '.tag', $room['tag'] ?? 'Main house' ); ?></span>
           <div class="sbtw-media-carousel" data-carousel>
             <div class="sbtw-mc-track">
-              <?php foreach ( $imgs as $im ) : ?>
-              <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/' . $im ) ); ?>" alt="<?php echo esc_attr( $room['h3'] ?? 'Bedroom' ); ?>" />
+              <?php foreach ( $imgs as $im_i => $im ) : ?>
+              <?php echo sbt_t1_img( 'C.house.imgs' . $ri . '.' . $im_i, sbt_gallery_src( $im ), $room['h3'] ?? 'Bedroom', array() ); ?>
               <?php endforeach; ?>
             </div>
             <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
