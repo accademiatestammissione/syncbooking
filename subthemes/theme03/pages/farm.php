@@ -24,9 +24,10 @@ $shop = $p['shop_url'] ?? 'https://shop.masseriamontefieno.com/';
     <div class="sbtw-two-col" id="olive-oil">
       <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
         <div class="sbtw-mc-track">
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-27.jpg' ) ); ?>" alt="The olive grove" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-11.jpg' ) ); ?>" alt="Among the olive trees" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-13.jpg' ) ); ?>" alt="Dry-stone walls and olives" />
+          <?php $sld = ( ! empty( $p['sld0_imgs'] ) && is_array( $p['sld0_imgs'] ) ) ? array_values( $p['sld0_imgs'] ) : array( 'mf-27.jpg', 'mf-11.jpg', 'mf-13.jpg' ); ?>
+          <?php foreach ( $sld as $si => $sim ) : ?>
+          <?php echo sbt_t1_img( 'C.farm.sld0_imgs.' . $si, sbt_gallery_src( $sim ), 'The olive grove ' . ( $si + 1 ), array( 'data-lightbox' => '' ) ); ?>
+          <?php endforeach; ?>
         </div>
         <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
         <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>
@@ -49,8 +50,10 @@ $shop = $p['shop_url'] ?? 'https://shop.masseriamontefieno.com/';
       </div>
       <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
         <div class="sbtw-mc-track">
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-27.jpg' ) ); ?>" alt="The olive grove rows" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-25.jpg' ) ); ?>" alt="The countryside at dusk" />
+          <?php $sld = ( ! empty( $p['sld1_imgs'] ) && is_array( $p['sld1_imgs'] ) ) ? array_values( $p['sld1_imgs'] ) : array( 'mf-27.jpg', 'mf-25.jpg' ); ?>
+          <?php foreach ( $sld as $si => $sim ) : ?>
+          <?php echo sbt_t1_img( 'C.farm.sld1_imgs.' . $si, sbt_gallery_src( $sim ), 'The olive grove rows ' . ( $si + 1 ), array( 'data-lightbox' => '' ) ); ?>
+          <?php endforeach; ?>
         </div>
         <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
         <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>

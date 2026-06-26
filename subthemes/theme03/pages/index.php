@@ -126,10 +126,10 @@ $svc_svgs = array(
     <div class="sbtw-two-col" id="book-whole">
       <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
         <div class="sbtw-mc-track">
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-17.jpg' ) ); ?>" alt="The whole estate among the olives" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-05.jpg' ) ); ?>" alt="The main house" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-09.jpg' ) ); ?>" alt="The second house" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-12.jpg' ) ); ?>" alt="The pool" />
+          <?php $sld = ( ! empty( $p['sld0_imgs'] ) && is_array( $p['sld0_imgs'] ) ) ? array_values( $p['sld0_imgs'] ) : array( 'mf-17.jpg', 'mf-05.jpg', 'mf-09.jpg', 'mf-12.jpg' ); ?>
+          <?php foreach ( $sld as $si => $sim ) : ?>
+          <?php echo sbt_t1_img( 'C.home.sld0_imgs.' . $si, sbt_gallery_src( $sim ), 'The whole estate among the olives ' . ( $si + 1 ), array( 'data-lightbox' => '' ) ); ?>
+          <?php endforeach; ?>
         </div>
         <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
         <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>
@@ -181,10 +181,10 @@ $svc_svgs = array(
     <div class="sbtw-two-col" id="farm">
       <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
         <div class="sbtw-mc-track">
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-27.jpg' ) ); ?>" alt="The olive grove" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-25.jpg' ) ); ?>" alt="The countryside" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-11.jpg' ) ); ?>" alt="The garden among the olives" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-13.jpg' ) ); ?>" alt="The dry-stone walls" />
+          <?php $sld = ( ! empty( $p['sld1_imgs'] ) && is_array( $p['sld1_imgs'] ) ) ? array_values( $p['sld1_imgs'] ) : array( 'mf-27.jpg', 'mf-25.jpg', 'mf-11.jpg', 'mf-13.jpg' ); ?>
+          <?php foreach ( $sld as $si => $sim ) : ?>
+          <?php echo sbt_t1_img( 'C.home.sld1_imgs.' . $si, sbt_gallery_src( $sim ), 'The olive grove ' . ( $si + 1 ), array( 'data-lightbox' => '' ) ); ?>
+          <?php endforeach; ?>
         </div>
         <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
         <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>
@@ -207,9 +207,10 @@ $svc_svgs = array(
       </div>
       <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
         <div class="sbtw-mc-track">
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-25.jpg' ) ); ?>" alt="The countryside at dusk" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-17.jpg' ) ); ?>" alt="The estate among the olives" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-27.jpg' ) ); ?>" alt="The olive grove" />
+          <?php $sld = ( ! empty( $p['sld2_imgs'] ) && is_array( $p['sld2_imgs'] ) ) ? array_values( $p['sld2_imgs'] ) : array( 'mf-25.jpg', 'mf-17.jpg', 'mf-27.jpg' ); ?>
+          <?php foreach ( $sld as $si => $sim ) : ?>
+          <?php echo sbt_t1_img( 'C.home.sld2_imgs.' . $si, sbt_gallery_src( $sim ), 'The countryside at dusk ' . ( $si + 1 ), array( 'data-lightbox' => '' ) ); ?>
+          <?php endforeach; ?>
         </div>
         <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
         <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>

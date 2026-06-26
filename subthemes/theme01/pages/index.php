@@ -86,19 +86,21 @@ $svc_icons = array(
     <div class="sbtw-house-grid">
       <?php
       $home_house_cards = ( isset( $HOUSE_CARDS ) && is_array( $HOUSE_CARDS ) ) ? $HOUSE_CARDS : array();
-      foreach ( $home_house_cards as $house_card ) :
+      foreach ( $home_house_cards as $hc_idx => $house_card ) :
         $hc_title = $house_card['title'] ?? '';
         $hc_tag   = $house_card['tag'] ?? '';
-        $hc_imgs  = ( ! empty( $house_card['gallery'] ) && is_array( $house_card['gallery'] ) )
-          ? array_values( array_filter( $house_card['gallery'] ) )
-          : array_filter( array( $house_card['img'] ?? '' ) );
+        $hc_imgs  = ( ! empty( $h['imgs' . $hc_idx] ) && is_array( $h['imgs' . $hc_idx] ) )
+          ? array_values( $h['imgs' . $hc_idx] )
+          : ( ( ! empty( $house_card['gallery'] ) && is_array( $house_card['gallery'] ) )
+            ? array_values( array_filter( $house_card['gallery'] ) )
+            : array_filter( array( $house_card['img'] ?? '' ) ) );
       ?>
       <div class="sbtw-house sbtw-reveal">
         <div class="sbtw-ph"><span class="sbtw-tag"><?php echo esc_html( $hc_tag ); ?></span>
           <div class="sbtw-media-carousel" data-carousel>
             <div class="sbtw-mc-track">
-              <?php foreach ( $hc_imgs as $hc_img ) : ?>
-              <img src="<?php echo esc_url( $hc_img ); ?>" alt="<?php echo esc_attr( $hc_title ); ?>" />
+              <?php foreach ( $hc_imgs as $hci => $hc_img ) : ?>
+              <?php echo sbt_t1_img( 'C.home.imgs' . $hc_idx . '.' . $hci, sbt_gallery_src( $hc_img ), $hc_title, array() ); ?>
               <?php endforeach; ?>
             </div>
             <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
@@ -123,10 +125,10 @@ $svc_icons = array(
     <div class="sbtw-two-col">
       <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
         <div class="sbtw-mc-track">
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-090.jpg' ) ); ?>" alt="The whole estate from above" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-085.jpg' ) ); ?>" alt="The villa at dusk" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-087.jpg' ) ); ?>" alt="The pergola" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-081.jpg' ) ); ?>" alt="The private pool" />
+          <?php $sld = ( ! empty( $h['sld0_imgs'] ) && is_array( $h['sld0_imgs'] ) ) ? array_values( $h['sld0_imgs'] ) : array( 'exterior-090.jpg', 'exterior-085.jpg', 'exterior-087.jpg', 'exterior-081.jpg' ); ?>
+          <?php foreach ( $sld as $si => $sim ) : ?>
+          <?php echo sbt_t1_img( 'C.home.sld0_imgs.' . $si, sbt_gallery_src( $sim ), 'The whole estate from above ' . ( $si + 1 ), array( 'data-lightbox' => '' ) ); ?>
+          <?php endforeach; ?>
         </div>
         <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
         <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>
@@ -184,11 +186,10 @@ $svc_icons = array(
     <div class="sbtw-two-col" id="spa">
       <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
         <div class="sbtw-mc-track">
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/jacuzzi.png' ) ); ?>" alt="SPA &amp; Wellness" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/hammam.png' ) ); ?>" alt="SPA — hammam" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/turkish-bath.png' ) ); ?>" alt="SPA — Turkish bath" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/sauna.png' ) ); ?>" alt="SPA — sauna" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/gym.png' ) ); ?>" alt="SPA — gym" />
+          <?php $sld = ( ! empty( $h['sld1_imgs'] ) && is_array( $h['sld1_imgs'] ) ) ? array_values( $h['sld1_imgs'] ) : array( 'jacuzzi.png', 'hammam.png', 'turkish-bath.png', 'sauna.png', 'gym.png' ); ?>
+          <?php foreach ( $sld as $si => $sim ) : ?>
+          <?php echo sbt_t1_img( 'C.home.sld1_imgs.' . $si, sbt_gallery_src( $sim ), 'SPA &amp; Wellness ' . ( $si + 1 ), array( 'data-lightbox' => '' ) ); ?>
+          <?php endforeach; ?>
         </div>
         <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
         <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>
@@ -211,11 +212,10 @@ $svc_icons = array(
       </div>
       <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
         <div class="sbtw-mc-track">
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-039.jpg' ) ); ?>" alt="Apulian Experience" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-104.jpg' ) ); ?>" alt="Experience — Apulian breakfast" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-087.jpg' ) ); ?>" alt="Experience — the pergola" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/exterior-078.jpg' ) ); ?>" alt="Experience — long table in the park" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/interior-005.jpg' ) ); ?>" alt="Experience — tasting" />
+          <?php $sld = ( ! empty( $h['sld2_imgs'] ) && is_array( $h['sld2_imgs'] ) ) ? array_values( $h['sld2_imgs'] ) : array( 'interior-039.jpg', 'interior-104.jpg', 'exterior-087.jpg', 'exterior-078.jpg', 'interior-005.jpg' ); ?>
+          <?php foreach ( $sld as $si => $sim ) : ?>
+          <?php echo sbt_t1_img( 'C.home.sld2_imgs.' . $si, sbt_gallery_src( $sim ), 'Apulian Experience ' . ( $si + 1 ), array( 'data-lightbox' => '' ) ); ?>
+          <?php endforeach; ?>
         </div>
         <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
         <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>

@@ -31,9 +31,10 @@ $p = isset( $C['spa'] ) && is_array( $C['spa'] ) ? $C['spa'] : array();
     <div class="sbtw-two-col">
       <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
         <div class="sbtw-mc-track">
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/great-hall.jpg' ) ); ?>" alt="Hydromassage & Turkish bath" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/courtyard.jpg' ) ); ?>" alt="Hydromassage pool" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/bedroom-2.jpg' ) ); ?>" alt="Relax room" />
+          <?php $sld = ( ! empty( $p['sld0_imgs'] ) && is_array( $p['sld0_imgs'] ) ) ? array_values( $p['sld0_imgs'] ) : array( 'great-hall.jpg', 'courtyard.jpg', 'bedroom-2.jpg' ); ?>
+          <?php foreach ( $sld as $si => $sim ) : ?>
+          <?php echo sbt_t1_img( 'C.spa.sld0_imgs.' . $si, sbt_gallery_src( $sim ), 'Hydromassage & Turkish bath ' . ( $si + 1 ), array( 'data-lightbox' => '' ) ); ?>
+          <?php endforeach; ?>
         </div>
         <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
         <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>
@@ -54,9 +55,10 @@ $p = isset( $C['spa'] ) && is_array( $C['spa'] ) ? $C['spa'] : array();
       </div>
       <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
         <div class="sbtw-mc-track">
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/courtyard.jpg' ) ); ?>" alt="Sauna, massages & Yoga" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/bedroom-1.jpg' ) ); ?>" alt="Wellness area" />
-          <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/aerial-pool.jpg' ) ); ?>" alt="Garden spa" />
+          <?php $sld = ( ! empty( $p['sld1_imgs'] ) && is_array( $p['sld1_imgs'] ) ) ? array_values( $p['sld1_imgs'] ) : array( 'courtyard.jpg', 'bedroom-1.jpg', 'aerial-pool.jpg' ); ?>
+          <?php foreach ( $sld as $si => $sim ) : ?>
+          <?php echo sbt_t1_img( 'C.spa.sld1_imgs.' . $si, sbt_gallery_src( $sim ), 'Sauna, massages & Yoga ' . ( $si + 1 ), array( 'data-lightbox' => '' ) ); ?>
+          <?php endforeach; ?>
         </div>
         <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
         <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>

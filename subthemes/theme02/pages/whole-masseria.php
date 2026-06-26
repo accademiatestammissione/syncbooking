@@ -17,11 +17,10 @@ $p = isset( $C['whole'] ) && is_array( $C['whole'] ) ? $C['whole'] : array();
   <div class="sbtw-wrap sbtw-two-col">
     <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
       <div class="sbtw-mc-track">
-        <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/aerial-pool.jpg' ) ); ?>" alt="The whole estate from above" />
-        <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/masseria-dusk.jpg' ) ); ?>" alt="The masseria at dusk" />
-        <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/great-hall.jpg' ) ); ?>" alt="The great hall" />
-        <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/courtyard.jpg' ) ); ?>" alt="The courtyard" />
-        <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/pool-pergola.jpg' ) ); ?>" alt="The private pool" />
+        <?php $sld = ( ! empty( $p['sld0_imgs'] ) && is_array( $p['sld0_imgs'] ) ) ? array_values( $p['sld0_imgs'] ) : array( 'aerial-pool.jpg', 'masseria-dusk.jpg', 'great-hall.jpg', 'courtyard.jpg', 'pool-pergola.jpg' ); ?>
+        <?php foreach ( $sld as $si => $sim ) : ?>
+        <?php echo sbt_t1_img( 'C.whole.sld0_imgs.' . $si, sbt_gallery_src( $sim ), 'The whole estate from above ' . ( $si + 1 ), array( 'data-lightbox' => '' ) ); ?>
+        <?php endforeach; ?>
       </div>
       <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
       <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>

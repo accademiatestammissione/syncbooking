@@ -58,9 +58,10 @@ $second_specs = ( ! empty( $p['second_specs'] ) && is_array( $p['second_specs'] 
   <div class="sbtw-wrap sbtw-two-col">
     <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
       <div class="sbtw-mc-track">
-        <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-09.jpg' ) ); ?>" alt="The second house" />
-        <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-13.jpg' ) ); ?>" alt="The garden by the second house" />
-        <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-17.jpg' ) ); ?>" alt="The estate among the olives" />
+        <?php $sld = ( ! empty( $p['sld0_imgs'] ) && is_array( $p['sld0_imgs'] ) ) ? array_values( $p['sld0_imgs'] ) : array( 'mf-09.jpg', 'mf-13.jpg', 'mf-17.jpg' ); ?>
+        <?php foreach ( $sld as $si => $sim ) : ?>
+        <?php echo sbt_t1_img( 'C.house.sld0_imgs.' . $si, sbt_gallery_src( $sim ), 'The second house ' . ( $si + 1 ), array( 'data-lightbox' => '' ) ); ?>
+        <?php endforeach; ?>
       </div>
       <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
       <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>

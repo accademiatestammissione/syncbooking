@@ -26,10 +26,10 @@ $p = isset( $C['pool'] ) && is_array( $C['pool'] ) ? $C['pool'] : array();
     </div>
     <div class="sbtw-media sbtw-reveal sbtw-media-carousel" data-carousel>
       <div class="sbtw-mc-track">
-        <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-12.jpg' ) ); ?>" alt="The pool among the olive trees" />
-        <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-18.jpg' ) ); ?>" alt="Loungers and umbrella by the pool" />
-        <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-19.jpg' ) ); ?>" alt="The pool corner" />
-        <img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-15.jpg' ) ); ?>" alt="The pool behind the olives" />
+        <?php $sld = ( ! empty( $p['sld0_imgs'] ) && is_array( $p['sld0_imgs'] ) ) ? array_values( $p['sld0_imgs'] ) : array( 'mf-12.jpg', 'mf-18.jpg', 'mf-19.jpg', 'mf-15.jpg' ); ?>
+        <?php foreach ( $sld as $si => $sim ) : ?>
+        <?php echo sbt_t1_img( 'C.pool.sld0_imgs.' . $si, sbt_gallery_src( $sim ), 'The pool among the olive trees ' . ( $si + 1 ), array( 'data-lightbox' => '' ) ); ?>
+        <?php endforeach; ?>
       </div>
       <button class="sbtw-mc-nav sbtw-mc-prev" type="button" aria-label="Previous">&#8249;</button>
       <button class="sbtw-mc-nav sbtw-mc-next" type="button" aria-label="Next">&#8250;</button>
