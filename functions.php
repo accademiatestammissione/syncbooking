@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.8' );
+define( 'SBT_VERSION', '2.2.9' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -4353,7 +4353,7 @@ function sbt_visual_meta_editor_assets() {
 		}
 
 		function closestGalleryUrls(field){
-			var scope = field.closest('.sbtw-media-carousel,.media-carousel,.sbtw-mosaic,.mosaic,.sbtw-gallery,.gallery,.sbtw-room-gallery,.room-gallery,.sbtw-house,.house,.sbtw-feature,.feature,.sbtw-page-hero,.page-hero') || document;
+			var scope = field.closest('.sbtw-media-carousel,.media-carousel,.sbtw-mosaic,.mosaic,.sbtw-gallery,.gallery,.sbtw-room-gallery,.room-gallery,.sbtw-hero-video,.hero-video,.sbtw-house,.house,.sbtw-feature,.feature,.sbtw-page-hero,.page-hero') || document;
 			var urls = [];
 			scope.querySelectorAll('img').forEach(function(img){
 				var src = img.getAttribute('src');
@@ -4397,7 +4397,7 @@ function sbt_visual_meta_editor_assets() {
 		}
 
 		function addGalleryEditors(){
-			document.querySelectorAll('.sbtw-gallery,.gallery,.sbtw-mosaic,.mosaic,.sbtw-media-carousel,.media-carousel,.sbtw-room-gallery,.room-gallery,.sbtw-w-gallery,.sbtw-w-rev-album').forEach(function(scope){
+			document.querySelectorAll('.sbtw-gallery,.gallery,.sbtw-mosaic,.mosaic,.sbtw-media-carousel,.media-carousel,.sbtw-room-gallery,.room-gallery,.sbtw-hero-video,.hero-video,.sbtw-w-gallery,.sbtw-w-rev-album').forEach(function(scope){
 				if (scope.querySelector('.sbt-vfe-gallery-edit')) return;
 				var firstField = scope.querySelector('img[data-sbt-vfe-gallery-item][data-sbt-vfe-gallery-path]');
 				if (!firstField) return;
