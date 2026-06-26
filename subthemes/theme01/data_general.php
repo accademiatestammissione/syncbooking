@@ -177,6 +177,7 @@ $C['home'] = array(
 	'welcome_gallery' => array( $IMG['welcome'], $IMG['a1'], $IMG['a5'], $IMG['room'], $IMG['garden'] ),
 	'gallery_over' => 'A look inside',
 	'gallery_h2' => 'Spaces that tell a story',
+	'gallery' => array( 'exterior-085.jpg', 'exterior-072.jpg', 'exterior-026.jpg', 'exterior-087.jpg', 'exterior-081.jpg' ),
 	'gallery' => array( $IMG['villa'], $IMG['garden'], $IMG['a5'], $IMG['a1'], $IMG['welcome'] ),
 	'entire_over' => 'Rent the entire villa',
 	'entire_h2' => 'Villa Rosa,<br/>all to yourself',

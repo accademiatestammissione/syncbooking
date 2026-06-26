@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.1' );
+define( 'SBT_VERSION', '2.2.2' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -521,6 +521,16 @@ function sbt_asset_url( $path ) {
 
 	// Uploads directory unavailable (rare) — last-resort remote base.
 	return trailingslashit( sbt_remote_assets_base_url( $subtheme_key ) ) . str_replace( '%2F', '/', rawurlencode( $path ) );
+}
+
+/**
+ * Resolve a gallery image value to a URL: a bare filename is looked up under the
+ * active subtheme's assets/images; a full URL (e.g. saved by the visual gallery
+ * editor) is used as-is. Shared by every editable gallery on the front end.
+ */
+function sbt_gallery_src( $v ) {
+	$v = (string) $v;
+	return preg_match( '#^https?://#i', $v ) ? $v : sbt_asset_url( 'assets/images/' . ltrim( $v, '/' ) );
 }
 
 function sbt_prepare_local_asset_path( $asset_path, $local_path, $subtheme_key = '' ) {

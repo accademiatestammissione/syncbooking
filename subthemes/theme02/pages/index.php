@@ -71,11 +71,10 @@ $room_cards = array(
       <h2><?php echo sbt_t1_text( 'C.home.gallery_h2', $h['gallery_h2'] ?? '' ); ?></h2>
     </div>
     <div class="sbtw-mosaic sbtw-reveal">
-      <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/salone-volte.jpg' ) ); ?>" alt="The vaulted hall" /></div>
-      <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/bedroom-1.jpg' ) ); ?>" alt="A vaulted bedroom" /></div>
-      <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/living-1.jpg' ) ); ?>" alt="The living room" /></div>
-      <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/courtyard.jpg' ) ); ?>" alt="The inner courtyard" /></div>
-      <div class="sbtw-m-item"><img data-lightbox src="<?php echo esc_url( sbt_asset_url( 'assets/images/pool-pergola.jpg' ) ); ?>" alt="The pool and pergola" /></div>
+      <?php $sbt_home_gallery = ( ! empty( $h['gallery'] ) && is_array( $h['gallery'] ) ) ? array_values( $h['gallery'] ) : array(); ?>
+      <?php foreach ( $sbt_home_gallery as $gi => $gimg ) : ?>
+      <div class="sbtw-m-item"><?php echo sbt_t1_img( 'C.home.gallery.' . $gi, sbt_gallery_src( $gimg ), ( $SITE['name'] ?? 'Gallery' ) . ' ' . ( $gi + 1 ), array( 'data-lightbox' => '' ) ); ?></div>
+      <?php endforeach; ?>
       <button class="sbtw-m-allbtn" type="button"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><?php echo esc_html( $TEXT['show_all_photos'] ?? 'Show all photos' ); ?></button>
     </div>
   </div>
