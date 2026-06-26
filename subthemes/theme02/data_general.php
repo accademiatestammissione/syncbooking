@@ -298,7 +298,6 @@ $C['home'] = array_merge($C['home'], [
   'gallery_over' => 'A look inside',
   'gallery_h2' => 'Spaces that tell a story',
   'gallery' => array( 'salone-volte.jpg', 'bedroom-1.jpg', 'living-1.jpg', 'courtyard.jpg', 'pool-pergola.jpg' ),
-  'gallery' => [$IMG['masseria_aerial'], $IMG['masseria_facade'], $IMG['masseria_courtyard'], $IMG['masseria_pool'], $IMG['room_main']],
   'houses_over' => 'The Rooms',
   'houses_h2' => 'Sleeping under the vaults',
   'houses_p' => 'Five double bedrooms, each carved beneath ancient stone vaults and furnished with wrought-iron beds, antique wardrobes and warm linen.',

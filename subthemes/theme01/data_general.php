@@ -178,7 +178,6 @@ $C['home'] = array(
 	'gallery_over' => 'A look inside',
 	'gallery_h2' => 'Spaces that tell a story',
 	'gallery' => array( 'exterior-085.jpg', 'exterior-072.jpg', 'exterior-026.jpg', 'exterior-087.jpg', 'exterior-081.jpg' ),
-	'gallery' => array( $IMG['villa'], $IMG['garden'], $IMG['a5'], $IMG['a1'], $IMG['welcome'] ),
 	'entire_over' => 'Rent the entire villa',
 	'entire_h2' => 'Villa Rosa,<br/>all to yourself',
 	'entire_p' => 'Choose the whole property for your family or group: the villa atmosphere, the park, the pool, the wellness area and all the quiet corners of Villa Rosa reserved for your stay.',

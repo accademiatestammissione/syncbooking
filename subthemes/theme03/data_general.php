@@ -203,7 +203,6 @@ $C = array(
 		'gallery_over' => 'A look inside',
 		'gallery_h2' => 'Stone, light and tradition',
 		'gallery' => array( 'mf-03.jpg', 'mf-10.jpg', 'mf-01.jpg', 'mf-16.jpg', 'mf-12.jpg' ),
-		'gallery' => $GALLERY,
 		'houses_over' => 'The estate',
 		'houses_h2' => 'Two houses among the olives',
 		'houses_p' => 'The main structure offers three beautifully restored stone bedrooms with decoration typical of Puglia, two kitchens, three bathrooms, a large living room and three outdoor areas. A second house, 120 metres away, adds one more bedroom with its own bathroom and outdoor space.',
