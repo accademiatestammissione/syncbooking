@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.12' );
+define( 'SBT_VERSION', '2.2.13' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -1429,6 +1429,7 @@ function sbt_assets_import_response_data( $job, $message, $done = false ) {
 		'register_index'   => absint( $job['register_index'] ?? 0 ),
 		'register_total'   => absint( $job['register_total'] ?? 0 ),
 		'extracted'        => absint( $job['extracted'] ?? 0 ),
+		'unchanged'        => absint( $job['unchanged'] ?? 0 ),
 		'registered'       => absint( $job['registered'] ?? 0 ),
 		'skipped'          => absint( $job['skipped'] ?? 0 ),
 		'failed'           => count( $job['failed'] ?? array() ),
@@ -1488,6 +1489,19 @@ function sbt_assets_import_extract_zip_entry( ZipArchive $zip, $index, $target_b
 		return 'failed';
 	}
 
+	// Skip files that are already present and identical to the zip entry (same size
+	// and modified time). This avoids rewriting thousands of unchanged images on
+	// every re-import. The extracted file is stamped below with the entry's mtime,
+	// so this comparison stays stable across subsequent imports.
+	$stat        = $zip->statIndex( $index );
+	$entry_size  = ( is_array( $stat ) && isset( $stat['size'] ) ) ? (int) $stat['size'] : -1;
+	$entry_mtime = ( is_array( $stat ) && isset( $stat['mtime'] ) ) ? (int) $stat['mtime'] : 0;
+	if ( $entry_size >= 0 && $entry_mtime > 0 && is_file( $target )
+		&& (int) filesize( $target ) === $entry_size
+		&& (int) filemtime( $target ) === $entry_mtime ) {
+		return 'unchanged';
+	}
+
 	wp_mkdir_p( dirname( $target ) );
 	$source = $zip->getStream( $name );
 	if ( ! $source ) {
@@ -1503,6 +1517,12 @@ function sbt_assets_import_extract_zip_entry( ZipArchive $zip, $index, $target_b
 	stream_copy_to_stream( $source, $destination );
 	fclose( $source );
 	fclose( $destination );
+
+	// Stamp the file with the zip entry's mtime so future imports detect it as
+	// unchanged (size + mtime match) and skip the rewrite.
+	if ( $entry_mtime > 0 ) {
+		@touch( $target, $entry_mtime );
+	}
 
 	return 'extracted';
 }
@@ -1570,6 +1590,8 @@ function sbt_assets_import_extract_step( &$job ) {
 		$result = sbt_assets_import_extract_zip_entry( $zip, $index, $job['target_base'] );
 		if ( 'extracted' === $result ) {
 			$job['extracted'] = absint( $job['extracted'] ?? 0 ) + 1;
+		} elseif ( 'unchanged' === $result ) {
+			$job['unchanged'] = absint( $job['unchanged'] ?? 0 ) + 1;
 		} elseif ( 'failed' === $result ) {
 			$job['failed'][] = $zip->getNameIndex( $index );
 		}
@@ -1625,6 +1647,7 @@ function sbt_assets_import_finish( $job ) {
 	$imports = get_option( SBT_MEDIA_OPTION, array() );
 	$imports[ $job['subtheme'] ] = array(
 		'downloaded'      => absint( $job['extracted'] ?? 0 ),
+		'unchanged'       => absint( $job['unchanged'] ?? 0 ),
 		'registered'      => absint( $job['registered'] ?? 0 ),
 		'skipped'         => absint( $job['skipped'] ?? 0 ),
 		'failed'          => count( $job['failed'] ?? array() ),
@@ -4301,6 +4324,8 @@ function sbt_visual_meta_editor_assets() {
 		/* Full-bleed hero backgrounds: keep the edit wrapper out of the layout box so the absolutely-positioned img still fills the hero. */
 		.sbtw-page-hero > .sbt-vfe-image-wrap, .sbtw-hero-video > .sbt-vfe-image-wrap, .sbtw-exp > .sbt-vfe-image-wrap, .sbtw-offer-card > .sbt-vfe-image-wrap { display:contents; }
 		.sbt-vfe-gallery-scope { position:relative; }
+		/* Full-bleed gallery scopes (e.g. theme03 home hero rotation) are absolutely positioned to fill their container; keep that so the gallery-scope marker doesn't collapse them to 0 height in the editor. The edit button still anchors (absolute is a positioning context). */
+		.sbtw-hero-video.sbt-vfe-gallery-scope { position:absolute; }
 		.sbt-vfe-gallery-edit { align-items:center; background:rgba(34,113,177,.96); border:0; border-radius:999px; color:#fff; cursor:pointer; display:inline-flex; font:600 12px/1 system-ui,sans-serif; gap:6px; padding:8px 11px; position:absolute; right:10px; top:10px; z-index:8; }
 		.sbt-vfe-modal { align-items:center; background:rgba(0,0,0,.45); bottom:0; display:none; justify-content:center; left:0; padding:24px; position:fixed; right:0; top:0; z-index:999999; }
 		.sbt-vfe-modal.is-open { display:flex; }
@@ -6357,7 +6382,8 @@ function sbt_render_general_settings_tab( $data, $overrides ) {
 				<?php if ( ! empty( $media_status['updated_at'] ) ) : ?>
 					<p class="sbt-muted">
 						Last import: <?php echo esc_html( $media_status['updated_at'] ); ?>.
-						Extracted: <?php echo esc_html( $media_status['downloaded'] ?? 0 ); ?>,
+						Written: <?php echo esc_html( $media_status['downloaded'] ?? 0 ); ?>,
+						unchanged (skipped): <?php echo esc_html( $media_status['unchanged'] ?? 0 ); ?>,
 						registered: <?php echo esc_html( $media_status['registered'] ?? 0 ); ?>,
 						errors: <?php echo esc_html( $media_status['failed'] ?? 0 ); ?>.
 					</p>
