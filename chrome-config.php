@@ -188,3 +188,30 @@ if ( ! function_exists( 'sbt_render_site_config' ) ) {
 		echo '<script>window.SBTW_CONFIG = ' . wp_json_encode( $config ) . ';</script>' . "\n";
 	}
 }
+
+if ( ! function_exists( 'sbt_render_favicon_links' ) ) {
+	/**
+	 * Emit the browser-tab icon (favicon) for the active subtheme. The source is
+	 * $IMG['favicon'] (a SITE override via the IMG.favicon admin field takes
+	 * precedence because overrides are applied to $IMG before this runs). Called
+	 * from each subtheme header's <head>.
+	 */
+	function sbt_render_favicon_links( $IMG ) {
+		$fav = ( is_array( $IMG ) && ! empty( $IMG['favicon'] ) ) ? (string) $IMG['favicon'] : '';
+		if ( '' === $fav ) {
+			return;
+		}
+		$type = '';
+		if ( preg_match( '/\.png(\?.*)?$/i', $fav ) ) {
+			$type = ' type="image/png"';
+		} elseif ( preg_match( '/\.svg(\?.*)?$/i', $fav ) ) {
+			$type = ' type="image/svg+xml"';
+		} elseif ( preg_match( '/\.ico(\?.*)?$/i', $fav ) ) {
+			$type = ' type="image/x-icon"';
+		}
+		$url = esc_url( $fav );
+		echo '<link rel="icon"' . $type . ' href="' . $url . '" />' . "\n";
+		echo '<link rel="shortcut icon"' . $type . ' href="' . $url . '" />' . "\n";
+		echo '<link rel="apple-touch-icon" href="' . $url . '" />' . "\n";
+	}
+}

@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.10' );
+define( 'SBT_VERSION', '2.2.11' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -6613,6 +6613,7 @@ function sbt_render_header_menu_tab( $data, $overrides, $edit_language = 'en' ) 
 				<?php
 				sbt_render_header_field( 'IMG.logo', 'Header logo', $data['IMG']['logo'] ?? '', $overrides, 'image' );
 				sbt_render_header_field( 'IMG.logo_foot', 'Footer logo', $data['IMG']['logo_foot'] ?? '', $overrides, 'image' );
+				sbt_render_header_field( 'IMG.favicon', 'Favicon (browser tab icon)', $data['IMG']['favicon'] ?? '', $overrides, 'image' );
 				?>
 			</div>
 		</div>

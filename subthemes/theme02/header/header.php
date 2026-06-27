@@ -27,6 +27,7 @@ if ( function_exists( 'add_query_arg' ) ) {
 <meta name="version" content="<?php echo esc_attr( $SOURCE_VERSION ); ?>" />
 <meta name="build-date" content="<?php echo esc_attr( $SOURCE_BUILD_DATE ); ?>" />
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<?php if ( function_exists( 'sbt_render_favicon_links' ) ) { sbt_render_favicon_links( $IMG ?? array() ); } ?>
 <?php if ( function_exists( 'wp_head' ) ) wp_head(); ?>
 <link rel="stylesheet" href="<?php echo esc_url( $SITE_CSS_URL ); ?>" />
 <?php
