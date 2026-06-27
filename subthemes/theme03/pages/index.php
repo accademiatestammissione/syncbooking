@@ -24,10 +24,10 @@ $svc_svgs = array(
 <!-- ============ HERO ============ -->
 <section class="sbtw-hero" id="top" data-screen-label="Hero">
   <div class="sbtw-hero-video" data-heroslide>
-    <?php $sbt_hero = ( ! empty( $p['hero_imgs'] ) && is_array( $p['hero_imgs'] ) ) ? array_values( $p['hero_imgs'] ) : array( 'mf-05.jpg', 'mf-12.jpg', 'mf-16.jpg', 'mf-19.jpg' ); ?>
-    <?php foreach ( $sbt_hero as $hsi => $hsim ) : ?>
-    <?php echo sbt_t1_img( 'C.home.hero_imgs.' . $hsi, sbt_gallery_src( $hsim ), ( $SITE['name'] ?? 'Masseria' ) . ' ' . ( $hsi + 1 ), array() ); ?>
-    <?php endforeach; ?>
+    <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-05.jpg' ) ); ?>" alt="Masseria Montefieno among the olive trees" />
+    <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-12.jpg' ) ); ?>" alt="The pool framed by olive trees" />
+    <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-16.jpg' ) ); ?>" alt="Dining under the pergola" />
+    <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-19.jpg' ) ); ?>" alt="The masseria at golden hour" />
   </div>
   <div class="sbtw-hero-overlay"></div>
   <div class="sbtw-hero-inner">
