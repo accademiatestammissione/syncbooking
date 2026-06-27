@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.15' );
+define( 'SBT_VERSION', '2.2.16' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -20,9 +20,9 @@ define( 'SBT_CF7_PLUGIN_SLUG', 'contact-form-7' );
 define( 'SBT_CF7_PLUGIN_FILE', 'contact-form-7/wp-contact-form-7.php' );
 define( 'SBT_MEDIA_OPTION', 'syncbooking_theme_media_imports' );
 define( 'SBT_ASSETS_IMPORT_JOB_OPTION_PREFIX', 'syncbooking_theme_assets_import_job_' );
-define( 'SBT_ASSETS_IMPORT_DOWNLOAD_CHUNK', 1048576 );
-define( 'SBT_ASSETS_IMPORT_EXTRACT_BATCH', 12 );
-define( 'SBT_ASSETS_IMPORT_REGISTER_BATCH', 8 );
+define( 'SBT_ASSETS_IMPORT_DOWNLOAD_CHUNK', 2097152 );
+define( 'SBT_ASSETS_IMPORT_EXTRACT_BATCH', 30 );
+define( 'SBT_ASSETS_IMPORT_REGISTER_BATCH', 20 );
 
 function sbt_setup() {
 	add_theme_support( 'title-tag' );
@@ -1306,7 +1306,15 @@ function sbt_register_upload_assets( $directory, $subtheme_key ) {
 	}
 }
 
-function sbt_register_upload_asset_file( $path, $directory, $subtheme_key ) {
+/**
+ * Register one extracted asset image in the Media Library.
+ *
+ * $registered_lookup, when passed (an array used as a set keyed by normalized
+ * '_sbt_bundled_media_path' value), lets the caller pre-resolve which files are
+ * already registered with a single batch query instead of one get_posts() per
+ * file. When null, the per-file query is used (back-compat).
+ */
+function sbt_register_upload_asset_file( $path, $directory, $subtheme_key, $registered_lookup = null ) {
 	if ( ! function_exists( 'wp_insert_attachment' ) || ! is_file( $path ) ) {
 		return 'ignored';
 	}
@@ -1318,18 +1326,25 @@ function sbt_register_upload_asset_file( $path, $directory, $subtheme_key ) {
 
 	require_once ABSPATH . 'wp-admin/includes/image.php';
 
-	$relative = trim( $subtheme_key . '/' . str_replace( trailingslashit( $directory ), '', $path ), '/' );
-	$existing = get_posts( array(
-		'post_type'      => 'attachment',
-		'post_status'    => 'inherit',
-		'posts_per_page' => 1,
-		'meta_key'       => '_sbt_bundled_media_path',
-		'meta_value'     => wp_normalize_path( $relative ),
-		'fields'         => 'ids',
-	) );
+	$relative = wp_normalize_path( trim( $subtheme_key . '/' . str_replace( trailingslashit( $directory ), '', $path ), '/' ) );
 
-	if ( $existing ) {
-		return 'skipped';
+	if ( is_array( $registered_lookup ) ) {
+		if ( isset( $registered_lookup[ $relative ] ) ) {
+			return 'skipped';
+		}
+	} else {
+		$existing = get_posts( array(
+			'post_type'      => 'attachment',
+			'post_status'    => 'inherit',
+			'posts_per_page' => 1,
+			'meta_key'       => '_sbt_bundled_media_path',
+			'meta_value'     => $relative,
+			'fields'         => 'ids',
+		) );
+
+		if ( $existing ) {
+			return 'skipped';
+		}
 	}
 
 	$attachment_id = wp_insert_attachment( array(
@@ -1343,10 +1358,36 @@ function sbt_register_upload_asset_file( $path, $directory, $subtheme_key ) {
 		return 'failed';
 	}
 
-	update_post_meta( $attachment_id, '_sbt_bundled_media_path', wp_normalize_path( $relative ) );
+	update_post_meta( $attachment_id, '_sbt_bundled_media_path', $relative );
 	wp_update_attachment_metadata( $attachment_id, wp_generate_attachment_metadata( $attachment_id, $path ) );
 
 	return 'registered';
+}
+
+/**
+ * Build a set (keyed by normalized relative path) of the bundled-media files in
+ * $rel_paths that are already registered, using a single query for the whole batch.
+ */
+function sbt_assets_import_registered_lookup( $rel_paths ) {
+	global $wpdb;
+	$rel_paths = array_values( array_filter( array_map( 'strval', (array) $rel_paths ) ) );
+	if ( ! $rel_paths || ! isset( $wpdb ) ) {
+		return array();
+	}
+
+	$placeholders = implode( ',', array_fill( 0, count( $rel_paths ), '%s' ) );
+	$sql = $wpdb->prepare(
+		"SELECT meta_value FROM {$wpdb->postmeta} WHERE meta_key = '_sbt_bundled_media_path' AND meta_value IN ( $placeholders )", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$rel_paths
+	);
+	$found = $wpdb->get_col( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+
+	$lookup = array();
+	foreach ( (array) $found as $value ) {
+		$lookup[ $value ] = true;
+	}
+
+	return $lookup;
 }
 
 function sbt_count_files_in_directory( $directory ) {
@@ -1618,9 +1659,18 @@ function sbt_assets_import_register_step( &$job ) {
 	$batch = max( 1, absint( apply_filters( 'sbt_assets_import_register_batch', SBT_ASSETS_IMPORT_REGISTER_BATCH ) ) );
 	$limit = min( $total, $index + $batch );
 
+	// Resolve which files in this batch are already in the Media Library with a
+	// single query, so the per-file registration check is an in-memory lookup
+	// instead of one DB query per file (huge win when re-importing ~5800 files).
+	$rel_paths = array();
+	for ( $i = $index; $i < $limit; $i++ ) {
+		$rel_paths[] = wp_normalize_path( trim( $job['subtheme'] . '/' . $files[ $i ], '/' ) );
+	}
+	$registered_lookup = sbt_assets_import_registered_lookup( $rel_paths );
+
 	for ( ; $index < $limit; $index++ ) {
 		$path = trailingslashit( $job['target_base'] ) . $files[ $index ];
-		$result = sbt_register_upload_asset_file( $path, $job['target_base'], $job['subtheme'] );
+		$result = sbt_register_upload_asset_file( $path, $job['target_base'], $job['subtheme'], $registered_lookup );
 		if ( 'registered' === $result ) {
 			$job['registered'] = absint( $job['registered'] ?? 0 ) + 1;
 		} elseif ( 'skipped' === $result ) {
