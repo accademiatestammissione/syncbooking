@@ -10,7 +10,7 @@ if ( ! function_exists( 'sbt_t3_asset' ) ) {
 }
 
 $IMG = array(
-	'favicon'   => sbt_t3_asset( 'assets/favicon.png' ),
+	'favicon'   => sbt_t3_asset( 'assets/images/favicon.png' ),
 	'logo'      => sbt_t3_asset( 'assets/images/logo.png' ),
 	'logo_foot' => sbt_t3_asset( 'assets/images/logo.png' ),
 	'welcome'   => sbt_t3_asset( 'assets/images/mf-05.jpg' ),

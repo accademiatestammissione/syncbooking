@@ -4,7 +4,7 @@
 $BASE = function_exists( 'sbt_media_base_url' ) ? sbt_media_base_url() : 'assets/uploads/';
 
 $IMG = array(
-	'favicon' => function_exists( 'sbt_asset_url' ) ? sbt_asset_url( 'assets/favicon.png' ) : 'assets/favicon.png',
+	'favicon' => function_exists( 'sbt_asset_url' ) ? sbt_asset_url( 'assets/images/favicon.png' ) : 'assets/images/favicon.png',
 	'logo' => $BASE . '2025/02/logo02-white-villarosaresort-conversano.png',
 	'logo_foot' => $BASE . '2025/02/logo03-white-villarosaresort-conversano.png',
 	'lgbtq' => $BASE . '2025/07/lgbtq.png',

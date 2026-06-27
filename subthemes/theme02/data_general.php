@@ -59,7 +59,7 @@ $SITE = [
 
 /* ---- IMAGES (by friendly key) ---- */
 $IMG = [
-  'favicon'   => 'assets/favicon.png',
+  'favicon'   => 'assets/images/favicon.png',
   'logo'      => "$BASE/2025/05/new-logo-black-masseria-le-cerase-conversano.png",
   'logo_foot' => "$BASE/2025/05/new-logo01-black-masseria-le-cerase-conversano.png",
 
@@ -91,7 +91,7 @@ $IMG['room_main'] = $IMG['contacts_hero'];
 $IMG['whole'] = $IMG['welcome'];
 
 if ( function_exists( 'sbt_asset_url' ) ) {
-  $IMG['favicon'] = sbt_asset_url( 'assets/favicon.png' );
+  $IMG['favicon'] = sbt_asset_url( 'assets/images/favicon.png' );
   $IMG['logo'] = sbt_asset_url( 'assets/images/logo.png' );
   $IMG['logo_foot'] = sbt_asset_url( 'assets/images/logo.png' );
   $IMG['welcome'] = sbt_asset_url( 'assets/images/masseria-dusk.jpg' );
