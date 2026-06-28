@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.21' );
+define( 'SBT_VERSION', '2.2.22' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -174,6 +174,7 @@ function sbt_default_options() {
 		'nav_extra'          => array(),
 		'nav_removed'        => array(),
 		'home_variant'       => array(),
+		'api_key'            => '',
 	);
 }
 
@@ -4323,6 +4324,102 @@ function sbt_apply_custom_nav_items( &$NAV ) {
 	}
 }
 
+/**
+ * Endpoint that receives the active subtheme's colours + menu on every save.
+ */
+function sbt_colors_menu_api_url() {
+	return 'https://admin.syncbooking.com/api-save-colors-menu';
+}
+
+/**
+ * Build the colours + menu snapshot for the active subtheme, with admin overrides
+ * applied. The booking bar inherits the site palette, so its colours are derived
+ * from the palette tokens.
+ */
+function sbt_colors_menu_payload() {
+	$subtheme  = sbt_active_subtheme_key();
+	$data      = sbt_load_active_data();
+	$site      = isset( $data['SITE'] ) && is_array( $data['SITE'] ) ? $data['SITE'] : array();
+	$overrides = function_exists( 'sbt_active_overrides' ) ? sbt_active_overrides() : array();
+
+	$tokens      = array( 'bg', 'surface', 'ink', 'muted', 'line', 'primary', 'primary_deep', 'primary_soft', 'accent', 'gold' );
+	$site_colors = array();
+	foreach ( $tokens as $token ) {
+		$key  = 'color_' . $token;
+		$path = 'SITE.' . $key;
+		$site_colors[ $token ] = ( isset( $overrides[ $path ] ) && '' !== $overrides[ $path ] )
+			? $overrides[ $path ]
+			: ( isset( $site[ $key ] ) ? $site[ $key ] : '' );
+	}
+
+	$booking_bar = array(
+		'background'      => $site_colors['primary'],
+		'background_deep' => $site_colors['primary_deep'],
+		'surface'         => $site_colors['surface'],
+		'text'            => $site_colors['ink'],
+		'accent'          => $site_colors['accent'],
+	);
+
+	$NAV = isset( $data['NAV'] ) && is_array( $data['NAV'] ) ? $data['NAV'] : array();
+	sbt_apply_custom_nav_items( $NAV );
+	$menu = array();
+	foreach ( $NAV as $item ) {
+		if ( ! is_array( $item ) ) {
+			continue;
+		}
+		$entry = array(
+			'label'    => isset( $item['label'] ) ? wp_strip_all_tags( $item['label'] ) : '',
+			'url'      => sbt_url( $item['url'] ?? '#' ),
+			'key'      => isset( $item['key'] ) ? $item['key'] : '',
+			'children' => array(),
+		);
+		if ( ! empty( $item['sub'] ) && is_array( $item['sub'] ) ) {
+			foreach ( $item['sub'] as $sub ) {
+				if ( empty( $sub['label'] ) ) {
+					continue;
+				}
+				$entry['children'][] = array(
+					'label' => wp_strip_all_tags( $sub['label'] ),
+					'url'   => sbt_url( $sub['url'] ?? '#' ),
+				);
+			}
+		}
+		$menu[] = $entry;
+	}
+
+	return array(
+		'subtheme' => $subtheme,
+		'colors'   => array(
+			'site'        => $site_colors,
+			'booking_bar' => $booking_bar,
+		),
+		'menu'     => $menu,
+	);
+}
+
+/**
+ * POST the colours + menu (plus site, API key and shared token) to SyncBooking on
+ * every settings save. Non-blocking so it never slows the save.
+ */
+function sbt_send_colors_menu_to_api() {
+	$options = sbt_get_options();
+	$body    = array(
+		'theme'   => 'THEME_SYNCBOOKING',
+		'token'   => 'syncbooking_compressione021190',
+		'site'    => home_url( '/' ),
+		'api_key' => isset( $options['api_key'] ) ? $options['api_key'] : '',
+		'data'    => wp_json_encode( sbt_colors_menu_payload() ),
+	);
+
+	wp_remote_post( sbt_colors_menu_api_url(), array(
+		'timeout'   => 8,
+		'blocking'  => false,
+		'sslverify' => true,
+		'headers'   => array( 'Accept' => 'application/json' ),
+		'body'      => $body,
+	) );
+}
+
 function sbt_rewrite_content_urls( &$value ) {
 	if ( ! is_array( $value ) ) {
 		return;
@@ -5477,6 +5574,10 @@ function sbt_sanitize_options( $raw ) {
 	$options['cf7_forms'] = isset( $existing['cf7_forms'] ) && is_array( $existing['cf7_forms'] ) ? $existing['cf7_forms'] : array();
 	$options['nav_extra'] = isset( $existing['nav_extra'] ) && is_array( $existing['nav_extra'] ) ? $existing['nav_extra'] : array();
 	$options['nav_removed'] = isset( $existing['nav_removed'] ) && is_array( $existing['nav_removed'] ) ? $existing['nav_removed'] : array();
+	$options['api_key'] = isset( $existing['api_key'] ) ? sanitize_text_field( $existing['api_key'] ) : '';
+	if ( isset( $raw['api_key'] ) ) {
+		$options['api_key'] = sanitize_text_field( wp_unslash( $raw['api_key'] ) );
+	}
 	$options['home_variant'] = isset( $existing['home_variant'] ) && is_array( $existing['home_variant'] ) ? $existing['home_variant'] : array();
 	if ( isset( $raw['home_variant'] ) && is_array( $raw['home_variant'] ) ) {
 		foreach ( $raw['home_variant'] as $variant_key => $variant_value ) {
@@ -6113,6 +6214,11 @@ function sbt_render_theme_tab( $active, $subthemes ) {
 			<?php endforeach; ?>
 		</div>
 		<div class="sbt-field-grid">
+			<div class="sbt-field">
+				<label>SyncBooking API Key</label>
+				<input type="text" name="<?php echo esc_attr( SBT_OPTION ); ?>[api_key]" value="<?php echo esc_attr( ( sbt_get_options()['api_key'] ?? '' ) ); ?>" placeholder="Your SyncBooking API key" autocomplete="off" spellcheck="false">
+				<span class="sbt-muted">Sent (with the site URL, colours and menu) to SyncBooking each time you save.</span>
+			</div>
 			<div class="sbt-field">
 				<label><?php echo esc_html( sbt_t( 'admin_language' ) ); ?></label>
 				<select name="<?php echo esc_attr( SBT_OPTION ); ?>[admin_language]">
@@ -7177,6 +7283,7 @@ function sbt_render_admin_page() {
 			sbt_sync_custom_house_pages();
 			sbt_create_theme_pages();
 			sbt_cf7_update_recipients();
+			sbt_send_colors_menu_to_api();
 			echo '<div class="notice notice-success is-dismissible"><p>SyncBooking settings saved.</p></div>';
 		}
 	}
