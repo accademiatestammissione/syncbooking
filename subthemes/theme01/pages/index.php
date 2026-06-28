@@ -16,10 +16,17 @@ $svc_icons = array(
 );
 ?>
 <!-- ============ HERO ============ -->
+<?php $home_v2 = ( 'variant2' === sbt_home_variant() ); ?>
 <section class="sbtw-hero" id="top" data-screen-label="Hero">
-  <div class="sbtw-hero-video">
+  <div class="sbtw-hero-video"<?php echo $home_v2 ? ' data-heroslide' : ''; ?>>
+  <?php if ( $home_v2 ) : ?>
+    <?php foreach ( array( 'exterior-081.jpg', 'exterior-085.jpg', 'exterior-090.jpg', 'exterior-087.jpg', 'interior-067.jpg', 'exterior-078.jpg' ) as $hs ) : ?>
+    <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/' . $hs ) ); ?>" alt="<?php echo esc_attr( $SITE['name'] ?? 'Villa Rosa Resort' ); ?>" />
+    <?php endforeach; ?>
+  <?php else : ?>
     <?php echo sbt_t1_img( 'C.home.hero_poster', sbt_gallery_src( $h['hero_poster'] ?? 'hero-poster.jpg' ), '', array( 'class' => 'sbtw-hero-poster', 'id' => 'heroPoster', 'aria-hidden' => 'true' ) ); ?>
     <iframe src="https://player.vimeo.com/video/687646681?autoplay=1&controls=0&mute=1&muted=1&loop=1&playlist=687646681&disablekb=1&modestbranding=1&playsinline=1&rel=0&background=1" allow="autoplay; fullscreen" title="Villa Rosa"></iframe>
+  <?php endif; ?>
   </div>
   <div class="sbtw-hero-overlay"></div>
   <div class="sbtw-hero-inner">

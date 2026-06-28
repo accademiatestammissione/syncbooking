@@ -21,9 +21,16 @@ $room_cards = array(
 );
 ?>
 <!-- ============ HERO ============ -->
+<?php $home_v2 = ( 'variant2' === sbt_home_variant() ); ?>
 <section class="sbtw-hero" id="top" data-screen-label="Hero">
-  <div class="sbtw-hero-video">
+  <div class="sbtw-hero-video"<?php echo $home_v2 ? ' data-heroslide' : ''; ?>>
+  <?php if ( $home_v2 ) : ?>
+    <?php foreach ( array( 'masseria-dusk.jpg', 'facade-glow.jpg', 'courtyard.jpg', 'pool-pergola.jpg', 'masseria-night.jpg', 'aerial-pool.jpg' ) as $hs ) : ?>
+    <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/' . $hs ) ); ?>" alt="<?php echo esc_attr( $SITE['name'] ?? 'Masseria Le Cerase' ); ?>" />
+    <?php endforeach; ?>
+  <?php else : ?>
     <video src="<?php echo esc_url( sbt_asset_url( 'assets/video/masseria.mp4' ) ); ?>" poster="<?php echo esc_url( sbt_asset_url( 'assets/images/masseria-dusk.jpg' ) ); ?>" autoplay muted loop playsinline></video>
+  <?php endif; ?>
   </div>
   <div class="sbtw-hero-overlay"></div>
   <div class="sbtw-hero-inner">

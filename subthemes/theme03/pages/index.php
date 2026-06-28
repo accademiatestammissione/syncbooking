@@ -22,12 +22,17 @@ $svc_svgs = array(
 );
 ?>
 <!-- ============ HERO ============ -->
+<?php $home_v2 = ( 'variant2' === sbt_home_variant() ); ?>
 <section class="sbtw-hero" id="top" data-screen-label="Hero">
-  <div class="sbtw-hero-video" data-heroslide>
+  <div class="sbtw-hero-video"<?php echo $home_v2 ? ' data-heroslide' : ''; ?>>
+  <?php if ( $home_v2 ) : ?>
     <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-05.jpg' ) ); ?>" alt="Masseria Montefieno among the olive trees" />
     <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-12.jpg' ) ); ?>" alt="The pool framed by olive trees" />
     <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-16.jpg' ) ); ?>" alt="Dining under the pergola" />
     <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-19.jpg' ) ); ?>" alt="The masseria at golden hour" />
+  <?php else : ?>
+    <video src="<?php echo esc_url( sbt_asset_url( 'assets/video/masseria.mp4' ) ); ?>" poster="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-05.jpg' ) ); ?>" autoplay muted loop playsinline></video>
+  <?php endif; ?>
   </div>
   <div class="sbtw-hero-overlay"></div>
   <div class="sbtw-hero-inner">

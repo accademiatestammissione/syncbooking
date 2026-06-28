@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.16' );
+define( 'SBT_VERSION', '2.2.17' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -173,6 +173,7 @@ function sbt_default_options() {
 		'cf7_forms'          => array(),
 		'nav_extra'          => array(),
 		'nav_removed'        => array(),
+		'home_variant'       => array(),
 	);
 }
 
@@ -321,6 +322,22 @@ function sbt_active_subtheme_key() {
 function sbt_active_subtheme() {
 	$subthemes = sbt_subthemes();
 	return $subthemes[ sbt_active_subtheme_key() ];
+}
+
+/**
+ * Home-page hero variant for a subtheme: 'variant1' (background video) or
+ * 'variant2' (image carousel). Stored per subtheme in options['home_variant'].
+ * Default keeps the current look: theme03 ships the image carousel, the others
+ * ship the video.
+ */
+function sbt_home_variant( $subtheme = '' ) {
+	$subtheme = '' === $subtheme ? sbt_active_subtheme_key() : sanitize_key( $subtheme );
+	$options = sbt_get_options();
+	$saved = isset( $options['home_variant'][ $subtheme ] ) ? $options['home_variant'][ $subtheme ] : '';
+	if ( in_array( $saved, array( 'variant1', 'variant2' ), true ) ) {
+		return $saved;
+	}
+	return 'theme03' === $subtheme ? 'variant2' : 'variant1';
 }
 
 function sbt_unit_label( $overrides = array() ) {
@@ -4738,8 +4755,38 @@ function sbt_visual_meta_editor_gallery_attachment_ids() {
 add_action( 'wp_ajax_sbt_vfe_gallery_attachment_ids', 'sbt_visual_meta_editor_gallery_attachment_ids' );
 
 function sbt_admin_menu() {
-	add_theme_page( 'SyncBooking Theme', 'SyncBooking Theme', 'edit_theme_options', 'syncbooking-theme', 'sbt_render_admin_page' );
+	// Top-level entry in the main admin sidebar, just before Appearance (pos 60).
+	add_menu_page(
+		'SyncBooking Theme',
+		'SyncBooking',
+		'edit_theme_options',
+		'syncbooking-theme',
+		'sbt_render_admin_page',
+		'dashicons-admin-customizer',
+		59
+	);
 }
+
+/**
+ * Keep the legacy Appearance URL (themes.php?page=syncbooking-theme) working by
+ * redirecting it to the new top-level page (admin.php?page=syncbooking-theme),
+ * preserving the tab.
+ */
+function sbt_admin_menu_legacy_redirect() {
+	if ( ! isset( $_GET['page'] ) || 'syncbooking-theme' !== $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification
+		return;
+	}
+	if ( ! isset( $GLOBALS['pagenow'] ) || 'themes.php' !== $GLOBALS['pagenow'] ) {
+		return;
+	}
+	$args = array( 'page' => 'syncbooking-theme' );
+	if ( isset( $_GET['tab'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification
+		$args['tab'] = sanitize_key( wp_unslash( $_GET['tab'] ) );
+	}
+	wp_safe_redirect( add_query_arg( $args, admin_url( 'admin.php' ) ) );
+	exit;
+}
+add_action( 'admin_init', 'sbt_admin_menu_legacy_redirect' );
 add_action( 'admin_menu', 'sbt_admin_menu' );
 
 function sbt_hide_wp_pages_menu() {
@@ -4755,7 +4802,7 @@ function sbt_redirect_wp_pages_list_to_theme_pages() {
 	global $pagenow;
 	$post_type = isset( $_GET['post_type'] ) ? sanitize_key( wp_unslash( $_GET['post_type'] ) ) : '';
 	if ( 'edit.php' === $pagenow && 'page' === $post_type ) {
-		wp_safe_redirect( admin_url( 'themes.php?page=syncbooking-theme&tab=pages' ) );
+		wp_safe_redirect( add_query_arg( array( 'page' => 'syncbooking-theme', 'tab' => 'pages' ), admin_url( 'admin.php' ) ) );
 		exit;
 	}
 }
@@ -5382,6 +5429,11 @@ function sbt_sanitize_options( $raw ) {
 	$options['cf7_forms'] = isset( $existing['cf7_forms'] ) && is_array( $existing['cf7_forms'] ) ? $existing['cf7_forms'] : array();
 	$options['nav_extra'] = isset( $existing['nav_extra'] ) && is_array( $existing['nav_extra'] ) ? $existing['nav_extra'] : array();
 	$options['nav_removed'] = isset( $existing['nav_removed'] ) && is_array( $existing['nav_removed'] ) ? $existing['nav_removed'] : array();
+	$options['home_variant'] = isset( $existing['home_variant'] ) && is_array( $existing['home_variant'] ) ? $existing['home_variant'] : array();
+	if ( isset( $raw['home_variant'] ) ) {
+		$variant = sanitize_key( wp_unslash( $raw['home_variant'] ) );
+		$options['home_variant'][ $options['subtheme'] ] = in_array( $variant, array( 'variant1', 'variant2' ), true ) ? $variant : 'variant1';
+	}
 	if ( isset( $raw['nav_extra'] ) || isset( $raw['nav_removed'] ) ) {
 		$nav_extra = array();
 		if ( isset( $raw['nav_extra'] ) && is_array( $raw['nav_extra'] ) ) {
@@ -5747,13 +5799,11 @@ function sbt_admin_current_tab() {
 }
 
 function sbt_admin_tab_url( $tab ) {
-	return add_query_arg(
-		array(
-			'page' => 'syncbooking-theme',
-			'tab'  => $tab,
-		),
-		admin_url( 'themes.php' )
-	);
+	$base = function_exists( 'menu_page_url' ) ? menu_page_url( 'syncbooking-theme', false ) : '';
+	if ( ! $base ) {
+		$base = add_query_arg( 'page', 'syncbooking-theme', admin_url( 'admin.php' ) );
+	}
+	return add_query_arg( 'tab', $tab, $base );
 }
 
 function sbt_redirect_legacy_home_tab() {
@@ -5998,6 +6048,14 @@ function sbt_render_theme_tab( $active, $subthemes ) {
 			<?php endforeach; ?>
 		</div>
 		<div class="sbt-field-grid">
+			<div class="sbt-field">
+				<label>Home page hero</label>
+				<div class="sbt-actions">
+					<label><input type="radio" name="<?php echo esc_attr( SBT_OPTION ); ?>[home_variant]" value="variant1" <?php checked( sbt_home_variant( $active ), 'variant1' ); ?>> Variant&nbsp;1 &mdash; Background video</label>
+					<label><input type="radio" name="<?php echo esc_attr( SBT_OPTION ); ?>[home_variant]" value="variant2" <?php checked( sbt_home_variant( $active ), 'variant2' ); ?>> Variant&nbsp;2 &mdash; Image carousel</label>
+				</div>
+				<span class="sbt-muted">Variant&nbsp;1 shows the homepage hero video; Variant&nbsp;2 shows a scrolling image carousel. Applies to the selected subtheme.</span>
+			</div>
 			<div class="sbt-field">
 				<label><?php echo esc_html( sbt_t( 'admin_language' ) ); ?></label>
 				<select name="<?php echo esc_attr( SBT_OPTION ); ?>[admin_language]">
