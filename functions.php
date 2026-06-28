@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.26' );
+define( 'SBT_VERSION', '2.2.27' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -4519,12 +4519,17 @@ function sbt_connect_popup_close( $message, $reload_opener ) {
 <p><?php echo esc_html( $message ); ?></p>
 <script>
 ( function () {
-	try {
-		if ( <?php echo $reload_opener ? 'true' : 'false'; ?> && window.opener && ! window.opener.closed ) {
-			window.opener.location.reload();
-		}
-	} catch ( e ) {}
-	window.close();
+<?php if ( $reload_opener ) : ?>
+	// Same-origin signal: the opener admin page listens for this and reloads itself
+	// (works even if the cross-origin redirect severed window.opener).
+	try { localStorage.setItem( 'sbt_connected', String( Date.now() ) ); } catch ( e ) {}
+	try { if ( window.opener && ! window.opener.closed ) { window.opener.location.reload(); } } catch ( e ) {}
+<?php endif; ?>
+	// window.close() is refused for windows that have navigation history; re-marking
+	// the window as script-opened first lets the browser close it. Retry once.
+	function bye() { try { window.open( '', '_self' ); } catch ( e ) {} window.close(); }
+	bye();
+	setTimeout( bye, 200 );
 } )();
 </script>
 </body></html>
@@ -6368,6 +6373,11 @@ function sbt_render_theme_tab( $active, $subthemes ) {
 				b.addEventListener('click', function(){
 					var u = b.getAttribute('data-sb-connect');
 					if ( u ) { window.open( u, 'sbtConnect', 'width=560,height=660,menubar=no,toolbar=no' ); }
+				});
+				// When the Connect popup saves the key it pings localStorage; reload to
+				// pick up the new key and unlock the tabs.
+				window.addEventListener('storage', function(e){
+					if ( e.key === 'sbt_connected' ) { location.reload(); }
 				});
 			})();
 			</script>
