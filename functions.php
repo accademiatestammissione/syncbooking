@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.18' );
+define( 'SBT_VERSION', '2.2.19' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -279,6 +279,24 @@ function sbt_admin_language() {
 	$options = sbt_get_options();
 	return isset( $options['admin_language'] ) && in_array( $options['admin_language'], array( 'it', 'en' ), true ) ? $options['admin_language'] : 'en';
 }
+
+/**
+ * One-time migration: make English the standard admin language. Flips an
+ * explicitly-saved 'it' to 'en' once (guarded), so existing sites adopt the new
+ * default; the user can switch back later without it being re-applied.
+ */
+function sbt_migrate_admin_language_en() {
+	if ( get_option( 'sbt_admin_lang_en_migrated' ) ) {
+		return;
+	}
+	$options = sbt_get_options();
+	if ( isset( $options['admin_language'] ) && 'en' !== $options['admin_language'] ) {
+		$options['admin_language'] = 'en';
+		update_option( SBT_OPTION, $options );
+	}
+	update_option( 'sbt_admin_lang_en_migrated', 1, false );
+}
+add_action( 'admin_init', 'sbt_migrate_admin_language_en' );
 
 function sbt_edit_mode() {
 	$options = sbt_get_options();
