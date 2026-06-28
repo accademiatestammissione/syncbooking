@@ -30,10 +30,6 @@ $IMG = array(
 $SITE = array(
 	'name' => 'Masseria Montefieno',
 	'tagline' => 'A stunning Masseria in Puglia',
-	'logo_class' => 'sbtw-logo-txt',
-	'logo_html' => '<img class="sbtw-lg-w" src="' . esc_url( sbt_t3_asset( 'assets/images/logo-montefieno-white.png' ) ) . '" alt="Masseria Montefieno" /><img class="sbtw-lg-d" src="' . esc_url( sbt_t3_asset( 'assets/images/logo-montefieno-dark.png' ) ) . '" alt="Masseria Montefieno" />',
-	'logo_foot_class' => 'sbtw-logo-txt sbtw-logo-foot',
-	'logo_foot_html' => '<img src="' . esc_url( sbt_t3_asset( 'assets/images/logo-montefieno.png' ) ) . '" alt="Masseria Montefieno" />',
 	'address' => 'Contrada Montefieno<br/>70014 Conversano (Bari)<br/>Puglia, Italy',
 	'address_line_1' => 'Contrada Montefieno',
 	'address_line_2' => '70014 Conversano (Bari)',

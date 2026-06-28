@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.19' );
+define( 'SBT_VERSION', '2.2.20' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -649,6 +649,36 @@ function sbt_enqueue_theme_fonts() {
 	);
 }
 add_action( 'wp_enqueue_scripts', 'sbt_enqueue_theme_fonts' );
+
+/**
+ * The client chrome builder (assets/syncbooking_site.js) hard-codes the brand
+ * logo link to "home.html" (the static-source convention). On WordPress the logo
+ * must point at the real home page, so once the chrome is built, rewrite any
+ * logo link whose href is home.html/index.html (or empty) to SBTW_CONFIG.brand.home.
+ */
+function sbt_fix_logo_home_link() {
+	?>
+	<script>
+	(function(){
+		var cfg = window.SBTW_CONFIG || {};
+		var home = ( cfg.brand && cfg.brand.home ) ? cfg.brand.home : '/';
+		function fix(){
+			document.querySelectorAll( 'a.sbtw-logo, a.sbtw-brand, .sbtw-foot-brand a, a.sbtw-logo-foot' ).forEach( function( a ){
+				var h = a.getAttribute( 'href' ) || '';
+				if ( /(^|\/)(home|index)\.html(\?.*)?$/i.test( h ) || h === '#' || h === '' ) {
+					a.setAttribute( 'href', home );
+				}
+			} );
+		}
+		fix();
+		var mo = new MutationObserver( fix );
+		mo.observe( document.documentElement, { childList: true, subtree: true } );
+		setTimeout( function(){ mo.disconnect(); }, 10000 );
+	})();
+	</script>
+	<?php
+}
+add_action( 'wp_footer', 'sbt_fix_logo_home_link', 20 );
 
 function sbt_page_templates() {
 	$subtheme_key = sbt_active_subtheme_key();
@@ -4909,7 +4939,7 @@ function sbt_hide_standard_page_editor() {
 add_action( 'admin_head-post.php', 'sbt_hide_standard_page_editor' );
 
 function sbt_enqueue_admin_assets( $hook ) {
-	if ( 'appearance_page_syncbooking-theme' !== $hook && 'post.php' !== $hook && 'post-new.php' !== $hook ) {
+	if ( 'toplevel_page_syncbooking-theme' !== $hook && 'post.php' !== $hook && 'post-new.php' !== $hook ) {
 		return;
 	}
 

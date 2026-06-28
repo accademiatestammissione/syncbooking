@@ -131,6 +131,7 @@ if ( ! function_exists( 'sbt_build_site_config' ) ) {
 				'name'       => $dec( $SITE['name'] ?? '' ),
 				'logo'       => $IMG['logo'] ?? '',
 				'logoFooter' => $IMG['logo_foot'] ?? ( $IMG['logo'] ?? '' ),
+				'home'       => $resolve( 'index.php' ),
 				'bookingUrl' => $resolve( 'syncbooking:booking' ),
 			),
 			// v6.5 general palette — each token feeds CSS variables in site.js.
