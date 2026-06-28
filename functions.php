@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.22' );
+define( 'SBT_VERSION', '2.2.23' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -4420,6 +4420,54 @@ function sbt_send_colors_menu_to_api() {
 	) );
 }
 
+/** Whether a SyncBooking API key has been set/collected. Gates the other tabs. */
+function sbt_has_api_key() {
+	$options = sbt_get_options();
+	return ! empty( $options['api_key'] );
+}
+
+/**
+ * Collect the API key from SyncBooking for this website
+ * (https://admin.syncbooking.com/api_data_wp?website=<site>&token=...). Returns
+ * the key string, or '' if it could not be retrieved.
+ */
+function sbt_fetch_api_key() {
+	$url = add_query_arg(
+		array(
+			'website' => home_url( '/' ),
+			'token'   => 'syncbooking_compressione021190',
+		),
+		'https://admin.syncbooking.com/api_data_wp'
+	);
+
+	$resp = wp_remote_get( $url, array(
+		'timeout' => 12,
+		'headers' => array( 'Accept' => 'application/json' ),
+	) );
+	if ( is_wp_error( $resp ) ) {
+		return '';
+	}
+
+	$json = json_decode( wp_remote_retrieve_body( $resp ), true );
+	if ( ! is_array( $json ) ) {
+		return '';
+	}
+
+	$candidates = array( $json );
+	if ( ! empty( $json['data'] ) && is_array( $json['data'] ) ) {
+		$candidates[] = $json['data'];
+	}
+	foreach ( $candidates as $bag ) {
+		foreach ( array( 'api_key', 'apiKey', 'apikey', 'key' ) as $field ) {
+			if ( ! empty( $bag[ $field ] ) && is_string( $bag[ $field ] ) ) {
+				return sanitize_text_field( $bag[ $field ] );
+			}
+		}
+	}
+
+	return '';
+}
+
 function sbt_rewrite_content_urls( &$value ) {
 	if ( ! is_array( $value ) ) {
 		return;
@@ -5949,7 +5997,14 @@ function sbt_admin_current_tab() {
 		return 'pages';
 	}
 
-	return in_array( $tab, array( 'themes', 'general', 'header', 'colors', 'menu', 'pages' ), true ) ? $tab : 'themes';
+	$tab = in_array( $tab, array( 'themes', 'general', 'header', 'colors', 'menu', 'pages' ), true ) ? $tab : 'themes';
+
+	// The other tabs are locked until a SyncBooking API key is set.
+	if ( 'themes' !== $tab && ! sbt_has_api_key() ) {
+		return 'themes';
+	}
+
+	return $tab;
 }
 
 function sbt_admin_tab_url( $tab ) {
@@ -6053,6 +6108,7 @@ function sbt_render_admin_shell_start( $active_tab ) {
 		.sbt-tabs { display:flex; gap:8px; margin:22px 0 18px; border-bottom:1px solid #dcdcde; }
 		.sbt-tab { border:1px solid transparent; border-bottom:0; color:#1d2327; display:inline-flex; font-weight:600; padding:12px 16px; text-decoration:none; }
 		.sbt-tab.is-active { background:#fff; border-color:#dcdcde; border-radius:6px 6px 0 0; margin-bottom:-1px; }
+		.sbt-tab--locked { color:#a7aaad; cursor:not-allowed; }
 		.sbt-panel { background:#fff; border:1px solid #dcdcde; border-radius:8px; padding:22px; }
 		.sbt-grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr)); }
 		.sbt-theme-grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr)); margin:18px 0; }
@@ -6180,8 +6236,13 @@ function sbt_render_admin_shell_start( $active_tab ) {
 		<h1>SyncBooking Theme <span class="sbt-version-badge"><?php echo esc_html( sbt_display_version() ); ?></span></h1>
 		<p class="sbt-muted">Manage subtheme, general settings, header, menu and pages from one dashboard.</p>
 		<nav class="sbt-tabs" aria-label="SyncBooking Theme">
+			<?php $sbt_api_locked = ! sbt_has_api_key(); ?>
 			<?php foreach ( $tabs as $key => $label ) : ?>
-				<a class="sbt-tab <?php echo $active_tab === $key ? 'is-active' : ''; ?>" href="<?php echo esc_url( sbt_admin_tab_url( $key ) ); ?>"><?php echo esc_html( $label ); ?></a>
+				<?php if ( $sbt_api_locked && 'themes' !== $key ) : ?>
+					<span class="sbt-tab sbt-tab--locked" aria-disabled="true" title="Enter your SyncBooking API key first">&#128274; <?php echo esc_html( $label ); ?></span>
+				<?php else : ?>
+					<a class="sbt-tab <?php echo $active_tab === $key ? 'is-active' : ''; ?>" href="<?php echo esc_url( sbt_admin_tab_url( $key ) ); ?>"><?php echo esc_html( $label ); ?></a>
+				<?php endif; ?>
 			<?php endforeach; ?>
 		</nav>
 	<?php
@@ -6194,6 +6255,9 @@ function sbt_render_theme_tab( $active, $subthemes ) {
 	<div class="sbt-panel">
 		<h2><?php echo esc_html( sbt_t( 'choose_subtheme' ) ); ?></h2>
 		<p class="sbt-muted"><?php echo esc_html( sbt_t( 'theme_note' ) ); ?></p>
+		<?php if ( ! sbt_has_api_key() ) : ?>
+			<div class="notice notice-warning inline" style="margin:0 0 16px;"><p><strong>Enter your SyncBooking API Key below to unlock the other tabs</strong> (General, Header &amp; Footer, Colours, Menu, Pages). Use &ldquo;Get API key from SyncBooking&rdquo; or paste it manually, then Save.</p></div>
+		<?php endif; ?>
 		<div class="sbt-theme-grid">
 			<?php foreach ( $subthemes as $key => $subtheme ) : ?>
 				<?php $card_variant = sbt_home_variant( $key ); ?>
@@ -6215,9 +6279,13 @@ function sbt_render_theme_tab( $active, $subthemes ) {
 		</div>
 		<div class="sbt-field-grid">
 			<div class="sbt-field">
-				<label>SyncBooking API Key</label>
-				<input type="text" name="<?php echo esc_attr( SBT_OPTION ); ?>[api_key]" value="<?php echo esc_attr( ( sbt_get_options()['api_key'] ?? '' ) ); ?>" placeholder="Your SyncBooking API key" autocomplete="off" spellcheck="false">
-				<span class="sbt-muted">Sent (with the site URL, colours and menu) to SyncBooking each time you save.</span>
+				<label>SyncBooking API Key <span style="color:#d63638;">*</span></label>
+				<input type="text" name="<?php echo esc_attr( SBT_OPTION ); ?>[api_key]" value="<?php echo esc_attr( ( sbt_get_options()['api_key'] ?? '' ) ); ?>" placeholder="Paste your SyncBooking API key" autocomplete="off" spellcheck="false">
+				<div class="sbt-actions" style="margin-top:6px;">
+					<button type="submit" class="button" name="sbt_action" value="fetch_api_key">Get API key from SyncBooking</button>
+					<a class="button button-link" href="<?php echo esc_url( add_query_arg( 'website', home_url( '/' ), 'https://admin.syncbooking.com/api_data_wp' ) ); ?>" target="_blank" rel="noopener">Open SyncBooking &#8599;</a>
+				</div>
+				<span class="sbt-muted"><strong>Required</strong> to unlock the other tabs. Sent (with the site URL, colours and menu) to SyncBooking on every save.</span>
 			</div>
 			<div class="sbt-field">
 				<label><?php echo esc_html( sbt_t( 'admin_language' ) ); ?></label>
@@ -7277,6 +7345,16 @@ function sbt_render_admin_page() {
 		} elseif ( 'reset_active_template' === $sbt_action ) {
 			if ( sbt_reset_subtheme_template( $selected_subtheme ) ) {
 				echo '<div class="notice notice-success is-dismissible"><p>Original template restored for the selected subtheme.</p></div>';
+			}
+		} elseif ( 'fetch_api_key' === $sbt_action ) {
+			$fetched_key = sbt_fetch_api_key();
+			if ( '' !== $fetched_key ) {
+				$fetch_opts = sbt_get_options();
+				$fetch_opts['api_key'] = $fetched_key;
+				update_option( SBT_OPTION, $fetch_opts );
+				echo '<div class="notice notice-success is-dismissible"><p>API key retrieved from SyncBooking.</p></div>';
+			} else {
+				echo '<div class="notice notice-error is-dismissible"><p>Could not retrieve the API key automatically. Open the SyncBooking link to copy it, then paste it below and save.</p></div>';
 			}
 		} else {
 			update_option( SBT_OPTION, sbt_sanitize_options( $raw_options ) );
