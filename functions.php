@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.28' );
+define( 'SBT_VERSION', '2.2.29' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -4480,61 +4480,26 @@ function sbt_validate_api_key( $api_key ) {
 }
 
 /**
- * Connect callback (popup → here). SyncBooking redirects the Connect popup back to
- * admin.php?page=syncbooking-theme&tab=themes&sb_connect=1&_wpnonce=…&sb_api_key=…
- * (same-origin). We verify the nonce + capability, store the key, then reload the
- * opener (the admin page) and close the popup.
+ * AJAX: persist the API key the Connect popup delivered via postMessage
+ * ({ type:'syncbooking-connect', api_key, ... }). Nonce + capability checked.
  */
-add_action( 'admin_init', 'sbt_handle_connect_callback' );
-function sbt_handle_connect_callback() {
-	if ( empty( $_GET['sb_connect'] ) || ! isset( $_GET['sb_api_key'] ) ) {
-		return;
-	}
+add_action( 'wp_ajax_sbt_connect_save', 'sbt_ajax_connect_save' );
+function sbt_ajax_connect_save() {
 	if ( ! current_user_can( 'edit_theme_options' ) ) {
-		return;
+		wp_send_json_error( 'forbidden', 403 );
 	}
-	$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
-	if ( ! wp_verify_nonce( $nonce, 'sbt_connect' ) ) {
-		sbt_connect_popup_close( 'Security check failed. Please click Connect again.', false );
-	}
+	check_ajax_referer( 'sbt_connect_save' );
 
-	$key = sanitize_text_field( wp_unslash( $_GET['sb_api_key'] ) );
+	$key = isset( $_POST['api_key'] ) ? sanitize_text_field( wp_unslash( $_POST['api_key'] ) ) : '';
 	if ( '' === $key ) {
-		sbt_connect_popup_close( 'SyncBooking did not return an API key.', false );
+		wp_send_json_error( 'empty' );
 	}
 
 	$options            = sbt_get_options();
 	$options['api_key'] = $key;
 	update_option( SBT_OPTION, $options );
 
-	sbt_connect_popup_close( 'Connected to SyncBooking. You can close this window.', true );
-}
-
-/** Render a tiny page that reloads the opener admin page and closes the Connect popup. */
-function sbt_connect_popup_close( $message, $reload_opener ) {
-	nocache_headers();
-	?><!DOCTYPE html>
-<html><head><meta charset="utf-8"><title>SyncBooking</title></head>
-<body style="font-family:-apple-system,Segoe UI,Roboto,sans-serif;padding:24px;color:#1d2327;">
-<p><?php echo esc_html( $message ); ?></p>
-<script>
-( function () {
-<?php if ( $reload_opener ) : ?>
-	// Same-origin signal: the opener admin page listens for this and reloads itself
-	// (works even if the cross-origin redirect severed window.opener).
-	try { localStorage.setItem( 'sbt_connected', String( Date.now() ) ); } catch ( e ) {}
-	try { if ( window.opener && ! window.opener.closed ) { window.opener.location.reload(); } } catch ( e ) {}
-<?php endif; ?>
-	// window.close() is refused for windows that have navigation history; re-marking
-	// the window as script-opened first lets the browser close it. Retry once.
-	function bye() { try { window.open( '', '_self' ); } catch ( e ) {} window.close(); }
-	bye();
-	setTimeout( bye, 200 );
-} )();
-</script>
-</body></html>
-	<?php
-	exit;
+	wp_send_json_success();
 }
 
 function sbt_rewrite_content_urls( &$value ) {
@@ -6327,18 +6292,11 @@ function sbt_render_theme_tab( $active, $subthemes ) {
 	$sbt_plugin_key = is_string( $sbt_plugin_key ) ? $sbt_plugin_key : '';
 	$sbt_eff_key    = '' !== $sbt_theme_key ? $sbt_theme_key : $sbt_plugin_key;
 	$sbt_site_host  = wp_parse_url( get_site_url(), PHP_URL_HOST );
-	$sbt_connect_cb = add_query_arg(
-		array(
-			'page'       => 'syncbooking-theme',
-			'tab'        => 'themes',
-			'sb_connect' => '1',
-			'_wpnonce'   => wp_create_nonce( 'sbt_connect' ),
-		),
-		admin_url( 'admin.php' )
-	);
-	// WordPress add_query_arg() does NOT url-encode values, so a nested URL with its
-	// own query string bleeds into the outer params. Encode the two values manually.
-	$sbt_connect_url = 'https://admin.syncbooking.com/api_data_wp?website=' . rawurlencode( get_site_url() ) . '&redirect_uri=' . rawurlencode( $sbt_connect_cb );
+	// Connect opens the endpoint with cb=postmessage: the popup posts
+	// { type:'syncbooking-connect', api_key, ... } back to this window via
+	// postMessage; we save it over AJAX and close the popup.
+	$sbt_connect_url = 'https://admin.syncbooking.com/api_data_wp?website=' . rawurlencode( get_site_url() ) . '&cb=postmessage';
+	$sbt_save_nonce  = wp_create_nonce( 'sbt_connect_save' );
 	?>
 	<div class="sbt-panel">
 		<div class="sbt-connect-box" style="margin:0 0 22px;padding:0 0 20px;border-bottom:1px solid #e3e3e6;">
@@ -6352,23 +6310,46 @@ function sbt_render_theme_tab( $active, $subthemes ) {
 			</p>
 			<div class="sbt-field">
 				<label>SyncBooking API Key <span style="color:#d63638;">*</span></label>
-				<input type="text" name="<?php echo esc_attr( SBT_OPTION ); ?>[api_key]" value="<?php echo esc_attr( $sbt_eff_key ); ?>" readonly autocomplete="off" spellcheck="false" style="background:#f6f7f7;cursor:not-allowed;">
+				<input type="text" id="sbt-api-key-input" name="<?php echo esc_attr( SBT_OPTION ); ?>[api_key]" value="<?php echo esc_attr( $sbt_eff_key ); ?>" readonly autocomplete="off" spellcheck="false" style="background:#f6f7f7;cursor:not-allowed;">
 				<div class="sbt-actions" style="margin-top:6px;">
 					<button type="button" class="button button-primary" id="sbt-connect-btn" data-sb-connect="<?php echo esc_url( $sbt_connect_url ); ?>">Connect to SyncBooking</button>
 				</div>
+				<div id="sbt-connect-result" class="sbt-muted" style="margin-top:6px;" aria-live="polite"></div>
 			</div>
 			<script>
 			(function(){
-				var b = document.getElementById('sbt-connect-btn');
-				if ( ! b ) { return; }
-				b.addEventListener('click', function(){
-					var u = b.getAttribute('data-sb-connect');
-					if ( u ) { window.open( u, 'sbtConnect', 'width=560,height=660,menubar=no,toolbar=no' ); }
-				});
-				// When the Connect popup saves the key it pings localStorage; reload to
-				// pick up the new key and unlock the tabs.
-				window.addEventListener('storage', function(e){
-					if ( e.key === 'sbt_connected' ) { location.reload(); }
+				var b      = document.getElementById('sbt-connect-btn');
+				var inp    = document.getElementById('sbt-api-key-input');
+				var note   = document.getElementById('sbt-connect-result');
+				var nonce  = '<?php echo esc_js( $sbt_save_nonce ); ?>';
+				var allowed = ['https://admin.syncbooking.com', 'http://admin.syncbooking.com'];
+				var popup  = null;
+				function say( msg, color ) { if ( note ) { note.style.color = color || ''; note.textContent = msg || ''; } }
+				if ( b ) {
+					b.addEventListener('click', function(){
+						var u = b.getAttribute('data-sb-connect');
+						if ( u ) {
+							say( 'Opening SyncBooking. Make sure you are logged in...' );
+							popup = window.open( u, 'syncbookingConnectWindow', 'width=700,height=700' );
+						}
+					});
+				}
+				// The popup posts { type:'syncbooking-connect', api_key, ... } back here.
+				window.addEventListener('message', function( event ){
+					if ( ! event || allowed.indexOf( event.origin ) === -1 ) { return; }
+					var data = event.data || {};
+					if ( data.type !== 'syncbooking-connect' ) { return; }
+					var apiKey = data.api_key || data.api_website || '';
+					if ( ! apiKey ) { say( 'Connection failed: no API key received.', '#d63638' ); return; }
+					if ( inp ) { inp.value = apiKey; }
+					// We have the key — close the popup straight away.
+					try { if ( popup && ! popup.closed ) { popup.close(); } } catch ( err ) {}
+					say( 'Connected. Saving...', 'green' );
+					// Persist server-side, then reload to unlock the tabs.
+					var body = 'action=sbt_connect_save&_wpnonce=' + encodeURIComponent( nonce ) + '&api_key=' + encodeURIComponent( apiKey );
+					fetch( ajaxurl, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body } )
+						.then( function(){ location.reload(); } )
+						.catch( function(){ location.reload(); } );
 				});
 			})();
 			</script>
