@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.27' );
+define( 'SBT_VERSION', '2.2.28' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -6343,28 +6343,19 @@ function sbt_render_theme_tab( $active, $subthemes ) {
 	<div class="sbt-panel">
 		<div class="sbt-connect-box" style="margin:0 0 22px;padding:0 0 20px;border-bottom:1px solid #e3e3e6;">
 			<h2>Connect to SyncBooking</h2>
-			<p class="sbt-muted" style="max-width:640px;">
+			<p class="sbt-muted">
 				To use this theme you need an account on
 				<a href="https://admin.syncbooking.com" target="_blank" rel="noopener"><strong>SyncBooking</strong></a>.
 				If you already have one, click <strong>Connect to SyncBooking</strong> below to link it.
 				In your SyncBooking profile you must add this website:
 				<strong><?php echo esc_html( $sbt_site_host ); ?></strong>.
 			</p>
-			<div class="sbt-field" style="max-width:560px;">
+			<div class="sbt-field">
 				<label>SyncBooking API Key <span style="color:#d63638;">*</span></label>
-				<input type="text" name="<?php echo esc_attr( SBT_OPTION ); ?>[api_key]" value="<?php echo esc_attr( $sbt_eff_key ); ?>" placeholder="Connect to SyncBooking, or paste your key" autocomplete="off" spellcheck="false">
+				<input type="text" name="<?php echo esc_attr( SBT_OPTION ); ?>[api_key]" value="<?php echo esc_attr( $sbt_eff_key ); ?>" readonly autocomplete="off" spellcheck="false" style="background:#f6f7f7;cursor:not-allowed;">
 				<div class="sbt-actions" style="margin-top:6px;">
 					<button type="button" class="button button-primary" id="sbt-connect-btn" data-sb-connect="<?php echo esc_url( $sbt_connect_url ); ?>">Connect to SyncBooking</button>
-					<?php if ( ! $has_key ) : ?>
-						<?php submit_button( 'Save API key', 'secondary', 'submit', false ); ?>
-					<?php endif; ?>
 				</div>
-				<span class="sbt-muted">
-					<?php if ( '' !== $sbt_eff_key && '' === $sbt_theme_key ) : ?>
-						Using the key from the connected <strong>SyncBooking plugin</strong>.
-					<?php endif; ?>
-					<strong>Required.</strong> Click <strong>Connect</strong> while logged in to SyncBooking in this browser &mdash; a window opens, confirms your structure and returns the key automatically. You can also paste it manually.
-				</span>
 			</div>
 			<script>
 			(function(){
