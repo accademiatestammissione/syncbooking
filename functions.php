@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.29' );
+define( 'SBT_VERSION', '2.2.30' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -4342,22 +4342,38 @@ function sbt_colors_menu_payload() {
 	$site      = isset( $data['SITE'] ) && is_array( $data['SITE'] ) ? $data['SITE'] : array();
 	$overrides = function_exists( 'sbt_active_overrides' ) ? sbt_active_overrides() : array();
 
-	$tokens      = array( 'bg', 'surface', 'ink', 'muted', 'line', 'primary', 'primary_deep', 'primary_soft', 'accent', 'gold' );
+	// 13 site colour tokens — same names as the front-end window.SBTW_CONFIG.colors.
+	$site_map = array(
+		'pageBg'      => 'color_bg',
+		'surface'     => 'color_surface',
+		'ink'         => 'color_ink',
+		'muted'       => 'color_muted',
+		'line'        => 'color_line',
+		'primary'     => 'color_primary',
+		'primaryDeep' => 'color_primary_deep',
+		'primarySoft' => 'color_primary_soft',
+		'rose'        => 'color_accent',
+		'gold'        => 'color_gold',
+		'headerText'  => 'color_header_text',
+		'footerBg'    => 'color_footer_bg',
+		'footerText'  => 'color_footer_text',
+	);
 	$site_colors = array();
-	foreach ( $tokens as $token ) {
-		$key  = 'color_' . $token;
+	foreach ( $site_map as $out => $key ) {
 		$path = 'SITE.' . $key;
-		$site_colors[ $token ] = ( isset( $overrides[ $path ] ) && '' !== $overrides[ $path ] )
+		$site_colors[ $out ] = ( isset( $overrides[ $path ] ) && '' !== $overrides[ $path ] )
 			? $overrides[ $path ]
 			: ( isset( $site[ $key ] ) ? $site[ $key ] : '' );
 	}
 
+	// 6 booking-bar colours — the bar inherits the palette, so derive them from it.
 	$booking_bar = array(
-		'background'      => $site_colors['primary'],
-		'background_deep' => $site_colors['primary_deep'],
-		'surface'         => $site_colors['surface'],
-		'text'            => $site_colors['ink'],
-		'accent'          => $site_colors['accent'],
+		'barBg'          => $site_colors['primary'],
+		'barLabel'       => $site_colors['primarySoft'],
+		'barText'        => '#ffffff',
+		'barSubmitBg'    => $site_colors['primaryDeep'],
+		'barSubmitText'  => '#ffffff',
+		'barSubmitHover' => $site_colors['primary'],
 	);
 
 	$NAV = isset( $data['NAV'] ) && is_array( $data['NAV'] ) ? $data['NAV'] : array();
@@ -4368,20 +4384,22 @@ function sbt_colors_menu_payload() {
 			continue;
 		}
 		$entry = array(
-			'label'    => isset( $item['label'] ) ? wp_strip_all_tags( $item['label'] ) : '',
-			'url'      => sbt_url( $item['url'] ?? '#' ),
-			'key'      => isset( $item['key'] ) ? $item['key'] : '',
-			'children' => array(),
+			'label' => isset( $item['label'] ) ? wp_strip_all_tags( $item['label'] ) : '',
+			'href'  => sbt_url( $item['url'] ?? '#' ),
 		);
 		if ( ! empty( $item['sub'] ) && is_array( $item['sub'] ) ) {
+			$children = array();
 			foreach ( $item['sub'] as $sub ) {
 				if ( empty( $sub['label'] ) ) {
 					continue;
 				}
-				$entry['children'][] = array(
+				$children[] = array(
 					'label' => wp_strip_all_tags( $sub['label'] ),
-					'url'   => sbt_url( $sub['url'] ?? '#' ),
+					'href'  => sbt_url( $sub['url'] ?? '#' ),
 				);
+			}
+			if ( $children ) {
+				$entry['children'] = $children;
 			}
 		}
 		$menu[] = $entry;
@@ -4398,12 +4416,17 @@ function sbt_colors_menu_payload() {
 }
 
 /**
- * POST the colours + menu (plus site, API key and shared token) to SyncBooking on
- * every settings save. Non-blocking so it never slows the save.
+ * POST the colours + menu (plus site, API key and shared token) to SyncBooking.
+ * Fired on every settings save (non-blocking, so it never slows the save) and once
+ * a day from cron (blocking, so the request completes). Skips when no API key is
+ * set, since the key is what identifies the structure on the SyncBooking side.
  */
-function sbt_send_colors_menu_to_api() {
-	$options = sbt_get_options();
-	$body    = array(
+function sbt_send_colors_menu_to_api( $blocking = false ) {
+	if ( '' === sbt_get_api_key() ) {
+		return;
+	}
+
+	$body = array(
 		'theme'   => 'THEME_SYNCBOOKING',
 		'token'   => 'syncbooking_compressione021190',
 		'site'    => home_url( '/' ),
@@ -4412,12 +4435,36 @@ function sbt_send_colors_menu_to_api() {
 	);
 
 	wp_remote_post( sbt_colors_menu_api_url(), array(
-		'timeout'   => 8,
-		'blocking'  => false,
+		'timeout'   => $blocking ? 15 : 8,
+		'blocking'  => (bool) $blocking,
 		'sslverify' => true,
 		'headers'   => array( 'Accept' => 'application/json' ),
 		'body'      => $body,
 	) );
+}
+
+/**
+ * Daily push of the colours + menu to SyncBooking, in addition to the on-save push.
+ * Scheduled on init; uses a blocking request so the WP-cron run delivers it.
+ */
+add_action( 'sbt_daily_colors_menu_sync', 'sbt_cron_colors_menu_sync' );
+function sbt_cron_colors_menu_sync() {
+	sbt_send_colors_menu_to_api( true );
+}
+
+add_action( 'init', 'sbt_schedule_daily_colors_menu_sync' );
+function sbt_schedule_daily_colors_menu_sync() {
+	if ( ! wp_next_scheduled( 'sbt_daily_colors_menu_sync' ) ) {
+		wp_schedule_event( time() + HOUR_IN_SECONDS, 'daily', 'sbt_daily_colors_menu_sync' );
+	}
+}
+
+add_action( 'switch_theme', 'sbt_clear_daily_colors_menu_sync' );
+function sbt_clear_daily_colors_menu_sync() {
+	$timestamp = wp_next_scheduled( 'sbt_daily_colors_menu_sync' );
+	if ( $timestamp ) {
+		wp_unschedule_event( $timestamp, 'sbt_daily_colors_menu_sync' );
+	}
 }
 
 /**
