@@ -5,8 +5,8 @@ $BASE = function_exists( 'sbt_media_base_url' ) ? sbt_media_base_url() : 'assets
 
 $IMG = array(
 	'favicon' => function_exists( 'sbt_asset_url' ) ? sbt_asset_url( 'assets/images/favicon.png' ) : 'assets/images/favicon.png',
-	'logo' => $BASE . '2025/02/logo02-white-villarosaresort-conversano.png',
-	'logo_foot' => $BASE . '2025/02/logo03-white-villarosaresort-conversano.png',
+	'logo' => function_exists( 'sbt_asset_url' ) ? sbt_asset_url( 'assets/images/logo.png' ) : 'assets/images/logo.png',
+	'logo_foot' => function_exists( 'sbt_asset_url' ) ? sbt_asset_url( 'assets/images/logo.png' ) : 'assets/images/logo.png',
 	'lgbtq' => $BASE . '2025/07/lgbtq.png',
 	'welcome' => function_exists( 'sbt_asset_url' ) ? sbt_asset_url( 'assets/images/exterior-085.jpg' ) : 'assets/images/exterior-085.jpg',
 	'hero' => function_exists( 'sbt_asset_url' ) ? sbt_asset_url( 'assets/images/exterior-085.jpg' ) : 'assets/images/exterior-085.jpg',
