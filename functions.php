@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.17' );
+define( 'SBT_VERSION', '2.2.18' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -162,7 +162,7 @@ function sbt_subthemes() {
 function sbt_default_options() {
 	return array(
 		'subtheme'           => 'theme01',
-		'admin_language'     => 'it',
+		'admin_language'     => 'en',
 		'default_language'   => 'en',
 		'edit_mode'          => 'visual',
 		'languages'          => array( 'en', 'it' ),
@@ -277,7 +277,7 @@ function sbt_current_header_language_code() {
 
 function sbt_admin_language() {
 	$options = sbt_get_options();
-	return isset( $options['admin_language'] ) && in_array( $options['admin_language'], array( 'it', 'en' ), true ) ? $options['admin_language'] : 'it';
+	return isset( $options['admin_language'] ) && in_array( $options['admin_language'], array( 'it', 'en' ), true ) ? $options['admin_language'] : 'en';
 }
 
 function sbt_edit_mode() {
@@ -5430,9 +5430,14 @@ function sbt_sanitize_options( $raw ) {
 	$options['nav_extra'] = isset( $existing['nav_extra'] ) && is_array( $existing['nav_extra'] ) ? $existing['nav_extra'] : array();
 	$options['nav_removed'] = isset( $existing['nav_removed'] ) && is_array( $existing['nav_removed'] ) ? $existing['nav_removed'] : array();
 	$options['home_variant'] = isset( $existing['home_variant'] ) && is_array( $existing['home_variant'] ) ? $existing['home_variant'] : array();
-	if ( isset( $raw['home_variant'] ) ) {
-		$variant = sanitize_key( wp_unslash( $raw['home_variant'] ) );
-		$options['home_variant'][ $options['subtheme'] ] = in_array( $variant, array( 'variant1', 'variant2' ), true ) ? $variant : 'variant1';
+	if ( isset( $raw['home_variant'] ) && is_array( $raw['home_variant'] ) ) {
+		foreach ( $raw['home_variant'] as $variant_key => $variant_value ) {
+			$variant_key = sanitize_key( $variant_key );
+			$variant_value = sanitize_key( wp_unslash( $variant_value ) );
+			if ( '' !== $variant_key && in_array( $variant_value, array( 'variant1', 'variant2' ), true ) ) {
+				$options['home_variant'][ $variant_key ] = $variant_value;
+			}
+		}
 	}
 	if ( isset( $raw['nav_extra'] ) || isset( $raw['nav_removed'] ) ) {
 		$nav_extra = array();
@@ -5903,8 +5908,12 @@ function sbt_render_admin_shell_start( $active_tab ) {
 		.sbt-grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr)); }
 		.sbt-theme-grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr)); margin:18px 0; }
 		.sbt-card { border:1px solid #dcdcde; border-radius:8px; max-width:100%; min-width:0; padding:18px; position:relative; }
-		.sbt-theme-card { align-items:flex-start; cursor:pointer; display:grid; gap:12px; grid-template-columns:auto 1fr; min-height:118px; }
-		.sbt-theme-card input { margin-top:4px; }
+		.sbt-theme-card { display:flex; flex-direction:column; gap:10px; min-height:118px; }
+		.sbt-theme-card__head { align-items:flex-start; cursor:pointer; display:grid; gap:12px; grid-template-columns:auto 1fr; }
+		.sbt-theme-card__head input { margin-top:4px; }
+		.sbt-theme-card__variant { border-top:1px solid #e3e3e6; display:flex; flex-direction:column; gap:5px; padding-top:9px; }
+		.sbt-theme-card__variant-title { color:#1d2327; font-size:12px; font-weight:600; }
+		.sbt-variant-opt { align-items:center; color:#444; cursor:pointer; display:flex; font-size:12px; gap:6px; }
 		.sbt-theme-card__body { min-width:0; }
 		.sbt-theme-card__body h3 { font-size:18px; line-height:1.25; margin:0 0 6px; }
 		.sbt-theme-card__meta { color:#646970; display:block; font-size:13px; }
@@ -6038,24 +6047,24 @@ function sbt_render_theme_tab( $active, $subthemes ) {
 		<p class="sbt-muted"><?php echo esc_html( sbt_t( 'theme_note' ) ); ?></p>
 		<div class="sbt-theme-grid">
 			<?php foreach ( $subthemes as $key => $subtheme ) : ?>
-				<label class="sbt-card sbt-theme-card <?php echo $active === $key ? 'is-selected' : ''; ?>">
-					<input type="radio" name="<?php echo esc_attr( SBT_OPTION ); ?>[subtheme]" value="<?php echo esc_attr( $key ); ?>" <?php checked( $active, $key ); ?>>
-					<span class="sbt-theme-card__body">
-						<h3><?php echo esc_html( 'Theme' . preg_replace( '/\D+/', '', $key ) ); ?></h3>
-						<span class="sbt-theme-card__meta"><?php echo esc_html( count( $subtheme['pages'] ) ); ?> template pages included</span>
-					</span>
-				</label>
+				<?php $card_variant = sbt_home_variant( $key ); ?>
+				<div class="sbt-card sbt-theme-card <?php echo $active === $key ? 'is-selected' : ''; ?>">
+					<label class="sbt-theme-card__head">
+						<input type="radio" name="<?php echo esc_attr( SBT_OPTION ); ?>[subtheme]" value="<?php echo esc_attr( $key ); ?>" <?php checked( $active, $key ); ?>>
+						<span class="sbt-theme-card__body">
+							<h3><?php echo esc_html( 'Theme' . preg_replace( '/\D+/', '', $key ) ); ?></h3>
+							<span class="sbt-theme-card__meta"><?php echo esc_html( count( $subtheme['pages'] ) ); ?> template pages included</span>
+						</span>
+					</label>
+					<div class="sbt-theme-card__variant">
+						<span class="sbt-theme-card__variant-title">Home page hero</span>
+						<label class="sbt-variant-opt"><input type="radio" name="<?php echo esc_attr( SBT_OPTION ); ?>[home_variant][<?php echo esc_attr( $key ); ?>]" value="variant1" <?php checked( $card_variant, 'variant1' ); ?>> Variant&nbsp;1 &mdash; Background video</label>
+						<label class="sbt-variant-opt"><input type="radio" name="<?php echo esc_attr( SBT_OPTION ); ?>[home_variant][<?php echo esc_attr( $key ); ?>]" value="variant2" <?php checked( $card_variant, 'variant2' ); ?>> Variant&nbsp;2 &mdash; Image carousel</label>
+					</div>
+				</div>
 			<?php endforeach; ?>
 		</div>
 		<div class="sbt-field-grid">
-			<div class="sbt-field">
-				<label>Home page hero</label>
-				<div class="sbt-actions">
-					<label><input type="radio" name="<?php echo esc_attr( SBT_OPTION ); ?>[home_variant]" value="variant1" <?php checked( sbt_home_variant( $active ), 'variant1' ); ?>> Variant&nbsp;1 &mdash; Background video</label>
-					<label><input type="radio" name="<?php echo esc_attr( SBT_OPTION ); ?>[home_variant]" value="variant2" <?php checked( sbt_home_variant( $active ), 'variant2' ); ?>> Variant&nbsp;2 &mdash; Image carousel</label>
-				</div>
-				<span class="sbt-muted">Variant&nbsp;1 shows the homepage hero video; Variant&nbsp;2 shows a scrolling image carousel. Applies to the selected subtheme.</span>
-			</div>
 			<div class="sbt-field">
 				<label><?php echo esc_html( sbt_t( 'admin_language' ) ); ?></label>
 				<select name="<?php echo esc_attr( SBT_OPTION ); ?>[admin_language]">
