@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.23' );
+define( 'SBT_VERSION', '2.2.24' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -4407,7 +4407,7 @@ function sbt_send_colors_menu_to_api() {
 		'theme'   => 'THEME_SYNCBOOKING',
 		'token'   => 'syncbooking_compressione021190',
 		'site'    => home_url( '/' ),
-		'api_key' => isset( $options['api_key'] ) ? $options['api_key'] : '',
+		'api_key' => sbt_get_api_key(),
 		'data'    => wp_json_encode( sbt_colors_menu_payload() ),
 	);
 
@@ -4420,52 +4420,63 @@ function sbt_send_colors_menu_to_api() {
 	) );
 }
 
-/** Whether a SyncBooking API key has been set/collected. Gates the other tabs. */
-function sbt_has_api_key() {
+/**
+ * The SyncBooking API key for this site. Mirrors the SyncBooking booking-bar
+ * plugin, which stores the connected key in the `syncbooking_api_key` WP option
+ * (its admin/tabs/connect.php). The theme reuses that exact key, so once the
+ * plugin is connected the theme is connected too. A key saved on the theme's
+ * Themes tab takes precedence (lets the theme work even without the plugin).
+ */
+function sbt_get_api_key() {
 	$options = sbt_get_options();
-	return ! empty( $options['api_key'] );
+	if ( ! empty( $options['api_key'] ) ) {
+		return (string) $options['api_key'];
+	}
+	$plugin_key = get_option( 'syncbooking_api_key', '' );
+	return is_string( $plugin_key ) ? $plugin_key : '';
+}
+
+/** Whether a SyncBooking API key is available (theme option or plugin option). Gates the other tabs. */
+function sbt_has_api_key() {
+	return '' !== sbt_get_api_key();
 }
 
 /**
- * Collect the API key from SyncBooking for this website
- * (https://admin.syncbooking.com/api_data_wp?website=<site>&token=...). Returns
- * the key string, or '' if it could not be retrieved.
+ * "Collect" the API key the same way the plugin exposes it: it is the connected
+ * key the SyncBooking booking-bar plugin already stored in the `syncbooking_api_key`
+ * WP option. Returns that key (sanitised), or '' if the plugin is not connected.
  */
 function sbt_fetch_api_key() {
+	$plugin_key = get_option( 'syncbooking_api_key', '' );
+	return is_string( $plugin_key ) ? sanitize_text_field( $plugin_key ) : '';
+}
+
+/**
+ * Validate an API key against SyncBooking exactly like the plugin's connect tab:
+ * GET https://admin.syncbooking.com/website_data?website=<site>&api_key=<key>,
+ * considered valid when the JSON carries a numeric id > 0.
+ */
+function sbt_validate_api_key( $api_key ) {
+	$api_key = (string) $api_key;
+	if ( '' === $api_key ) {
+		return false;
+	}
 	$url = add_query_arg(
 		array(
-			'website' => home_url( '/' ),
-			'token'   => 'syncbooking_compressione021190',
+			'website' => rawurlencode( get_site_url() ),
+			'api_key' => rawurlencode( $api_key ),
 		),
-		'https://admin.syncbooking.com/api_data_wp'
+		'https://admin.syncbooking.com/website_data'
 	);
-
-	$resp = wp_remote_get( $url, array(
-		'timeout' => 12,
+	$response = wp_remote_get( $url, array(
 		'headers' => array( 'Accept' => 'application/json' ),
+		'timeout' => 10,
 	) );
-	if ( is_wp_error( $resp ) ) {
-		return '';
+	if ( is_wp_error( $response ) ) {
+		return false;
 	}
-
-	$json = json_decode( wp_remote_retrieve_body( $resp ), true );
-	if ( ! is_array( $json ) ) {
-		return '';
-	}
-
-	$candidates = array( $json );
-	if ( ! empty( $json['data'] ) && is_array( $json['data'] ) ) {
-		$candidates[] = $json['data'];
-	}
-	foreach ( $candidates as $bag ) {
-		foreach ( array( 'api_key', 'apiKey', 'apikey', 'key' ) as $field ) {
-			if ( ! empty( $bag[ $field ] ) && is_string( $bag[ $field ] ) ) {
-				return sanitize_text_field( $bag[ $field ] );
-			}
-		}
-	}
-
-	return '';
+	$data = json_decode( wp_remote_retrieve_body( $response ), true );
+	return ( is_array( $data ) && isset( $data['id'] ) && is_numeric( $data['id'] ) && $data['id'] > 0 );
 }
 
 function sbt_rewrite_content_urls( &$value ) {
@@ -6256,7 +6267,7 @@ function sbt_render_theme_tab( $active, $subthemes ) {
 		<h2><?php echo esc_html( sbt_t( 'choose_subtheme' ) ); ?></h2>
 		<p class="sbt-muted"><?php echo esc_html( sbt_t( 'theme_note' ) ); ?></p>
 		<?php if ( ! sbt_has_api_key() ) : ?>
-			<div class="notice notice-warning inline" style="margin:0 0 16px;"><p><strong>Enter your SyncBooking API Key below to unlock the other tabs</strong> (General, Header &amp; Footer, Colours, Menu, Pages). Use &ldquo;Get API key from SyncBooking&rdquo; or paste it manually, then Save.</p></div>
+			<div class="notice notice-warning inline" style="margin:0 0 16px;"><p><strong>Connect SyncBooking to unlock the other tabs</strong> (General, Header &amp; Footer, Colours, Menu, Pages). Click &ldquo;Import key from SyncBooking plugin&rdquo; if the booking plugin is already connected, or paste your API Key below, then Save.</p></div>
 		<?php endif; ?>
 		<div class="sbt-theme-grid">
 			<?php foreach ( $subthemes as $key => $subtheme ) : ?>
@@ -6278,14 +6289,24 @@ function sbt_render_theme_tab( $active, $subthemes ) {
 			<?php endforeach; ?>
 		</div>
 		<div class="sbt-field-grid">
+			<?php
+			$sbt_theme_key  = sbt_get_options()['api_key'] ?? '';
+			$sbt_plugin_key = get_option( 'syncbooking_api_key', '' );
+			$sbt_plugin_key = is_string( $sbt_plugin_key ) ? $sbt_plugin_key : '';
+			$sbt_eff_key    = '' !== $sbt_theme_key ? $sbt_theme_key : $sbt_plugin_key;
+			?>
 			<div class="sbt-field">
 				<label>SyncBooking API Key <span style="color:#d63638;">*</span></label>
-				<input type="text" name="<?php echo esc_attr( SBT_OPTION ); ?>[api_key]" value="<?php echo esc_attr( ( sbt_get_options()['api_key'] ?? '' ) ); ?>" placeholder="Paste your SyncBooking API key" autocomplete="off" spellcheck="false">
+				<input type="text" name="<?php echo esc_attr( SBT_OPTION ); ?>[api_key]" value="<?php echo esc_attr( $sbt_eff_key ); ?>" placeholder="Connect the SyncBooking plugin, or paste your key" autocomplete="off" spellcheck="false">
 				<div class="sbt-actions" style="margin-top:6px;">
-					<button type="submit" class="button" name="sbt_action" value="fetch_api_key">Get API key from SyncBooking</button>
-					<a class="button button-link" href="<?php echo esc_url( add_query_arg( 'website', home_url( '/' ), 'https://admin.syncbooking.com/api_data_wp' ) ); ?>" target="_blank" rel="noopener">Open SyncBooking &#8599;</a>
+					<button type="submit" class="button" name="sbt_action" value="fetch_api_key">Import key from SyncBooking plugin</button>
 				</div>
-				<span class="sbt-muted"><strong>Required</strong> to unlock the other tabs. Sent (with the site URL, colours and menu) to SyncBooking on every save.</span>
+				<span class="sbt-muted">
+					<?php if ( '' !== $sbt_eff_key && '' === $sbt_theme_key ) : ?>
+						Using the key from the connected <strong>SyncBooking plugin</strong>.
+					<?php endif; ?>
+					<strong>Required</strong> to unlock the other tabs &mdash; the same key the SyncBooking booking plugin uses (option <code>syncbooking_api_key</code>). Sent with the site URL, colours and menu on every save.
+				</span>
 			</div>
 			<div class="sbt-field">
 				<label><?php echo esc_html( sbt_t( 'admin_language' ) ); ?></label>
@@ -7352,9 +7373,14 @@ function sbt_render_admin_page() {
 				$fetch_opts = sbt_get_options();
 				$fetch_opts['api_key'] = $fetched_key;
 				update_option( SBT_OPTION, $fetch_opts );
-				echo '<div class="notice notice-success is-dismissible"><p>API key retrieved from SyncBooking.</p></div>';
+				$key_valid = sbt_validate_api_key( $fetched_key );
+				if ( $key_valid ) {
+					echo '<div class="notice notice-success is-dismissible"><p>API key imported from the SyncBooking plugin and validated. The other tabs are now unlocked.</p></div>';
+				} else {
+					echo '<div class="notice notice-warning is-dismissible"><p>API key imported from the SyncBooking plugin (could not validate it right now). The other tabs are now unlocked.</p></div>';
+				}
 			} else {
-				echo '<div class="notice notice-error is-dismissible"><p>Could not retrieve the API key automatically. Open the SyncBooking link to copy it, then paste it below and save.</p></div>';
+				echo '<div class="notice notice-error is-dismissible"><p>No connected API key found. Connect the SyncBooking booking plugin first (its <em>Connect</em> tab), or paste your API Key below and Save.</p></div>';
 			}
 		} else {
 			update_option( SBT_OPTION, sbt_sanitize_options( $raw_options ) );
