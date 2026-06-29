@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.30' );
+define( 'SBT_VERSION', '2.2.31' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -4406,12 +4406,14 @@ function sbt_colors_menu_payload() {
 	}
 
 	return array(
-		'subtheme' => $subtheme,
-		'colors'   => array(
+		'subtheme'         => $subtheme,
+		'languages'        => array_values( sbt_enabled_languages() ),
+		'default_language' => sbt_default_language(),
+		'colors'           => array(
 			'site'        => $site_colors,
 			'booking_bar' => $booking_bar,
 		),
-		'menu'     => $menu,
+		'menu'             => $menu,
 	);
 }
 
