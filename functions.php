@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.33' );
+define( 'SBT_VERSION', '2.2.34' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -6989,16 +6989,17 @@ function sbt_render_colors_tab( $data, $overrides ) {
 		array( 'color_primary_soft', 'Primary — soft',  '#a8645a', 'Softer accent variant.' ),
 		array( 'color_accent',       'Rose accent',     '#b47e6e', 'Overlines, underlines, fine details.' ),
 		array( 'color_gold',         'Gold detail',     '#a98c5b', 'Occasional gold detail colour.' ),
+		array( 'color_header_text',  'Header text',       '#f7f2ea', 'Desktop nav link colour.' ),
+		array( 'color_footer_bg',    'Footer background', '#8a463f', 'Footer background colour.' ),
+		array( 'color_footer_text',  'Footer text',       '#e0c9c3', 'Footer text colour.' ),
 	);
 
-	// Preset palettes. Order matches $tokens: bg, surface, ink, muted, line, primary, deep, soft, rose, gold.
+	// Preset palettes = the three subthemes. Order matches $tokens (13):
+	// bg, surface, ink, muted, line, primary, deep, soft, rose, gold, headerText, footerBg, footerText.
 	$presets = array(
-		'Terracotta'      => array( '#f6f2ea', '#fbf8f2', '#2b2723', '#7d7468', '#e6dfd2', '#8a463f', '#73362f', '#a8645a', '#b47e6e', '#a98c5b' ),
-		'Olive grove'     => array( '#f3f4ec', '#f9faf3', '#262922', '#6f7464', '#dde1d2', '#4f6138', '#3c4b2a', '#6f815a', '#93a06f', '#b09a5b' ),
-		'Adriatic blue'   => array( '#eef2f4', '#f7fafb', '#1f2730', '#66727d', '#d6dee3', '#2f5d73', '#234656', '#5a8197', '#7fa6b6', '#b9a05c' ),
-		'Charcoal & gold' => array( '#f4f2ee', '#faf8f4', '#232323', '#74706a', '#e0dcd4', '#2c2c2c', '#1a1a1a', '#555049', '#9a8f7e', '#b08d4f' ),
-		'Rose'            => array( '#f8f1ef', '#fdf7f5', '#2c2522', '#847069', '#ecdcd6', '#9a4f57', '#7e3b43', '#b86f76', '#c98c92', '#b89a6a' ),
-		'Forest'          => array( '#eef2ee', '#f6faf6', '#1f2620', '#647065', '#d6e0d6', '#2f5d44', '#224634', '#5a8169', '#7fa68d', '#ab9357' ),
+		'Palette 01' => array( '#f6f2ea', '#fbf8f2', '#2b2723', '#7d7468', '#e6dfd2', '#8a463f', '#73362f', '#a8645a', '#b47e6e', '#a98c5b', '#f7f2ea', '#8a463f', '#e0c9c3' ),
+		'Palette 02' => array( '#f4efe5', '#faf6ee', '#2b2723', '#7d7468', '#e3dbcf', '#a98c5b', '#8a7349', '#bca06f', '#a98c5b', '#a98c5b', '#f7f2ea', '#e9e6e0', '#7d7468' ),
+		'Palette 03' => array( '#f4efe5', '#faf6ee', '#2b2723', '#7d7468', '#e3dbcf', '#8f6f45', '#6f5734', '#aa8758', '#8f6f45', '#a98c5b', '#f7f2ea', '#e9e6e0', '#7d7468' ),
 	);
 	?>
 	<style>
@@ -7063,48 +7064,11 @@ function sbt_render_colors_tab( $data, $overrides ) {
 			</div>
 		</div>
 
-		<?php
-		// 3 optional chrome colours — empty means "inherit the palette default".
-		$primary_now = ( array_key_exists( 'SITE.color_primary', $overrides ) && '' !== $overrides['SITE.color_primary'] )
-			? $overrides['SITE.color_primary']
-			: ( $site['color_primary'] ?? '#8a463f' );
-		$chrome = array(
-			array( 'color_header_text', 'Header text',       '#f7f2ea',    'Desktop nav link colour. Empty = inherit (warm cream).' ),
-			array( 'color_footer_bg',   'Footer background', $primary_now, 'Empty = inherit the primary accent.' ),
-			array( 'color_footer_text', 'Footer text',       '#e0c9c3',    'Empty = inherit the soft-rose default.' ),
-		);
-		?>
-		<div class="sbt-section-card">
-			<h3><span class="dashicons dashicons-editor-textcolor"></span>Header &amp; footer <span style="font-weight:400;color:#646970;">(optional)</span></h3>
-			<p class="sbt-section-desc">Leave a field empty to inherit the palette default. Set a colour only to override the header nav text or the footer.</p>
-			<div class="sbt-color-grid">
-				<?php
-				foreach ( $chrome as $t ) {
-					$path    = 'SITE.' . $t[0];
-					$current = array_key_exists( $path, $overrides ) ? $overrides[ $path ] : ( $site[ $t[0] ] ?? '' );
-					$current = sbt_sanitize_hex_color_value( $current, '' );
-					$name    = SBT_OPTION . '[overrides][' . $path . ']';
-					$swatch  = '' !== $current ? $current : $t[2];
-					?>
-					<div class="sbt-color-field">
-						<input type="color" class="sbt-color-pick" data-token="<?php echo esc_attr( $t[0] ); ?>" value="<?php echo esc_attr( $swatch ); ?>">
-						<span class="sbt-color-meta">
-							<label><?php echo esc_html( $t[1] ); ?></label>
-							<input type="text" class="sbt-color-hex" data-token="<?php echo esc_attr( $t[0] ); ?>" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $current ); ?>" placeholder="inherit" maxlength="7" spellcheck="false">
-							<span class="sbt-color-desc"><?php echo esc_html( $t[3] ); ?></span>
-						</span>
-					</div>
-					<?php
-				}
-				?>
-			</div>
-		</div>
-
 		<?php submit_button( 'Save colours' ); ?>
 	</div>
 	<script>
 	(function(){
-		var order = ['color_bg','color_surface','color_ink','color_muted','color_line','color_primary','color_primary_deep','color_primary_soft','color_accent','color_gold'];
+		var order = ['color_bg','color_surface','color_ink','color_muted','color_line','color_primary','color_primary_deep','color_primary_soft','color_accent','color_gold','color_header_text','color_footer_bg','color_footer_text'];
 		function pick(tok){ return document.querySelector('.sbt-color-pick[data-token="'+tok+'"]'); }
 		function hex(tok){ return document.querySelector('.sbt-color-hex[data-token="'+tok+'"]'); }
 		function valid(v){ return /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(v); }
