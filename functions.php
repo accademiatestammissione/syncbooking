@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.32' );
+define( 'SBT_VERSION', '2.2.33' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -4366,20 +4366,9 @@ function sbt_colors_menu_payload() {
 			: ( isset( $site[ $key ] ) ? $site[ $key ] : '' );
 	}
 
-	// headerText/footerBg/footerText are blank in the data — the front-end falls
-	// back to per-subtheme CSS defaults (syncbooking_site.css). Mirror those defaults
-	// so we report the colours that actually render (e.g. theme01 footer = primary).
-	$chrome_fallback = array(
-		'theme01' => array( 'headerText' => '#f7f2ea', 'footerBg' => $site_colors['primary'], 'footerText' => '#e0c9c3' ),
-		'theme02' => array( 'headerText' => '#f7f2ea', 'footerBg' => '#e9e6e0', 'footerText' => $site_colors['muted'] ),
-		'theme03' => array( 'headerText' => '#f7f2ea', 'footerBg' => '#e9e6e0', 'footerText' => $site_colors['muted'] ),
-	);
-	$fb = isset( $chrome_fallback[ $subtheme ] ) ? $chrome_fallback[ $subtheme ] : $chrome_fallback['theme01'];
-	foreach ( array( 'headerText', 'footerBg', 'footerText' ) as $chrome_key ) {
-		if ( '' === $site_colors[ $chrome_key ] ) {
-			$site_colors[ $chrome_key ] = $fb[ $chrome_key ];
-		}
-	}
+	// headerText/footerBg/footerText are sent as stored: a value when set in the
+	// Colours tab, or empty = "inherit the palette default" (footer bg = primary,
+	// header text = warm cream, footer text = soft rose), mirroring the config.
 
 	// 6 booking-bar colours — the bar inherits the palette, so derive them from it.
 	$booking_bar = array(
@@ -7065,6 +7054,43 @@ function sbt_render_colors_tab( $data, $overrides ) {
 						<span class="sbt-color-meta">
 							<label><?php echo esc_html( $t[1] ); ?></label>
 							<input type="text" class="sbt-color-hex" data-token="<?php echo esc_attr( $t[0] ); ?>" value="<?php echo esc_attr( $current ); ?>" maxlength="7" spellcheck="false">
+							<span class="sbt-color-desc"><?php echo esc_html( $t[3] ); ?></span>
+						</span>
+					</div>
+					<?php
+				}
+				?>
+			</div>
+		</div>
+
+		<?php
+		// 3 optional chrome colours — empty means "inherit the palette default".
+		$primary_now = ( array_key_exists( 'SITE.color_primary', $overrides ) && '' !== $overrides['SITE.color_primary'] )
+			? $overrides['SITE.color_primary']
+			: ( $site['color_primary'] ?? '#8a463f' );
+		$chrome = array(
+			array( 'color_header_text', 'Header text',       '#f7f2ea',    'Desktop nav link colour. Empty = inherit (warm cream).' ),
+			array( 'color_footer_bg',   'Footer background', $primary_now, 'Empty = inherit the primary accent.' ),
+			array( 'color_footer_text', 'Footer text',       '#e0c9c3',    'Empty = inherit the soft-rose default.' ),
+		);
+		?>
+		<div class="sbt-section-card">
+			<h3><span class="dashicons dashicons-editor-textcolor"></span>Header &amp; footer <span style="font-weight:400;color:#646970;">(optional)</span></h3>
+			<p class="sbt-section-desc">Leave a field empty to inherit the palette default. Set a colour only to override the header nav text or the footer.</p>
+			<div class="sbt-color-grid">
+				<?php
+				foreach ( $chrome as $t ) {
+					$path    = 'SITE.' . $t[0];
+					$current = array_key_exists( $path, $overrides ) ? $overrides[ $path ] : ( $site[ $t[0] ] ?? '' );
+					$current = sbt_sanitize_hex_color_value( $current, '' );
+					$name    = SBT_OPTION . '[overrides][' . $path . ']';
+					$swatch  = '' !== $current ? $current : $t[2];
+					?>
+					<div class="sbt-color-field">
+						<input type="color" class="sbt-color-pick" data-token="<?php echo esc_attr( $t[0] ); ?>" value="<?php echo esc_attr( $swatch ); ?>">
+						<span class="sbt-color-meta">
+							<label><?php echo esc_html( $t[1] ); ?></label>
+							<input type="text" class="sbt-color-hex" data-token="<?php echo esc_attr( $t[0] ); ?>" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $current ); ?>" placeholder="inherit" maxlength="7" spellcheck="false">
 							<span class="sbt-color-desc"><?php echo esc_html( $t[3] ); ?></span>
 						</span>
 					</div>
