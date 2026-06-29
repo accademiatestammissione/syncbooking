@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.31' );
+define( 'SBT_VERSION', '2.2.32' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -4364,6 +4364,21 @@ function sbt_colors_menu_payload() {
 		$site_colors[ $out ] = ( isset( $overrides[ $path ] ) && '' !== $overrides[ $path ] )
 			? $overrides[ $path ]
 			: ( isset( $site[ $key ] ) ? $site[ $key ] : '' );
+	}
+
+	// headerText/footerBg/footerText are blank in the data — the front-end falls
+	// back to per-subtheme CSS defaults (syncbooking_site.css). Mirror those defaults
+	// so we report the colours that actually render (e.g. theme01 footer = primary).
+	$chrome_fallback = array(
+		'theme01' => array( 'headerText' => '#f7f2ea', 'footerBg' => $site_colors['primary'], 'footerText' => '#e0c9c3' ),
+		'theme02' => array( 'headerText' => '#f7f2ea', 'footerBg' => '#e9e6e0', 'footerText' => $site_colors['muted'] ),
+		'theme03' => array( 'headerText' => '#f7f2ea', 'footerBg' => '#e9e6e0', 'footerText' => $site_colors['muted'] ),
+	);
+	$fb = isset( $chrome_fallback[ $subtheme ] ) ? $chrome_fallback[ $subtheme ] : $chrome_fallback['theme01'];
+	foreach ( array( 'headerText', 'footerBg', 'footerText' ) as $chrome_key ) {
+		if ( '' === $site_colors[ $chrome_key ] ) {
+			$site_colors[ $chrome_key ] = $fb[ $chrome_key ];
+		}
 	}
 
 	// 6 booking-bar colours — the bar inherits the palette, so derive them from it.
