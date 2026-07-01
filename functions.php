@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.40' );
+define( 'SBT_VERSION', '2.2.41' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -4714,39 +4714,57 @@ function sbt_visual_meta_editor_assets() {
 		.sbtw-hero-video-edit { align-items:center; background:rgba(34,113,177,.96); border:0; border-radius:999px; bottom:16px; color:#fff; cursor:pointer; display:inline-flex; font:600 12px/1 system-ui,sans-serif; gap:6px; padding:8px 11px; position:absolute; right:16px; z-index:6; }
 		.sbt-vfe-gallery-scope { position:relative; }
 		.sbt-vfe-gallery-edit { align-items:center; background:rgba(34,113,177,.96); border:0; border-radius:999px; color:#fff; cursor:pointer; display:inline-flex; font:600 12px/1 system-ui,sans-serif; gap:6px; padding:8px 11px; position:absolute; right:10px; top:10px; z-index:8; }
-		.sbt-vfe-modal { align-items:center; background:rgba(0,0,0,.45); bottom:0; display:none; justify-content:center; left:0; padding:24px; position:fixed; right:0; top:0; z-index:999999; }
+		.sbt-vfe-modal { align-items:center; background:rgba(20,24,31,.6); -webkit-backdrop-filter:blur(2px); backdrop-filter:blur(2px); bottom:0; display:none; justify-content:center; left:0; padding:24px; position:fixed; right:0; top:0; z-index:999999; }
 		.sbt-vfe-modal.is-open { display:flex; }
 		.sbt-vfe-modal.sbt-vfe-modal-yield { display:none !important; }
-		.sbt-vfe-dialog { background:#fff; border-radius:8px; box-shadow:0 18px 60px rgba(0,0,0,.25); color:#1d2327; max-width:620px; padding:18px; width:min(620px,100%); }
-		.sbt-vfe-dialog h3 { color:#1d2327; font:600 18px/1.25 system-ui,sans-serif; margin:0 0 12px; }
-		.sbt-vfe-dialog textarea, .sbt-vfe-dialog input, .sbt-vfe-dialog select { border:1px solid #8c8f94; border-radius:4px; box-sizing:border-box; color:#1d2327; font:400 15px/1.45 system-ui,sans-serif; min-height:44px; padding:10px; width:100%; }
+		.sbt-vfe-dialog { background:#fff; border-radius:16px; box-shadow:0 24px 60px -12px rgba(15,23,42,.3), 0 4px 14px rgba(15,23,42,.1); color:#1d2327; display:flex; flex-direction:column; max-height:88vh; max-width:640px; overflow-y:auto; width:min(640px,100%); }
+		.sbt-vfe-dialog-hint { color:#646970; font:400 13px/1.5 system-ui,sans-serif; margin:0; padding:0 24px 14px; }
+		.sbt-vfe-input { padding:0 24px 22px; }
+		.sbt-vfe-dialog-head { align-items:center; border-bottom:1px solid #eef0f2; display:flex; flex:0 0 auto; justify-content:space-between; padding:20px 24px 16px; }
+		.sbt-vfe-close { align-items:center; background:#f3f4f5; border:0; border-radius:999px; color:#50575e; cursor:pointer; display:flex; flex:0 0 auto; font-size:15px; height:30px; justify-content:center; line-height:1; transition:background .15s ease, color .15s ease; width:30px; }
+		.sbt-vfe-close:hover { background:#e5e7ea; color:#1d2327; }
+		.sbt-vfe-dialog-body { flex:1 1 auto; overflow-y:auto; padding:22px 24px; }
+		.sbt-vfe-dialog h3 { color:#1d2327; font:600 18px/1.3 system-ui,sans-serif; margin:0; }
+		.sbt-vfe-label { color:#50575e; display:block; font:600 12px/1.4 system-ui,sans-serif; letter-spacing:.02em; margin:0 0 6px; text-transform:uppercase; }
+		.sbt-vfe-dialog textarea, .sbt-vfe-dialog input, .sbt-vfe-dialog select { background:#fbfbfc; border:1.5px solid #dcdfe3; border-radius:8px; box-sizing:border-box; color:#1d2327; font:400 15px/1.45 system-ui,sans-serif; min-height:46px; padding:11px 13px; transition:border-color .15s ease, background .15s ease; width:100%; }
+		.sbt-vfe-dialog textarea:focus, .sbt-vfe-dialog input:focus, .sbt-vfe-dialog select:focus { background:#fff; border-color:#2271b1; box-shadow:0 0 0 3px rgba(34,113,177,.12); outline:0; }
 		.sbt-vfe-dialog textarea { min-height:150px; resize:vertical; }
-		.sbt-vfe-url-hint { color:#646970; font:400 12px/1.45 system-ui,sans-serif; margin:8px 0 0; }
-		.sbt-vfe-preview { display:grid; gap:8px; margin:0 0 10px; }
-		.sbt-vfe-preview img, .sbt-vfe-preview video { border:1px solid #dcdcde; border-radius:6px; height:120px; object-fit:cover; width:180px; }
-		.sbt-vfe-video-types { display:flex; gap:8px; margin:0 0 14px; }
-		.sbt-vfe-video-type-opt { align-items:center; border:2px solid #dcdcde; border-radius:6px; cursor:pointer; display:flex; flex:1; font:600 13px/1 system-ui,sans-serif; gap:8px; justify-content:center; padding:12px 10px; transition:border-color .15s ease, background .15s ease; }
+		.sbt-vfe-url-hint { color:#767c82; font:400 12.5px/1.5 system-ui,sans-serif; margin:10px 0 0; }
+		.sbt-vfe-preview { align-items:center; background:#f7f7f8; border:1.5px dashed #dcdfe3; border-radius:10px; display:flex; justify-content:center; margin:0 0 14px; min-height:150px; overflow:hidden; padding:12px; }
+		.sbt-vfe-preview img, .sbt-vfe-preview video { border-radius:6px; display:block; max-height:220px; max-width:100%; object-fit:contain; }
+		.sbt-vfe-preview p { color:#8c9196; font:500 13px/1.4 system-ui,sans-serif; margin:0; }
+		.sbt-vfe-video-types { display:flex; gap:10px; margin:0 0 16px; }
+		.sbt-vfe-video-type-opt { align-items:center; background:#fbfbfc; border:1.5px solid #dcdfe3; border-radius:9px; cursor:pointer; display:flex; flex:1; font:600 13px/1 system-ui,sans-serif; gap:8px; justify-content:center; padding:13px 10px; transition:border-color .15s ease, background .15s ease, color .15s ease; }
+		.sbt-vfe-video-type-opt:hover { border-color:#b6c8db; }
 		.sbt-vfe-video-type-opt input { margin:0; }
-		.sbt-vfe-video-type-opt:has(input:checked) { background:#eaf2fa; border-color:#2271b1; color:#2271b1; }
-		.sbt-vfe-media-actions { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; }
-		.sbt-vfe-media-actions button { border:1px solid #8c8f94; border-radius:4px; cursor:pointer; font:600 13px/1 system-ui,sans-serif; padding:8px 11px; }
-		.sbt-vfe-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:14px; }
-		.sbt-vfe-actions button { border:1px solid #8c8f94; border-radius:4px; cursor:pointer; font:600 14px/1 system-ui,sans-serif; padding:9px 13px; }
+		.sbt-vfe-video-type-opt:has(input:checked) { background:#eaf2fb; border-color:#2271b1; color:#2271b1; }
+		.sbt-vfe-media-actions { display:flex; flex-wrap:wrap; gap:8px; margin:12px 0 4px; }
+		.sbt-vfe-media-actions button { background:#fff; border:1.5px solid #dcdfe3; border-radius:8px; color:#1d2327; cursor:pointer; font:600 13px/1 system-ui,sans-serif; padding:9px 14px; transition:background .15s ease, border-color .15s ease; }
+		.sbt-vfe-media-actions button:hover { background:#f3f4f5; border-color:#b6c8db; }
+		.sbt-vfe-actions { background:#fbfbfc; border-top:1px solid #eef0f2; display:flex; flex:0 0 auto; gap:10px; justify-content:flex-end; padding:16px 24px; }
+		.sbt-vfe-actions button { border:1.5px solid #dcdfe3; border-radius:8px; cursor:pointer; font:600 14px/1 system-ui,sans-serif; padding:10px 18px; transition:background .15s ease, border-color .15s ease, transform .1s ease; }
+		.sbt-vfe-actions button:active { transform:scale(.97); }
+		.sbt-vfe-cancel { background:#fff; color:#50575e; }
+		.sbt-vfe-cancel:hover { background:#f3f4f5; }
 		.sbt-vfe-save { background:#2271b1; border-color:#2271b1!important; color:#fff; }
-		.sbt-vfe-gallery-dialog { max-width:760px; width:min(760px,100%); }
-		.sbt-vfe-gallery-hint { color:#646970; font:400 13px/1.5 system-ui,sans-serif; margin:0 0 14px; }
-		.sbt-vfe-gallery-list { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:6px; max-height:52vh; overflow-y:auto; padding:2px; }
-		.sbt-vfe-gallery-empty { color:#646970; font:400 14px/1.5 system-ui,sans-serif; margin:0; padding:20px 0; text-align:center; width:100%; }
-		.sbt-vfe-gallery-item { background:#f6f7f7; border:1px solid #dcdcde; border-radius:6px; cursor:grab; padding:8px; position:relative; width:150px; }
+		.sbt-vfe-save:hover { background:#195d92; }
+		.sbt-vfe-gallery-dialog { max-width:800px; width:min(800px,100%); }
+		.sbt-vfe-gallery-hint { background:#eaf2fb; border-radius:8px; color:#1d5a8f; font:400 13px/1.5 system-ui,sans-serif; margin:0 24px 16px; padding:10px 14px; }
+		.sbt-vfe-gallery-list { display:flex; flex-wrap:wrap; gap:14px; margin:0 24px 8px; max-height:50vh; overflow-y:auto; padding:2px; }
+		.sbt-vfe-gallery-dialog > .sbt-vfe-media-actions { margin:0 24px 20px; }
+		.sbt-vfe-gallery-empty { color:#8c9196; font:400 14px/1.5 system-ui,sans-serif; margin:0; padding:32px 0; text-align:center; width:100%; }
+		.sbt-vfe-gallery-item { background:#fbfbfc; border:1.5px solid #e5e7ea; border-radius:10px; cursor:grab; padding:9px; position:relative; transition:border-color .15s ease, box-shadow .15s ease; width:150px; }
+		.sbt-vfe-gallery-item:hover { border-color:#b6c8db; box-shadow:0 2px 8px rgba(15,23,42,.08); }
 		.sbt-vfe-gallery-item.is-dragging { opacity:.4; }
-		.sbt-vfe-gallery-item img { border-radius:4px; display:block; height:100px; object-fit:cover; width:100%; }
-		.sbt-vfe-gallery-drag { color:#8c8f94; display:block; font-size:14px; margin-bottom:4px; text-align:center; }
-		.sbt-vfe-gallery-pos { background:#2271b1; border-radius:999px; color:#fff; font:600 11px/20px system-ui,sans-serif; height:20px; left:8px; position:absolute; text-align:center; top:8px; width:20px; }
-		.sbt-vfe-gallery-item-actions { display:flex; gap:4px; justify-content:center; margin-top:6px; }
-		.sbt-vfe-gallery-item-actions button { background:#fff; border:1px solid #8c8f94; border-radius:4px; cursor:pointer; font-size:12px; line-height:1; padding:5px 7px; }
+		.sbt-vfe-gallery-item img { border-radius:6px; display:block; height:100px; object-fit:cover; width:100%; }
+		.sbt-vfe-gallery-drag { color:#a7abaf; display:block; font-size:14px; margin-bottom:4px; text-align:center; }
+		.sbt-vfe-gallery-pos { background:#2271b1; border-radius:999px; box-shadow:0 1px 3px rgba(15,23,42,.25); color:#fff; font:700 11px/20px system-ui,sans-serif; height:20px; left:8px; position:absolute; text-align:center; top:8px; width:20px; }
+		.sbt-vfe-gallery-item-actions { display:flex; gap:5px; justify-content:center; margin-top:7px; }
+		.sbt-vfe-gallery-item-actions button { background:#fff; border:1.5px solid #dcdfe3; border-radius:6px; cursor:pointer; font-size:12px; line-height:1; padding:6px 8px; transition:background .15s ease; }
+		.sbt-vfe-gallery-item-actions button:hover { background:#f3f4f5; }
 		.sbt-vfe-gallery-item-actions button:disabled { cursor:not-allowed; opacity:.35; }
 		.sbt-vfe-gallery-remove { color:#d63638; }
-		.sbt-vfe-gallery-count { align-self:center; color:#646970; font:400 13px/1 system-ui,sans-serif; }
+		.sbt-vfe-gallery-count { align-self:center; color:#767c82; font:500 13px/1 system-ui,sans-serif; }
 	</style>
 	<script>
 	(function(){
@@ -4760,8 +4778,33 @@ function sbt_visual_meta_editor_assets() {
 		var activeField = null;
 		var modal = document.createElement('div');
 		modal.className = 'sbt-vfe-modal';
-		modal.innerHTML = '<div class="sbt-vfe-dialog" role="dialog" aria-modal="true"><h3>Edit content</h3><div class="sbt-vfe-input"></div><div class="sbt-vfe-actions"><button type="button" class="sbt-vfe-cancel">Cancel</button><button type="button" class="sbt-vfe-save">Save</button></div></div>';
+		modal.innerHTML = '<div class="sbt-vfe-dialog" role="dialog" aria-modal="true">' +
+			'<div class="sbt-vfe-dialog-head"><h3>Edit content</h3><button type="button" class="sbt-vfe-close" aria-label="Close">&times;</button></div>' +
+			'<p class="sbt-vfe-dialog-hint"></p>' +
+			'<div class="sbt-vfe-input"></div>' +
+			'<div class="sbt-vfe-actions"><button type="button" class="sbt-vfe-cancel">Cancel</button><button type="button" class="sbt-vfe-save">Save</button></div>' +
+			'</div>';
 		document.body.appendChild(modal);
+
+		var FIELD_TITLES = {
+			text:         { title: 'Edit heading or text', hint: '' },
+			url:          { title: 'Edit link', hint: '' },
+			image:        { title: 'Edit image', hint: 'Choose a photo from your media library, upload a new one, or paste a direct image URL.' },
+			video_source: { title: 'Edit video', hint: 'Pick a source on the left, then paste a link or choose a file to match.' },
+			gallery:      { title: 'Edit gallery', hint: '' }
+		};
+
+		function setDialogHeading(dialogEl, type, multiline){
+			var meta = FIELD_TITLES[type] || FIELD_TITLES.text;
+			var title = ( 'text' === type && multiline ) ? 'Edit paragraph' : ( ( 'text' === type ) ? 'Edit heading' : meta.title );
+			var h3 = dialogEl.querySelector('h3');
+			var hint = dialogEl.querySelector('.sbt-vfe-dialog-hint');
+			if (h3) { h3.textContent = title; }
+			if (hint) {
+				hint.textContent = meta.hint;
+				hint.style.display = meta.hint ? '' : 'none';
+			}
+		}
 
 		// The WP media library modal renders behind our own modal (both are very
 		// high z-index, ours wins by source order/value), making it unusable. Hide
@@ -4802,7 +4845,7 @@ function sbt_visual_meta_editor_assets() {
 		}
 
 		function renderImageInput(wrap, value, galleryPath){
-			wrap.innerHTML = '<div class="sbt-vfe-preview"></div><input type="url"><div class="sbt-vfe-media-actions"><button type="button" class="sbt-vfe-pick-image">Choose / upload image</button></div>';
+			wrap.innerHTML = '<div class="sbt-vfe-preview"></div><span class="sbt-vfe-label">Image URL</span><input type="url"><div class="sbt-vfe-media-actions"><button type="button" class="sbt-vfe-pick-image">Choose / upload image</button></div>';
 			wrap.querySelector('input').value = value;
 			updateImagePreview(wrap, value);
 		}
@@ -4813,7 +4856,7 @@ function sbt_visual_meta_editor_assets() {
 				options += '<option value="' + url.replace(/"/g, '&quot;') + '"' + (url === value ? ' selected' : '') + '>' + config.linkTargets[url] + ' - ' + url + '</option>';
 			});
 			var isKnown = !!(config.linkTargets && config.linkTargets[value]);
-			wrap.innerHTML = '<select class="sbt-vfe-url-select">' + options + '</select><input type="url" class="sbt-vfe-url-input" placeholder="https://example.com/page/"><p class="sbt-vfe-url-hint">Choose a page/post or enter a direct https:// URL.</p>';
+			wrap.innerHTML = '<span class="sbt-vfe-label">Link target</span><select class="sbt-vfe-url-select">' + options + '</select><input type="url" class="sbt-vfe-url-input" placeholder="https://example.com/page/"><p class="sbt-vfe-url-hint">Choose a page/post above, or type a direct https:// URL here.</p>';
 			wrap.querySelector('.sbt-vfe-url-input').value = isKnown ? '' : value;
 		}
 
@@ -4840,10 +4883,11 @@ function sbt_visual_meta_editor_assets() {
 			}).join('');
 
 			wrap.innerHTML =
+				'<span class="sbt-vfe-label">Video source</span>' +
 				'<div class="sbt-vfe-video-types">' + typesHtml + '</div>' +
 				'<div class="sbt-vfe-video-panel" data-panel="mp4"><div class="sbt-vfe-preview"></div><input type="url" class="sbt-vfe-video-value" data-for="mp4" placeholder="Video file URL"><div class="sbt-vfe-media-actions"><button type="button" class="sbt-vfe-pick-video">Choose / upload video</button></div></div>' +
-				'<div class="sbt-vfe-video-panel" data-panel="youtube"><input type="text" class="sbt-vfe-video-value" data-for="youtube" placeholder="YouTube URL or video ID"></div>' +
-				'<div class="sbt-vfe-video-panel" data-panel="vimeo"><input type="text" class="sbt-vfe-video-value" data-for="vimeo" placeholder="Vimeo URL or video ID"></div>';
+				'<div class="sbt-vfe-video-panel" data-panel="youtube"><span class="sbt-vfe-label">YouTube URL or video ID</span><input type="text" class="sbt-vfe-video-value" data-for="youtube" placeholder="e.g. https://youtu.be/dQw4w9WgXcQ"></div>' +
+				'<div class="sbt-vfe-video-panel" data-panel="vimeo"><span class="sbt-vfe-label">Vimeo URL or video ID</span><input type="text" class="sbt-vfe-video-value" data-for="vimeo" placeholder="e.g. https://vimeo.com/76979871"></div>';
 
 			wrap.querySelector('input[name="sbtVideoType"][value="' + activeType + '"]').checked = true;
 			wrap.querySelector('.sbt-vfe-video-value[data-for="' + activeType + '"]').value = value;
@@ -4950,7 +4994,7 @@ function sbt_visual_meta_editor_assets() {
 		var galleryModal = document.createElement('div');
 		galleryModal.className = 'sbt-vfe-modal sbt-vfe-gallery-modal';
 		galleryModal.innerHTML = '<div class="sbt-vfe-dialog sbt-vfe-gallery-dialog" role="dialog" aria-modal="true">' +
-			'<h3>Edit gallery</h3>' +
+			'<div class="sbt-vfe-dialog-head"><h3>Edit gallery</h3><button type="button" class="sbt-vfe-close sbt-vfe-gallery-close" aria-label="Close">&times;</button></div>' +
 			'<p class="sbt-vfe-gallery-hint">Drag a photo or use the arrows to reorder. Click &times; to remove. &ldquo;Add images&rdquo; appends new ones at the end.</p>' +
 			'<div class="sbt-vfe-gallery-list"></div>' +
 			'<div class="sbt-vfe-media-actions"><button type="button" class="sbt-vfe-gallery-add">+ Add images</button><span class="sbt-vfe-gallery-count"></span></div>' +
@@ -5046,10 +5090,13 @@ function sbt_visual_meta_editor_assets() {
 			frame.open();
 		});
 
-		galleryModal.querySelector('.sbt-vfe-gallery-cancel').addEventListener('click', function(){
+		function closeGalleryModal(){
 			galleryModal.classList.remove('is-open');
 			galleryState = { field: null, parentPath: '', urls: [] };
-		});
+		}
+		galleryModal.querySelector('.sbt-vfe-gallery-cancel').addEventListener('click', closeGalleryModal);
+		galleryModal.querySelector('.sbt-vfe-gallery-close').addEventListener('click', closeGalleryModal);
+		galleryModal.addEventListener('click', function(event){ if (event.target === galleryModal) closeGalleryModal(); });
 
 		galleryModal.querySelector('.sbt-vfe-gallery-save').addEventListener('click', function(){
 			if (!galleryState.field) return;
@@ -5122,6 +5169,7 @@ function sbt_visual_meta_editor_assets() {
 				wrap.innerHTML = multiline ? '<textarea></textarea>' : '<input type="text">';
 				wrap.firstElementChild.value = value;
 			}
+			setDialogHeading(modal.querySelector('.sbt-vfe-dialog'), type, multiline);
 			modal.classList.add('is-open');
 			(wrap.querySelector('textarea,input') || wrap.firstElementChild).focus();
 		}, true);
@@ -5152,10 +5200,13 @@ function sbt_visual_meta_editor_assets() {
 			if (select) select.value = '';
 		});
 
-		modal.querySelector('.sbt-vfe-cancel').addEventListener('click', function(){
+		function closeModal(){
 			modal.classList.remove('is-open');
 			activeField = null;
-		});
+		}
+		modal.querySelector('.sbt-vfe-cancel').addEventListener('click', closeModal);
+		modal.querySelector('.sbt-vfe-close').addEventListener('click', closeModal);
+		modal.addEventListener('click', function(event){ if (event.target === modal) closeModal(); });
 
 		modal.querySelector('.sbt-vfe-save').addEventListener('click', function(){
 			if (!activeField) return;
@@ -5179,6 +5230,12 @@ function sbt_visual_meta_editor_assets() {
 			}
 			var reload = activeField.getAttribute('data-sbt-vfe-reload') === '1';
 			saveVisualField(activeField, activeField.getAttribute('data-sbt-vfe-path'), value, type, reload);
+		});
+
+		document.addEventListener('keydown', function(event){
+			if ('Escape' !== event.key) return;
+			if (modal.classList.contains('is-open')) closeModal();
+			if (galleryModal.classList.contains('is-open')) closeGalleryModal();
 		});
 
 		addGalleryEditors();
