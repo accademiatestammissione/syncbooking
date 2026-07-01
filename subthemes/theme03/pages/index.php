@@ -31,7 +31,9 @@ $svc_svgs = array(
     <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-16.jpg' ) ); ?>" alt="Dining under the pergola" />
     <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-19.jpg' ) ); ?>" alt="The masseria at golden hour" />
   <?php else : ?>
-    <video src="<?php echo esc_url( sbt_asset_url( 'assets/video/masseria.mp4' ) ); ?>" poster="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-05.jpg' ) ); ?>" autoplay muted loop playsinline></video>
+    <?php $hero_video_raw = $p['hero_video'] ?? 'masseria.mp4'; ?>
+    <video src="<?php echo esc_url( sbt_video_src( $hero_video_raw ) ); ?>" poster="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-05.jpg' ) ); ?>" autoplay muted loop playsinline></video>
+    <?php echo sbt_t1_control( 'C.home.hero_video', $hero_video_raw, 'Video', 'video', 'sbtw-hero-video-edit', true ); ?>
   <?php endif; ?>
   </div>
   <div class="sbtw-hero-overlay"></div>

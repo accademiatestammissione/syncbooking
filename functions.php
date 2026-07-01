@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.35' );
+define( 'SBT_VERSION', '2.2.36' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -567,6 +567,11 @@ function sbt_asset_url( $path ) {
 function sbt_gallery_src( $v ) {
 	$v = (string) $v;
 	return preg_match( '#^https?://#i', $v ) ? $v : sbt_asset_url( 'assets/images/' . ltrim( $v, '/' ) );
+}
+
+function sbt_video_src( $v ) {
+	$v = (string) $v;
+	return preg_match( '#^https?://#i', $v ) ? $v : sbt_asset_url( 'assets/video/' . ltrim( $v, '/' ) );
 }
 
 function sbt_prepare_local_asset_path( $asset_path, $local_path, $subtheme_key = '' ) {
@@ -2918,6 +2923,25 @@ function sbt_apply_flat_overrides( &$value, $path, $overrides ) {
 		foreach ( $value as $key => &$child ) {
 			sbt_apply_flat_overrides( $child, '' === $path ? (string) $key : $path . '.' . $key, $overrides );
 		}
+
+		// A saved override may target a field with no counterpart in the subtheme's
+		// seed content (e.g. a single-value field like a hero video/poster that was
+		// only ever introduced as a template default, never as a data key). The walk
+		// above only visits keys that already exist, so inject any direct-child
+		// override that doesn't have one.
+		$prefix = '' === $path ? '' : $path . '.';
+		if ( '' !== $prefix ) {
+			foreach ( $overrides as $override_path => $override_value ) {
+				if ( 0 !== strpos( (string) $override_path, $prefix ) ) {
+					continue;
+				}
+				$rest = substr( (string) $override_path, strlen( $prefix ) );
+				if ( '' === $rest || false !== strpos( $rest, '.' ) || array_key_exists( $rest, $value ) ) {
+					continue;
+				}
+				$value[ $rest ] = $override_value;
+			}
+		}
 	}
 }
 
@@ -4610,7 +4634,7 @@ function sbt_vfe( $path, $value, $args = array() ) {
 	return '<' . $tag . ' class="sbt-vfe-field" data-sbt-vfe-path="' . esc_attr( $path ) . '" data-sbt-vfe-multiline="' . ( $args['multiline'] ? '1' : '0' ) . '" data-sbt-vfe-type="' . esc_attr( $args['type'] ) . '" data-sbt-vfe-value="' . esc_attr( $value ) . '" data-sbt-vfe-context="' . esc_attr( $args['context'] ) . '">' . $value . '<button type="button" class="sbt-vfe-edit" aria-label="Edit field">&#9998;</button></' . $tag . '>';
 }
 
-function sbt_vfe_control( $path, $value, $label = 'Edit', $type = 'text' ) {
+function sbt_vfe_control( $path, $value, $label = 'Edit', $type = 'text', $extra_class = '', $reload = false ) {
 	if ( ! sbt_visual_meta_editor_enabled() || ! sbt_visual_meta_editor_allowed_path( $path ) ) {
 		return '';
 	}
@@ -4619,7 +4643,9 @@ function sbt_vfe_control( $path, $value, $label = 'Edit', $type = 'text' ) {
 		$value = sbt_editable_url_value( $value );
 	}
 
-	return '<span class="sbt-vfe-field sbt-vfe-control" data-sbt-vfe-path="' . esc_attr( $path ) . '" data-sbt-vfe-multiline="0" data-sbt-vfe-type="' . esc_attr( $type ) . '" data-sbt-vfe-value="' . esc_attr( $value ) . '"><span class="sbt-vfe-control-label">' . esc_html( $label ) . '</span><button type="button" class="sbt-vfe-edit" aria-label="' . esc_attr( $label ) . '">&#9998;</button></span>';
+	$class = 'sbt-vfe-field sbt-vfe-control' . ( $extra_class ? ' ' . $extra_class : '' );
+
+	return '<span class="' . esc_attr( $class ) . '" data-sbt-vfe-path="' . esc_attr( $path ) . '" data-sbt-vfe-multiline="0" data-sbt-vfe-type="' . esc_attr( $type ) . '" data-sbt-vfe-value="' . esc_attr( $value ) . '" data-sbt-vfe-reload="' . ( $reload ? '1' : '0' ) . '"><span class="sbt-vfe-control-label">' . esc_html( $label ) . '</span><button type="button" class="sbt-vfe-edit" aria-label="' . esc_attr( $label ) . '">&#9998;</button></span>';
 }
 
 function sbt_vfe_is_gallery_item_path( $path ) {
@@ -4670,6 +4696,10 @@ function sbt_visual_meta_editor_assets() {
 		.sbt-vfe-image-wrap > .sbt-vfe-control { left:10px; position:absolute; top:10px; z-index:5; }
 		/* Full-bleed hero backgrounds: keep the edit wrapper out of the layout box so the absolutely-positioned img still fills the hero. */
 		.sbtw-page-hero > .sbt-vfe-image-wrap, .sbtw-hero-video > .sbt-vfe-image-wrap, .sbtw-exp > .sbt-vfe-image-wrap, .sbtw-offer-card > .sbt-vfe-image-wrap { display:contents; }
+		/* Page/home heroes anchor the control to the whole hero section, which puts a top-left button right over the site logo/nav. Pin it to the bottom instead. */
+		.sbtw-page-hero > .sbt-vfe-image-wrap > .sbt-vfe-control, .sbtw-hero-video > .sbt-vfe-image-wrap > .sbt-vfe-control { bottom:16px; top:auto; }
+		.sbtw-hero-video { position:relative; }
+		.sbtw-hero-video-edit { align-items:center; background:rgba(34,113,177,.96); border:0; border-radius:999px; bottom:16px; color:#fff; cursor:pointer; display:inline-flex; font:600 12px/1 system-ui,sans-serif; gap:6px; padding:8px 11px; position:absolute; right:16px; z-index:6; }
 		.sbt-vfe-gallery-scope { position:relative; }
 		.sbt-vfe-gallery-edit { align-items:center; background:rgba(34,113,177,.96); border:0; border-radius:999px; color:#fff; cursor:pointer; display:inline-flex; font:600 12px/1 system-ui,sans-serif; gap:6px; padding:8px 11px; position:absolute; right:10px; top:10px; z-index:8; }
 		.sbt-vfe-modal { align-items:center; background:rgba(0,0,0,.45); bottom:0; display:none; justify-content:center; left:0; padding:24px; position:fixed; right:0; top:0; z-index:999999; }
@@ -4680,7 +4710,7 @@ function sbt_visual_meta_editor_assets() {
 		.sbt-vfe-dialog textarea { min-height:150px; resize:vertical; }
 		.sbt-vfe-url-hint { color:#646970; font:400 12px/1.45 system-ui,sans-serif; margin:8px 0 0; }
 		.sbt-vfe-preview { display:grid; gap:8px; margin:0 0 10px; }
-		.sbt-vfe-preview img { border:1px solid #dcdcde; border-radius:6px; height:120px; object-fit:cover; width:180px; }
+		.sbt-vfe-preview img, .sbt-vfe-preview video { border:1px solid #dcdcde; border-radius:6px; height:120px; object-fit:cover; width:180px; }
 		.sbt-vfe-media-actions { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; }
 		.sbt-vfe-media-actions button { border:1px solid #8c8f94; border-radius:4px; cursor:pointer; font:600 13px/1 system-ui,sans-serif; padding:8px 11px; }
 		.sbt-vfe-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:14px; }
@@ -4766,6 +4796,30 @@ function sbt_visual_meta_editor_assets() {
 			var preview = wrap.querySelector('.sbt-vfe-preview');
 			if (!preview) return;
 			preview.innerHTML = value ? '<img alt="" src="' + value.replace(/"/g, '&quot;') + '">' : '<p>No image selected.</p>';
+		}
+
+		function renderVideoInput(wrap, value){
+			wrap.innerHTML = '<div class="sbt-vfe-preview"></div><input type="url"><div class="sbt-vfe-media-actions"><button type="button" class="sbt-vfe-pick-video">Choose / upload video</button></div>';
+			wrap.querySelector('input').value = value;
+			updateVideoPreview(wrap, value);
+		}
+
+		function updateVideoPreview(wrap, value){
+			var preview = wrap.querySelector('.sbt-vfe-preview');
+			if (!preview) return;
+			preview.innerHTML = value ? '<video src="' + value.replace(/"/g, '&quot;') + '" controls muted></video>' : '<p>No video selected.</p>';
+		}
+
+		function openVideoFrame(wrap){
+			if (!window.wp || !wp.media) return;
+			var frame = wp.media({ title: 'Select video', multiple: false, library: { type: 'video' } });
+			frame.on('select', function(){
+				var item = frame.state().get('selection').first().toJSON();
+				var input = wrap.querySelector('input');
+				input.value = item.url;
+				updateVideoPreview(wrap, item.url);
+			});
+			frame.open();
 		}
 
 		function openImageFrame(wrap){
@@ -4975,6 +5029,8 @@ function sbt_visual_meta_editor_assets() {
 			var parentGallery = type === 'image' ? galleryParentPath(activeField.getAttribute('data-sbt-vfe-path')) : '';
 			if (type === 'image') {
 				renderImageInput(wrap, value, parentGallery);
+			} else if (type === 'video') {
+				renderVideoInput(wrap, value);
 			} else if (type === 'url') {
 				renderUrlInput(wrap, value);
 			} else {
@@ -4989,6 +5045,9 @@ function sbt_visual_meta_editor_assets() {
 			if (event.target.closest('.sbt-vfe-pick-image')) {
 				event.preventDefault();
 				openImageFrame(modal.querySelector('.sbt-vfe-input'));
+			} else if (event.target.closest('.sbt-vfe-pick-video')) {
+				event.preventDefault();
+				openVideoFrame(modal.querySelector('.sbt-vfe-input'));
 			}
 		});
 
@@ -5022,7 +5081,8 @@ function sbt_visual_meta_editor_assets() {
 				var input = modal.querySelector('textarea,input');
 				value = input ? input.value : '';
 			}
-			saveVisualField(activeField, activeField.getAttribute('data-sbt-vfe-path'), value, type, false);
+			var reload = activeField.getAttribute('data-sbt-vfe-reload') === '1';
+			saveVisualField(activeField, activeField.getAttribute('data-sbt-vfe-path'), value, type, reload);
 		});
 
 		addGalleryEditors();
@@ -5049,7 +5109,7 @@ function sbt_visual_meta_editor_save() {
 	$raw_value = isset( $_POST['value'] ) ? wp_unslash( $_POST['value'] ) : '';
 	if ( 'url' === $type ) {
 		$value = sbt_sanitize_editable_url( $raw_value );
-	} elseif ( 'image' === $type ) {
+	} elseif ( 'image' === $type || 'video' === $type ) {
 		$value = esc_url_raw( $raw_value );
 	} elseif ( 'gallery' === $type ) {
 		$urls = preg_split( '/\r\n|\r|\n/', (string) $raw_value );

@@ -29,7 +29,9 @@ $room_cards = array(
     <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/' . $hs ) ); ?>" alt="<?php echo esc_attr( $SITE['name'] ?? 'Masseria Le Cerase' ); ?>" />
     <?php endforeach; ?>
   <?php else : ?>
-    <video src="<?php echo esc_url( sbt_asset_url( 'assets/video/masseria.mp4' ) ); ?>" poster="<?php echo esc_url( sbt_asset_url( 'assets/images/masseria-dusk.jpg' ) ); ?>" autoplay muted loop playsinline></video>
+    <?php $hero_video_raw = $h['hero_video'] ?? 'masseria.mp4'; ?>
+    <video src="<?php echo esc_url( sbt_video_src( $hero_video_raw ) ); ?>" poster="<?php echo esc_url( sbt_asset_url( 'assets/images/masseria-dusk.jpg' ) ); ?>" autoplay muted loop playsinline></video>
+    <?php echo sbt_t1_control( 'C.home.hero_video', $hero_video_raw, 'Video', 'video', 'sbtw-hero-video-edit', true ); ?>
   <?php endif; ?>
   </div>
   <div class="sbtw-hero-overlay"></div>
