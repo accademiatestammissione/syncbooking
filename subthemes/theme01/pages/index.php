@@ -30,9 +30,11 @@ $svc_icons = array(
     $hero_video_id  = preg_match( '/(\d{5,})/', (string) $hero_video_raw, $hvm ) ? $hvm[1] : '687646681';
     ?>
     <iframe src="https://player.vimeo.com/video/<?php echo esc_attr( $hero_video_id ); ?>?autoplay=1&controls=0&mute=1&muted=1&loop=1&playlist=<?php echo esc_attr( $hero_video_id ); ?>&disablekb=1&modestbranding=1&playsinline=1&rel=0&background=1" allow="autoplay; fullscreen" title="Villa Rosa"></iframe>
-    <?php echo sbt_t1_control( 'C.home.hero_video', $hero_video_raw, 'Video', 'text', 'sbtw-hero-video-edit', true ); ?>
   <?php endif; ?>
   </div>
+  <?php if ( ! $home_v2 ) : ?>
+    <?php echo sbt_t1_control( 'C.home.hero_video', $hero_video_raw, 'Video', 'text', 'sbtw-hero-video-edit', true ); ?>
+  <?php endif; ?>
   <div class="sbtw-hero-overlay"></div>
   <div class="sbtw-hero-inner">
     <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.home.hero_over', $h['hero_over'] ?? '' ); ?></div>

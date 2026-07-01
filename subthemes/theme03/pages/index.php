@@ -33,9 +33,11 @@ $svc_svgs = array(
   <?php else : ?>
     <?php $hero_video_raw = $p['hero_video'] ?? 'masseria.mp4'; ?>
     <video src="<?php echo esc_url( sbt_video_src( $hero_video_raw ) ); ?>" poster="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-05.jpg' ) ); ?>" autoplay muted loop playsinline></video>
-    <?php echo sbt_t1_control( 'C.home.hero_video', $hero_video_raw, 'Video', 'video', 'sbtw-hero-video-edit', true ); ?>
   <?php endif; ?>
   </div>
+  <?php if ( ! $home_v2 ) : ?>
+    <?php echo sbt_t1_control( 'C.home.hero_video', $hero_video_raw, 'Video', 'video', 'sbtw-hero-video-edit', true ); ?>
+  <?php endif; ?>
   <div class="sbtw-hero-overlay"></div>
   <div class="sbtw-hero-inner">
     <div class="sbtw-overline"><?php echo sbt_t1_text( 'C.home.hero_over', $p['hero_over'] ?? 'Masseria Montefieno · Conversano · Puglia' ); ?></div>
