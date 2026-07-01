@@ -20,8 +20,9 @@ $svc_icons = array(
 <section class="sbtw-hero" id="top" data-screen-label="Hero">
   <div class="sbtw-hero-video"<?php echo $home_v2 ? ' data-heroslide' : ''; ?>>
   <?php if ( $home_v2 ) : ?>
-    <?php foreach ( array( 'exterior-081.jpg', 'exterior-085.jpg', 'exterior-090.jpg', 'exterior-087.jpg', 'interior-067.jpg', 'exterior-078.jpg' ) as $hs ) : ?>
-    <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/' . $hs ) ); ?>" alt="<?php echo esc_attr( $SITE['name'] ?? 'Villa Rosa Resort' ); ?>" />
+    <?php $hero_slides = ( ! empty( $h['hero_imgs'] ) && is_array( $h['hero_imgs'] ) ) ? array_values( $h['hero_imgs'] ) : array( 'exterior-081.jpg', 'exterior-085.jpg', 'exterior-090.jpg', 'exterior-087.jpg', 'interior-067.jpg', 'exterior-078.jpg' ); ?>
+    <?php foreach ( $hero_slides as $hs_i => $hs ) : ?>
+    <?php echo sbt_t1_img( 'C.home.hero_imgs.' . $hs_i, sbt_gallery_src( $hs ), $SITE['name'] ?? 'Villa Rosa Resort', array() ); ?>
     <?php endforeach; ?>
   <?php else : ?>
     <?php echo sbt_t1_img( 'C.home.hero_poster', sbt_gallery_src( $h['hero_poster'] ?? 'hero-poster.jpg' ), '', array( 'class' => 'sbtw-hero-poster', 'id' => 'heroPoster', 'aria-hidden' => 'true' ) ); ?>

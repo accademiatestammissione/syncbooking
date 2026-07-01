@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.39' );
+define( 'SBT_VERSION', '2.2.40' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -4716,6 +4716,7 @@ function sbt_visual_meta_editor_assets() {
 		.sbt-vfe-gallery-edit { align-items:center; background:rgba(34,113,177,.96); border:0; border-radius:999px; color:#fff; cursor:pointer; display:inline-flex; font:600 12px/1 system-ui,sans-serif; gap:6px; padding:8px 11px; position:absolute; right:10px; top:10px; z-index:8; }
 		.sbt-vfe-modal { align-items:center; background:rgba(0,0,0,.45); bottom:0; display:none; justify-content:center; left:0; padding:24px; position:fixed; right:0; top:0; z-index:999999; }
 		.sbt-vfe-modal.is-open { display:flex; }
+		.sbt-vfe-modal.sbt-vfe-modal-yield { display:none !important; }
 		.sbt-vfe-dialog { background:#fff; border-radius:8px; box-shadow:0 18px 60px rgba(0,0,0,.25); color:#1d2327; max-width:620px; padding:18px; width:min(620px,100%); }
 		.sbt-vfe-dialog h3 { color:#1d2327; font:600 18px/1.25 system-ui,sans-serif; margin:0 0 12px; }
 		.sbt-vfe-dialog textarea, .sbt-vfe-dialog input, .sbt-vfe-dialog select { border:1px solid #8c8f94; border-radius:4px; box-sizing:border-box; color:#1d2327; font:400 15px/1.45 system-ui,sans-serif; min-height:44px; padding:10px; width:100%; }
@@ -4762,6 +4763,14 @@ function sbt_visual_meta_editor_assets() {
 		modal.innerHTML = '<div class="sbt-vfe-dialog" role="dialog" aria-modal="true"><h3>Edit content</h3><div class="sbt-vfe-input"></div><div class="sbt-vfe-actions"><button type="button" class="sbt-vfe-cancel">Cancel</button><button type="button" class="sbt-vfe-save">Save</button></div></div>';
 		document.body.appendChild(modal);
 
+		// The WP media library modal renders behind our own modal (both are very
+		// high z-index, ours wins by source order/value), making it unusable. Hide
+		// our modal for as long as a media frame opened from it stays open.
+		function yieldModalToMediaFrame(frame, hostModal){
+			frame.on('open', function(){ hostModal.classList.add('sbt-vfe-modal-yield'); });
+			frame.on('close', function(){ hostModal.classList.remove('sbt-vfe-modal-yield'); });
+		}
+
 		function fieldHtml(field){
 			if (field.hasAttribute('data-sbt-vfe-value')) {
 				return field.getAttribute('data-sbt-vfe-value') || '';
@@ -4783,7 +4792,7 @@ function sbt_visual_meta_editor_assets() {
 		}
 
 		function closestGalleryUrls(field){
-			var scope = field.closest('.sbtw-media-carousel,.media-carousel,.sbtw-mosaic,.mosaic,.sbtw-gallery,.gallery,.sbtw-room-gallery,.room-gallery,.sbtw-house,.house,.sbtw-feature,.feature,.sbtw-page-hero,.page-hero') || document;
+			var scope = field.closest('.sbtw-media-carousel,.media-carousel,.sbtw-mosaic,.mosaic,.sbtw-gallery,.gallery,.sbtw-room-gallery,.room-gallery,.sbtw-house,.house,.sbtw-feature,.feature,.sbtw-page-hero,.page-hero,.sbtw-hero-video') || document;
 			var urls = [];
 			scope.querySelectorAll('img').forEach(function(img){
 				var src = img.getAttribute('src');
@@ -4863,6 +4872,7 @@ function sbt_visual_meta_editor_assets() {
 				if (input) { input.value = item.url; }
 				updateVideoPreview(wrap, item.url);
 			});
+			yieldModalToMediaFrame(frame, modal);
 			frame.open();
 		}
 
@@ -4895,11 +4905,12 @@ function sbt_visual_meta_editor_assets() {
 				input.value = item.url;
 				updateImagePreview(wrap, item.url);
 			});
+			yieldModalToMediaFrame(frame, modal);
 			frame.open();
 		}
 
 		function addGalleryEditors(){
-			document.querySelectorAll('.sbtw-gallery,.gallery,.sbtw-mosaic,.mosaic,.sbtw-media-carousel,.media-carousel,.sbtw-room-gallery,.room-gallery,.sbtw-w-gallery,.sbtw-w-rev-album').forEach(function(scope){
+			document.querySelectorAll('.sbtw-gallery,.gallery,.sbtw-mosaic,.mosaic,.sbtw-media-carousel,.media-carousel,.sbtw-room-gallery,.room-gallery,.sbtw-w-gallery,.sbtw-w-rev-album,.sbtw-hero-video[data-heroslide]').forEach(function(scope){
 				if (scope.querySelector('.sbt-vfe-gallery-edit')) return;
 				var firstField = scope.querySelector('img[data-sbt-vfe-gallery-item][data-sbt-vfe-gallery-path]');
 				if (!firstField) return;
@@ -4914,7 +4925,16 @@ function sbt_visual_meta_editor_assets() {
 					event.stopPropagation();
 					openGalleryFrame(firstField);
 				});
-				scope.appendChild(button);
+				// The hero slideshow sits under a dark overlay that would cover a
+				// button appended here (same stacking-context trap as the hero video
+				// control) - place it as a sibling of the hero section instead, styled
+				// like the video/image hero controls (bottom-anchored, escapes the trap).
+				if (scope.matches('.sbtw-hero-video[data-heroslide]') && scope.parentElement) {
+					button.classList.add('sbtw-hero-video-edit');
+					scope.parentElement.appendChild(button);
+				} else {
+					scope.appendChild(button);
+				}
 			});
 		}
 
@@ -5022,6 +5042,7 @@ function sbt_visual_meta_editor_assets() {
 				});
 				renderGalleryList();
 			});
+			yieldModalToMediaFrame(frame, galleryModal);
 			frame.open();
 		});
 

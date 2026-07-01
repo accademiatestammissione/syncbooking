@@ -190,6 +190,7 @@ $C = array(
 		'hero_h1' => 'Silence, stillness,<br/>and ancient olives',
 		'hero_sub' => 'A masseria in the Puglia countryside, surrounded by seven hectares of centuries-old olive groves and fruit trees.',
 		'hero_slides' => array( $IMG['hero_1'], $IMG['hero_2'], $IMG['hero_3'], $IMG['hero_4'] ),
+		'hero_imgs' => array( 'mf-05.jpg', 'mf-12.jpg', 'mf-16.jpg', 'mf-19.jpg' ),
 		'scroll_label' => 'Scroll',
 		'welcome_over' => 'Welcome',
 		'welcome_h2' => 'An idyllic corner<br/>of the Puglia countryside',

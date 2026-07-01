@@ -25,8 +25,9 @@ $room_cards = array(
 <section class="sbtw-hero" id="top" data-screen-label="Hero">
   <div class="sbtw-hero-video"<?php echo $home_v2 ? ' data-heroslide' : ''; ?>>
   <?php if ( $home_v2 ) : ?>
-    <?php foreach ( array( 'masseria-dusk.jpg', 'facade-glow.jpg', 'courtyard.jpg', 'pool-pergola.jpg', 'masseria-night.jpg', 'aerial-pool.jpg' ) as $hs ) : ?>
-    <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/' . $hs ) ); ?>" alt="<?php echo esc_attr( $SITE['name'] ?? 'Masseria Le Cerase' ); ?>" />
+    <?php $hero_slides = ( ! empty( $h['hero_imgs'] ) && is_array( $h['hero_imgs'] ) ) ? array_values( $h['hero_imgs'] ) : array( 'masseria-dusk.jpg', 'facade-glow.jpg', 'courtyard.jpg', 'pool-pergola.jpg', 'masseria-night.jpg', 'aerial-pool.jpg' ); ?>
+    <?php foreach ( $hero_slides as $hs_i => $hs ) : ?>
+    <?php echo sbt_t1_img( 'C.home.hero_imgs.' . $hs_i, sbt_gallery_src( $hs ), $SITE['name'] ?? 'Masseria Le Cerase', array() ); ?>
     <?php endforeach; ?>
   <?php else : ?>
     <?php

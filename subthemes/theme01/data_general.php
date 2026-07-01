@@ -171,6 +171,7 @@ $C['home'] = array(
 	'hero_h1' => 'Your home in the<br/>heart of Puglia',
 	'hero_sub' => 'An oasis of well-being nestled in a centuries-old park, steps from the Norman-Swabian Castle.',
 	'scroll_label' => 'Scroll',
+	'hero_imgs' => array( 'exterior-081.jpg', 'exterior-085.jpg', 'exterior-090.jpg', 'exterior-087.jpg', 'interior-067.jpg', 'exterior-078.jpg' ),
 	'welcome_over' => 'Welcome',
 	'welcome_h2' => 'An eclectic 1930s villa,<br/>reborn as a retreat',
 	'welcome_p1' => 'Villa Rosa is your oasis of well-being. Nestled in a large park with centuries-old trees, just steps from the ancient Norman-Swabian Castle that characterizes the village of Conversano - one of Puglia\'s most charming villages - lies a complex of elegant residences, including a historic villa in an eclectic style from the 1930s.',

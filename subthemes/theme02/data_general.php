@@ -291,6 +291,7 @@ $C['home'] = array_merge($C['home'], [
   'hero_over' => 'Masseria Le Cerase - Conversano - Puglia',
   'hero_h1' => 'A 17th-century<br>masseria, only yours',
   'hero_sub' => 'A fortified country house among olive groves, cherry orchards and vineyards - yours to live, for up to ten guests.',
+  'hero_imgs' => array( 'masseria-dusk.jpg', 'facade-glow.jpg', 'courtyard.jpg', 'pool-pergola.jpg', 'masseria-night.jpg', 'aerial-pool.jpg' ),
   'scroll_label' => 'Scroll',
   'welcome_h2' => 'Centuries of stone,<br>surrounded by countryside',
   'welcome_p1' => 'Masseria Le Cerase is a fortified seventeenth-century farmhouse in the countryside of Conversano, in the heart of Puglia. Built in local limestone, it stands among organic olive groves, cherry orchards and vineyards - the trees that give the masseria its name.',

@@ -26,10 +26,10 @@ $svc_svgs = array(
 <section class="sbtw-hero" id="top" data-screen-label="Hero">
   <div class="sbtw-hero-video"<?php echo $home_v2 ? ' data-heroslide' : ''; ?>>
   <?php if ( $home_v2 ) : ?>
-    <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-05.jpg' ) ); ?>" alt="Masseria Montefieno among the olive trees" />
-    <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-12.jpg' ) ); ?>" alt="The pool framed by olive trees" />
-    <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-16.jpg' ) ); ?>" alt="Dining under the pergola" />
-    <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/mf-19.jpg' ) ); ?>" alt="The masseria at golden hour" />
+    <?php $hero_slides = ( ! empty( $p['hero_imgs'] ) && is_array( $p['hero_imgs'] ) ) ? array_values( $p['hero_imgs'] ) : array( 'mf-05.jpg', 'mf-12.jpg', 'mf-16.jpg', 'mf-19.jpg' ); ?>
+    <?php foreach ( $hero_slides as $hs_i => $hs ) : ?>
+    <?php echo sbt_t1_img( 'C.home.hero_imgs.' . $hs_i, sbt_gallery_src( $hs ), $SITE['name'] ?? 'Masseria Montefieno', array() ); ?>
+    <?php endforeach; ?>
   <?php else : ?>
     <?php
     $hero_video_type = in_array( $p['hero_video_type'] ?? '', array( 'mp4', 'youtube', 'vimeo' ), true ) ? $p['hero_video_type'] : 'mp4';
