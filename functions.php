@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.34' );
+define( 'SBT_VERSION', '2.2.35' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -4686,6 +4686,20 @@ function sbt_visual_meta_editor_assets() {
 		.sbt-vfe-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:14px; }
 		.sbt-vfe-actions button { border:1px solid #8c8f94; border-radius:4px; cursor:pointer; font:600 14px/1 system-ui,sans-serif; padding:9px 13px; }
 		.sbt-vfe-save { background:#2271b1; border-color:#2271b1!important; color:#fff; }
+		.sbt-vfe-gallery-dialog { max-width:760px; width:min(760px,100%); }
+		.sbt-vfe-gallery-hint { color:#646970; font:400 13px/1.5 system-ui,sans-serif; margin:0 0 14px; }
+		.sbt-vfe-gallery-list { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:6px; max-height:52vh; overflow-y:auto; padding:2px; }
+		.sbt-vfe-gallery-empty { color:#646970; font:400 14px/1.5 system-ui,sans-serif; margin:0; padding:20px 0; text-align:center; width:100%; }
+		.sbt-vfe-gallery-item { background:#f6f7f7; border:1px solid #dcdcde; border-radius:6px; cursor:grab; padding:8px; position:relative; width:150px; }
+		.sbt-vfe-gallery-item.is-dragging { opacity:.4; }
+		.sbt-vfe-gallery-item img { border-radius:4px; display:block; height:100px; object-fit:cover; width:100%; }
+		.sbt-vfe-gallery-drag { color:#8c8f94; display:block; font-size:14px; margin-bottom:4px; text-align:center; }
+		.sbt-vfe-gallery-pos { background:#2271b1; border-radius:999px; color:#fff; font:600 11px/20px system-ui,sans-serif; height:20px; left:8px; position:absolute; text-align:center; top:8px; width:20px; }
+		.sbt-vfe-gallery-item-actions { display:flex; gap:4px; justify-content:center; margin-top:6px; }
+		.sbt-vfe-gallery-item-actions button { background:#fff; border:1px solid #8c8f94; border-radius:4px; cursor:pointer; font-size:12px; line-height:1; padding:5px 7px; }
+		.sbt-vfe-gallery-item-actions button:disabled { cursor:not-allowed; opacity:.35; }
+		.sbt-vfe-gallery-remove { color:#d63638; }
+		.sbt-vfe-gallery-count { align-self:center; color:#646970; font:400 13px/1 system-ui,sans-serif; }
 	</style>
 	<script>
 	(function(){
@@ -4786,50 +4800,130 @@ function sbt_visual_meta_editor_assets() {
 			});
 		}
 
-		function preloadGallerySelection(frame, urls){
-			if (!urls.length) return;
-			var data = new FormData();
-			data.append('action', 'sbt_vfe_gallery_attachment_ids');
-			data.append('nonce', config.nonce);
-			urls.forEach(function(url){
-				data.append('urls[]', url);
-			});
-			fetch(config.ajaxUrl, { method:'POST', credentials:'same-origin', body:data })
-				.then(function(response){ return response.json(); })
-				.then(function(json){
-					if (!json || !json.success || !json.data || !json.data.ids) return;
-					var selection = frame.state().get('selection');
-					json.data.ids.forEach(function(id){
-						var attachment = wp.media.attachment(id);
-						attachment.fetch();
-						selection.add(attachment);
-					});
-				});
+		/**
+		 * Gallery manager: a dedicated panel (not the generic media-library grid) that
+		 * shows the CURRENT images in order, lets the user reorder (drag or arrows),
+		 * remove any of them, and append new ones via the media library. Save posts
+		 * the final ordered URL list through the same 'gallery' save path as before.
+		 */
+		var galleryState = { field: null, parentPath: '', urls: [] };
+		var galleryDragIndex = -1;
+
+		var galleryModal = document.createElement('div');
+		galleryModal.className = 'sbt-vfe-modal sbt-vfe-gallery-modal';
+		galleryModal.innerHTML = '<div class="sbt-vfe-dialog sbt-vfe-gallery-dialog" role="dialog" aria-modal="true">' +
+			'<h3>Edit gallery</h3>' +
+			'<p class="sbt-vfe-gallery-hint">Drag a photo or use the arrows to reorder. Click &times; to remove. &ldquo;Add images&rdquo; appends new ones at the end.</p>' +
+			'<div class="sbt-vfe-gallery-list"></div>' +
+			'<div class="sbt-vfe-media-actions"><button type="button" class="sbt-vfe-gallery-add">+ Add images</button><span class="sbt-vfe-gallery-count"></span></div>' +
+			'<div class="sbt-vfe-actions"><button type="button" class="sbt-vfe-gallery-cancel">Cancel</button><button type="button" class="sbt-vfe-gallery-save">Save gallery</button></div>' +
+			'</div>';
+		document.body.appendChild(galleryModal);
+		var galleryListEl = galleryModal.querySelector('.sbt-vfe-gallery-list');
+		var galleryCountEl = galleryModal.querySelector('.sbt-vfe-gallery-count');
+
+		function renderGalleryList(){
+			var urls = galleryState.urls;
+			galleryCountEl.textContent = urls.length + (urls.length === 1 ? ' image' : ' images');
+			if (!urls.length) {
+				galleryListEl.innerHTML = '<p class="sbt-vfe-gallery-empty">No images yet &mdash; click &ldquo;Add images&rdquo; below.</p>';
+				return;
+			}
+			galleryListEl.innerHTML = urls.map(function(url, index){
+				return '<div class="sbt-vfe-gallery-item" draggable="true" data-index="' + index + '">' +
+					'<span class="sbt-vfe-gallery-drag" title="Drag to reorder">&#9776;</span>' +
+					'<img src="' + url.replace(/"/g, '&quot;') + '" alt="">' +
+					'<span class="sbt-vfe-gallery-pos">' + (index + 1) + '</span>' +
+					'<span class="sbt-vfe-gallery-item-actions">' +
+						'<button type="button" class="sbt-vfe-gallery-up" data-index="' + index + '" aria-label="Move up"' + (index === 0 ? ' disabled' : '') + '>&#8593;</button>' +
+						'<button type="button" class="sbt-vfe-gallery-down" data-index="' + index + '" aria-label="Move down"' + (index === urls.length - 1 ? ' disabled' : '') + '>&#8595;</button>' +
+						'<button type="button" class="sbt-vfe-gallery-remove" data-index="' + index + '" aria-label="Remove">&times;</button>' +
+					'</span>' +
+				'</div>';
+			}).join('');
 		}
 
-		function openGalleryFrame(field){
+		function galleryMoveItem(from, to){
+			if (to < 0 || to >= galleryState.urls.length || from === to) return;
+			var moved = galleryState.urls.splice(from, 1)[0];
+			galleryState.urls.splice(to, 0, moved);
+			renderGalleryList();
+		}
+
+		galleryListEl.addEventListener('click', function(event){
+			var button = event.target.closest('button[data-index]');
+			if (!button) return;
+			var index = parseInt(button.getAttribute('data-index'), 10);
+			if (button.classList.contains('sbt-vfe-gallery-remove')) {
+				galleryState.urls.splice(index, 1);
+				renderGalleryList();
+			} else if (button.classList.contains('sbt-vfe-gallery-up')) {
+				galleryMoveItem(index, index - 1);
+			} else if (button.classList.contains('sbt-vfe-gallery-down')) {
+				galleryMoveItem(index, index + 1);
+			}
+		});
+
+		galleryListEl.addEventListener('dragstart', function(event){
+			var item = event.target.closest('.sbt-vfe-gallery-item');
+			if (!item) return;
+			galleryDragIndex = parseInt(item.getAttribute('data-index'), 10);
+			item.classList.add('is-dragging');
+			event.dataTransfer.effectAllowed = 'move';
+		});
+		galleryListEl.addEventListener('dragover', function(event){
+			if (galleryDragIndex === -1) return;
+			event.preventDefault();
+		});
+		galleryListEl.addEventListener('drop', function(event){
+			var item = event.target.closest('.sbt-vfe-gallery-item');
+			if (!item || galleryDragIndex === -1) return;
+			event.preventDefault();
+			galleryMoveItem(galleryDragIndex, parseInt(item.getAttribute('data-index'), 10));
+		});
+		galleryListEl.addEventListener('dragend', function(){
+			galleryDragIndex = -1;
+			var dragging = galleryListEl.querySelector('.is-dragging');
+			if (dragging) dragging.classList.remove('is-dragging');
+		});
+
+		galleryModal.querySelector('.sbt-vfe-gallery-add').addEventListener('click', function(){
 			if (!window.wp || !wp.media) return;
-			var parentPath = galleryPathFromElement(field);
-			if (!parentPath) return;
-			var galleryUrls = closestGalleryUrls(field);
 			var frame = wp.media({
-				title: 'Edit full gallery',
-				button: { text: 'Use these images' },
+				title: 'Add images',
+				button: { text: 'Add to gallery' },
 				multiple: true,
 				library: { type: 'image' }
 			});
-			frame.on('open', function(){
-				preloadGallerySelection(frame, galleryUrls);
-			});
 			frame.on('select', function(){
-				var urls = [];
 				frame.state().get('selection').each(function(attachment){
 					var item = attachment.toJSON();
-					if (item.url) urls.push(item.url);
+					if (item.url && galleryState.urls.indexOf(item.url) === -1) {
+						galleryState.urls.push(item.url);
+					}
 				});
-				saveVisualField(field, parentPath, urls.join("\n"), 'gallery', true);
+				renderGalleryList();
 			});
 			frame.open();
+		});
+
+		galleryModal.querySelector('.sbt-vfe-gallery-cancel').addEventListener('click', function(){
+			galleryModal.classList.remove('is-open');
+			galleryState = { field: null, parentPath: '', urls: [] };
+		});
+
+		galleryModal.querySelector('.sbt-vfe-gallery-save').addEventListener('click', function(){
+			if (!galleryState.field) return;
+			saveVisualField(galleryState.field, galleryState.parentPath, galleryState.urls.join("\n"), 'gallery', true);
+			galleryModal.classList.remove('is-open');
+		});
+
+		function openGalleryFrame(field){
+			var parentPath = galleryPathFromElement(field);
+			if (!parentPath) return;
+			galleryState = { field: field, parentPath: parentPath, urls: closestGalleryUrls(field).slice() };
+			renderGalleryList();
+			galleryModal.classList.add('is-open');
 		}
 
 		function refreshVisualField(field, value, saveType, reloadAfterSave){
@@ -4988,51 +5082,6 @@ function sbt_visual_meta_editor_save() {
 	wp_send_json_success( array( 'value' => $value ) );
 }
 add_action( 'wp_ajax_sbt_vfe_save', 'sbt_visual_meta_editor_save' );
-
-function sbt_visual_meta_editor_gallery_attachment_ids() {
-	if ( ! current_user_can( 'edit_theme_options' ) ) {
-		wp_send_json_error( 'Permessi insufficienti.' );
-	}
-
-	check_ajax_referer( 'sbt_vfe_save', 'nonce' );
-
-	$raw_urls = isset( $_POST['urls'] ) && is_array( $_POST['urls'] ) ? wp_unslash( $_POST['urls'] ) : array();
-	$ids = array();
-
-	foreach ( $raw_urls as $raw_url ) {
-		$url = esc_url_raw( $raw_url );
-		if ( '' === $url ) {
-			continue;
-		}
-
-		$id = attachment_url_to_postid( $url );
-		if ( ! $id ) {
-			$path = wp_parse_url( $url, PHP_URL_PATH );
-			$marker = '/syncbooking-theme/';
-			if ( is_string( $path ) && false !== strpos( $path, $marker ) ) {
-				$relative = ltrim( substr( $path, strpos( $path, $marker ) + strlen( $marker ) ), '/' );
-				$matches = get_posts(
-					array(
-						'post_type'      => 'attachment',
-						'post_status'    => 'inherit',
-						'posts_per_page' => 1,
-						'fields'         => 'ids',
-						'meta_key'       => '_sbt_bundled_media_path',
-						'meta_value'     => wp_normalize_path( $relative ),
-					)
-				);
-				$id = $matches ? absint( $matches[0] ) : 0;
-			}
-		}
-
-		if ( $id ) {
-			$ids[] = $id;
-		}
-	}
-
-	wp_send_json_success( array( 'ids' => array_values( array_unique( array_map( 'absint', $ids ) ) ) ) );
-}
-add_action( 'wp_ajax_sbt_vfe_gallery_attachment_ids', 'sbt_visual_meta_editor_gallery_attachment_ids' );
 
 function sbt_admin_menu() {
 	// Top-level entry in the main admin sidebar, just before Appearance (pos 60).
