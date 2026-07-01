@@ -29,12 +29,23 @@ $room_cards = array(
     <img src="<?php echo esc_url( sbt_asset_url( 'assets/images/' . $hs ) ); ?>" alt="<?php echo esc_attr( $SITE['name'] ?? 'Masseria Le Cerase' ); ?>" />
     <?php endforeach; ?>
   <?php else : ?>
-    <?php $hero_video_raw = $h['hero_video'] ?? 'masseria.mp4'; ?>
-    <video src="<?php echo esc_url( sbt_video_src( $hero_video_raw ) ); ?>" poster="<?php echo esc_url( sbt_asset_url( 'assets/images/masseria-dusk.jpg' ) ); ?>" autoplay muted loop playsinline></video>
+    <?php
+    $hero_video_type = in_array( $h['hero_video_type'] ?? '', array( 'mp4', 'youtube', 'vimeo' ), true ) ? $h['hero_video_type'] : 'mp4';
+    $hero_video_raw  = $h['hero_video'] ?? 'masseria.mp4';
+    ?>
+    <?php if ( 'youtube' === $hero_video_type ) : ?>
+      <?php $yt_id = sbt_extract_video_id( $hero_video_raw, 'youtube' ); ?>
+      <iframe src="https://www.youtube.com/embed/<?php echo esc_attr( $yt_id ); ?>?autoplay=1&mute=1&loop=1&playlist=<?php echo esc_attr( $yt_id ); ?>&controls=0&showinfo=0&modestbranding=1&rel=0&iv_load_policy=3&playsinline=1" allow="autoplay; fullscreen" title="Masseria Le Cerase"></iframe>
+    <?php elseif ( 'vimeo' === $hero_video_type ) : ?>
+      <?php $vm_id = sbt_extract_video_id( $hero_video_raw, 'vimeo' ); ?>
+      <iframe src="https://player.vimeo.com/video/<?php echo esc_attr( $vm_id ); ?>?autoplay=1&controls=0&mute=1&muted=1&loop=1&playlist=<?php echo esc_attr( $vm_id ); ?>&disablekb=1&modestbranding=1&playsinline=1&rel=0&background=1" allow="autoplay; fullscreen" title="Masseria Le Cerase"></iframe>
+    <?php else : ?>
+      <video src="<?php echo esc_url( sbt_video_src( $hero_video_raw ) ); ?>" poster="<?php echo esc_url( sbt_asset_url( 'assets/images/masseria-dusk.jpg' ) ); ?>" autoplay muted loop playsinline></video>
+    <?php endif; ?>
   <?php endif; ?>
   </div>
   <?php if ( ! $home_v2 ) : ?>
-    <?php echo sbt_t1_control( 'C.home.hero_video', $hero_video_raw, 'Video', 'video', 'sbtw-hero-video-edit', true ); ?>
+    <?php echo sbt_t1_control( 'C.home.hero_video', wp_json_encode( array( 'type' => $hero_video_type, 'value' => $hero_video_raw ) ), 'Video', 'video_source', 'sbtw-hero-video-edit', true ); ?>
   <?php endif; ?>
   <div class="sbtw-hero-overlay"></div>
   <div class="sbtw-hero-inner">

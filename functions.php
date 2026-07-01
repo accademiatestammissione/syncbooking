@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.38' );
+define( 'SBT_VERSION', '2.2.39' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -572,6 +572,19 @@ function sbt_gallery_src( $v ) {
 function sbt_video_src( $v ) {
 	$v = (string) $v;
 	return preg_match( '#^https?://#i', $v ) ? $v : sbt_asset_url( 'assets/video/' . ltrim( $v, '/' ) );
+}
+
+/** Extract a bare YouTube/Vimeo video ID from either a full URL or an ID pasted directly. */
+function sbt_extract_video_id( $raw, $provider ) {
+	$raw = trim( (string) $raw );
+	if ( 'youtube' === $provider ) {
+		if ( preg_match( '#(?:youtu\.be/|youtube\.com/(?:embed/|watch\?v=|shorts/))([A-Za-z0-9_-]{6,})#i', $raw, $m ) ) {
+			return $m[1];
+		}
+		return preg_match( '/^[A-Za-z0-9_-]{6,}$/', $raw ) ? $raw : '';
+	}
+	// Vimeo IDs are numeric; accept a bare ID or pull the first long digit run out of a URL.
+	return preg_match( '/(\d{5,})/', $raw, $m ) ? $m[1] : '';
 }
 
 function sbt_prepare_local_asset_path( $asset_path, $local_path, $subtheme_key = '' ) {
@@ -4710,6 +4723,10 @@ function sbt_visual_meta_editor_assets() {
 		.sbt-vfe-url-hint { color:#646970; font:400 12px/1.45 system-ui,sans-serif; margin:8px 0 0; }
 		.sbt-vfe-preview { display:grid; gap:8px; margin:0 0 10px; }
 		.sbt-vfe-preview img, .sbt-vfe-preview video { border:1px solid #dcdcde; border-radius:6px; height:120px; object-fit:cover; width:180px; }
+		.sbt-vfe-video-types { display:flex; gap:8px; margin:0 0 14px; }
+		.sbt-vfe-video-type-opt { align-items:center; border:2px solid #dcdcde; border-radius:6px; cursor:pointer; display:flex; flex:1; font:600 13px/1 system-ui,sans-serif; gap:8px; justify-content:center; padding:12px 10px; transition:border-color .15s ease, background .15s ease; }
+		.sbt-vfe-video-type-opt input { margin:0; }
+		.sbt-vfe-video-type-opt:has(input:checked) { background:#eaf2fa; border-color:#2271b1; color:#2271b1; }
 		.sbt-vfe-media-actions { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; }
 		.sbt-vfe-media-actions button { border:1px solid #8c8f94; border-radius:4px; cursor:pointer; font:600 13px/1 system-ui,sans-serif; padding:8px 11px; }
 		.sbt-vfe-actions { display:flex; gap:8px; justify-content:flex-end; margin-top:14px; }
@@ -4797,10 +4814,38 @@ function sbt_visual_meta_editor_assets() {
 			preview.innerHTML = value ? '<img alt="" src="' + value.replace(/"/g, '&quot;') + '">' : '<p>No image selected.</p>';
 		}
 
-		function renderVideoInput(wrap, value){
-			wrap.innerHTML = '<div class="sbt-vfe-preview"></div><input type="url"><div class="sbt-vfe-media-actions"><button type="button" class="sbt-vfe-pick-video">Choose / upload video</button></div>';
-			wrap.querySelector('input').value = value;
-			updateVideoPreview(wrap, value);
+		var VIDEO_TYPES = [
+			{ key: 'mp4', label: 'MP4' },
+			{ key: 'youtube', label: 'YouTube' },
+			{ key: 'vimeo', label: 'Vimeo' }
+		];
+
+		function renderVideoSourceInput(wrap, jsonValue){
+			var data = {};
+			try { data = JSON.parse(jsonValue) || {}; } catch (e) {}
+			var activeType = VIDEO_TYPES.some(function(t){ return t.key === data.type; }) ? data.type : 'mp4';
+			var value = data.value || '';
+
+			var typesHtml = VIDEO_TYPES.map(function(t){
+				return '<label class="sbt-vfe-video-type-opt"><input type="radio" name="sbtVideoType" value="' + t.key + '"> ' + t.label + '</label>';
+			}).join('');
+
+			wrap.innerHTML =
+				'<div class="sbt-vfe-video-types">' + typesHtml + '</div>' +
+				'<div class="sbt-vfe-video-panel" data-panel="mp4"><div class="sbt-vfe-preview"></div><input type="url" class="sbt-vfe-video-value" data-for="mp4" placeholder="Video file URL"><div class="sbt-vfe-media-actions"><button type="button" class="sbt-vfe-pick-video">Choose / upload video</button></div></div>' +
+				'<div class="sbt-vfe-video-panel" data-panel="youtube"><input type="text" class="sbt-vfe-video-value" data-for="youtube" placeholder="YouTube URL or video ID"></div>' +
+				'<div class="sbt-vfe-video-panel" data-panel="vimeo"><input type="text" class="sbt-vfe-video-value" data-for="vimeo" placeholder="Vimeo URL or video ID"></div>';
+
+			wrap.querySelector('input[name="sbtVideoType"][value="' + activeType + '"]').checked = true;
+			wrap.querySelector('.sbt-vfe-video-value[data-for="' + activeType + '"]').value = value;
+			if ('mp4' === activeType) { updateVideoPreview(wrap, value); }
+			showVideoSourcePanel(wrap, activeType);
+		}
+
+		function showVideoSourcePanel(wrap, type){
+			wrap.querySelectorAll('.sbt-vfe-video-panel').forEach(function(panel){
+				panel.style.display = ( panel.getAttribute('data-panel') === type ) ? '' : 'none';
+			});
 		}
 
 		function updateVideoPreview(wrap, value){
@@ -4814,11 +4859,31 @@ function sbt_visual_meta_editor_assets() {
 			var frame = wp.media({ title: 'Select video', multiple: false, library: { type: 'video' } });
 			frame.on('select', function(){
 				var item = frame.state().get('selection').first().toJSON();
-				var input = wrap.querySelector('input');
-				input.value = item.url;
+				var input = wrap.querySelector('.sbt-vfe-video-value[data-for="mp4"]');
+				if (input) { input.value = item.url; }
 				updateVideoPreview(wrap, item.url);
 			});
 			frame.open();
+		}
+
+		function saveVideoSource(field, videoType, videoValue){
+			var basePath = field.getAttribute('data-sbt-vfe-path');
+			var typeData = new FormData();
+			typeData.append('action', 'sbt_vfe_save');
+			typeData.append('nonce', config.nonce);
+			typeData.append('post_id', config.postId || 0);
+			typeData.append('language', config.language || 'en');
+			typeData.append('path', basePath + '_type');
+			typeData.append('value', videoType);
+			typeData.append('type', 'text');
+
+			fetch(config.ajaxUrl, { method:'POST', credentials:'same-origin', body:typeData })
+				.then(function(response){ return response.json(); })
+				.then(function(json){
+					if (!json || !json.success) throw new Error(json && json.data ? json.data : 'Save error');
+					saveVisualField(field, basePath, videoValue, ( 'mp4' === videoType ? 'video' : 'text' ), true);
+				})
+				.catch(function(error){ alert(error.message); });
 		}
 
 		function openImageFrame(wrap){
@@ -5028,8 +5093,8 @@ function sbt_visual_meta_editor_assets() {
 			var parentGallery = type === 'image' ? galleryParentPath(activeField.getAttribute('data-sbt-vfe-path')) : '';
 			if (type === 'image') {
 				renderImageInput(wrap, value, parentGallery);
-			} else if (type === 'video') {
-				renderVideoInput(wrap, value);
+			} else if (type === 'video_source') {
+				renderVideoSourceInput(wrap, value);
 			} else if (type === 'url') {
 				renderUrlInput(wrap, value);
 			} else {
@@ -5051,10 +5116,13 @@ function sbt_visual_meta_editor_assets() {
 		});
 
 		modal.addEventListener('change', function(event){
-			if (!event.target.closest('.sbt-vfe-url-select')) return;
-			var wrap = modal.querySelector('.sbt-vfe-input');
-			var input = wrap.querySelector('.sbt-vfe-url-input');
-			if (event.target.value && input) input.value = '';
+			if (event.target.closest('.sbt-vfe-url-select')) {
+				var wrap = modal.querySelector('.sbt-vfe-input');
+				var input = wrap.querySelector('.sbt-vfe-url-input');
+				if (event.target.value && input) input.value = '';
+			} else if (event.target.name === 'sbtVideoType') {
+				showVideoSourcePanel(modal.querySelector('.sbt-vfe-input'), event.target.value);
+			}
 		});
 
 		modal.addEventListener('input', function(event){
@@ -5071,6 +5139,14 @@ function sbt_visual_meta_editor_assets() {
 		modal.querySelector('.sbt-vfe-save').addEventListener('click', function(){
 			if (!activeField) return;
 			var type = activeField.getAttribute('data-sbt-vfe-type') || 'text';
+			if (type === 'video_source') {
+				var wrap = modal.querySelector('.sbt-vfe-input');
+				var checked = wrap.querySelector('input[name="sbtVideoType"]:checked');
+				var videoType = checked ? checked.value : 'mp4';
+				var valueInput = wrap.querySelector('.sbt-vfe-video-value[data-for="' + videoType + '"]');
+				saveVideoSource(activeField, videoType, valueInput ? valueInput.value : '');
+				return;
+			}
 			var value = '';
 			if (type === 'url') {
 				var selected = modal.querySelector('.sbt-vfe-url-select');
