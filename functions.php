@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SBT_VERSION', '2.2.37' );
+define( 'SBT_VERSION', '2.2.38' );
 define( 'SBT_OPTION', 'syncbooking_theme_options' );
 
 require_once __DIR__ . '/chrome-partials.php';
@@ -4698,7 +4698,6 @@ function sbt_visual_meta_editor_assets() {
 		.sbtw-page-hero > .sbt-vfe-image-wrap, .sbtw-hero-video > .sbt-vfe-image-wrap, .sbtw-exp > .sbt-vfe-image-wrap, .sbtw-offer-card > .sbt-vfe-image-wrap { display:contents; }
 		/* Page/home heroes anchor the control to the whole hero section, which puts a top-left button right over the site logo/nav. Pin it to the bottom instead. */
 		.sbtw-page-hero > .sbt-vfe-image-wrap > .sbt-vfe-control, .sbtw-hero-video > .sbt-vfe-image-wrap > .sbt-vfe-control { bottom:16px; top:auto; }
-		.sbtw-hero-video { position:relative; }
 		.sbtw-hero-video-edit { align-items:center; background:rgba(34,113,177,.96); border:0; border-radius:999px; bottom:16px; color:#fff; cursor:pointer; display:inline-flex; font:600 12px/1 system-ui,sans-serif; gap:6px; padding:8px 11px; position:absolute; right:16px; z-index:6; }
 		.sbt-vfe-gallery-scope { position:relative; }
 		.sbt-vfe-gallery-edit { align-items:center; background:rgba(34,113,177,.96); border:0; border-radius:999px; color:#fff; cursor:pointer; display:inline-flex; font:600 12px/1 system-ui,sans-serif; gap:6px; padding:8px 11px; position:absolute; right:10px; top:10px; z-index:8; }
